@@ -7,6 +7,7 @@ namespace
 {
 	constexpr Duration kFadeDuration = 1s;
 
+	constexpr Vec2 kJacketPos{ 0, -80 };
 	constexpr SizeF kJacketSize{ 300.0, 300.0 };
 }
 
@@ -23,7 +24,7 @@ Co::Task<void> PlayPrepareScene::start()
 	m_seStream.play();
 
 	// ジャケットのスケールアニメーション
-	const auto _ = Co::Ease(&m_jacketScale, 2s).fromTo(1.2, 1.0).play().runScoped();
+	const auto runner = Co::Ease(&m_jacketScale, 2s).fromTo(1.2, 1.0).play().runScoped();
 
 	const auto [isWait, isStart, isBack] = co_await Co::Any(
 		Co::Delay(2s),
@@ -36,7 +37,6 @@ Co::Task<void> PlayPrepareScene::start()
 	}
 	else
 	{
-		co_await ShowLoadingOneFrame::Play(HasBgYN::No);
 		requestNextScene<PlayScene>(m_chartFilePath, m_isAutoPlay);
 	}
 }
@@ -46,10 +46,15 @@ void PlayPrepareScene::draw() const
 	FitToHeight(m_bgTexture).drawAt(Scene::Center());
 
 	const SizeF jacketSize = kJacketSize * m_jacketScale;
-	m_jacketTexture.resized(jacketSize).drawAt(Scene::Center().movedBy(0, Scaled(-100)));
+	m_jacketTexture.resized(jacketSize).drawAt(Scene::Center().movedBy(Scaled(kJacketPos)));
 }
 
 Co::Task<void> PlayPrepareScene::fadeIn()
 {
 	co_await Co::ScreenFadeIn(kFadeDuration, Palette::White);
+}
+
+Co::Task<void> PlayPrepareScene::postFadeOut()
+{
+	co_await ShowLoadingOneFrame::Play(HasBgYN::No);
 }
