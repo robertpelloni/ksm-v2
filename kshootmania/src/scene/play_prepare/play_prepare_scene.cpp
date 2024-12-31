@@ -28,8 +28,8 @@ Co::Task<void> PlayPrepareScene::start()
 
 	const auto [isWait, isStart, isBack] = co_await Co::Any(
 		Co::Delay(2s),
-		KeyConfig::WaitForDown(KeyConfig::kStart),
-		KeyConfig::WaitForDown(KeyConfig::kBack));
+		KeyConfig::WaitUntilDown(KeyConfig::kStart),
+		KeyConfig::WaitUntilDown(KeyConfig::kBack));
 
 	if (isBack)
 	{

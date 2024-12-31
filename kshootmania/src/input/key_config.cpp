@@ -269,12 +269,12 @@ void KeyConfig::ClearInput(Button button)
 	}
 }
 
-Co::Task<void> KeyConfig::WaitForDown(Button button)
+Co::Task<void> KeyConfig::WaitUntilDown(Button button)
 {
-	co_await Co::WaitUntil([button]() { return Down(button); });
-
-	// 即座に次シーンに遷移した場合に多重に反応しないよう、入力をクリアする必要がある
+	// 前シーンの入力で多重に反応しないよう、入力をクリア
 	ClearInput(button);
+
+	return Co::WaitUntil([button]() { return Down(button); });
 }
 
 bool KeyConfig::Up(Button button)

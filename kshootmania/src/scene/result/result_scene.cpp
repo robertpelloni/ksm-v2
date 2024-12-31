@@ -37,8 +37,8 @@ Co::Task<void> ResultScene::start()
 {
 	// StartボタンまたはBackボタンが押されるまで待機
 	co_await Co::Any(
-		KeyConfig::WaitForDown(KeyConfig::kStart),
-		KeyConfig::WaitForDown(KeyConfig::kBack));
+		KeyConfig::WaitUntilDown(KeyConfig::kStart),
+		KeyConfig::WaitUntilDown(KeyConfig::kBack));
 
 	// 楽曲選択へ戻る
 	requestNextScene<SelectScene>();

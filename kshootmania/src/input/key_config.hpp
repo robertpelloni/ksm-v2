@@ -96,7 +96,7 @@ namespace KeyConfig
 
 	void ClearInput(Button button);
 
-	Co::Task<void> WaitForDown(Button button);
+	Co::Task<void> WaitUntilDown(Button button);
 
 	bool Up(Button button);
 
