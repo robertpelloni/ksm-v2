@@ -6,6 +6,18 @@ namespace
 {
 	constexpr Duration kFadeInDuration = 0.25s;
 	constexpr Duration kFadeOutDuration = 0.4s;
+
+	constexpr FilePathView kSelectSceneUIFilePath = U"ui/scene/select.noco";
+
+	std::shared_ptr<noco::Canvas> LoadSelectSceneCanvas()
+	{
+		const auto canvas = noco::Canvas::LoadFromFile(kSelectSceneUIFilePath);
+		if (!canvas)
+		{
+			throw Error{ U"Failed to load '{}'"_fmt(kSelectSceneUIFilePath) };
+		}
+		return canvas;
+	}
 }
 
 void SelectScene::moveToPlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)
@@ -19,7 +31,8 @@ SelectScene::SelectScene()
 		ConfigIni::GetInt(ConfigIni::Key::kSelectCloseFolderKey) == ConfigIni::Value::SelectCloseFolderKey::kBackButton
 			? KeyConfig::kBack
 			: KeyConfig::kBackspace)
-	, m_menu([this](FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlayYN) { moveToPlayScene(chartFilePath, isAutoPlayYN); })
+	, m_canvas(LoadSelectSceneCanvas())
+	, m_menu(m_canvas, [this](FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlayYN) { moveToPlayScene(chartFilePath, isAutoPlayYN); })
 {
 	AutoMuteAddon::SetEnabled(true);
 }
@@ -56,21 +69,25 @@ void SelectScene::update()
 	{
 		m_menu.decideAutoPlay();
 	}
+
+	m_canvas->update();
 }
 
 void SelectScene::draw() const
 {
-	FitToHeight(m_bgTexture).drawAt(Scene::Center());
-	m_bgAnim.draw();
-	m_menu.draw();
+	m_canvas->draw();
 }
 
 Co::Task<void> SelectScene::fadeIn()
 {
+	const auto canvasUpdateRunner = Co::UpdaterTask([this] { m_canvas->update(); }).runScoped();
+
 	co_await Co::ScreenFadeIn(kFadeInDuration);
 }
 
 Co::Task<void> SelectScene::fadeOut()
 {
+	const auto canvasUpdateRunner = Co::UpdaterTask([this] { m_canvas->update(); }).runScoped();
+
 	co_await Co::ScreenFadeOut(kFadeOutDuration, m_fadeOutColor);
 }

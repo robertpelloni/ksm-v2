@@ -2,11 +2,17 @@
 #include "select_folder_state.hpp"
 #include "ui/array_with_linear_menu.hpp"
 #include "select_difficulty_menu.hpp"
-#include "select_menu_graphics.hpp"
 #include "select_song_preview.hpp"
 #include "ksmaudio/ksmaudio.hpp"
 
 using PlaySeYN = YesNo<struct PlaySeYN_tag>;
+
+enum class SelectMenuShakeDirection
+{
+	kUnspecified,
+	kUp,
+	kDown,
+};
 
 class ISelectMenuItem;
 
@@ -22,18 +28,19 @@ struct SelectMenuEventContext
 class SelectMenu
 {
 private:
+	static constexpr int32 kNumDisplayItems = 8;
+	static constexpr int32 kNumTopItems = kNumDisplayItems / 2;
+	static constexpr int32 kNumBottomItems = kNumDisplayItems - kNumTopItems - 1;
+
 	const SelectMenuEventContext m_eventContext;
+
+	std::shared_ptr<noco::Canvas> m_selectSceneCanvas;
 
 	SelectFolderState m_folderState;
 
 	ArrayWithLinearMenu<std::unique_ptr<ISelectMenuItem>> m_menu;
 
 	SelectDifficultyMenu m_difficultyMenu;
-
-	SelectMenuGraphics m_graphics;
-
-	SelectMenuShakeDirection m_shakeDirection = SelectMenuShakeDirection::kUnspecified;
-	Stopwatch m_shakeStopwatch;
 
 	SelectSongPreview m_songPreview;
 
@@ -49,18 +56,20 @@ private:
 
 	void setCursorToItemByFullPath(FilePathView fullPath);
 
-	void refreshGraphics(SelectMenuGraphics::RefreshType type);
+	void refreshContentCanvasParams();
 
 	void refreshSongPreview();
 
+	void playShakeUpTween();
+
+	void playShakeDownTween();
+
 public:
-	explicit SelectMenu(std::function<void(FilePathView, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene);
+	explicit SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, std::function<void(FilePathView, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene);
 
 	~SelectMenu(); // ヘッダではISelectMenuItemが不完全型なのでソースファイル側で定義
 
 	void update();
-
-	void draw() const;
 
 	void decide();
 

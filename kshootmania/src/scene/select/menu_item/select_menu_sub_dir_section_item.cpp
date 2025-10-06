@@ -1,5 +1,4 @@
 ﻿#include "select_menu_sub_dir_section_item.hpp"
-#include "scene/select/select_menu_graphics.hpp"
 #include "common/fs_utils.hpp"
 
 SelectMenuSubDirSectionItem::SelectMenuSubDirSectionItem(FilePathView fullPath)
@@ -8,23 +7,27 @@ SelectMenuSubDirSectionItem::SelectMenuSubDirSectionItem(FilePathView fullPath)
 {
 }
 
-void SelectMenuSubDirSectionItem::decide(const SelectMenuEventContext& context, [[maybe_unused]] int32 difficultyIdx)
+void SelectMenuSubDirSectionItem::decide([[maybe_unused]] const SelectMenuEventContext& context, [[maybe_unused]] int32 difficultyIdx)
 {
 	//Print << U"Not Implemented (SelectMenuSubDirSectionItem::decide)";
 }
 
-void SelectMenuSubDirSectionItem::drawCenter([[maybe_unused]] int32 difficultyIdx, const RenderTexture& renderTexture, const SelectMenuItemGraphicAssets& assets) const
+void SelectMenuSubDirSectionItem::setCanvasParamsCenter(noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
 {
-	Shader::Copy(assets.subDirItemTextures.center, renderTexture);
-
-	const ScopedRenderTarget2D scopedRenderTarget(renderTexture);
-	assets.font(m_displayName).drawAt(44, Vec2{ 16 + 740 / 2, 135 + 102 / 2 });
+	canvas.setParamValues({
+		{ U"center_isDirectory", true },
+		{ U"center_isLevel", false },
+		{ U"center_isSong", false },
+		{ U"center_title", m_displayName },
+	});
 }
 
-void SelectMenuSubDirSectionItem::drawUpperLower([[maybe_unused]] int32 difficultyIdx, const RenderTexture& renderTexture, const SelectMenuItemGraphicAssets& assets, bool isUpper) const
+void SelectMenuSubDirSectionItem::setCanvasParamsTopBottom(noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
 {
-	Shader::Copy(isUpper ? assets.subDirItemTextures.upperHalf : assets.subDirItemTextures.lowerHalf, renderTexture);
-
-	const ScopedRenderTarget2D scopedRenderTarget(renderTexture);
-	assets.font(m_displayName).drawAt(38, isUpper ? Vec2{ 16 + 770 / 2, 12 + 86 / 2 } : Vec2{ 16 + 770 / 2, 126 + 86 / 2 });
+	canvas.setParamValues({
+		{ paramNamePrefix + U"isDirectory", true },
+		{ paramNamePrefix + U"isLevel", false },
+		{ paramNamePrefix + U"isSong", false },
+		{ paramNamePrefix + U"title", m_displayName },
+	});
 }

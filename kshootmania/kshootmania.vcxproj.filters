@@ -303,16 +303,10 @@
     <ClCompile Include="src\scene\select\select_scene.cpp">
       <Filter>Source Files\scene\select</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\select\select_bg_anim.cpp">
-      <Filter>Source Files\scene\select</Filter>
-    </ClCompile>
     <ClCompile Include="src\scene\select\select_menu.cpp">
       <Filter>Source Files\scene\select</Filter>
     </ClCompile>
     <ClCompile Include="src\scene\select\select_difficulty_menu.cpp">
-      <Filter>Source Files\scene\select</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene\select\select_menu_graphics.cpp">
       <Filter>Source Files\scene\select</Filter>
     </ClCompile>
     <ClCompile Include="src\scene\play\play_scene.cpp">
@@ -841,12 +835,6 @@
     <ClInclude Include="src\scene\select\select_scene.hpp">
       <Filter>Header Files\scene\select</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\select\select_assets.hpp">
-      <Filter>Header Files\scene\select</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\select\select_bg_anim.hpp">
-      <Filter>Header Files\scene\select</Filter>
-    </ClInclude>
     <ClInclude Include="src\scene\select\select_menu.hpp">
       <Filter>Header Files\scene\select</Filter>
     </ClInclude>
@@ -860,9 +848,6 @@
       <Filter>Header Files\ui</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\select\select_difficulty_menu.hpp">
-      <Filter>Header Files\scene\select</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\select\select_menu_graphics.hpp">
       <Filter>Header Files\scene\select</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\play\play_scene.hpp">

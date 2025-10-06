@@ -32,6 +32,8 @@ public:
 
 	int32 level() const;
 
+	String dispBPM() const;
+
 	FilePath previewBGMFilePath() const;
 
 	SecondsF previewBGMOffset() const;

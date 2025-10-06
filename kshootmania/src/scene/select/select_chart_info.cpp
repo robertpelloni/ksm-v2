@@ -72,6 +72,11 @@ int32 SelectChartInfo::level() const
 	return m_chartData.meta.level;
 }
 
+String SelectChartInfo::dispBPM() const
+{
+	return Unicode::FromUTF8(m_chartData.meta.dispBPM);
+}
+
 FilePath SelectChartInfo::previewBGMFilePath() const
 {
 	return toFullPath(m_chartData.audio.bgm.filename);

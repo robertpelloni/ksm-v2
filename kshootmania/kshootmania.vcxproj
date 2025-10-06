@@ -195,11 +195,9 @@
     <ClCompile Include="src\scene\select\menu_item\select_menu_fav_folder_item.cpp" />
     <ClCompile Include="src\scene\select\menu_item\select_menu_song_item.cpp" />
     <ClCompile Include="src\scene\select\menu_item\select_menu_sub_dir_section_item.cpp" />
-    <ClCompile Include="src\scene\select\select_bg_anim.cpp" />
     <ClCompile Include="src\scene\select\select_chart_info.cpp" />
     <ClCompile Include="src\scene\select\select_difficulty_menu.cpp" />
     <ClCompile Include="src\scene\select\select_menu.cpp" />
-    <ClCompile Include="src\scene\select\select_menu_graphics.cpp" />
     <ClCompile Include="src\scene\select\select_scene.cpp" />
     <ClCompile Include="src\scene\select\select_song_preview.cpp" />
     <ClCompile Include="src\scene\title\title_menu.cpp" />
@@ -396,13 +394,10 @@
     <ClInclude Include="src\scene\select\menu_item\select_menu_fav_folder_item.hpp" />
     <ClInclude Include="src\scene\select\menu_item\select_menu_song_item.hpp" />
     <ClInclude Include="src\scene\select\menu_item\select_menu_sub_dir_section_item.hpp" />
-    <ClInclude Include="src\scene\select\select_assets.hpp" />
-    <ClInclude Include="src\scene\select\select_bg_anim.hpp" />
     <ClInclude Include="src\scene\select\select_chart_info.hpp" />
     <ClInclude Include="src\scene\select\select_difficulty_menu.hpp" />
     <ClInclude Include="src\scene\select\select_folder_state.hpp" />
     <ClInclude Include="src\scene\select\select_menu.hpp" />
-    <ClInclude Include="src\scene\select\select_menu_graphics.hpp" />
     <ClInclude Include="src\scene\select\select_scene.hpp" />
     <ClInclude Include="src\scene\select\select_song_preview.hpp" />
     <ClInclude Include="src\scene\title\title_assets.hpp" />

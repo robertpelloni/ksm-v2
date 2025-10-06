@@ -18,18 +18,6 @@ namespace
 						return FileSystem::IsDirectory(p);
 					});
 	}
-
-	Vec2 ShakeVec(SelectMenuShakeDirection direction, double timeSec)
-	{
-		constexpr double kShakeHeight = 2.0;
-		constexpr double kShakeDurationSec = 0.04;
-		using enum SelectMenuShakeDirection;
-		if ((direction != kUp && direction != kDown) || timeSec < 0.0 || kShakeDurationSec < timeSec)
-		{
-			return Vec2::Zero();
-		}
-		return Scaled(Vec2{ 0.0, Cos(Math::HalfPi * timeSec / kShakeDurationSec) * kShakeHeight * (direction == kUp ? -1 : 1) });
-	}
 }
 
 bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe)
@@ -183,7 +171,7 @@ bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe)
 	ConfigIni::SetString(ConfigIni::Key::kSelectDirectory, directoryPath);
 	ConfigIni::SetInt(ConfigIni::Key::kSelectSongIndex, 0);
 
-	refreshGraphics(SelectMenuGraphics::kAll);
+	refreshContentCanvasParams();
 	refreshSongPreview();
 
 	return true;
@@ -208,26 +196,44 @@ void SelectMenu::setCursorToItemByFullPath(FilePathView fullPath)
 	}
 }
 
-void SelectMenu::refreshGraphics(SelectMenuGraphics::RefreshType type)
+void SelectMenu::refreshContentCanvasParams()
 {
-	const int32 difficultyCursor = m_difficultyMenu.cursor(); // could be -1
-	const int32 difficultyIdx = (difficultyCursor >= 0) ? difficultyCursor : m_difficultyMenu.rawCursor();
-	m_graphics.refresh(m_menu, difficultyIdx, type);
-	switch (type)
+	if (m_menu.empty())
 	{
-	case SelectMenuGraphics::kCursorUp:
-		m_shakeDirection = SelectMenuShakeDirection::kUp;
-		break;
+		return;
+	}
 
-	case SelectMenuGraphics::kCursorDown:
-		m_shakeDirection = SelectMenuShakeDirection::kDown;
-		break;
+	const int32 difficultyCursor = m_difficultyMenu.cursor(); // この値は-1にもなり得る
+	const int32 difficultyIdx = difficultyCursor >= 0 ? difficultyCursor : m_difficultyMenu.rawCursor();
+	m_selectSceneCanvas->setParamValues({
+		{ U"difficultyCursorState", U"difficulty{}"_fmt(difficultyIdx) },
+	});
 
-	default:
-		m_shakeDirection = SelectMenuShakeDirection::kUnspecified;
-		break;
-	};
-	m_shakeStopwatch.restart();
+	// 中央の項目のパラメータを反映
+	if (const auto pItem = m_menu.cursorValue().get())
+	{
+		pItem->setCanvasParamsCenter(*m_selectSceneCanvas, difficultyIdx);
+	}
+
+	// 上の項目のパラメータを反映
+	for (int32 i = 0; i < kNumTopItems; ++i)
+	{
+		if (const auto pItem = m_menu.atCyclic(m_menu.cursor() - kNumTopItems + i).get())
+		{
+			const int32 topIdx = kNumTopItems - i;
+			pItem->setCanvasParamsTopBottom(*m_selectSceneCanvas, difficultyIdx, U"top{}_"_fmt(topIdx), U"TopItem{}"_fmt(topIdx));
+		}
+	}
+
+	// 下の項目のパラメータを反映
+	for (int32 i = 0; i < kNumBottomItems; ++i)
+	{
+		if (const auto pItem = m_menu.atCyclic(m_menu.cursor() + 1 + i).get())
+		{
+			const int32 bottomIdx = i + 1;
+			pItem->setCanvasParamsTopBottom(*m_selectSceneCanvas, difficultyIdx, U"bottom{}_"_fmt(bottomIdx), U"BottomItem{}"_fmt(bottomIdx));
+		}
+	}
 }
 
 void SelectMenu::refreshSongPreview()
@@ -249,8 +255,27 @@ void SelectMenu::refreshSongPreview()
 	}
 }
 
-SelectMenu::SelectMenu(std::function<void(FilePathView, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene)
-	: m_eventContext
+void SelectMenu::playShakeUpTween()
+{
+	m_selectSceneCanvas->setTweenActiveByTag(U"shakeDown", false);
+
+	// 再度再生できるようにオフにしてからオンにする
+	m_selectSceneCanvas->setTweenActiveByTag(U"shakeUp", false);
+	m_selectSceneCanvas->setTweenActiveByTag(U"shakeUp", true);
+}
+
+void SelectMenu::playShakeDownTween()
+{
+	m_selectSceneCanvas->setTweenActiveByTag(U"shakeUp", false);
+
+	// 再度再生できるようにオフにしてからオンにする
+	m_selectSceneCanvas->setTweenActiveByTag(U"shakeDown", false);
+	m_selectSceneCanvas->setTweenActiveByTag(U"shakeDown", true);
+}
+
+SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, std::function<void(FilePathView, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene)
+	: m_selectSceneCanvas(selectSceneCanvas)
+	, m_eventContext
 		{
 			.fnMoveToPlayScene = [fnMoveToPlayScene](FilePath path, MusicGame::IsAutoPlayYN isAutoPlay) { fnMoveToPlayScene(path, isAutoPlay); },
 			.fnOpenDirectory = [this](FilePath path) { openDirectory(path, PlaySeYN::Yes); },
@@ -267,7 +292,6 @@ SelectMenu::SelectMenu(std::function<void(FilePathView, MusicGame::IsAutoPlayYN)
 			.cyclic = IsCyclicMenuYN::Yes,
 		})
 	, m_difficultyMenu(this)
-	, m_shakeStopwatch(StartImmediately::No)
 {
 	// ConfigIniのカーソルの値はopenDirectory内で上書きされるので事前に取得しておく
 	const int32 loadedCursor = ConfigIni::GetInt(ConfigIni::Key::kSelectSongIndex);
@@ -289,7 +313,7 @@ SelectMenu::SelectMenu(std::function<void(FilePathView, MusicGame::IsAutoPlayYN)
 		openDirectory(U"", PlaySeYN::No);
 	}
 
-	refreshGraphics(SelectMenuGraphics::kAll);
+	refreshContentCanvasParams();
 	refreshSongPreview();
 }
 
@@ -302,7 +326,15 @@ void SelectMenu::update()
 	{
 		ConfigIni::SetInt(ConfigIni::Key::kSelectSongIndex, m_menu.cursor());
 		m_songSelectSe.play();
-		refreshGraphics(deltaCursor > 0 ? SelectMenuGraphics::kCursorDown : SelectMenuGraphics::kCursorUp);
+		if (deltaCursor > 0)
+		{
+			playShakeDownTween();
+		}
+		else
+		{
+			playShakeUpTween();
+		}
+		refreshContentCanvasParams();
 		refreshSongPreview();
 	}
 
@@ -311,19 +343,11 @@ void SelectMenu::update()
 	{
 		ConfigIni::SetInt(ConfigIni::Key::kSelectDifficulty, m_difficultyMenu.cursor());
 		m_difficultySelectSe.play();
-		refreshGraphics(SelectMenuGraphics::kAll);
+		refreshContentCanvasParams();
 		refreshSongPreview();
 	}
 
 	m_songPreview.update();
-}
-
-void SelectMenu::draw() const
-{
-	const Vec2 shakeVec = ShakeVec(m_shakeDirection, m_shakeStopwatch.sF());
-
-	m_graphics.draw(shakeVec);
-	m_difficultyMenu.draw(shakeVec);
 }
 
 void SelectMenu::decide()
@@ -370,7 +394,7 @@ void SelectMenu::closeFolder(PlaySeYN playSe)
 	ConfigIni::SetString(ConfigIni::Key::kSelectDirectory, U"");
 	ConfigIni::SetInt(ConfigIni::Key::kSelectSongIndex, m_menu.cursor());
 
-	refreshGraphics(SelectMenuGraphics::kAll);
+	refreshContentCanvasParams();
 	refreshSongPreview();
 }
 

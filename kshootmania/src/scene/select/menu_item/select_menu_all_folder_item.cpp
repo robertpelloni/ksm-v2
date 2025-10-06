@@ -1,5 +1,4 @@
 ﻿#include "select_menu_all_folder_item.hpp"
-#include "scene/select/select_menu_graphics.hpp"
 
 namespace
 {
@@ -11,23 +10,27 @@ SelectMenuAllFolderItem::SelectMenuAllFolderItem(IsCurrentFolderYN isCurrentFold
 {
 }
 
-void SelectMenuAllFolderItem::decide(const SelectMenuEventContext& context, [[maybe_unused]] int32 difficultyIdx)
+void SelectMenuAllFolderItem::decide([[maybe_unused]] const SelectMenuEventContext& context, [[maybe_unused]] int32 difficultyIdx)
 {
 	//Print << U"Not Implemented (SelectMenuAllFolderItem::decide)";
 }
 
-void SelectMenuAllFolderItem::drawCenter([[maybe_unused]] int32 difficultyIdx, const RenderTexture& renderTexture, const SelectMenuItemGraphicAssets& assets) const
+void SelectMenuAllFolderItem::setCanvasParamsCenter(noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
 {
-	Shader::Copy(assets.dirItemTextures.center, renderTexture);
-
-	const ScopedRenderTarget2D scopedRenderTarget(renderTexture);
-	assets.font(FolderDisplayNameCenter(kDisplayName, m_isCurrentFolder)).drawAt(44, Vec2{ 16 + 740 / 2, 135 + 102 / 2 });
+	canvas.setParamValues({
+		{ U"center_isDirectory", true },
+		{ U"center_isLevel", false },
+		{ U"center_isSong", false },
+		{ U"center_title", FolderDisplayNameCenter(kDisplayName, m_isCurrentFolder) },
+	});
 }
 
-void SelectMenuAllFolderItem::drawUpperLower([[maybe_unused]] int32 difficultyIdx, const RenderTexture& renderTexture, const SelectMenuItemGraphicAssets& assets, bool isUpper) const
+void SelectMenuAllFolderItem::setCanvasParamsTopBottom(noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
 {
-	Shader::Copy(isUpper ? assets.dirItemTextures.upperHalf : assets.dirItemTextures.lowerHalf, renderTexture);
-
-	const ScopedRenderTarget2D scopedRenderTarget(renderTexture);
-	assets.font(FolderDisplayNameUpperLower(kDisplayName, m_isCurrentFolder)).drawAt(38, isUpper ? Vec2{ 16 + 770 / 2, 12 + 86 / 2 } : Vec2{ 16 + 770 / 2, 126 + 86 / 2 });
+	canvas.setParamValues({
+		{ paramNamePrefix + U"isDirectory", true },
+		{ paramNamePrefix + U"isLevel", false },
+		{ paramNamePrefix + U"isSong", false },
+		{ paramNamePrefix + U"title", FolderDisplayNameTopBottom(kDisplayName, m_isCurrentFolder) },
+	});
 }
