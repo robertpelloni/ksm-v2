@@ -1,9 +1,10 @@
 ﻿#include "select_menu_sub_dir_section_item.hpp"
 #include "scene/select/select_menu_graphics.hpp"
+#include "common/fs_utils.hpp"
 
 SelectMenuSubDirSectionItem::SelectMenuSubDirSectionItem(FilePathView fullPath)
 	: m_fullPath(fullPath)
-	, m_displayName(FileSystem::FileName(m_fullPath))
+	, m_displayName(FsUtils::DirectoryNameByDirectoryPath(m_fullPath))
 {
 }
 

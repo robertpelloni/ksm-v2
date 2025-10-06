@@ -1,11 +1,12 @@
 ﻿#include "select_menu_dir_folder_item.hpp"
 #include "scene/select/select_menu_graphics.hpp"
 #include "graphics/font_utils.hpp"
+#include "common/fs_utils.hpp"
 
 SelectMenuDirFolderItem::SelectMenuDirFolderItem(IsCurrentFolderYN isCurrentFolder, FilePathView fullPath)
 	: m_isCurrentFolder(isCurrentFolder)
 	, m_fullPath(fullPath)
-	, m_displayName(FileSystem::FileName(m_fullPath))
+	, m_displayName(FsUtils::DirectoryNameByDirectoryPath(m_fullPath))
 {
 }
 
