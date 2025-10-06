@@ -81,8 +81,9 @@ void Main()
 	Console.open();
 #endif
 
-	// コルーチンライブラリ初期化
+	// ライブラリ初期化
 	Co::Init();
+	noco::Init();
 
 	// メインループ
 	const auto sceneRunner = Co::PlaySceneFrom<TitleScene>(TitleMenuItem::kStart).runScoped();
