@@ -59,16 +59,13 @@ namespace MusicGame
 
 	void GameMain::updateHighwayScroll()
 	{
-		// ハイスピード初回更新
-		// HighwayScrollはHispeedSettingMenuの更新に必要だが、事前に一度は更新しておかないとBPMが入らないので、初回は追加で更新
+		// ハイスピードを更新
 		if (m_isFirstUpdate)
 		{
+			// HighwayScrollはHispeedSettingMenuの更新に必要だが、事前に一度は更新しておかないとBPMが入らないので、初回は追加で先に更新
 			// TODO: 消したい
 			m_highwayScroll.update(m_hispeedSettingMenu.hispeedSetting(), m_gameStatus.currentBPM);
-			m_isFirstUpdate = false;
 		}
-
-		// ハイスピードを更新
 		m_hispeedSettingMenu.update(m_highwayScroll);
 		m_highwayScroll.update(m_hispeedSettingMenu.hispeedSetting(), m_gameStatus.currentBPM);
 	}
@@ -127,6 +124,8 @@ namespace MusicGame
 
 		// グラフィックの更新
 		m_graphicsMain.update(m_viewStatus);
+
+		m_isFirstUpdate = false;
 
 		return ShouldStartFadeOut(m_gameStatus) ? StartFadeOutYN::Yes : StartFadeOutYN::No;
 	}

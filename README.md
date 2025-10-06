@@ -3,7 +3,7 @@ K-Shoot MANIA v2 (v1 Remastered)
 
 ## 開発状況
 
-https://github.com/kshootmania/ksm-v2/wiki#%E9%96%8B%E7%99%BA%E7%8A%B6%E6%B3%81
+https://github.com/m4saka/kshootmania-v1-cpp/wiki#%E9%96%8B%E7%99%BA%E7%8A%B6%E6%B3%81
 
 ## 開発のコンセプト
 
@@ -22,16 +22,6 @@ https://github.com/kshootmania/ksm-v2/wiki#%E9%96%8B%E7%99%BA%E7%8A%B6%E6%B3%81
 - Visual Studio 2022
     - Visual Studio Installer上で「C++ によるデスクトップ開発」にチェックを付けてインストールしてください /  
       Install "Desktop development with C++" from the Visual Studio Installer
-- OpenSiv3D 0.6.16 (installed to Visual Studio 2022)
+- OpenSiv3D 0.6.14 (installed to Visual Studio 2022)
     - 下記からインストーラをダウンロードして実行してください / Download and run the installer below
         - https://github.com/Siv3D/OpenSiv3D#downloads
-
-## Contributionについて
-
-本プロジェクトは実装途中の段階であり、満たす必要がある要件(互換性に関する必須事項など)が十分にドキュメント化されていないため、機能実装についてのContributionは当面の間受け付けておりません。
-
-既存処理の不具合修正に関するContributionについてはPull Requestにて歓迎いたします。
-
-## Contributors
-
-@m4saka, @ario1281
