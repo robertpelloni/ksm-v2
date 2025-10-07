@@ -2,6 +2,7 @@
 #include "kson/chart_data.hpp"
 #include "music_game/camera/cam_system.hpp"
 #include "cam_pattern_spin.hpp"
+#include "cam_pattern_half_spin.hpp"
 
 namespace MusicGame::Camera
 {
@@ -9,6 +10,7 @@ namespace MusicGame::Camera
 	{
 	private:
 		CamPatternSpin m_spin;
+		CamPatternHalfSpin m_halfSpin;
 
 	public:
 		explicit CamPatternMain(const kson::ChartData& chartData);
