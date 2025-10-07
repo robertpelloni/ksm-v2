@@ -9,7 +9,20 @@ namespace FsUtils
 
 	FilePath AppDirectoryPath()
 	{
+#ifdef __APPLE__
+		FilePath modulePath = FileSystem::ModulePath();
+		// macOSのAppBundleの場合、ModulePathが既に.appまでのパスを返す
+		if (modulePath.ends_with(U".app"))
+		{
+			return modulePath;
+		}
+		else
+		{
+			return FileSystem::ParentPath(modulePath);
+		}
+#else
 		return FileSystem::ParentPath(FileSystem::ModulePath());
+#endif
 	}
 
 	String DirectoryNameByDirectoryPath(FilePathView directoryPath)

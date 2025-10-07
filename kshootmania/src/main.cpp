@@ -31,7 +31,13 @@ void Main()
 
 	// 実行ファイルのパスをカレントディレクトリに設定
 	// (ChangeCurrentDirectoryはここ以外は基本的に使用禁止。どうしても使う必要がある場合は必ずAppDirectoryPathに戻すこと)
+#ifdef __APPLE__
+	// macOSのAppBundleの場合、Contents/Resourcesディレクトリに移動
+	const FilePath appDir = FileSystem::PathAppend(FsUtils::AppDirectoryPath(), U"Contents/Resources");
+	FileSystem::ChangeCurrentDirectory(appDir);
+#else
 	FileSystem::ChangeCurrentDirectory(FsUtils::AppDirectoryPath());
+#endif
 
 	// デフォルト色を指定
 	Scene::SetBackground(Palette::Black);
