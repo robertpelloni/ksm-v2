@@ -92,6 +92,6 @@ Co::Task<void> TitleScene::fadeOut()
 		break;
 
 	default:
-		throw Error{ U"Invalid menu item: {}"_fmt(std::to_underlying(m_selectedMenuItem)) };
+		throw Error{ U"Invalid menu item: {}"_fmt(static_cast<std::underlying_type_t<TitleMenuItem>>(m_selectedMenuItem)) };
 	}
 }

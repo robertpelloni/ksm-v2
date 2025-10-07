@@ -57,13 +57,13 @@ void KeyConfig::SetConfigValueByCommaSeparated(ConfigSet targetConfigSet, String
 
 	if (targetConfigSet < 0 || kConfigSetEnumCount <= targetConfigSet)
 	{
-		Print << U"Warning: Invalid key config target '{}'!"_fmt(std::to_underlying(targetConfigSet));
+		Print << U"Warning: Invalid key config target '{}'!"_fmt(static_cast<std::underlying_type_t<ConfigSet>>(targetConfigSet));
 		return;
 	}
 
 	if (values.size() != kConfigurableButtonEnumCount)
 	{
-		Print << U"Warning: Key configuration ({}) is ignored because value count does not match! (expected:{}, actual:{})"_fmt(kConfigSetNames[targetConfigSet], std::to_underlying(kConfigurableButtonEnumCount), values.size());
+		Print << U"Warning: Key configuration ({}) is ignored because value count does not match! (expected:{}, actual:{})"_fmt(kConfigSetNames[targetConfigSet], static_cast<int32>(kConfigurableButtonEnumCount), values.size());
 		values = String(kDefaultConfigValues[targetConfigSet]).split(U',');
 	}
 
@@ -104,12 +104,12 @@ void KeyConfig::SetConfigValue(ConfigSet targetConfigSet, ConfigurableButton but
 {
 	if (targetConfigSet < 0 || kConfigSetEnumCount <= targetConfigSet)
 	{
-		throw Error(U"Warning: Invalid key config target '{}'!"_fmt(std::to_underlying(targetConfigSet)));
+		throw Error(U"Warning: Invalid key config target '{}'!"_fmt(static_cast<std::underlying_type_t<ConfigSet>>(targetConfigSet)));
 	}
 
 	if (button < 0 || kConfigurableButtonEnumCount <= button)
 	{
-		throw Error(U"Warning: Invalid key config button '{}'!"_fmt(std::to_underlying(button)));
+		throw Error(U"Warning: Invalid key config button '{}'!"_fmt(static_cast<std::underlying_type_t<ConfigurableButton>>(button)));
 	}
 
 	s_configSetArray[targetConfigSet][button] = input;
@@ -121,12 +121,12 @@ const Input& KeyConfig::GetConfigValue(ConfigSet targetConfigSet, ConfigurableBu
 {
 	if (targetConfigSet < 0 || kConfigSetEnumCount <= targetConfigSet)
 	{
-		throw Error(U"Warning: Invalid key config target '{}'!"_fmt(std::to_underlying(targetConfigSet)));
+		throw Error(U"Warning: Invalid key config target '{}'!"_fmt(static_cast<std::underlying_type_t<ConfigSet>>(targetConfigSet)));
 	}
 
 	if (button < 0 || kConfigurableButtonEnumCount <= button)
 	{
-		throw Error(U"Warning: Invalid key config button '{}'!"_fmt(std::to_underlying(button)));
+		throw Error(U"Warning: Invalid key config button '{}'!"_fmt(static_cast<std::underlying_type_t<ConfigurableButton>>(button)));
 	}
 
 	return s_configSetArray[targetConfigSet][button];
