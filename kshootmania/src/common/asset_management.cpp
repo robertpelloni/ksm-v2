@@ -49,6 +49,26 @@ namespace AssetManagement
 		void RegisterFontAssets()
 		{
 			// フォントを登録
+			// Linux環境ではResource()がModulePathの相対パス問題で正しく動作しないため、直接resources/からの相対パスを使用
+#ifdef __linux
+			constexpr StringView kResourceDir = U"resources/";
+			FontAsset::Register(kFontAssetSystem, FontMethod::MSDF, 44, kResourceDir + kFontResourcePath, FontStyle::Default);
+			FontAsset::Register(kFontAssetSystemBold, FontMethod::MSDF, 44, kResourceDir + kFontResourcePath, FontStyle::Bold);
+			FontAsset::Register(kFontAssetSystemJp, FontMethod::MSDF, 44, kResourceDir + kFontJaResourcePath, FontStyle::Default);
+			FontAsset::Register(kFontAssetSystemJpBold, FontMethod::MSDF, 44, kResourceDir + kFontJaResourcePath, FontStyle::Bold);
+			FontAsset::Register(kFontAssetSystemJpCJK, FontMethod::MSDF, 44, Typeface::CJK_Regular_JP, FontStyle::Default);
+			FontAsset::Register(kFontAssetSystemJpCJKBold, FontMethod::MSDF, 44, Typeface::CJK_Regular_JP, FontStyle::Bold);
+			FontAsset::Register(kFontAssetSystemKr, FontMethod::MSDF, 44, kResourceDir + kFontKrResourcePath, FontStyle::Default);
+			FontAsset::Register(kFontAssetSystemKrBold, FontMethod::MSDF, 44, kResourceDir + kFontKrResourcePath, FontStyle::Bold);
+			FontAsset::Register(kFontAssetSystemKrCJK, FontMethod::MSDF, 44, Typeface::CJK_Regular_KR, FontStyle::Default);
+			FontAsset::Register(kFontAssetSystemKrCJKBold, FontMethod::MSDF, 44, Typeface::CJK_Regular_KR, FontStyle::Bold);
+			FontAsset::Register(kFontAssetSystemSc, FontMethod::MSDF, 44, Typeface::CJK_Regular_SC);
+			FontAsset::Register(kFontAssetSystemScBold, FontMethod::MSDF, 44, Typeface::CJK_Regular_SC, FontStyle::Bold);
+			FontAsset::Register(kFontAssetSystemTc, FontMethod::MSDF, 44, Typeface::CJK_Regular_TC);
+			FontAsset::Register(kFontAssetSystemTcBold, FontMethod::MSDF, 44, Typeface::CJK_Regular_TC, FontStyle::Bold);
+			FontAsset::Register(kFontAssetSystemEmoji, FontMethod::MSDF, 44, Typeface::MonochromeEmoji);
+			FontAsset::Register(kFontAssetSystemEmojiBold, FontMethod::MSDF, 44, Typeface::MonochromeEmoji, FontStyle::Bold);
+#else
 			FontAsset::Register(kFontAssetSystem, FontMethod::MSDF, 44, Resource(kFontResourcePath), FontStyle::Default);
 			FontAsset::Register(kFontAssetSystemBold, FontMethod::MSDF, 44, Resource(kFontResourcePath), FontStyle::Bold);
 			FontAsset::Register(kFontAssetSystemJp, FontMethod::MSDF, 44, Resource(kFontJaResourcePath), FontStyle::Default);
@@ -65,6 +85,7 @@ namespace AssetManagement
 			FontAsset::Register(kFontAssetSystemTcBold, FontMethod::MSDF, 44, Typeface::CJK_Regular_TC, FontStyle::Bold);
 			FontAsset::Register(kFontAssetSystemEmoji, FontMethod::MSDF, 44, Typeface::MonochromeEmoji);
 			FontAsset::Register(kFontAssetSystemEmojiBold, FontMethod::MSDF, 44, Typeface::MonochromeEmoji, FontStyle::Bold);
+#endif
 		}
 
 		Font MakeFallbackFont(StringView fontAssetName1, StringView fontAssetName2, StringView fontAssetName3, StringView fontAssetName4 = U"", StringView fontAssetName5 = U"")

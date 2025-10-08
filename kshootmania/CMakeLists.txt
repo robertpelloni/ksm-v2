@@ -9,7 +9,7 @@ if (NOT CMAKE_CONFIGURATION_TYPES AND
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/App)
 
 file(GLOB_RECURSE KSM_SRC_FILES src/*.cpp)
 list(REMOVE_ITEM KSM_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/stdafx.cpp)
@@ -148,5 +148,11 @@ elseif(UNIX)
         -Wextra
         -Wno-unknown-pragmas
         -include ${CMAKE_CURRENT_SOURCE_DIR}/src/stdafx.h
+    )
+
+    # BASSライブラリへのRPATHを設定
+    set_target_properties(kshootmania PROPERTIES
+        BUILD_RPATH "${CMAKE_SOURCE_DIR}/ksmaudio/third_party_linux/bass:${CMAKE_SOURCE_DIR}/ksmaudio/third_party_linux/bass_fx"
+        INSTALL_RPATH "$ORIGIN/../lib"
     )
 endif()
