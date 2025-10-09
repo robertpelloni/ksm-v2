@@ -35,6 +35,13 @@ SelectScene::SelectScene()
 	, m_menu(m_canvas, [this](FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlayYN) { moveToPlayScene(chartFilePath, isAutoPlayYN); })
 {
 	AutoMuteAddon::SetEnabled(true);
+
+	if (m_menu.empty())
+	{
+		System::MessageBoxOK(U"譜面データが見つかりませんでした。", MessageBoxStyle::Warning);
+		m_skipFadeout = true;
+		requestNextScene<TitleScene>(TitleMenuItem::kStart);
+	}
 }
 
 void SelectScene::update()
@@ -87,6 +94,11 @@ Co::Task<void> SelectScene::fadeIn()
 
 Co::Task<void> SelectScene::fadeOut()
 {
+	if (m_skipFadeout)
+	{
+		co_return;
+	}
+
 	const auto canvasUpdateRunner = Co::UpdaterTask([this] { m_canvas->update(); }).runScoped();
 
 	co_await Co::ScreenFadeOut(kFadeOutDuration, m_fadeOutColor);

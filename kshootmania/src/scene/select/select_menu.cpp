@@ -238,7 +238,7 @@ void SelectMenu::refreshContentCanvasParams()
 
 void SelectMenu::refreshSongPreview()
 {
-	if (m_menu.cursorValue() == nullptr)
+	if (m_menu.empty() || m_menu.cursorValue() == nullptr)
 	{
 		m_songPreview.requestDefaultBgm();
 		return;

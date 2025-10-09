@@ -10,6 +10,8 @@ private:
 
 	ColorF m_fadeOutColor = Palette::Black;
 
+	bool m_skipFadeout = false;
+
 	std::shared_ptr<noco::Canvas> m_canvas;
 
 	SelectMenu m_menu;

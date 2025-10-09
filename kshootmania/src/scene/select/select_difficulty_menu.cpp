@@ -33,6 +33,13 @@ void SelectDifficultyMenu::update()
 		return;
 	}
 
+	// メニューが空の場合は何もしない
+	if (m_pSelectMenu->empty())
+	{
+		m_menu.setCursor(cursorPrev);
+		return;
+	}
+
 	const ISelectMenuItem& menuItem = m_pSelectMenu->cursorMenuItem();
 	if (!menuItem.difficultyMenuExists())
 	{
