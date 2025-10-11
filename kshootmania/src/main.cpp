@@ -18,7 +18,7 @@ void CreateHighScoreBackup()
 	FileSystem::Copy(U"score", U"score_backup", CopyOption::UpdateExisting);
 }
 
-void Main()
+void KSMMain()
 {
 	// Escキーによるプログラム終了を無効化
 	System::SetTerminationTriggers(UserAction::CloseButtonClicked);
@@ -101,4 +101,17 @@ void Main()
 
 	// 音声のバックエンドを終了
 	ksmaudio::Terminate();
+}
+
+void Main()
+{
+	try
+	{
+		KSMMain();
+	}
+	catch (const Error& e)
+	{
+		System::MessageBoxOK(e.what(), MessageBoxStyle::Error);
+		throw;
+	}
 }
