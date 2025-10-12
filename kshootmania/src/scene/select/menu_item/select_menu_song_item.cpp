@@ -4,32 +4,6 @@
 
 namespace
 {
-	Texture LoadJacketTexture(FilePathView filePath)
-	{
-		// TODO: Cache jacket image texture
-
-		if (!FileSystem::IsFile(filePath))
-		{
-			Logger << U"[SelectMenu] Jacket image file not found: {}"_fmt(filePath);
-			return Texture{};
-		}
-
-		return Texture{ filePath };
-	}
-
-	Texture LoadIconTexture(FilePathView filePath)
-	{
-		// TODO: Cache icon image texture
-
-		if (!FileSystem::IsFile(filePath))
-		{
-			Logger << U"[SelectMenu] Icon image file not found: {}"_fmt(filePath);
-			return Texture{};
-		}
-
-		return Texture{ filePath };
-	}
-
 	std::shared_ptr<noco::Node> GetJacketNode(noco::Canvas& canvas, StringView itemNodeName)
 	{
 		if (const auto itemNode = canvas.findByName(itemNodeName))
@@ -64,7 +38,7 @@ SelectMenuSongItem::SelectMenuSongItem(const FilePath& songDirectoryPath)
 
 		if (chartInfo->hasError())
 		{
-			Logger << U"[SelectMenu] KSH Loading Error: {} ({})"_fmt(chartInfo->errorString(), chartFilePath);
+			Logger << U"[ksm warning] SelectMenuSongItem::SelectMenuSongItem: KSH Loading Error (error:'{}', chartFilePath:'{}')"_fmt(chartInfo->errorString(), chartFilePath);
 			continue;
 		}
 
@@ -72,13 +46,13 @@ SelectMenuSongItem::SelectMenuSongItem(const FilePath& songDirectoryPath)
 		if (difficultyIdx < 0 || kNumDifficulties <= difficultyIdx) [[unlikely]]
 		{
 			// 未知の難易度の場合は一番右の難易度にする
-			Logger << U"[SelectMenu] Difficulty index out of range: {} ({})"_fmt(difficultyIdx, chartFilePath);
+			Logger << U"[ksm warning] SelectMenuSongItem::SelectMenuSongItem: Difficulty index out of range (difficultyIdx:{}, chartFilePath:'{}')"_fmt(difficultyIdx, chartFilePath);
 			difficultyIdx = kNumDifficulties - 1;
 		}
 
 		if (m_chartInfos[difficultyIdx] != nullptr) [[unlikely]]
 		{
-			Logger << U"[SelectMenu] Skip duplication (difficultyIdx:{}): {}"_fmt(difficultyIdx, chartFilePath);
+			Logger << U"[ksm warning] SelectMenuSongItem::SelectMenuSongItem: Skip duplication (difficultyIdx:{}, chartFilePath:'{}')"_fmt(difficultyIdx, chartFilePath);
 			continue;
 		}
 
@@ -92,14 +66,14 @@ void SelectMenuSongItem::decide(const SelectMenuEventContext& context, int32 dif
 {
 	if (difficultyIdx < 0 || kNumDifficulties <= difficultyIdx)
 	{
-		Logger << U"[SelectMenu] Difficulty index out of range: {} ({})"_fmt(difficultyIdx, m_fullPath);
+		Logger << U"[ksm warning] SelectMenuSongItem::decide: Difficulty index out of range (difficultyIdx:{}, fullPath:'{}')"_fmt(difficultyIdx, m_fullPath);
 		return;
 	}
 
 	const SelectChartInfo* pChartInfo = chartInfoPtr(difficultyIdx);
 	if (pChartInfo == nullptr)
 	{
-		Logger << U"[SelectMenu] pChartInfo is null (difficultyIdx:{}): {}"_fmt(difficultyIdx, m_fullPath);
+		Logger << U"[ksm warning] SelectMenuSongItem::decide: pChartInfo is null (difficultyIdx:{}, fullPath:'{}')"_fmt(difficultyIdx, m_fullPath);
 		return;
 	}
 	const FilePath chartFilePath = FilePath{ pChartInfo->chartFilePath() };
@@ -110,14 +84,14 @@ void SelectMenuSongItem::decideAutoPlay(const SelectMenuEventContext& context, i
 {
 	if (difficultyIdx < 0 || kNumDifficulties <= difficultyIdx)
 	{
-		Logger << U"[SelectMenu] Difficulty index out of range: {} ({})"_fmt(difficultyIdx, m_fullPath);
+		Logger << U"[ksm warning] SelectMenuSongItem::decideAutoPlay: Difficulty index out of range (difficultyIdx:{}, fullPath:'{}')"_fmt(difficultyIdx, m_fullPath);
 		return;
 	}
 
 	const SelectChartInfo* pChartInfo = chartInfoPtr(difficultyIdx);
 	if (pChartInfo == nullptr)
 	{
-		Logger << U"[SelectMenu] pChartInfo is null (difficultyIdx:{}): {}"_fmt(difficultyIdx, m_fullPath);
+		Logger << U"[ksm warning] SelectMenuSongItem::decideAutoPlay: pChartInfo is null (difficultyIdx:{}, fullPath:'{}')"_fmt(difficultyIdx, m_fullPath);
 		return;
 	}
 	const FilePath chartFilePath = FilePath{ pChartInfo->chartFilePath() };
@@ -135,7 +109,7 @@ const SelectChartInfo* SelectMenuSongItem::chartInfoPtr(int difficultyIdx) const
 	return m_chartInfos[difficultyIdx].get();
 }
 
-void SelectMenuSongItem::setCanvasParamsCenter(noco::Canvas& canvas, int32 difficultyIdx) const
+void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx) const
 {
 	// 最初に見つかった譜面情報から共通情報を取得
 	const SelectChartInfo* pFirstChartInfo = nullptr;
@@ -196,7 +170,7 @@ void SelectMenuSongItem::setCanvasParamsCenter(noco::Canvas& canvas, int32 diffi
 
 		// ジャケット画像を設定
 		// TODO: タグ等で取得可能にする
-		const Texture jacketTexture = LoadJacketTexture(pChartInfo->jacketFilePath());
+		const Texture& jacketTexture = context.fnGetJacketTexture(pChartInfo->jacketFilePath());
 		if (const auto jacketNode = GetJacketNode(canvas, U"CenterItem"))
 		{
 			if (const auto sprite = jacketNode->getComponent<noco::Sprite>())
@@ -217,7 +191,7 @@ void SelectMenuSongItem::setCanvasParamsCenter(noco::Canvas& canvas, int32 diffi
 			else
 			{
 				// アイコンが指定されている場合はテクスチャロードして表示
-				const Texture iconTexture = LoadIconTexture(pChartInfo->iconFilePath());
+				const Texture& iconTexture = context.fnGetIconTexture(pChartInfo->iconFilePath());
 				iconNode->setActive(!iconTexture.isEmpty());
 				if (const auto sprite = iconNode->getComponent<noco::Sprite>())
 				{
@@ -234,7 +208,7 @@ void SelectMenuSongItem::setCanvasParamsCenter(noco::Canvas& canvas, int32 diffi
 	}
 }
 
-void SelectMenuSongItem::setCanvasParamsTopBottom(noco::Canvas& canvas, int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
+void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
 {
 	// 難易度が存在しない場合は代替カーソル値を使用して譜面情報を取得
 	// (曲名・アーティスト名・ジャケット画像はカーソル難易度が存在しない場合でも常に描画する必要があるため。
@@ -268,7 +242,7 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(noco::Canvas& canvas, int32 di
 
 	// ジャケット画像を設定
 	// TODO: タグ等で取得可能にする
-	const Texture jacketTexture = LoadJacketTexture(pAltChartInfo->jacketFilePath());
+	const Texture jacketTexture = context.fnGetJacketTexture(pAltChartInfo->jacketFilePath());
 	if (const auto jacketNode = GetJacketNode(canvas, nodeName))
 	{
 		if (const auto sprite = jacketNode->getComponent<noco::Sprite>())
@@ -289,7 +263,7 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(noco::Canvas& canvas, int32 di
 		else
 		{
 			// アイコンが指定されている場合はテクスチャロードして表示
-			const Texture iconTexture = LoadIconTexture(pAltChartInfo->iconFilePath());
+			const Texture iconTexture = context.fnGetIconTexture(pAltChartInfo->iconFilePath());
 			iconNode->setActive(!iconTexture.isEmpty());
 			if (const auto sprite = iconNode->getComponent<noco::Sprite>())
 			{

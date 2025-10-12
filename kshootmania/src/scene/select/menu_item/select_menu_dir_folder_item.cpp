@@ -21,7 +21,7 @@ void SelectMenuDirFolderItem::decide(const SelectMenuEventContext& context, [[ma
 	}
 }
 
-void SelectMenuDirFolderItem::setCanvasParamsCenter(noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
+void SelectMenuDirFolderItem::setCanvasParamsCenter([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
 {
 	canvas.setParamValues({
 		{ U"center_isDirectory", true },
@@ -31,7 +31,7 @@ void SelectMenuDirFolderItem::setCanvasParamsCenter(noco::Canvas& canvas, [[mayb
 	});
 }
 
-void SelectMenuDirFolderItem::setCanvasParamsTopBottom(noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
+void SelectMenuDirFolderItem::setCanvasParamsTopBottom([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
 {
 	canvas.setParamValues({
 		{ paramNamePrefix + U"isDirectory", true },

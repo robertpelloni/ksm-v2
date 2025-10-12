@@ -212,7 +212,7 @@ void SelectMenu::refreshContentCanvasParams()
 	// 中央の項目のパラメータを反映
 	if (const auto pItem = m_menu.cursorValue().get())
 	{
-		pItem->setCanvasParamsCenter(*m_selectSceneCanvas, difficultyIdx);
+		pItem->setCanvasParamsCenter(m_eventContext, *m_selectSceneCanvas, difficultyIdx);
 	}
 
 	// 上の項目のパラメータを反映
@@ -221,7 +221,7 @@ void SelectMenu::refreshContentCanvasParams()
 		if (const auto pItem = m_menu.atCyclic(m_menu.cursor() - kNumTopItems + i).get())
 		{
 			const int32 topIdx = kNumTopItems - i;
-			pItem->setCanvasParamsTopBottom(*m_selectSceneCanvas, difficultyIdx, U"top{}_"_fmt(topIdx), U"TopItem{}"_fmt(topIdx));
+			pItem->setCanvasParamsTopBottom(m_eventContext, *m_selectSceneCanvas, difficultyIdx, U"top{}_"_fmt(topIdx), U"TopItem{}"_fmt(topIdx));
 		}
 	}
 
@@ -231,7 +231,7 @@ void SelectMenu::refreshContentCanvasParams()
 		if (const auto pItem = m_menu.atCyclic(m_menu.cursor() + 1 + i).get())
 		{
 			const int32 bottomIdx = i + 1;
-			pItem->setCanvasParamsTopBottom(*m_selectSceneCanvas, difficultyIdx, U"bottom{}_"_fmt(bottomIdx), U"BottomItem{}"_fmt(bottomIdx));
+			pItem->setCanvasParamsTopBottom(m_eventContext, *m_selectSceneCanvas, difficultyIdx, U"bottom{}_"_fmt(bottomIdx), U"BottomItem{}"_fmt(bottomIdx));
 		}
 	}
 }
@@ -280,6 +280,8 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 			.fnMoveToPlayScene = [fnMoveToPlayScene](FilePath path, MusicGame::IsAutoPlayYN isAutoPlay) { fnMoveToPlayScene(path, isAutoPlay); },
 			.fnOpenDirectory = [this](FilePath path) { openDirectory(path, PlaySeYN::Yes); },
 			.fnCloseFolder = [this]() { closeFolder(PlaySeYN::Yes); },
+			.fnGetJacketTexture = [this](FilePathView path) -> const Texture& { return getJacketTexture(path); },
+			.fnGetIconTexture = [this](FilePathView path) -> const Texture& { return getIconTexture(path); },
 		}
 	, m_menu(
 		LinearMenu::CreateInfoWithCursorMinMax{
@@ -411,4 +413,44 @@ bool SelectMenu::empty() const
 void SelectMenu::fadeOutSongPreviewForExit(Duration duration)
 {
 	m_songPreview.fadeOutForExit(duration);
+}
+
+const Texture& SelectMenu::getJacketTexture(FilePathView filePath)
+{
+	if (auto it = m_jacketTextureCache.find(filePath); it != m_jacketTextureCache.end())
+	{
+		return it->second;
+	}
+
+	Texture texture;
+	if (FileSystem::IsFile(filePath))
+	{
+		texture = Texture{ filePath };
+	}
+	else
+	{
+		Logger << U"[ksm warning] SelectMenu::getJacketTexture: Jacket image file not found (filePath:'{}')"_fmt(filePath);
+	}
+
+	return m_jacketTextureCache.emplace(filePath, std::move(texture)).first->second;
+}
+
+const Texture& SelectMenu::getIconTexture(FilePathView filePath)
+{
+	if (auto it = m_iconTextureCache.find(filePath); it != m_iconTextureCache.end())
+	{
+		return it->second;
+	}
+
+	Texture texture;
+	if (FileSystem::IsFile(filePath))
+	{
+		texture = Texture{ filePath };
+	}
+	else
+	{
+		Logger << U"[ksm warning] SelectMenu::getIconTexture: Icon image file not found (filePath:'{}')"_fmt(filePath);
+	}
+
+	return m_iconTextureCache.emplace(filePath, std::move(texture)).first->second;
 }

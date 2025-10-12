@@ -12,7 +12,7 @@ void SelectMenuFavFolderItem::decide([[maybe_unused]] const SelectMenuEventConte
 	//Print << U"Not Implemented (SelectMenuFavFolderItem::decide)";
 }
 
-void SelectMenuFavFolderItem::setCanvasParamsCenter(noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
+void SelectMenuFavFolderItem::setCanvasParamsCenter([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
 {
 	canvas.setParamValues({
 		{ U"center_isDirectory", true },
@@ -22,7 +22,7 @@ void SelectMenuFavFolderItem::setCanvasParamsCenter(noco::Canvas& canvas, [[mayb
 	});
 }
 
-void SelectMenuFavFolderItem::setCanvasParamsTopBottom(noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
+void SelectMenuFavFolderItem::setCanvasParamsTopBottom([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
 {
 	canvas.setParamValues({
 		{ paramNamePrefix + U"isDirectory", true },

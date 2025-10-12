@@ -23,6 +23,8 @@ struct SelectMenuEventContext
 	std::function<void(FilePath, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene;
 	std::function<void(FilePath)> fnOpenDirectory;
 	std::function<void()> fnCloseFolder;
+	std::function<const Texture&(FilePathView)> fnGetJacketTexture;
+	std::function<const Texture&(FilePathView)> fnGetIconTexture;
 };
 
 class SelectMenu
@@ -49,6 +51,10 @@ private:
 	const ksmaudio::Sample m_difficultySelectSe{"se/sel_l.wav"};
 
 	const ksmaudio::Sample m_folderSelectSe{"se/sel_dir.wav"};
+
+	HashTable<String, Texture> m_jacketTextureCache;
+
+	HashTable<String, Texture> m_iconTextureCache;
 
 	bool openDirectory(FilePathView directoryPath, PlaySeYN playSe);
 
@@ -84,4 +90,8 @@ public:
 	bool empty() const;
 
 	void fadeOutSongPreviewForExit(Duration duration);
+
+	const Texture& getJacketTexture(FilePathView filePath);
+
+	const Texture& getIconTexture(FilePathView filePath);
 };

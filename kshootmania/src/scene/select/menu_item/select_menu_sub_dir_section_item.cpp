@@ -12,7 +12,7 @@ void SelectMenuSubDirSectionItem::decide([[maybe_unused]] const SelectMenuEventC
 	//Print << U"Not Implemented (SelectMenuSubDirSectionItem::decide)";
 }
 
-void SelectMenuSubDirSectionItem::setCanvasParamsCenter(noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
+void SelectMenuSubDirSectionItem::setCanvasParamsCenter([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
 {
 	canvas.setParamValues({
 		{ U"center_isDirectory", true },
@@ -22,7 +22,7 @@ void SelectMenuSubDirSectionItem::setCanvasParamsCenter(noco::Canvas& canvas, [[
 	});
 }
 
-void SelectMenuSubDirSectionItem::setCanvasParamsTopBottom(noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
+void SelectMenuSubDirSectionItem::setCanvasParamsTopBottom([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
 {
 	canvas.setParamValues({
 		{ paramNamePrefix + U"isDirectory", true },
