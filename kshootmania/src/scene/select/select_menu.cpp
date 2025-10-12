@@ -59,6 +59,8 @@ bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe)
 		}
 
 		m_menu.clear();
+		m_jacketTextureCache.clear();
+		m_iconTextureCache.clear();
 
 		// ディレクトリの見出し項目を追加
 		m_menu.push_back(std::make_unique<SelectMenuDirFolderItem>(IsCurrentFolderYN::Yes, FileSystem::FullPath(directoryPath)));
@@ -112,6 +114,8 @@ bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe)
 	else
 	{
 		m_menu.clear();
+		m_jacketTextureCache.clear();
+		m_iconTextureCache.clear();
 
 		m_folderState.folderType = SelectFolderState::kNone;
 		m_folderState.fullPath = U"";
