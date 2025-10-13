@@ -9,6 +9,7 @@
 #include "audio/bgm.hpp"
 #include "audio/assist_tick.hpp"
 #include "audio/laser_slam_se.hpp"
+#include "audio/fx_chip_se.hpp"
 #include "audio/audio_effect_main.hpp"
 #include "ui/hispeed_setting_menu.hpp"
 #include "graphics/graphics_main.hpp"
@@ -57,6 +58,7 @@ namespace MusicGame
 		Audio::BGM m_bgm;
 		Audio::AssistTick m_assistTick;
 		Audio::LaserSlamSE m_laserSlamSE;
+		Audio::FXChipSE m_fxChipSE;
 
 		// 音声エフェクト
 		Audio::AudioEffectMain m_audioEffectMain;

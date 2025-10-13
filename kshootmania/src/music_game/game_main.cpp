@@ -80,6 +80,7 @@ namespace MusicGame
 		, m_bgm(FileSystem::PathAppend(m_parentPath, Unicode::FromUTF8(m_chartData.audio.bgm.filename)), m_chartData.audio.bgm.vol, SecondsF{ static_cast<double>(m_chartData.audio.bgm.offset) / 1000 })
 		, m_assistTick(createInfo.assistTickEnabled)
 		, m_laserSlamSE(m_chartData)
+		, m_fxChipSE(m_chartData, m_parentPath)
 		, m_audioEffectMain(m_bgm, m_chartData, m_timingCache)
 		, m_graphicsMain(m_chartData, m_parentPath, createInfo.playOption)
 	{
@@ -121,6 +122,7 @@ namespace MusicGame
 		const double currentTimeSec = m_bgm.posSec().count();
 		m_assistTick.update(m_chartData, m_timingCache, currentTimeSec);
 		m_laserSlamSE.update(m_chartData, m_gameStatus);
+		m_fxChipSE.update(m_chartData, m_gameStatus);
 
 		// グラフィックの更新
 		m_graphicsMain.update(m_viewStatus);

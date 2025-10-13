@@ -381,6 +381,9 @@
     <ClCompile Include="src\music_game\graphics\jdgline\laser_cursor_3d_graphics.cpp">
       <Filter>Source Files\music_game\graphics\jdgline</Filter>
     </ClCompile>
+    <ClCompile Include="src\music_game\audio\fx_chip_se.cpp">
+      <Filter>Source Files\music_game\audio</Filter>
+    </ClCompile>
     <ClCompile Include="src\music_game\audio\laser_slam_se.cpp">
       <Filter>Source Files\music_game\audio</Filter>
     </ClCompile>
@@ -942,6 +945,9 @@
     </ClInclude>
     <ClInclude Include="src\music_game\graphics\jdgline\laser_cursor_3d_graphics.hpp">
       <Filter>Header Files\music_game\graphics\jdgline</Filter>
+    </ClInclude>
+    <ClInclude Include="src\music_game\audio\fx_chip_se.hpp">
+      <Filter>Header Files\music_game\audio</Filter>
     </ClInclude>
     <ClInclude Include="src\music_game\audio\laser_slam_se.hpp">
       <Filter>Header Files\music_game\audio</Filter>

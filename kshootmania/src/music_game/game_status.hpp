@@ -53,6 +53,12 @@ namespace MusicGame
 
 		// 直近でキーを押した、または離した時間(秒)
 		double currentLongNoteAnimOffsetTimeSec = kPastTimeSec;
+
+		// 最後にチップノーツを判定した時間(FXレーンのみ使用)
+		double lastChipJudgedTimeSec = kPastTimeSec;
+
+		// 最後に判定したチップノーツのPulse値(FXレーンのみ使用)
+		kson::Pulse lastJudgedChipPulse = kPastPulse;
 	};
 
 	struct LaserAnimStatus

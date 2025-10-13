@@ -145,6 +145,7 @@
     <ClCompile Include="src\music_game\audio\audio_effect_main.cpp" />
     <ClCompile Include="src\music_game\audio\audio_effect_utils.cpp" />
     <ClCompile Include="src\music_game\audio\bgm.cpp" />
+    <ClCompile Include="src\music_game\audio\fx_chip_se.cpp" />
     <ClCompile Include="src\music_game\audio\laser_slam_se.cpp" />
     <ClCompile Include="src\music_game\camera\cam_pattern\cam_pattern_main.cpp" />
     <ClCompile Include="src\music_game\camera\cam_pattern\cam_pattern_half_spin.cpp" />
@@ -329,6 +330,7 @@
     <ClInclude Include="src\music_game\audio\audio_effect_main.hpp" />
     <ClInclude Include="src\music_game\audio\audio_effect_utils.hpp" />
     <ClInclude Include="src\music_game\audio\bgm.hpp" />
+    <ClInclude Include="src\music_game\audio\fx_chip_se.hpp" />
     <ClInclude Include="src\music_game\audio\laser_slam_se.hpp" />
     <ClInclude Include="src\music_game\camera\camera_math.hpp" />
     <ClInclude Include="src\music_game\camera\cam_pattern\cam_pattern_main.hpp" />

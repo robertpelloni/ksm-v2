@@ -196,6 +196,13 @@ namespace MusicGame::Judgment
 					.startTimeSec = currentTimeSec,
 					.type = *chipAnimType,
 				});
+
+				// FXチップのキー音再生用にタイミングを記録
+				if (*chipAnimType != JudgmentResult::kError)
+				{
+					laneStatusRef.lastChipJudgedTimeSec = currentTimeSec;
+					laneStatusRef.lastJudgedChipPulse = nearestNotePulse;
+				}
 			}
 		}
 	}
@@ -259,11 +266,15 @@ namespace MusicGame::Judgment
 						.type = result,
 					});
 
-					// オートプレイの場合はここでCRITICALのキービームを表示
 					if (isAutoPlay)
 					{
+						// オートプレイの場合はここでCRITICALのキービームを表示
 						laneStatusRef.keyBeamTimeSec = passSec;
 						laneStatusRef.keyBeamType = KeyBeamType::kCritical;
+
+						// FXチップキー音のオートプレイ用にタイミングを記録
+						laneStatusRef.lastChipJudgedTimeSec = currentTimeSec;
+						laneStatusRef.lastJudgedChipPulse = y;
 					}
 				}
 
