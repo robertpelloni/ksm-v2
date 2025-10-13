@@ -27,6 +27,13 @@ namespace MusicGame::Audio
 				return FileSystem::PathAppend(parentPath, Unicode::FromUTF8(filename));
 			}
 		}
+
+		DWORD GetMaxPolyphony(const kson::ChartData& chartData)
+		{
+			// 旧バージョンの譜面では最大同時再生数が異なる
+			const bool isLegacy = chartData.compat.isKSHVersionOlderThan(kKeySoundMaxPolyphonyLegacyUntilKSHVersion);
+			return isLegacy ? kKeySoundMaxPolyphonyLegacy : kKeySoundMaxPolyphony;
+		}
 	}
 
 	FXChipSE::FXChipSE(const kson::ChartData& chartData, FilePathView parentPath)
@@ -47,10 +54,7 @@ namespace MusicGame::Audio
 				continue;
 			}
 
-			// 同一効果音の同時再生数は1まで
-			// TODO: 旧バージョンのkshでは同時再生数が異なる
-			constexpr DWORD kMaxPolyphony = 1;
-			m_keySounds.emplace(filename, ksmaudio::Sample{ filePath.narrow(), kMaxPolyphony });
+			m_keySounds.emplace(filename, ksmaudio::Sample{ filePath.narrow(), GetMaxPolyphony(chartData) });
 		}
 	}
 

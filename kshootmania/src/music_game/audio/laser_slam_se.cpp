@@ -5,8 +5,9 @@ namespace MusicGame::Audio
 {
 	namespace
 	{
-		uint32 GetMaxPolyphony(const kson::ChartData& chartData)
+		DWORD GetMaxPolyphony(const kson::ChartData& chartData)
 		{
+			// 旧バージョンの譜面では最大同時再生数が異なる
 			const bool isLegacy = chartData.compat.isKSHVersionOlderThan(kLaserSlamSEMaxPolyphonyLegacyUntilKSHVersion);
 			return isLegacy ? kLaserSlamSEMaxPolyphonyLegacy : kLaserSlamSEMaxPolyphony;
 		}
