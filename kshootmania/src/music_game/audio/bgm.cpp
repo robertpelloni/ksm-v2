@@ -39,6 +39,10 @@ namespace MusicGame::Audio
 			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Phaser>(name, def.v, paramChanges, updateTriggerTiming);
 			break;
 
+		case kson::AudioEffectType::PitchShift:
+			pAudioEffectBus->emplaceAudioEffect<ksmaudio::PitchShift>(name, def.v, paramChanges, updateTriggerTiming);
+			break;
+
 		case kson::AudioEffectType::Wobble:
 			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Wobble>(name, def.v, paramChanges, updateTriggerTiming);
 			break;
