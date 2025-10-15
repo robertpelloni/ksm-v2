@@ -66,9 +66,17 @@ void SelectScene::update()
 	}
 
 	// スタートボタンを押した場合、フォルダを開く または プレイ開始
+	// Shift+スタートボタンの場合はオートプレイ開始
 	if (KeyConfig::Down(KeyConfig::kStart))
 	{
-		m_menu.decide();
+		if (KeyShift.pressed())
+		{
+			m_menu.decideAutoPlay();
+		}
+		else
+		{
+			m_menu.decide();
+		}
 	}
 
 	// オートプレイボタン(F11)を押した場合、オートプレイ開始
