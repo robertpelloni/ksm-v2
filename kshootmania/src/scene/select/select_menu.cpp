@@ -5,18 +5,27 @@
 #include "menu_item/select_menu_all_folder_item.hpp"
 #include "menu_item/select_menu_dir_folder_item.hpp"
 #include "menu_item/select_menu_sub_dir_section_item.hpp"
+#include "common/fs_utils.hpp"
 
 namespace
 {
 	Array<FilePath> GetSubDirectories(FilePathView path)
 	{
-		return
+		Array<FilePath> directories =
 			FileSystem::DirectoryContents(path, Recursive::No)
 				.filter(
 					[](FilePathView p)
 					{
 						return FileSystem::IsDirectory(p);
 					});
+
+		// フォルダ名(小文字変換)の昇順でソート
+		directories.sort_by([](const FilePath& a, const FilePath& b)
+		{
+			return FsUtils::DirectoryNameByDirectoryPath(a).lowercased() < FsUtils::DirectoryNameByDirectoryPath(b).lowercased();
+		});
+
+		return directories;
 	}
 }
 
@@ -134,6 +143,12 @@ bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe)
 		{
 			directories.append(GetSubDirectories(path).map([](FilePathView p) { return FileSystem::FullPath(p); }));
 		}
+
+		// フォルダ名(小文字変換)の昇順でソート
+		directories.sort_by([](const FilePath& a, const FilePath& b)
+		{
+			return FsUtils::DirectoryNameByDirectoryPath(a).lowercased() < FsUtils::DirectoryNameByDirectoryPath(b).lowercased();
+		});
 
 		// フォルダを開いている場合は、そのフォルダが先頭になるような順番で項目を追加する必要があるので、現在開いているフォルダのインデックスを調べる
 		std::size_t currentDirectoryIdx = 0;
