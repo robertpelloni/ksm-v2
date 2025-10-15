@@ -820,6 +820,9 @@
     <ClInclude Include="src\input\key_config.hpp">
       <Filter>Header Files\input</Filter>
     </ClInclude>
+    <ClInclude Include="src\input\platform_key.hpp">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
     <ClInclude Include="src\i18n\i18n.hpp">
       <Filter>Header Files\i18n</Filter>
     </ClInclude>

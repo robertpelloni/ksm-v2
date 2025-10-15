@@ -325,6 +325,7 @@
     <ClInclude Include="src\input\cursor\cursor_input.hpp" />
     <ClInclude Include="src\input\cursor\icursor_input_device.hpp" />
     <ClInclude Include="src\input\key_config.hpp" />
+    <ClInclude Include="src\input\platform_key.hpp" />
     <ClInclude Include="src\music_game\audio\assist_tick.hpp" />
     <ClInclude Include="src\music_game\audio\audio_defines.hpp" />
     <ClInclude Include="src\music_game\audio\audio_effect_main.hpp" />

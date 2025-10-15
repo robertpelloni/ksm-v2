@@ -1,6 +1,7 @@
 ﻿#include "game_main.hpp"
 #include "game_defines.hpp"
 #include "kson/kson.hpp"
+#include "input/platform_key.hpp"
 
 namespace MusicGame
 {
@@ -94,6 +95,9 @@ namespace MusicGame
 
 	GameMain::StartFadeOutYN GameMain::update()
 	{
+		// 一時停止・早送りの制御
+		processPlaybackControl();
+
 		// 状態更新
 		updateStatus();
 
@@ -170,5 +174,40 @@ namespace MusicGame
 	void GameMain::startBGMFadeOut(Duration duration)
 	{
 		m_bgm.setFadeOut(duration);
+	}
+
+	void GameMain::processPlaybackControl()
+	{
+		const bool isCtrlPressed = PlatformKey::KeyCommandControl.pressed();
+
+		// 一時停止/再開(Ctrl+Enter)
+		if (isCtrlPressed && KeyEnter.down())
+		{
+			if (m_isPaused)
+			{
+				m_bgm.play();
+				m_isPaused = false;
+			}
+			else
+			{
+				m_bgm.pause();
+				m_isPaused = true;
+			}
+		}
+
+		// 早送り(Ctrl+Right)
+		if (!m_isPaused && isCtrlPressed && KeyRight.pressed())
+		{
+			if (m_fastForwardStopwatch.ms() >= 60)
+			{
+				const auto currentPos = m_bgm.posSec();
+				m_bgm.seekPosSec(currentPos + SecondsF(1.0));
+				m_fastForwardStopwatch.restart();
+			}
+		}
+		else
+		{
+			m_fastForwardStopwatch.restart();
+		}
 	}
 }

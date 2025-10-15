@@ -74,9 +74,15 @@ namespace MusicGame
 		ViewStatus m_viewStatus;
 		bool m_isFinishedPrev = false;
 
+		// 再生制御
+		bool m_isPaused = false;
+		Stopwatch m_fastForwardStopwatch;
+
 		void updateStatus();
 
 		void updateHighwayScroll();
+
+		void processPlaybackControl();
 
 	public:
 		explicit GameMain(const GameCreateInfo& createInfo);
