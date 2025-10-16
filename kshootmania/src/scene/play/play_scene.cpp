@@ -70,6 +70,9 @@ void PlayScene::update()
 		// Backボタンの場合はスコアが変動しないようロック
 		m_gameMain.lockForExit();
 
+		// 次のシーンで多重に反応しないよう、Backボタンの入力をクリア
+		KeyConfig::ClearInput(KeyConfig::kBack);
+
 		if (m_isAutoPlay)
 		{
 			requestNextScene<SelectScene>();
