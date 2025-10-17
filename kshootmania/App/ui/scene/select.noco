@@ -870,7 +870,7 @@
                     255,
                     255
                   ],
-                  "fontAssetName": "",
+                  "fontAssetName": "SystemBold",
                   "fontSize": 24.0,
                   "gradationColor1": [
                     255,
@@ -2773,7 +2773,7 @@
                     255,
                     255
                   ],
-                  "fontAssetName": "",
+                  "fontAssetName": "SystemBold",
                   "fontSize": 24.0,
                   "gradationColor1": [
                     255,
@@ -4676,7 +4676,7 @@
                     255,
                     255
                   ],
-                  "fontAssetName": "",
+                  "fontAssetName": "SystemBold",
                   "fontSize": 24.0,
                   "gradationColor1": [
                     255,
@@ -6579,7 +6579,7 @@
                     255,
                     255
                   ],
-                  "fontAssetName": "",
+                  "fontAssetName": "SystemBold",
                   "fontSize": 24.0,
                   "gradationColor1": [
                     255,
@@ -8482,7 +8482,7 @@
                     255,
                     255
                   ],
-                  "fontAssetName": "",
+                  "fontAssetName": "SystemBold",
                   "fontSize": 24.0,
                   "gradationColor1": [
                     255,
@@ -8565,11 +8565,11 @@
                 ],
                 "posDelta": [
                   -108.0,
-                  24.0
+                  26.0
                 ],
                 "sizeDelta": [
                   554.0,
-                  40.0
+                  38.0
                 ],
                 "sizeDeltaPivot": [
                   0.5,
@@ -10385,7 +10385,7 @@
                     255,
                     255
                   ],
-                  "fontAssetName": "",
+                  "fontAssetName": "SystemBold",
                   "fontSize": 24.0,
                   "gradationColor1": [
                     255,
@@ -12288,7 +12288,7 @@
                     255,
                     255
                   ],
-                  "fontAssetName": "",
+                  "fontAssetName": "SystemBold",
                   "fontSize": 24.0,
                   "gradationColor1": [
                     255,
@@ -14191,7 +14191,7 @@
                     255,
                     255
                   ],
-                  "fontAssetName": "",
+                  "fontAssetName": "SystemBold",
                   "fontSize": 24.0,
                   "gradationColor1": [
                     255,
@@ -19287,6 +19287,7 @@
     "type": "FlowLayout",
     "verticalAlign": "Top"
   },
+  "defaultFontAssetName": "",
   "params": {
     "bottom1_artist": {
       "type": "String",
@@ -19609,6 +19610,6 @@
     640.0,
     480.0
   ],
-  "serializedVersion": 3,
-  "version": "0.2.1"
+  "serializedVersion": 4,
+  "version": "0.2.2"
 }
