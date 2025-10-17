@@ -1,7 +1,9 @@
 ﻿#include <Siv3D.hpp>
 #include <CoTaskLib.hpp>
+#include <NocoUI.hpp>
 #include "common/frame_rate_limit.hpp"
 #include "common/ime_utils.hpp"
+#include "common/asset_management.hpp"
 #include "addon/auto_mute_addon.hpp"
 #include "ksmaudio/ksmaudio.hpp"
 #include "scene/title/title_scene.hpp"
@@ -84,6 +86,9 @@ void KSMMain()
 	// ライブラリ初期化
 	Co::Init();
 	noco::Init();
+
+	// NocoUIのグローバルデフォルトフォントを設定
+	noco::SetGlobalDefaultFont(AssetManagement::SystemFont());
 
 	// メインループ
 	const auto sceneRunner = Co::PlaySceneFrom<TitleScene>(TitleMenuItem::kStart).runScoped();

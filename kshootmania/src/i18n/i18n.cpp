@@ -1,4 +1,5 @@
 ﻿#include "i18n.hpp"
+#include "../common/asset_management.hpp"
 
 namespace
 {
@@ -114,6 +115,8 @@ void I18n::LoadLanguage(StringView name, StringView fallback)
 			}
 		}
 	}
+
+	AssetManagement::RefreshSystemFontForCurrentLanguage();
 }
 
 StringView I18n::Get(Category category, int32 keyIdx)
