@@ -1,9 +1,9 @@
 ﻿#include "select_menu_sub_dir_section_item.hpp"
 #include "common/fs_utils.hpp"
 
-SelectMenuSubDirSectionItem::SelectMenuSubDirSectionItem(FilePathView fullPath)
+SelectMenuSubDirSectionItem::SelectMenuSubDirSectionItem(FilePathView fullPath, const Optional<String>& customDisplayName)
 	: m_fullPath(fullPath)
-	, m_displayName(FsUtils::DirectoryNameByDirectoryPath(m_fullPath))
+	, m_displayName(customDisplayName.value_or(FsUtils::DirectoryNameByDirectoryPath(m_fullPath)))
 {
 }
 

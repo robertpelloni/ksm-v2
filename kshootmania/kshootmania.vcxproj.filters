@@ -366,6 +366,9 @@
     <ClCompile Include="src\common\asset_management.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
+    <ClCompile Include="src\common\encoding.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
     <ClCompile Include="src\music_game\audio\audio_effect_utils.cpp">
       <Filter>Source Files\music_game\audio</Filter>
     </ClCompile>
@@ -926,6 +929,9 @@
       <Filter>Header Files\music_game\judgment</Filter>
     </ClInclude>
     <ClInclude Include="src\common\asset_management.hpp">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\encoding.hpp">
       <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="src\music_game\audio\audio_effect_utils.hpp">

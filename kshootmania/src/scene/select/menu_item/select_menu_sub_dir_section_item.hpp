@@ -8,7 +8,7 @@ private:
 	const String m_displayName;
 
 public:
-	explicit SelectMenuSubDirSectionItem(FilePathView fullPath);
+	explicit SelectMenuSubDirSectionItem(FilePathView fullPath, const Optional<String>& customDisplayName = none);
 
 	virtual ~SelectMenuSubDirSectionItem() = default;
 

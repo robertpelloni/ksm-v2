@@ -6,6 +6,7 @@
 #include "menu_item/select_menu_dir_folder_item.hpp"
 #include "menu_item/select_menu_sub_dir_section_item.hpp"
 #include "common/fs_utils.hpp"
+#include "common/encoding.hpp"
 
 namespace
 {
@@ -26,6 +27,71 @@ namespace
 		});
 
 		return directories;
+	}
+
+	// foldername.csvを読み込んでフォルダ名→表示名の対応関係を取得
+	// (キー"*"は全フォルダに対して適用される表示名を示す)
+	HashTable<String, String> LoadFolderNameTable(FilePathView directoryPath)
+	{
+		HashTable<String, String> folderNameTable;
+		const FilePath csvPath = FileSystem::PathAppend(directoryPath, U"foldername.csv");
+
+		if (!FileSystem::IsFile(csvPath))
+		{
+			return folderNameTable;
+		}
+
+		// ファイルを行ごとに読み込む(BOMに基づいてShift-JISまたはUTF-8として)
+		const Array<String> lines = Encoding::ReadTextFileLinesShiftJISOrUTF8BasedOnBOM(csvPath);
+		for (const String& line : lines)
+		{
+			// カンマで分割
+			const Array<String> parts = line.split(U',');
+			if (parts.size() < 2)
+			{
+				continue;
+			}
+
+			// 左右のダブルクオートを除去
+			auto removeQuotes = [](String str) -> String
+			{
+				str = str.trimmed();
+				if (str.length() >= 2 && str.starts_with(U'"') && str.ends_with(U'"'))
+				{
+					return str.substr(1, str.length() - 2);
+				}
+				return str;
+			};
+
+			const String folderName = removeQuotes(parts[0]);
+			const String displayName = removeQuotes(parts[1]);
+
+			// フォルダ名が空でなければ対応関係に追加
+			// (displayNameが空文字列の場合はサブフォルダ見出しの非表示化を表すため、displayNameが空の場合も除外しない)
+			if (!folderName.isEmpty())
+			{
+				folderNameTable[folderName] = displayName;
+			}
+		}
+
+		return folderNameTable;
+	}
+
+	// foldername.csvによる置換後の表示フォルダ名を取得(対応関係がない場合はnone)
+	Optional<String> GetDisplayNameFromFolderNameTable(const HashTable<String, String>& folderNameTable, const String& folderName)
+	{
+		if (const auto it = folderNameTable.find(folderName); it != folderNameTable.end())
+		{
+			return it->second;
+		}
+
+		// "*"による全フォルダ置換があれば使用
+		if (const auto it = folderNameTable.find(U"*"); it != folderNameTable.end())
+		{
+			return it->second;
+		}
+
+		return none;
 	}
 }
 
@@ -93,11 +159,23 @@ bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe, Refr
 			}
 		}
 
+		// foldername.csvを読み込んでフォルダ名の対応関係を取得
+		const HashTable<String, String> folderNameTable = LoadFolderNameTable(directoryPath);
+
 		// サブディレクトリ内の曲の項目を追加
 		for (const auto& subDirCandidate : subDirCandidates)
 		{
-			// サブディレクトリの見出し項目を追加
-			m_menu.push_back(std::make_unique<SelectMenuSubDirSectionItem>(FileSystem::FullPath(subDirCandidate))); // TODO: foldername.csvから読み込んだフォルダ名で置換
+			const String folderName = FsUtils::DirectoryNameByDirectoryPath(subDirCandidate);
+			const Optional<String> displayName = GetDisplayNameFromFolderNameTable(folderNameTable, folderName);
+
+			// 表示名が空文字列の場合は見出し項目を追加せず、曲だけを追加
+			const bool shouldSkipHeading = displayName.has_value() && displayName->isEmpty();
+
+			if (!shouldSkipHeading)
+			{
+				// サブディレクトリの見出し項目を追加
+				m_menu.push_back(std::make_unique<SelectMenuSubDirSectionItem>(FileSystem::FullPath(subDirCandidate), displayName));
+			}
 
 			bool chartExists = false;
 			const Array<FilePath> songDirectories = GetSubDirectories(subDirCandidate);
@@ -111,7 +189,7 @@ bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe, Refr
 			}
 
 			// サブディレクトリ内に譜面が存在しなかった場合は見出し項目を削除
-			if (!chartExists)
+			if (!shouldSkipHeading && !chartExists)
 			{
 				m_menu.pop_back();
 			}
