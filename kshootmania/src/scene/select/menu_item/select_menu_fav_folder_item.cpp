@@ -16,7 +16,7 @@ void SelectMenuFavFolderItem::setCanvasParamsCenter([[maybe_unused]] const Selec
 {
 	canvas.setParamValues({
 		{ U"center_isDirectory", true },
-		{ U"center_isLevel", false },
+		{ U"center_isSubDirectory", false },
 		{ U"center_isSong", false },
 		{ U"center_title", FolderDisplayNameCenter(m_displayName, m_isCurrentFolder) },
 	});
@@ -26,7 +26,7 @@ void SelectMenuFavFolderItem::setCanvasParamsTopBottom([[maybe_unused]] const Se
 {
 	canvas.setParamValues({
 		{ paramNamePrefix + U"isDirectory", true },
-		{ paramNamePrefix + U"isLevel", false },
+		{ paramNamePrefix + U"isSubDirectory", false },
 		{ paramNamePrefix + U"isSong", false },
 		{ paramNamePrefix + U"title", FolderDisplayNameTopBottom(m_displayName, m_isCurrentFolder) },
 	});

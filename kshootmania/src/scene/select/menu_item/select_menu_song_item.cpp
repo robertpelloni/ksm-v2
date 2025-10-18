@@ -131,7 +131,7 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 	canvas.setParamValues({
 		{ U"center_isSong", true },
 		{ U"center_isDirectory", false },
-		{ U"center_isLevel", false },
+		{ U"center_isSubDirectory", false },
 		{ U"center_title", pFirstChartInfo->title() },
 		{ U"center_artist", pFirstChartInfo->artist() },
 		{ U"center_bpm", pFirstChartInfo->dispBPM() },
@@ -232,7 +232,7 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 	canvas.setParamValues({
 		{ paramNamePrefix + U"isSong", true },
 		{ paramNamePrefix + U"isDirectory", false },
-		{ paramNamePrefix + U"isLevel", false },
+		{ paramNamePrefix + U"isSubDirectory", false },
 		{ paramNamePrefix + U"title", pAltChartInfo->title() },
 		{ paramNamePrefix + U"artist", pAltChartInfo->artist() },
 		{ paramNamePrefix + U"levelIndex", pAltChartInfo->level() },
