@@ -16,7 +16,13 @@ private:
 
 	SelectMenu m_menu;
 
+	Array<String> m_playerNames;
+
 	void moveToPlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay);
+
+	void refreshCanvasPlayerName();
+
+	void updatePlayerSwitching();
 
 public:
 	SelectScene();

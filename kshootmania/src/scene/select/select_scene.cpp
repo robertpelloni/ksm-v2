@@ -1,6 +1,8 @@
 ﻿#include "select_scene.hpp"
 #include "scene/play_prepare/play_prepare_scene.hpp"
 #include "scene/title/title_scene.hpp"
+#include "ini/config_ini.hpp"
+#include "common/fs_utils.hpp"
 
 namespace
 {
@@ -18,12 +20,81 @@ namespace
 		}
 		return canvas;
 	}
+
+	Array<String> GetPlayerNames()
+	{
+		Array<String> playerNames;
+
+		for (const auto& dirPath : FileSystem::DirectoryContents(U"score/", Recursive::No))
+		{
+			if (FileSystem::IsDirectory(dirPath))
+			{
+				playerNames.push_back(FsUtils::DirectoryNameByDirectoryPath(dirPath));
+			}
+		}
+
+		if (playerNames.empty())
+		{
+			playerNames.push_back(U"PLAYER");
+		}
+
+		playerNames.sort_by([](const String& a, const String& b)
+		{
+			return a.lowercased() < b.lowercased();
+		});
+
+		return playerNames;
+	}
 }
 
 void SelectScene::moveToPlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)
 {
 	m_fadeOutColor = Palette::White;
 	requestNextScene<PlayPrepareScene>(FilePath{ chartFilePath }, isAutoPlay);
+}
+
+void SelectScene::refreshCanvasPlayerName()
+{
+	const String playerName{ ConfigIni::GetString(ConfigIni::Key::kCurrentPlayer) };
+	m_canvas->setParamValue(U"playerName", playerName);
+}
+
+void SelectScene::updatePlayerSwitching()
+{
+	const bool btBCPressed = KeyConfig::Pressed(KeyConfig::kBT_B) && KeyConfig::Pressed(KeyConfig::kBT_C);
+	if (!btBCPressed)
+	{
+		return;
+	}
+
+	const bool leftDown = KeyConfig::Down(KeyConfig::kLeft);
+	const bool rightDown = KeyConfig::Down(KeyConfig::kRight);
+
+	if (!leftDown && !rightDown)
+	{
+		return;
+	}
+
+	const String currentPlayer{ ConfigIni::GetString(ConfigIni::Key::kCurrentPlayer) };
+
+	auto it = std::find(m_playerNames.begin(), m_playerNames.end(), currentPlayer);
+	int32 currentIndex = (it != m_playerNames.end()) ? static_cast<int32>(it - m_playerNames.begin()) : 0;
+
+	if (leftDown)
+	{
+		currentIndex = (currentIndex - 1 + static_cast<int32>(m_playerNames.size())) % static_cast<int32>(m_playerNames.size());
+	}
+	else if (rightDown)
+	{
+		currentIndex = (currentIndex + 1) % static_cast<int32>(m_playerNames.size());
+	}
+
+	const String newPlayerName = m_playerNames[currentIndex];
+	ConfigIni::SetString(ConfigIni::Key::kCurrentPlayer, newPlayerName);
+	ConfigIni::Save();
+
+	refreshCanvasPlayerName();
+	m_menu.reloadCurrentDirectory();
 }
 
 SelectScene::SelectScene()
@@ -33,8 +104,18 @@ SelectScene::SelectScene()
 			: KeyConfig::kBackspace)
 	, m_canvas(LoadSelectSceneCanvas())
 	, m_menu(m_canvas, [this](FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlayYN) { moveToPlayScene(chartFilePath, isAutoPlayYN); })
+	, m_playerNames(GetPlayerNames())
 {
 	AutoMuteAddon::SetEnabled(true);
+
+	// iniから読み込んだプレイヤー名が空文字列の場合は"PLAYER"に修正
+	const String currentPlayer{ ConfigIni::GetString(ConfigIni::Key::kCurrentPlayer) };
+	if (currentPlayer.isEmpty())
+	{
+		ConfigIni::SetString(ConfigIni::Key::kCurrentPlayer, U"PLAYER");
+	}
+
+	refreshCanvasPlayerName();
 
 	if (m_menu.empty())
 	{
@@ -46,6 +127,8 @@ SelectScene::SelectScene()
 
 void SelectScene::update()
 {
+	updatePlayerSwitching();
+
 	const bool closeFolder = m_menu.isFolderOpen() && KeyConfig::Down(m_folderCloseButton/* ← kBackspace・kBackのいずれかが入っている */);
 
 	// Backボタン(Escキー)を押した場合、(フォルダを閉じる状況でなければ)タイトル画面へ戻る

@@ -29,7 +29,7 @@ namespace
 	}
 }
 
-bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe)
+bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe, RefreshSongPreviewYN refreshSongPreview, SaveToConfigIniYN saveToConfigIni)
 {
 	using Unicode::FromUTF8;
 
@@ -187,11 +187,18 @@ bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe)
 		}
 	}
 
-	ConfigIni::SetString(ConfigIni::Key::kSelectDirectory, directoryPath);
-	ConfigIni::SetInt(ConfigIni::Key::kSelectSongIndex, 0);
+	if (saveToConfigIni)
+	{
+		ConfigIni::SetString(ConfigIni::Key::kSelectDirectory, directoryPath);
+		ConfigIni::SetInt(ConfigIni::Key::kSelectSongIndex, 0);
+	}
 
 	refreshContentCanvasParams();
-	refreshSongPreview();
+
+	if (refreshSongPreview)
+	{
+		this->refreshSongPreview();
+	}
 
 	return true;
 }
@@ -359,13 +366,18 @@ void SelectMenu::update()
 		refreshSongPreview();
 	}
 
-	m_difficultyMenu.update();
-	if (m_difficultyMenu.deltaCursor() != 0)
+	// BT-B+C押下中は無視(プレイヤー切り替えと干渉しないようにするため)
+	const bool btBCPressed = KeyConfig::Pressed(KeyConfig::kBT_B) && KeyConfig::Pressed(KeyConfig::kBT_C);
+	if (!btBCPressed)
 	{
-		ConfigIni::SetInt(ConfigIni::Key::kSelectDifficulty, m_difficultyMenu.cursor());
-		m_difficultySelectSe.play();
-		refreshContentCanvasParams();
-		refreshSongPreview();
+		m_difficultyMenu.update();
+		if (m_difficultyMenu.deltaCursor() != 0)
+		{
+			ConfigIni::SetInt(ConfigIni::Key::kSelectDifficulty, m_difficultyMenu.cursor());
+			m_difficultySelectSe.play();
+			refreshContentCanvasParams();
+			refreshSongPreview();
+		}
 	}
 
 	m_songPreview.update();
@@ -432,6 +444,20 @@ bool SelectMenu::empty() const
 void SelectMenu::fadeOutSongPreviewForExit(Duration duration)
 {
 	m_songPreview.fadeOutForExit(duration);
+}
+
+void SelectMenu::reloadCurrentDirectory()
+{
+	const int32 currentCursor = m_menu.cursor();
+	const int32 currentDifficulty = m_difficultyMenu.rawCursor();
+	const FilePath currentDirectory = m_folderState.fullPath;
+
+	openDirectory(currentDirectory, PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
+
+	m_menu.setCursor(currentCursor);
+	m_difficultyMenu.setCursor(currentDifficulty);
+
+	refreshContentCanvasParams();
 }
 
 const Texture& SelectMenu::getJacketTexture(FilePathView filePath)

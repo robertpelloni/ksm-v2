@@ -6,6 +6,8 @@
 #include "ksmaudio/ksmaudio.hpp"
 
 using PlaySeYN = YesNo<struct PlaySeYN_tag>;
+using RefreshSongPreviewYN = YesNo<struct RefreshSongPreviewYN_tag>;
+using SaveToConfigIniYN = YesNo<struct SaveToConfigIniYN_tag>;
 
 enum class SelectMenuShakeDirection
 {
@@ -56,7 +58,7 @@ private:
 
 	HashTable<String, Texture> m_iconTextureCache;
 
-	bool openDirectory(FilePathView directoryPath, PlaySeYN playSe);
+	bool openDirectory(FilePathView directoryPath, PlaySeYN playSe, RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::Yes, SaveToConfigIniYN saveToConfigIni = SaveToConfigIniYN::Yes);
 
 	void setCursorAndSave(int32 cursor);
 
@@ -94,4 +96,6 @@ public:
 	const Texture& getJacketTexture(FilePathView filePath);
 
 	const Texture& getIconTexture(FilePathView filePath);
+
+	void reloadCurrentDirectory();
 };
