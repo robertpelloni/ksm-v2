@@ -8,15 +8,13 @@ namespace MusicGame::Audio
 		constexpr Duration kManualUpdateInterval = 0.005s;
 	}
 
-	void BGM::emplaceAudioEffectImpl(bool isFX, const std::string& name, const kson::AudioEffectDef& def, const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges, const std::set<float>& updateTriggerTiming)
+	void BGM::emplaceAudioEffectToBus(
+		ksmaudio::AudioEffect::AudioEffectBus* pAudioEffectBus,
+		const std::string& name,
+		const kson::AudioEffectDef& def,
+		const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
+		const std::set<float>& updateTriggerTiming)
 	{
-		if (m_stream.numChannels() == 0)
-		{
-			// ロード失敗時は音声エフェクトを追加しない
-			return;
-		}
-
-		const auto pAudioEffectBus = isFX ? m_pAudioEffectBusFX : m_pAudioEffectBusLaser;
 		switch (def.type)
 		{
 		case kson::AudioEffectType::Retrigger:
@@ -77,6 +75,18 @@ namespace MusicGame::Audio
 		}
 	}
 
+	void BGM::emplaceAudioEffectImpl(bool isFX, const std::string& name, const kson::AudioEffectDef& def, const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges, const std::set<float>& updateTriggerTiming)
+	{
+		if (m_stream.numChannels() == 0)
+		{
+			// ロード失敗時は音声エフェクトを追加しない
+			return;
+		}
+
+		const auto pAudioEffectBus = isFX ? m_pAudioEffectBusFX : m_pAudioEffectBusLaser;
+		emplaceAudioEffectToBus(pAudioEffectBus, name, def, paramChanges, updateTriggerTiming);
+	}
+
 	BGM::BGM(FilePathView filePath, double volume, SecondsF offset)
 		: m_stream(filePath.narrow(), volume, true, true)
 		, m_duration(m_stream.duration())
@@ -100,6 +110,14 @@ namespace MusicGame::Audio
 			if (m_manualUpdateStopwatch.elapsed() >= kManualUpdateInterval)
 			{
 				m_stream.updateManually();
+				for (auto& switchAudio : m_switchAudioStreamsFX)
+				{
+					switchAudio->stream.updateManually();
+				}
+				for (auto& switchAudio : m_switchAudioStreamsLaser)
+				{
+					switchAudio->stream.updateManually();
+				}
 				m_manualUpdateStopwatch.restart();
 			}
 			m_timeSec = m_stream.posSec() - m_offset;
@@ -118,6 +136,16 @@ namespace MusicGame::Audio
 			{
 				m_stream.seekPosSec(m_timeSec + m_offset);
 				m_stream.play();
+				for (auto& switchAudio : m_switchAudioStreamsFX)
+				{
+					switchAudio->stream.seekPosSec(m_timeSec + m_offset);
+					switchAudio->stream.play();
+				}
+				for (auto& switchAudio : m_switchAudioStreamsLaser)
+				{
+					switchAudio->stream.seekPosSec(m_timeSec + m_offset);
+					switchAudio->stream.play();
+				}
 				m_isStreamStarted = true;
 			}
 		}
@@ -137,6 +165,23 @@ namespace MusicGame::Audio
 		m_pAudioEffectBusLaser->updateByLaser(
 			status,
 			activeAudioEffectIdx);
+
+		// アクティブなSwitchAudioストリームにも同じLASERエフェクトを適用
+		if (m_activeSwitchAudioIdxFX.has_value())
+		{
+			auto& switchAudio = m_switchAudioStreamsFX[m_activeSwitchAudioIdxFX.value()];
+			switchAudio->pAudioEffectBusLaser->setBypass(bypass);
+
+			// SwitchAudioストリームには標準LASERエフェクト(peak,hpf,lpf,bitc)のみ登録されているので、インデックスを変換
+			// ユーザー定義エフェクト(isBuiltin=false)の場合はnulloptとなる
+			const std::optional<std::size_t> convertedIdx = activeAudioEffectIdx.has_value()
+				? m_pAudioEffectBusLaser->convertIdxToOtherBus(activeAudioEffectIdx.value(), *switchAudio->pAudioEffectBusLaser)
+				: std::nullopt;
+
+			switchAudio->pAudioEffectBusLaser->updateByLaser(
+				status,
+				convertedIdx);
+		}
 	}
 
 	void BGM::play()
@@ -151,6 +196,14 @@ namespace MusicGame::Audio
 		if (m_isStreamStarted)
 		{
 			m_stream.pause();
+			for (auto& switchAudio : m_switchAudioStreamsFX)
+			{
+				switchAudio->stream.pause();
+			}
+			for (auto& switchAudio : m_switchAudioStreamsLaser)
+			{
+				switchAudio->stream.pause();
+			}
 		}
 		m_stopwatch.pause();
 		m_isPaused = true;
@@ -161,10 +214,26 @@ namespace MusicGame::Audio
 		if (posSec < 0s)
 		{
 			m_stream.stop();
+			for (auto& switchAudio : m_switchAudioStreamsFX)
+			{
+				switchAudio->stream.stop();
+			}
+			for (auto& switchAudio : m_switchAudioStreamsLaser)
+			{
+				switchAudio->stream.stop();
+			}
 		}
 		else
 		{
 			m_stream.seekPosSec(posSec);
+			for (auto& switchAudio : m_switchAudioStreamsFX)
+			{
+				switchAudio->stream.seekPosSec(posSec);
+			}
+			for (auto& switchAudio : m_switchAudioStreamsLaser)
+			{
+				switchAudio->stream.seekPosSec(posSec);
+			}
 		}
 		m_timeSec = posSec;
 		m_stopwatch.set(posSec);
@@ -229,5 +298,101 @@ namespace MusicGame::Audio
 	void BGM::setFadeOut(Duration duration)
 	{
 		m_stream.setFadeOut(duration);
+	}
+
+	void BGM::emplaceSwitchAudioStream(
+		bool isFX,
+		const std::string& effectName,
+		const std::string& filename,
+		const FilePath& parentPath)
+	{
+		const FilePath fullPath = FileSystem::PathAppend(parentPath, Unicode::FromUTF8(filename));
+		if (!FileSystem::Exists(fullPath))
+		{
+			// 音声ファイルが見つからない場合はスキップ
+			Logger << U"[ksm warning] SwitchAudio audio file not found: '{}'"_fmt(fullPath);
+			return;
+		}
+
+		// ストリームを追加
+		auto& targetStreams = isFX ? m_switchAudioStreamsFX : m_switchAudioStreamsLaser;
+		targetStreams.emplace_back(std::make_unique<SwitchAudioStream>(
+			effectName,
+			fullPath.narrow(),
+			1.0,   // volume (メインBGMと同じ)
+			true,  // コンプレッサー有効
+			true   // プリロード
+		));
+
+		// 初期状態はミュートにする
+		targetStreams.back()->stream.setMuted(true);
+	}
+
+	void BGM::updateSwitchAudio(Optional<std::size_t> switchAudioIdxFX, Optional<std::size_t> switchAudioIdxLaser)
+	{
+		if (m_activeSwitchAudioIdxFX == switchAudioIdxFX && m_activeSwitchAudioIdxLaser == switchAudioIdxLaser)
+		{
+			return;  // 変更なし
+		}
+
+		// SwitchAudio切り替えの優先順位は「FXのSwitchAudio＞LASERのSwitchAudio＞メイン」とする(v1と同じ)
+		// 同時に鳴るのは必ず1つだけ
+		const bool fxActive = switchAudioIdxFX.has_value();
+		const bool laserActive = !fxActive && switchAudioIdxLaser.has_value();
+		const bool mainActive = !fxActive && !laserActive;
+
+		// ミュート状態に反映
+		m_stream.setMuted(!mainActive);
+		for (std::size_t i = 0; i < m_switchAudioStreamsFX.size(); ++i)
+		{
+			m_switchAudioStreamsFX[i]->stream.setMuted(!fxActive || i != switchAudioIdxFX.value());
+		}
+		for (std::size_t i = 0; i < m_switchAudioStreamsLaser.size(); ++i)
+		{
+			m_switchAudioStreamsLaser[i]->stream.setMuted(!laserActive || i != switchAudioIdxLaser.value());
+		}
+
+		m_activeSwitchAudioIdxFX = switchAudioIdxFX;
+		m_activeSwitchAudioIdxLaser = switchAudioIdxLaser;
+	}
+
+	Optional<std::size_t> BGM::switchAudioIdxByNameFX(const std::string& name) const
+	{
+		// Note: SwitchAudioの数は少ないため、線形探索で問題ない
+		for (std::size_t i = 0; i < m_switchAudioStreamsFX.size(); ++i)
+		{
+			if (m_switchAudioStreamsFX[i]->name == name)
+			{
+				return i;
+			}
+		}
+		return none;
+	}
+
+	Optional<std::size_t> BGM::switchAudioIdxByNameLaser(const std::string& name) const
+	{
+		// Note: SwitchAudioの数は少ないため、線形探索で問題ない
+		for (std::size_t i = 0; i < m_switchAudioStreamsLaser.size(); ++i)
+		{
+			if (m_switchAudioStreamsLaser[i]->name == name)
+			{
+				return i;
+			}
+		}
+		return none;
+	}
+
+	void BGM::emplaceSwitchAudioLaserEffect(
+		const std::string& name,
+		const kson::AudioEffectDef& def,
+		const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
+		const std::set<float>& updateTriggerTiming)
+	{
+		// FX用のSwitchAudioストリームのみにLASERエフェクトを登録
+		// (標準のLASERエフェクトのみが登録される)
+		for (auto& switchAudio : m_switchAudioStreamsFX)
+		{
+			emplaceAudioEffectToBus(switchAudio->pAudioEffectBusLaser, name, def, paramChanges, updateTriggerTiming);
+		}
 	}
 }

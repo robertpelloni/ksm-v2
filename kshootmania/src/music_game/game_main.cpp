@@ -82,7 +82,7 @@ namespace MusicGame
 		, m_assistTick(createInfo.assistTickEnabled)
 		, m_laserSlamSE(m_chartData)
 		, m_fxChipSE(m_chartData, m_parentPath)
-		, m_audioEffectMain(m_bgm, m_chartData, m_timingCache)
+		, m_audioEffectMain(m_bgm, m_chartData, m_timingCache, m_parentPath)
 		, m_graphicsMain(m_chartData, m_parentPath, createInfo.playOption)
 	{
 	}

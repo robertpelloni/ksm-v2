@@ -4,6 +4,25 @@
 
 namespace MusicGame::Audio
 {
+	struct SwitchAudioStream
+	{
+		std::string name;
+		ksmaudio::StreamWithEffects stream;
+		ksmaudio::AudioEffect::AudioEffectBus* pAudioEffectBusLaser;
+
+		SwitchAudioStream(const std::string& name, const std::string& filePath, double volume, bool enableCompressor, bool preload)
+			: name(name)
+			, stream(filePath, volume, enableCompressor, preload)
+			, pAudioEffectBusLaser(stream.emplaceAudioEffectBusLaser())
+		{
+		}
+
+		SwitchAudioStream(const SwitchAudioStream&) = delete;
+		SwitchAudioStream& operator=(const SwitchAudioStream&) = delete;
+		SwitchAudioStream(SwitchAudioStream&&) = delete;
+		SwitchAudioStream& operator=(SwitchAudioStream&&) = delete;
+	};
+
 	class BGM
 	{
 	private:
@@ -18,8 +37,21 @@ namespace MusicGame::Audio
 		Stopwatch m_stopwatch;
 		Stopwatch m_manualUpdateStopwatch;
 
+		// SwitchAudio音声のストリーム
+		std::vector<std::unique_ptr<SwitchAudioStream>> m_switchAudioStreamsFX;
+		std::vector<std::unique_ptr<SwitchAudioStream>> m_switchAudioStreamsLaser;
+		Optional<std::size_t> m_activeSwitchAudioIdxFX;
+		Optional<std::size_t> m_activeSwitchAudioIdxLaser;
+
 		void emplaceAudioEffectImpl(
 			bool isFX,
+			const std::string& name,
+			const kson::AudioEffectDef& def,
+			const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
+			const std::set<float>& updateTriggerTiming);
+
+		static void emplaceAudioEffectToBus(
+			ksmaudio::AudioEffect::AudioEffectBus* pAudioEffectBus,
 			const std::string& name,
 			const kson::AudioEffectDef& def,
 			const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
@@ -64,5 +96,22 @@ namespace MusicGame::Audio
 		const ksmaudio::AudioEffect::AudioEffectBus& audioEffectBusLaser() const;
 
 		void setFadeOut(Duration duration);
+
+		void emplaceSwitchAudioStream(
+			bool isFX,
+			const std::string& effectName,
+			const std::string& filename,
+			const FilePath& parentPath);
+
+		void updateSwitchAudio(Optional<std::size_t> switchAudioIdxFX, Optional<std::size_t> switchAudioIdxLaser);
+
+		Optional<std::size_t> switchAudioIdxByNameFX(const std::string& name) const;
+		Optional<std::size_t> switchAudioIdxByNameLaser(const std::string& name) const;
+
+		void emplaceSwitchAudioLaserEffect(
+			const std::string& name,
+			const kson::AudioEffectDef& def,
+			const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
+			const std::set<float>& updateTriggerTiming = {});
 	};
 }

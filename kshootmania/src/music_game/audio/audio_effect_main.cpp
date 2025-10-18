@@ -12,6 +12,13 @@ namespace MusicGame::Audio
 		constexpr std::string_view kPeakingFilterAudioEffectName = "peaking_filter";
 		constexpr std::string_view kDefaultLaserAudioEffectName = kPeakingFilterAudioEffectName;
 
+		struct AudioEffectDefWithBuiltinFlag
+		{
+			std::string name;
+			kson::AudioEffectDef def;
+			bool isBuiltin; // 標準エフェクトかどうか(SwitchAudioの音声に対して登録されるかに影響)
+		};
+
 		std::unordered_map<std::string, std::map<float, std::string>> ConvertParamChangesFromPulseToSec(
 			const kson::Dict<kson::ByPulse<std::string>>& paramChangeDict,
 			const kson::ChartData& chartData,
@@ -31,7 +38,7 @@ namespace MusicGame::Audio
 			return result;
 		}
 
-		void RegisterAudioEffects(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache)
+		void RegisterAudioEffects(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache, const FilePath& parentPath)
 		{
 			using AudioEffectUtils::PrecalculateUpdateTriggerTiming;
 
@@ -42,8 +49,8 @@ namespace MusicGame::Audio
 
 			// デフォルトのエフェクト定義を追加
 			// (もし譜面側で同名のエフェクト定義がある場合は上書きせず譜面側を優先する)
-			std::vector<kson::AudioEffectDefKVP> defFX;
-			std::vector<kson::AudioEffectDefKVP> defLaser;
+			std::vector<AudioEffectDefWithBuiltinFlag> defFX;
+			std::vector<AudioEffectDefWithBuiltinFlag> defLaser;
 			const auto fnInsertDefaultFX = [&defFX, &chartData](const std::string& name, const kson::AudioEffectDef& v)
 			{
 				if (chartData.audio.audioEffect.fx.defContains(name))
@@ -51,9 +58,10 @@ namespace MusicGame::Audio
 					return;
 				}
 				defFX.push_back(
-					kson::AudioEffectDefKVP{
+					AudioEffectDefWithBuiltinFlag{
 						.name = name,
-						.v = v,
+						.def = v,
+						.isBuiltin = true,
 					});
 			};
 			const auto fnInsertDefaultLaser = [&defLaser, &chartData](const std::string& name, const kson::AudioEffectDef& v)
@@ -63,9 +71,10 @@ namespace MusicGame::Audio
 					return;
 				}
 				defLaser.push_back(
-					kson::AudioEffectDefKVP{
+					AudioEffectDefWithBuiltinFlag{
 						.name = name,
-						.v = v,
+						.def = v,
+						.isBuiltin = true,
 					});
 			};
 
@@ -80,41 +89,93 @@ namespace MusicGame::Audio
 			fnInsertDefaultFX("tapestop", { .type = kson::AudioEffectType::Tapestop });
 			fnInsertDefaultFX("echo", { .type = kson::AudioEffectType::Echo });
 			fnInsertDefaultFX("sidechain", { .type = kson::AudioEffectType::Sidechain });
-			defFX.insert(defFX.end(), chartData.audio.audioEffect.fx.def.begin(), chartData.audio.audioEffect.fx.def.end());
-			for (const auto& [name, def] : defFX)
+			// ユーザー定義エフェクトを追加
+			for (const auto& kvp : chartData.audio.audioEffect.fx.def)
 			{
-				const auto& paramChangeDict = chartData.audio.audioEffect.fx.paramChange;
-				const std::set<float> updateTriggerTiming =
-					paramChangeDict.contains(name)
-					? PrecalculateUpdateTriggerTiming(def, paramChangeDict.at(name), totalMeasures, chartData, timingCache)
-					: PrecalculateUpdateTriggerTiming(def, totalMeasures, chartData, timingCache);
-				const auto paramChanges =
-					paramChangeDict.contains(name)
-					? ConvertParamChangesFromPulseToSec(paramChangeDict.at(name), chartData, timingCache)
-					: std::unordered_map<std::string, std::map<float, std::string>>{};
+				defFX.push_back(
+					AudioEffectDefWithBuiltinFlag{
+						.name = kvp.name,
+						.def = kvp.v,
+						.isBuiltin = false,
+					});
+			}
+			for (const auto& [name, def, isBuiltin] : defFX)
+			{
+				if (def.type == kson::AudioEffectType::SwitchAudio)
+				{
+					// SwitchAudioの場合
+					if (def.v.contains("filename"))
+					{
+						// ファイル名をもとに音声を追加ロード
+						const std::string& filename = def.v.at("filename");
+						bgm.emplaceSwitchAudioStream(true, name, filename, parentPath);
+					}
+				}
+				else
+				{
+					// 通常のDSPエフェクトの場合
+					const auto& paramChangeDict = chartData.audio.audioEffect.fx.paramChange;
+					const std::set<float> updateTriggerTiming =
+						paramChangeDict.contains(name)
+						? PrecalculateUpdateTriggerTiming(def, paramChangeDict.at(name), totalMeasures, chartData, timingCache)
+						: PrecalculateUpdateTriggerTiming(def, totalMeasures, chartData, timingCache);
+					const auto paramChanges =
+						paramChangeDict.contains(name)
+						? ConvertParamChangesFromPulseToSec(paramChangeDict.at(name), chartData, timingCache)
+						: std::unordered_map<std::string, std::map<float, std::string>>{};
 
-				bgm.emplaceAudioEffectFX(name, def, paramChanges, updateTriggerTiming);
+					bgm.emplaceAudioEffectFX(name, def, paramChanges, updateTriggerTiming);
+				}
 			}
 
-			// Laser
+			// LASER
 			fnInsertDefaultLaser("peaking_filter", { .type = kson::AudioEffectType::PeakingFilter });
 			fnInsertDefaultLaser("high_pass_filter", { .type = kson::AudioEffectType::HighPassFilter });
 			fnInsertDefaultLaser("low_pass_filter", { .type = kson::AudioEffectType::LowPassFilter });
 			fnInsertDefaultLaser("bitcrusher", { .type = kson::AudioEffectType::Bitcrusher });
-			defLaser.insert(defLaser.end(), chartData.audio.audioEffect.laser.def.begin(), chartData.audio.audioEffect.laser.def.end());
-			for (const auto& [name, def] : defLaser)
+			// ユーザー定義エフェクトを追加
+			for (const auto& kvp : chartData.audio.audioEffect.laser.def)
 			{
-				const auto& paramChangeDict = chartData.audio.audioEffect.laser.paramChange;
-				const std::set<float> updateTriggerTiming =
-					paramChangeDict.contains(name)
-					? PrecalculateUpdateTriggerTiming(def, paramChangeDict.at(name), totalMeasures, chartData, timingCache)
-					: PrecalculateUpdateTriggerTiming(def, totalMeasures, chartData, timingCache);
-				const auto paramChanges =
-					paramChangeDict.contains(name)
-					? ConvertParamChangesFromPulseToSec(paramChangeDict.at(name), chartData, timingCache)
-					: std::unordered_map<std::string, std::map<float, std::string>>{};
+				defLaser.push_back(
+					AudioEffectDefWithBuiltinFlag{
+						.name = kvp.name,
+						.def = kvp.v,
+						.isBuiltin = false,
+					});
+			}
+			for (const auto& [name, def, isBuiltin] : defLaser)
+			{
+				if (def.type == kson::AudioEffectType::SwitchAudio)
+				{
+					// SwitchAudioの場合
+					if (def.v.contains("filename"))
+					{
+						// ファイル名をもとに音声を追加ロード
+						const std::string& filename = def.v.at("filename");
+						bgm.emplaceSwitchAudioStream(false, name, filename, parentPath);
+					}
+				}
+				else
+				{
+					// 通常のDSPエフェクトの場合
+					const auto& paramChangeDict = chartData.audio.audioEffect.laser.paramChange;
+					const std::set<float> updateTriggerTiming =
+						paramChangeDict.contains(name)
+						? PrecalculateUpdateTriggerTiming(def, paramChangeDict.at(name), totalMeasures, chartData, timingCache)
+						: PrecalculateUpdateTriggerTiming(def, totalMeasures, chartData, timingCache);
+					const auto paramChanges =
+						paramChangeDict.contains(name)
+						? ConvertParamChangesFromPulseToSec(paramChangeDict.at(name), chartData, timingCache)
+						: std::unordered_map<std::string, std::map<float, std::string>>{};
 
-				bgm.emplaceAudioEffectLaser(name, def, paramChanges, updateTriggerTiming);
+					bgm.emplaceAudioEffectLaser(name, def, paramChanges, updateTriggerTiming);
+
+					// FXのSwitchAudioストリームには標準のLASERエフェクト(peak,hpf,lpf,bitc)のみを登録
+					if (isBuiltin)
+					{
+						bgm.emplaceSwitchAudioLaserEffect(name, def, paramChanges, updateTriggerTiming);
+					}
+				}
 			}
 		}
 
@@ -136,16 +197,22 @@ namespace MusicGame::Audio
 							continue;
 						}
 
-						if (!audioEffectBus.audioEffectContainsName(audioEffectName))
+						const auto switchAudioIdx = bgm.switchAudioIdxByNameFX(audioEffectName);
+						if (switchAudioIdx.has_value())
 						{
-							// FXノーツに定義されていないエフェクト名が指定されている場合は無視
-							continue;
+							// SwitchAudioの場合
+							convertedLongEvent[i].insert_or_assign(y, SwitchAudioInvocation{
+								.switchAudioIdx = switchAudioIdx.value(),
+							});
 						}
-
-						convertedLongEvent[i].insert_or_assign(y, AudioEffectInvocation{
-							.audioEffectIdx = audioEffectBus.audioEffectNameToIdx(audioEffectName),
-							.overrideParams = ksmaudio::AudioEffect::StrDictToParamValueSetDict(dict),
-						});
+						else if (audioEffectBus.audioEffectContainsName(audioEffectName))
+						{
+							// 通常のDSPエフェクトの場合
+							convertedLongEvent[i].insert_or_assign(y, DSPAudioEffectInvocation{
+								.audioEffectIdx = audioEffectBus.audioEffectNameToIdx(audioEffectName),
+								.overrideParams = ksmaudio::AudioEffect::StrDictToParamValueSetDict(dict),
+							});
+						}
 					}
 				}
 			}
@@ -174,16 +241,25 @@ namespace MusicGame::Audio
 			{
 				for (const auto& y : pulses)
 				{
-					if (audioEffectBus.audioEffectContainsName(audioEffectName))
+					const auto switchAudioIdx = bgm.switchAudioIdxByNameLaser(audioEffectName);
+					if (switchAudioIdx.has_value())
 					{
-						convertedPulseEvent.insert_or_assign(y, AudioEffectInvocation{
+						// SwitchAudioの場合
+						convertedPulseEvent.insert_or_assign(y, SwitchAudioInvocation{
+							.switchAudioIdx = switchAudioIdx.value(),
+						});
+					}
+					else if (audioEffectBus.audioEffectContainsName(audioEffectName))
+					{
+						// 通常のDSPエフェクトの場合
+						convertedPulseEvent.insert_or_assign(y, DSPAudioEffectInvocation{
 							.audioEffectIdx = audioEffectBus.audioEffectNameToIdx(audioEffectName),
 							.isPeakingFilterLaser = fnIsPeakingFilter(audioEffectName),
 						});
 					}
 					else
 					{
-						// LASERに定義されていないエフェクト名が指定されている場合はエフェクトなしにする
+						// 存在しないエフェクトの場合はエフェクトなしにする
 						convertedPulseEvent.insert_or_assign(y, none);
 					}
 				}
@@ -195,7 +271,7 @@ namespace MusicGame::Audio
 				const std::string defaultAudioEffectName{ kDefaultLaserAudioEffectName };
 				if (audioEffectBus.audioEffectContainsName(defaultAudioEffectName))
 				{
-					convertedPulseEvent.insert_or_assign(kson::Pulse{ 0 }, AudioEffectInvocation{
+					convertedPulseEvent.insert_or_assign(kson::Pulse{ 0 }, DSPAudioEffectInvocation{
 						.audioEffectIdx = audioEffectBus.audioEffectNameToIdx(defaultAudioEffectName),
 						.isPeakingFilterLaser = fnIsPeakingFilter(defaultAudioEffectName),
 					});
@@ -272,10 +348,17 @@ namespace MusicGame::Audio
 				// 現在のロングノーツの範囲外にある場合はエフェクトなし
 				continue;
 			}
-			m_activeAudioEffectDictFX.emplace(audioEffectInvocation.audioEffectIdx, ksmaudio::AudioEffect::ActiveAudioEffectInvocation{
-				.pOverrideParams = &audioEffectInvocation.overrideParams,
-				.laneIdx = laneIdx,
-			});
+
+			// アクティブな音声エフェクト呼び出しとして追加
+			// (SwitchAudioはupdate関数側で別途処理するためここではDSPエフェクトのみ対象とする)
+			if (std::holds_alternative<DSPAudioEffectInvocation>(audioEffectInvocation))
+			{
+				const auto& dspInvocation = std::get<DSPAudioEffectInvocation>(audioEffectInvocation);
+				m_activeAudioEffectDictFX.emplace(dspInvocation.audioEffectIdx, ksmaudio::AudioEffect::ActiveAudioEffectInvocation{
+					.pOverrideParams = &dspInvocation.overrideParams,
+					.laneIdx = laneIdx,
+				});
+			}
 		}
 	}
 
@@ -287,8 +370,8 @@ namespace MusicGame::Audio
 		return audioEffectInvocation;
 	}
 
-	AudioEffectMain::AudioEffectMain(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache)
-		: m_longFXNoteInvocations((RegisterAudioEffects(bgm, chartData, timingCache), CreateLongFXNoteAudioEffectInvocations(bgm, chartData))) // 先に登録しておく必要があるので、分かりにくいがカンマ演算子を使用している(TODO: もうちょっとどうにかする)
+	AudioEffectMain::AudioEffectMain(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache, const FilePath& parentPath)
+		: m_longFXNoteInvocations((RegisterAudioEffects(bgm, chartData, timingCache, parentPath), CreateLongFXNoteAudioEffectInvocations(bgm, chartData))) // 先に登録しておく必要があるので、分かりにくいがカンマ演算子を使用している(TODO: もうちょっとどうにかする)
 		, m_laserPulseInvocations(CreateLaserPulseAudioEffectInvocations(bgm, chartData))
 	{
 	}
@@ -301,10 +384,11 @@ namespace MusicGame::Audio
 		const kson::Pulse currentPulseForAudio = kson::SecToPulse(currentTimeSecForAudio, chartData.beat, timingCache);
 		const double currentBPMForAudio = kson::TempoAt(currentPulseForAudio, chartData.beat);
 
+		std::array<Optional<std::pair<kson::Pulse, kson::Interval>>, kson::kNumFXLanesSZ> currentLongNoteOfLanes;
+		bool bypassFX = true;
+
 		// ロングFXノーツの音声エフェクト
 		{
-			bool bypassFX = true;
-			std::array<Optional<std::pair<kson::Pulse, kson::Interval>>, kson::kNumFXLanesSZ> currentLongNoteOfLanes;
 			for (std::size_t i = 0; i < kson::kNumFXLanesSZ; ++i)
 			{
 				const auto currentLongNoteByTime = CurrentLongNoteByTime(chartData.note.fx[i], currentPulseForAudio);
@@ -342,12 +426,17 @@ namespace MusicGame::Audio
 					.sec = static_cast<float>(currentTimeSecForAudio),
 				},
 				m_activeAudioEffectDictFX);
+
 		}
+
+		const Optional<AudioEffectInvocation>& activeLaserInvocation = getActiveLaserAudioEffectInvocation(currentPulseForAudio);
+		bool bypassLaser = true;
 
 		// LASERノーツの音声エフェクト
 		{
-			const Optional<AudioEffectInvocation>& activeInvocation = getActiveLaserAudioEffectInvocation(currentPulseForAudio);
-			const bool isPeakingFilter = activeInvocation.has_value() && activeInvocation->isPeakingFilterLaser;
+			const bool isPeakingFilter = activeLaserInvocation.has_value()
+				&& std::holds_alternative<DSPAudioEffectInvocation>(*activeLaserInvocation)
+				&& std::get<DSPAudioEffectInvocation>(*activeLaserInvocation).isPeakingFilterLaser;
 			kson::Pulse currentPulseForLaserAudio;
 			if (isPeakingFilter && chartData.audio.audioEffect.laser.peakingFilterDelay != 0)
 			{
@@ -361,7 +450,6 @@ namespace MusicGame::Audio
 				currentPulseForLaserAudio = currentPulseForAudio;
 			}
 
-			bool bypassLaser = true;
 			float laserValue = 0.0f;
 			for (std::size_t i = 0; i < kson::kNumLaserLanesSZ; ++i)
 			{
@@ -397,7 +485,59 @@ namespace MusicGame::Audio
 					.bpm = static_cast<float>(currentBPMForAudio),
 					.sec = static_cast<float>(currentTimeSecForAudio),
 				},
-				activeInvocation.has_value() ? std::make_optional(activeInvocation->audioEffectIdx) : std::nullopt);
+				(activeLaserInvocation.has_value() && std::holds_alternative<DSPAudioEffectInvocation>(*activeLaserInvocation))
+				? std::make_optional(std::get<DSPAudioEffectInvocation>(*activeLaserInvocation).audioEffectIdx)
+				: std::nullopt);
 		}
+
+		Optional<std::size_t> activeSwitchAudioIdxFX;
+		Optional<std::size_t> activeSwitchAudioIdxLaser;
+	
+		// FXのSwitchAudioチェック
+		if (!bypassFX)
+		{
+			for (std::size_t i = 0U; i < kson::kNumFXLanesSZ; ++i)
+			{
+				const std::size_t laneIdx = (i == 0) ? m_lastPressedLongFXNoteLaneIdx : (1U - m_lastPressedLongFXNoteLaneIdx);
+				if (!currentLongNoteOfLanes[laneIdx].has_value())
+				{
+					continue;
+				}
+				const auto& [longNoteY, longNote] = *currentLongNoteOfLanes[laneIdx];
+				const auto itr = kson::ValueItrAt(m_longFXNoteInvocations[laneIdx], currentPulseForAudio);
+				if (itr == m_longFXNoteInvocations[laneIdx].end())
+				{
+					continue;
+				}
+				const auto& [longEventY, audioEffectInvocationOpt] = *itr;
+				if (!audioEffectInvocationOpt.has_value())
+				{
+					continue;
+				}
+				const auto& audioEffectInvocation = *audioEffectInvocationOpt;
+				if (longEventY > currentPulseForAudio || longEventY < longNoteY || longNoteY + longNote.length <= longEventY)
+				{
+					continue;
+				}
+				if (std::holds_alternative<SwitchAudioInvocation>(audioEffectInvocation))
+				{
+					const auto& switchInvocation = std::get<SwitchAudioInvocation>(audioEffectInvocation);
+					activeSwitchAudioIdxFX = switchInvocation.switchAudioIdx;
+					break;
+				}
+			}
+		}
+	
+		// LASERのSwitchAudioチェック
+		if (!bypassLaser)
+		{
+			if (activeLaserInvocation.has_value() && std::holds_alternative<SwitchAudioInvocation>(*activeLaserInvocation))
+			{
+				const auto& switchInvocation = std::get<SwitchAudioInvocation>(*activeLaserInvocation);
+				activeSwitchAudioIdxLaser = switchInvocation.switchAudioIdx;
+			}
+		}
+	
+		bgm.updateSwitchAudio(activeSwitchAudioIdxFX, activeSwitchAudioIdxLaser);
 	}
 }
