@@ -8,8 +8,6 @@ class SelectDifficultyMenu
 private:
 	LinearMenu m_menu;
 
-	bool m_isCursorChanged = false;
-
 	const SelectMenu* const m_pSelectMenu;
 
 	Stopwatch m_stopwatch;

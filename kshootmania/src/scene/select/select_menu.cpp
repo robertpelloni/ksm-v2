@@ -378,8 +378,7 @@ void SelectMenu::playShakeDownTween()
 }
 
 SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, std::function<void(FilePathView, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene)
-	: m_selectSceneCanvas(selectSceneCanvas)
-	, m_eventContext
+	: m_eventContext
 		{
 			.fnMoveToPlayScene = [fnMoveToPlayScene](FilePath path, MusicGame::IsAutoPlayYN isAutoPlay) { fnMoveToPlayScene(path, isAutoPlay); },
 			.fnOpenDirectory = [this](FilePath path) { openDirectory(path, PlaySeYN::Yes); },
@@ -387,6 +386,7 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 			.fnGetJacketTexture = [this](FilePathView path) -> const Texture& { return getJacketTexture(path); },
 			.fnGetIconTexture = [this](FilePathView path) -> const Texture& { return getIconTexture(path); },
 		}
+	, m_selectSceneCanvas(selectSceneCanvas)
 	, m_menu(
 		LinearMenu::CreateInfoWithCursorMinMax{
 			.cursorInputCreateInfo = {

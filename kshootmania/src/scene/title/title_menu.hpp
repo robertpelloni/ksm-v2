@@ -34,10 +34,6 @@ private:
 public:
 	explicit TitleMenu(TitleMenuItem defaultMenuitem, const std::shared_ptr<noco::Canvas>& titleSceneCanvas);
 
-	TitleMenu(TitleMenu&&) = default;
-
-	TitleMenu& operator=(TitleMenu&&) = default;
-
 	void update();
 
 	Co::Task<TitleMenuItem> selectedMenuItemAsync()
