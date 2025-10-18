@@ -172,7 +172,13 @@ namespace MusicGame::Graphics
 				// カーソルがクリティカル判定の範囲内でない
 				continue;
 			}
-			const double cursorX = laneStatus.cursorWide ? ((laneStatus.cursorX.value() - 0.5) * 2 + 0.5) : laneStatus.cursorX.value();
+			const auto cursorXOpt = laneStatus.cursorXForDraw();
+			if (!cursorXOpt.has_value())
+			{
+				// カーソルが出ていない
+				continue;
+			}
+			const double cursorX = laneStatus.cursorWide ? ((cursorXOpt.value() - 0.5) * 2 + 0.5) : cursorXOpt.value();
 			const Vec2 position = Scaled(kTextureSize.x / 4 + 28 + static_cast<int32>(295 * cursorX), 17);
 			m_laserAnimTexture(frameIdx, i).resized(size).draw(position);
 		}

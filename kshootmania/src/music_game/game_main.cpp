@@ -29,12 +29,22 @@ namespace MusicGame
 		// 再生時間と現在のBPMを取得
 		// TODO: SecondsFに統一
 		const double currentTimeSec = m_bgm.posSec().count();
+		const double inputDelaySec = m_playOption.inputDelayMs / 1000.0;
+		const double laserInputDelaySec = m_playOption.laserInputDelayMs / 1000.0;
+		const double currentTimeSecForButtonJudgment = currentTimeSec - inputDelaySec;
+		const double currentTimeSecForLaserJudgment = currentTimeSec - inputDelaySec - laserInputDelaySec;
 		const kson::Pulse currentPulse = kson::SecToPulse(currentTimeSec, m_chartData.beat, m_timingCache);
 		const double currentPulseDouble = kson::SecToPulseDouble(currentTimeSec, m_chartData.beat, m_timingCache);
+		const kson::Pulse currentPulseForButtonJudgment = kson::SecToPulse(currentTimeSecForButtonJudgment, m_chartData.beat, m_timingCache);
+		const kson::Pulse currentPulseForLaserJudgment = kson::SecToPulse(currentTimeSecForLaserJudgment, m_chartData.beat, m_timingCache);
 		const double currentBPM = kson::TempoAt(currentPulse, m_chartData.beat);
 		m_gameStatus.currentTimeSec = currentTimeSec;
+		m_gameStatus.currentTimeSecForButtonJudgment = currentTimeSecForButtonJudgment;
+		m_gameStatus.currentTimeSecForLaserJudgment = currentTimeSecForLaserJudgment;
 		m_gameStatus.currentPulse = currentPulse;
 		m_gameStatus.currentPulseDouble = currentPulseDouble;
+		m_gameStatus.currentPulseForButtonJudgment = currentPulseForButtonJudgment;
+		m_gameStatus.currentPulseForLaserJudgment = currentPulseForLaserJudgment;
 		m_gameStatus.currentBPM = currentBPM;
 
 		// 視点変更を更新
@@ -76,9 +86,10 @@ namespace MusicGame
 		, m_parentPath(FileSystem::ParentPath(createInfo.chartFilePath))
 		, m_chartData(kson::LoadKSHChartData(createInfo.chartFilePath.narrow()))
 		, m_timingCache(kson::CreateTimingCache(m_chartData.beat))
+		, m_playOption(createInfo.playOption)
 		, m_judgmentMain(m_chartData, m_timingCache, createInfo.playOption)
 		, m_highwayScroll(m_chartData)
-		, m_bgm(FileSystem::PathAppend(m_parentPath, Unicode::FromUTF8(m_chartData.audio.bgm.filename)), m_chartData.audio.bgm.vol, SecondsF{ static_cast<double>(m_chartData.audio.bgm.offset) / 1000 })
+		, m_bgm(FileSystem::PathAppend(m_parentPath, Unicode::FromUTF8(m_chartData.audio.bgm.filename)), m_chartData.audio.bgm.vol, SecondsF{ static_cast<double>(m_chartData.audio.bgm.offset + createInfo.playOption.globalOffsetMs) / 1000 })
 		, m_assistTick(createInfo.assistTickEnabled)
 		, m_laserSlamSE(m_chartData)
 		, m_fxChipSE(m_chartData, m_parentPath)

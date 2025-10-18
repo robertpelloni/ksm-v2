@@ -107,6 +107,30 @@ namespace MusicGame
 		{
 			return cursorX.has_value() && noteCursorX.has_value() && Judgment::IsLaserCursorInCriticalJudgmentRange(cursorX.value(), noteCursorX.value());
 		}
+
+		// 描画用のカーソル横位置を取得
+		Optional<double> cursorXForDraw() const
+		{
+			// cursorXが存在しない場合はnoneを返す
+			if (!cursorX.has_value())
+			{
+				return none;
+			}
+
+			// noteVisualCursorXまたはnoteCursorXが存在しない場合は、cursorXをそのまま使用
+			if (!noteVisualCursorX.has_value() || !noteCursorX.has_value())
+			{
+				return cursorX.value();
+			}
+
+			// カーソルが理想位置に近い場合は、判定調整に影響されない描画用の理想位置を返す
+			if (Judgment::IsLaserCursorInAutoFitRange(cursorX.value(), noteCursorX.value()))
+			{
+				return noteVisualCursorX.value();
+			}
+
+			return cursorX.value();
+		}
 	};
 
 	struct PlayFinishStatus
@@ -122,8 +146,12 @@ namespace MusicGame
 		// TODO: 描画に使用するものは完全にViewStatusへ移動する(エディタ上でのプレビュー時にViewStatusさえ構築すればプレビューできるようにする想定)
 
 		double currentTimeSec = 0.0;
+		double currentTimeSecForButtonJudgment = 0.0;
+		double currentTimeSecForLaserJudgment = 0.0;
 		kson::Pulse currentPulse = 0;
 		double currentPulseDouble = 0.0;
+		kson::Pulse currentPulseForButtonJudgment = 0;
+		kson::Pulse currentPulseForLaserJudgment = 0;
 		double currentBPM = 120.0;
 		
 		std::array<ButtonLaneStatus, kson::kNumBTLanesSZ> btLaneStatus;

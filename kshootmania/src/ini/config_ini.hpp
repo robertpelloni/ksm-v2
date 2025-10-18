@@ -23,8 +23,8 @@ namespace ConfigIni
 		constexpr StringView kLaserInputType = U"laserinput";
 		constexpr StringView kAssistTick = U"assisttick";
 		constexpr StringView kDisableIME = U"disableime";
-		constexpr StringView kTimingAdjust = U"inputdelay";
-		constexpr StringView kLaserTimingAdjust = U"laserdelay";
+		constexpr StringView kInputDelay = U"inputdelay";
+		constexpr StringView kLaserInputDelay = U"laserdelay";
 		constexpr StringView kLaserMouseDirectionX = U"mouse_directionx";
 		constexpr StringView kLaserMouseDirectionY = U"mouse_directiony";
 		constexpr StringView kLaserSignalSensitivity = U"mouse_sensitivity";

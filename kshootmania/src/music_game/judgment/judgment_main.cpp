@@ -24,19 +24,19 @@ namespace MusicGame::Judgment
 		// BTレーンの判定
 		for (std::size_t i = 0U; i < kson::kNumBTLanesSZ; ++i)
 		{
-			m_btLaneJudgments[i].update(chartData.note.bt[i], gameStatusRef.currentPulse, gameStatusRef.currentTimeSec, gameStatusRef.btLaneStatus[i], m_judgmentHandler);
+			m_btLaneJudgments[i].update(chartData.note.bt[i], gameStatusRef.currentPulseForButtonJudgment, gameStatusRef.currentTimeSecForButtonJudgment, gameStatusRef.currentTimeSec, gameStatusRef.btLaneStatus[i], m_judgmentHandler);
 		}
 
 		// FXレーンの判定
 		for (std::size_t i = 0U; i < kson::kNumFXLanesSZ; ++i)
 		{
-			m_fxLaneJudgments[i].update(chartData.note.fx[i], gameStatusRef.currentPulse, gameStatusRef.currentTimeSec, gameStatusRef.fxLaneStatus[i], m_judgmentHandler);
+			m_fxLaneJudgments[i].update(chartData.note.fx[i], gameStatusRef.currentPulseForButtonJudgment, gameStatusRef.currentTimeSecForButtonJudgment, gameStatusRef.currentTimeSec, gameStatusRef.fxLaneStatus[i], m_judgmentHandler);
 		}
 
 		// LASERレーンの判定
 		for (std::size_t i = 0U; i < kson::kNumLaserLanesSZ; ++i)
 		{
-			m_laserLaneJudgments[i].update(chartData.note.laser[i], gameStatusRef.currentPulse, gameStatusRef.currentTimeSec, gameStatusRef.laserLaneStatus[i], m_judgmentHandler);
+			m_laserLaneJudgments[i].update(chartData.note.laser[i], gameStatusRef.currentPulseForLaserJudgment, gameStatusRef.currentPulse, gameStatusRef.currentTimeSecForLaserJudgment, gameStatusRef.currentTimeSec, gameStatusRef.laserLaneStatus[i], m_judgmentHandler);
 		}
 
 		// 状態をViewStatusに反映

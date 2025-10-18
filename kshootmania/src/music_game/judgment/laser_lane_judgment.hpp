@@ -65,10 +65,14 @@ namespace MusicGame::Judgment
 		double m_lastCorrectMovementSec = kPastTimeSec;
 
 		Optional<kson::Pulse> m_prevCurrentLaserSectionPulse = none;
+		Optional<kson::Pulse> m_prevCurrentLaserSectionPulseForDraw = none;
 		bool m_prevIsCursorInCriticalJudgmentRange = false;
+		bool m_prevIsCursorInCriticalJudgmentRangeForDraw = false;
 		bool m_prevIsCursorInAutoFitRange = false;
 		kson::Pulse m_prevPulse = kPastPulse;
 		double m_prevTimeSec = kPastTimeSec;
+		kson::Pulse m_prevPulseForDraw = kPastPulse;
+		double m_prevTimeSecForDraw = kPastTimeSec;
 
 		void processCursorMovement(double deltaCursorX, kson::Pulse currentPulse, double currentTimeSec, LaserLaneStatus& laneStatusRef);
 
@@ -89,7 +93,7 @@ namespace MusicGame::Judgment
 	public:
 		LaserLaneJudgment(JudgmentPlayMode judgmentPlayMode, KeyConfig::Button keyConfigButtonL, KeyConfig::Button keyConfigButtonR, const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache);
 
-		void update(const kson::ByPulse<kson::LaserSection>& lane, kson::Pulse currentPulse, double currentSec, LaserLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef);
+		void update(const kson::ByPulse<kson::LaserSection>& lane, kson::Pulse currentPulse, kson::Pulse currentPulseForDraw, double currentSec, double currentTimeSecForDraw, LaserLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef);
 
 		void lockForExit();
 

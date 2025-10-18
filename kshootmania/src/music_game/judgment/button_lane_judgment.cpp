@@ -103,7 +103,7 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	void ButtonLaneJudgment::processKeyDown(const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
+	void ButtonLaneJudgment::processKeyDown(const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, double currentTimeSecForDraw, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
 	{
 		using namespace TimingWindow;
 
@@ -157,7 +157,7 @@ namespace MusicGame::Judgment
 			}
 		}
 
-		laneStatusRef.keyBeamTimeSec = currentTimeSec;
+		laneStatusRef.keyBeamTimeSec = currentTimeSecForDraw;
 		laneStatusRef.keyBeamType = KeyBeamType::kDefault;
 
 		if (found)
@@ -242,7 +242,7 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	void ButtonLaneJudgment::processPassedNoteJudgment(const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef, IsAutoPlayYN isAutoPlay)
+	void ButtonLaneJudgment::processPassedNoteJudgment(const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, double currentTimeSecForDraw, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef, IsAutoPlayYN isAutoPlay)
 	{
 		using namespace TimingWindow;
 
@@ -269,7 +269,7 @@ namespace MusicGame::Judgment
 					if (isAutoPlay)
 					{
 						// オートプレイの場合はここでCRITICALのキービームを表示
-						laneStatusRef.keyBeamTimeSec = passSec;
+						laneStatusRef.keyBeamTimeSec = currentTimeSecForDraw;
 						laneStatusRef.keyBeamType = KeyBeamType::kCritical;
 
 						// FXチップキー音のオートプレイ用にタイミングを記録
@@ -310,14 +310,14 @@ namespace MusicGame::Judgment
 	{
 	}
 
-	void ButtonLaneJudgment::update(const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
+	void ButtonLaneJudgment::update(const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, double currentTimeSecForDraw, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
 	{
 		if (m_judgmentPlayMode == JudgmentPlayMode::kOn)
 		{
 			// チップノーツとロングノーツの始点の判定処理
 			if (!m_isLockedForExit && KeyConfig::Down(m_keyConfigButton))
 			{
-				processKeyDown(lane, currentPulse, currentTimeSec, laneStatusRef, judgmentHandlerRef);
+				processKeyDown(lane, currentPulse, currentTimeSec, currentTimeSecForDraw, laneStatusRef, judgmentHandlerRef);
 			}
 
 			// ロングノーツ押下中の判定処理
@@ -335,7 +335,7 @@ namespace MusicGame::Judgment
 			}
 
 			// 通り過ぎたノーツをERROR判定にする
-			processPassedNoteJudgment(lane, currentPulse, currentTimeSec, laneStatusRef, judgmentHandlerRef, IsAutoPlayYN::No);
+			processPassedNoteJudgment(lane, currentPulse, currentTimeSec, currentTimeSecForDraw, laneStatusRef, judgmentHandlerRef, IsAutoPlayYN::No);
 
 			if (IsDuringLongNote(lane, currentPulse))
 			{
@@ -349,7 +349,7 @@ namespace MusicGame::Judgment
 		else if (m_judgmentPlayMode == JudgmentPlayMode::kAuto)
 		{
 			// 通り過ぎたノーツをCRITICAL判定にする
-			processPassedNoteJudgment(lane, currentPulse, currentTimeSec, laneStatusRef, judgmentHandlerRef, IsAutoPlayYN::Yes);
+			processPassedNoteJudgment(lane, currentPulse, currentTimeSec, currentTimeSecForDraw, laneStatusRef, judgmentHandlerRef, IsAutoPlayYN::Yes);
 
 			kson::Pulse currentLongNoteY;
 			if (IsDuringLongNote(lane, currentPulse, &currentLongNoteY))

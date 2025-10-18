@@ -132,9 +132,19 @@ namespace
 					I18n::Get(I18n::Option::kAssistTickOff),
 					I18n::Get(I18n::Option::kAssistTickOn),
 				}).setKeyTextureIdx(4),
-				/*CreateInfo::Int(ConfigIni::Key::kTimingAdjust, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs)).setKeyTextureIdx(6), // TODO: additional suffix
-				CreateInfo::Int(ConfigIni::Key::kLaserTimingAdjust, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs)).setKeyTextureIdx(7),
-				CreateInfo::Enum(ConfigIni::Key::kLaserMouseDirectionX, Array<StringView>{
+				CreateInfo::Int(ConfigIni::Key::kInputDelay, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
+				.setAdditionalSuffixes(
+					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),
+					I18n::Get(I18n::Option::kTimingAdjustSuffixLater),
+					I18n::Get(I18n::Option::kTimingAdjustSuffixEarlier))
+				.setKeyTextureIdx(6),
+				CreateInfo::Int(ConfigIni::Key::kLaserInputDelay, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
+				.setAdditionalSuffixes(
+					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),
+					I18n::Get(I18n::Option::kLaserTimingAdjustLater),
+					I18n::Get(I18n::Option::kLaserTimingAdjustEarlier))
+				.setKeyTextureIdx(7),
+				/*CreateInfo::Enum(ConfigIni::Key::kLaserMouseDirectionX, Array<StringView>{
 					I18n::Get(I18n::Option::kLaserMouseDirectionLeftThenRight),
 					I18n::Get(I18n::Option::kLaserMouseDirectionRightThenRight),
 				}).setKeyTextureIdx(8),

@@ -16,7 +16,9 @@ namespace
 			.playOption = MusicGame::PlayOption
 			{
 				.isAutoPlay = isAutoPlay,
-				// TODO: 他のオプション
+				.globalOffsetMs = ConfigIni::GetInt(ConfigIni::Key::kGlobalOffset),
+				.inputDelayMs = ConfigIni::GetInt(ConfigIni::Key::kInputDelay),
+				.laserInputDelayMs = ConfigIni::GetInt(ConfigIni::Key::kLaserInputDelay),
 			},
 			.assistTickEnabled = ConfigIni::GetBool(ConfigIni::Key::kAssistTick),
 		};

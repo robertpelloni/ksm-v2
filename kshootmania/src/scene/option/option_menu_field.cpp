@@ -156,6 +156,22 @@ OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Int(StringView configIn
 	};
 }
 
+OptionMenuField::CreateInfo& OptionMenuField::CreateInfo::setAdditionalSuffixes(StringView suffixStrZero, StringView suffixStrPositive, StringView suffixStrNegative)&
+{
+	this->suffixStrZero = String(suffixStrZero);
+	this->suffixStrPositive = String(suffixStrPositive);
+	this->suffixStrNegative = String(suffixStrNegative);
+	return *this;
+}
+
+OptionMenuField::CreateInfo&& OptionMenuField::CreateInfo::setAdditionalSuffixes(StringView suffixStrZero, StringView suffixStrPositive, StringView suffixStrNegative)&&
+{
+	this->suffixStrZero = String(suffixStrZero);
+	this->suffixStrPositive = String(suffixStrPositive);
+	this->suffixStrNegative = String(suffixStrNegative);
+	return std::move(*this);
+}
+
 OptionMenuField::CreateInfo& OptionMenuField::CreateInfo::setKeyTextureIdx(int32 idx)&
 {
 	keyTextureIdx = idx;
@@ -184,6 +200,9 @@ OptionMenuField::OptionMenuField(const TextureRegion& keyTextureRegion, const Cr
 	: m_configIniKey(createInfo.configIniKey)
 	, m_isEnum(createInfo.valueStep == 0)
 	, m_suffixStr(createInfo.suffixStr)
+	, m_suffixStrZero(createInfo.suffixStrZero)
+	, m_suffixStrPositive(createInfo.suffixStrPositive)
+	, m_suffixStrNegative(createInfo.suffixStrNegative)
 	, m_valueDisplayNamePairs(createInfo.valueDisplayNamePairs)
 	, m_onChangeCallback(createInfo.onChangeCallback)
 	, m_menu(createInfo.valueStep == 0
@@ -254,6 +273,37 @@ void OptionMenuField::draw(const Vec2& position, const TiledTexture& valueTiledT
 	}
 	else
 	{
-		font(Format(cursor) + m_suffixStr).drawAt(Scaled(15), textPosition);
+		String displayStr;
+		if (!m_suffixStrZero.isEmpty())
+		{
+			String additionalSuffix;
+			if (cursor == 0)
+			{
+				additionalSuffix = m_suffixStrZero;
+			}
+			else if (cursor > 0)
+			{
+				additionalSuffix = m_suffixStrPositive;
+			}
+			else
+			{
+				additionalSuffix = m_suffixStrNegative;
+			}
+
+			if (cursor > 0)
+			{
+				displayStr = U"+" + Format(cursor) + m_suffixStr + additionalSuffix;
+			}
+			else
+			{
+				displayStr = Format(cursor) + m_suffixStr + additionalSuffix;
+			}
+		}
+		else
+		{
+			displayStr = Format(cursor) + m_suffixStr;
+		}
+
+		font(displayStr).drawAt(Scaled(15), textPosition);
 	}
 }
