@@ -56,7 +56,12 @@ public:
 		return false;
 	}
 
-	virtual bool isSubDirHeading() const
+	virtual bool isSubFolderHeading() const
+	{
+		return false;
+	}
+
+	virtual bool isFolder() const
 	{
 		return false;
 	}

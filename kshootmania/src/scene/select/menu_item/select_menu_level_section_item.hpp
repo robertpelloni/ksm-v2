@@ -15,7 +15,7 @@ public:
 
 	virtual void decideAutoPlay(const SelectMenuEventContext& context, int32 difficultyIdx) override;
 
-	virtual bool isSubDirHeading() const override
+	virtual bool isSubFolderHeading() const override
 	{
 		return true;
 	}

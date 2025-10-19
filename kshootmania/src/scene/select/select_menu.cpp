@@ -517,6 +517,42 @@ void SelectMenu::update()
 		}
 	}
 
+	// Homeキーで先頭に移動
+	if (KeyHome.down() && !m_menu.empty())
+	{
+		setCursorAndSave(0);
+		m_folderSelectSe.play();
+		refreshContentCanvasParams();
+		refreshSongPreview();
+	}
+
+	// Endキーで末尾に移動
+	if (KeyEnd.down() && !m_menu.empty())
+	{
+		int32 targetIndex = static_cast<int32>(m_menu.size() - 1);
+
+		// フォルダを開いている場合、フォルダ内の最後の項目に移動
+		if (isFolderOpen())
+		{
+			// 後ろから検索して、フォルダ項目でない最初の項目を見つける
+			// (他のフォルダ項目をスキップして、曲項目またはサブフォルダ見出し項目の最後を探す)
+			for (std::size_t i = m_menu.size() - 1; i >= 1; --i)
+			{
+				const auto& pItem = m_menu[i];
+				if (pItem != nullptr && !pItem->isFolder())
+				{
+					targetIndex = static_cast<int32>(i);
+					break;
+				}
+			}
+		}
+
+		setCursorAndSave(targetIndex);
+		m_folderSelectSe.play();
+		refreshContentCanvasParams();
+		refreshSongPreview();
+	}
+
 	m_songPreview.update();
 }
 
@@ -696,7 +732,7 @@ void SelectMenu::moveToNextSubDirSection()
 		}
 
 		// サブフォルダ見出し項目またはレベル見出し項目かどうかをチェック
-		if (pItem->isSubDirHeading())
+		if (pItem->isSubFolderHeading())
 		{
 			// 次の見出し項目が見つかった
 			setCursorAndSave(static_cast<int32>(i));
@@ -734,7 +770,7 @@ void SelectMenu::moveToPrevSubDirSection()
 		}
 
 		// サブフォルダ見出し項目またはレベル見出し項目かどうかをチェック
-		if (pItem->isSubDirHeading())
+		if (pItem->isSubFolderHeading())
 		{
 			// 前の見出し項目が見つかった
 			setCursorAndSave(i);

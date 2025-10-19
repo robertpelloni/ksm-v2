@@ -15,6 +15,11 @@ public:
 
 	virtual void decide(const SelectMenuEventContext& context, int32 difficultyIdx) override;
 
+	virtual bool isFolder() const override
+	{
+		return true;
+	}
+
 	virtual FilePathView fullPath() const override
 	{
 		return m_fullPath;

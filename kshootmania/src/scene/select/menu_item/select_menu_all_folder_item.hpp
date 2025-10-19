@@ -18,6 +18,11 @@ public:
 		return kAllFolderSpecialPath;
 	}
 
+	virtual bool isFolder() const override
+	{
+		return true;
+	}
+
 	virtual void decide(const SelectMenuEventContext& context, int32 difficultyIdx) override;
 
 	/// @brief Canvasのパラメータを設定(中央の項目)
