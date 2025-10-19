@@ -24,6 +24,7 @@ struct SelectMenuEventContext
 	//       (メニュー項目の再構築が発生すると呼び出し元のFilePathが無効になるので、事前にコピーしておく必要がある)
 	std::function<void(FilePath, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene;
 	std::function<void(FilePath)> fnOpenDirectory;
+	std::function<void()> fnOpenAllFolder;
 	std::function<void()> fnCloseFolder;
 	std::function<const Texture&(FilePathView)> fnGetJacketTexture;
 	std::function<const Texture&(FilePathView)> fnGetIconTexture;
@@ -66,6 +67,12 @@ private:
 
 	bool openDirectoryWithLevelSort(FilePathView directoryPath);
 
+	bool openAllFolder(PlaySeYN playSe, RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::Yes, SaveToConfigIniYN saveToConfigIni = SaveToConfigIniYN::Yes);
+
+	bool openAllFolderWithNameSort();
+
+	bool openAllFolderWithLevelSort();
+
 	void setCursorAndSave(int32 cursor);
 
 	void setCursorToItemByFullPath(FilePathView fullPath);
@@ -81,6 +88,12 @@ private:
 	void moveToNextSubDirSection();
 
 	void moveToPrevSubDirSection();
+
+	Array<FilePath> getSortedTopLevelFolderDirectories() const;
+
+	void addOtherFolderItemsRotated(FilePathView currentFolderPath);
+
+	void addOtherFolderItemsSimple();
 
 public:
 	explicit SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, std::function<void(FilePathView, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene);

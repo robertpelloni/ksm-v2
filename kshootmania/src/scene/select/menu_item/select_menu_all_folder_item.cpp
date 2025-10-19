@@ -10,9 +10,16 @@ SelectMenuAllFolderItem::SelectMenuAllFolderItem(IsCurrentFolderYN isCurrentFold
 {
 }
 
-void SelectMenuAllFolderItem::decide([[maybe_unused]] const SelectMenuEventContext& context, [[maybe_unused]] int32 difficultyIdx)
+void SelectMenuAllFolderItem::decide(const SelectMenuEventContext& context, [[maybe_unused]] int32 difficultyIdx)
 {
-	//Print << U"Not Implemented (SelectMenuAllFolderItem::decide)";
+	if (m_isCurrentFolder)
+	{
+		context.fnCloseFolder();
+	}
+	else
+	{
+		context.fnOpenAllFolder();
+	}
 }
 
 void SelectMenuAllFolderItem::setCanvasParamsCenter([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
