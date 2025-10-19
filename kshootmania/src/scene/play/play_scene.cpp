@@ -10,6 +10,10 @@ namespace
 
 	MusicGame::GameCreateInfo MakeGameCreateInfo(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)
 	{
+		// オートプレイ時は判定調整なしで再生
+		const int32 inputDelayMs = isAutoPlay ? 0 : ConfigIni::GetInt(ConfigIni::Key::kInputDelay);
+		const int32 laserInputDelayMs = isAutoPlay ? 0 : ConfigIni::GetInt(ConfigIni::Key::kLaserInputDelay);
+
 		return
 		{
 			.chartFilePath = FilePath{ chartFilePath },
@@ -17,8 +21,8 @@ namespace
 			{
 				.isAutoPlay = isAutoPlay,
 				.globalOffsetMs = ConfigIni::GetInt(ConfigIni::Key::kGlobalOffset),
-				.inputDelayMs = ConfigIni::GetInt(ConfigIni::Key::kInputDelay),
-				.laserInputDelayMs = ConfigIni::GetInt(ConfigIni::Key::kLaserInputDelay),
+				.inputDelayMs = inputDelayMs,
+				.laserInputDelayMs = laserInputDelayMs,
 			},
 			.assistTickEnabled = ConfigIni::GetBool(ConfigIni::Key::kAssistTick),
 		};
