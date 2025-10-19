@@ -24,7 +24,7 @@ namespace MusicGame::Graphics
 
 		// TODO: separate into single class
 		const Mesh m_bgBillboardMesh;
-		Texture m_bgTexture;
+		std::array<Texture, 2> m_bgTextures;
 		const Mat4x4 m_bgTransform;
 		std::array<Array<RenderTexture>, 2> m_layerFrameTextures;
 		const Mat4x4 m_layerTransform;
@@ -41,6 +41,8 @@ namespace MusicGame::Graphics
 		ComboOverlay m_comboOverlay;
 		FrameRateMonitor m_frameRateMonitor;
 		AchievementPanel m_achievementPanel;
+
+		const PlayOption m_playOption;
 
 		void drawBG(const ViewStatus& viewStatus) const;
 
