@@ -100,14 +100,43 @@ namespace MusicGame::Graphics
 		double layerTiltRadians = 0.0;
 		if (chartData.bg.legacy.layer.rotation.tilt)
 		{
-			layerTiltRadians += viewStatus.tiltRadians * 0.8 + Math::ToRadians(viewStatus.camStatus.rotationZLayer);
+			layerTiltRadians += viewStatus.tiltRadians * 0.8;
+		}
+		if (chartData.bg.legacy.layer.rotation.spin)
+		{
+			layerTiltRadians += Math::ToRadians(viewStatus.camStatus.rotationZLayer);
 		}
 
-		// TODO: Layer speed specified by KSH
 		// TODO: Use different layer texture index depending on gauge percentage
 		if (!m_layerFrameTextures[0].empty())
 		{
-			const int32 layerFrame = MathUtils::WrappedMod(static_cast<int32>(gameStatus.currentPulse * 1000 / 35 / kson::kResolution4), static_cast<int32>(m_layerFrameTextures[0].size()));
+			// レイヤーアニメーション速度の計算
+			int32 layerFrame = 0;
+			const std::int32_t duration = chartData.bg.legacy.layer.duration;
+			if (duration == 0)
+			{
+				// duration == 0の場合、テンポ同期(1フレーム = 0.035小節)
+				layerFrame = MathUtils::WrappedMod(static_cast<int32>(gameStatus.currentPulse * 1000 / 35 / kson::kResolution4), static_cast<int32>(m_layerFrameTextures[0].size()));
+			}
+			else
+			{
+				// duration != 0の場合、固定速度(ミリ秒単位)
+				const double absDuration = std::abs(duration);
+				const double frameTimeMs = gameStatus.currentTimeSec * 1000.0;
+				const int32 frameCount = static_cast<int32>(m_layerFrameTextures[0].size());
+
+				if (duration > 0)
+				{
+					// 正再生
+					layerFrame = MathUtils::WrappedMod(static_cast<int32>(frameTimeMs * frameCount / absDuration), frameCount);
+				}
+				else
+				{
+					// 逆再生
+					layerFrame = MathUtils::WrappedMod(frameCount - static_cast<int32>(frameTimeMs * frameCount / absDuration) - 1, frameCount);
+				}
+			}
+
 			m_bgBillboardMesh.draw(m_layerTransform * TiltTransformMatrix(layerTiltRadians, kLayerBillboardPosition), m_layerFrameTextures[0].at(layerFrame));
 		}
 	}
