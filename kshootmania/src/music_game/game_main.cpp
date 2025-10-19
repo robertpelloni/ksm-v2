@@ -31,10 +31,10 @@ namespace MusicGame
 		const double currentTimeSec = m_bgm.posSec().count();
 		const double inputDelaySec = m_playOption.effectiveInputDelayMs() / 1000.0;
 		const double laserInputDelaySec = m_playOption.effectiveLaserInputDelayMs() / 1000.0;
-		const double audioEffectDelaySec = m_playOption.effectiveAudioEffectDelayMs() / 1000.0;
+		const double audioProcDelaySec = m_playOption.effectiveAudioProcDelayMs() / 1000.0;
 		const double currentTimeSecForButtonJudgment = currentTimeSec - inputDelaySec;
 		const double currentTimeSecForLaserJudgment = currentTimeSec - inputDelaySec - laserInputDelaySec;
-		const double currentTimeSecForAudioEffect = currentTimeSec - audioEffectDelaySec;
+		const double currentTimeSecForAudioProc = currentTimeSec - audioProcDelaySec;
 		const kson::Pulse currentPulse = kson::SecToPulse(currentTimeSec, m_chartData.beat, m_timingCache);
 		const double currentPulseDouble = kson::SecToPulseDouble(currentTimeSec, m_chartData.beat, m_timingCache);
 		const kson::Pulse currentPulseForButtonJudgment = kson::SecToPulse(currentTimeSecForButtonJudgment, m_chartData.beat, m_timingCache);
@@ -43,7 +43,7 @@ namespace MusicGame
 		m_gameStatus.currentTimeSec = currentTimeSec;
 		m_gameStatus.currentTimeSecForButtonJudgment = currentTimeSecForButtonJudgment;
 		m_gameStatus.currentTimeSecForLaserJudgment = currentTimeSecForLaserJudgment;
-		m_gameStatus.currentTimeSecForAudioEffect = currentTimeSecForAudioEffect;
+		m_gameStatus.currentTimeSecForAudioProc = currentTimeSecForAudioProc;
 		m_gameStatus.currentPulse = currentPulse;
 		m_gameStatus.currentPulseDouble = currentPulseDouble;
 		m_gameStatus.currentPulseForButtonJudgment = currentPulseForButtonJudgment;
@@ -96,7 +96,7 @@ namespace MusicGame
 		, m_assistTick(createInfo.assistTickEnabled)
 		, m_laserSlamSE(m_chartData)
 		, m_fxChipSE(m_chartData, m_parentPath)
-		, m_audioEffectMain(m_bgm, m_chartData, m_timingCache, m_parentPath, createInfo.playOption.effectiveAudioEffectDelayMs() / 1000.0)
+		, m_audioEffectMain(m_bgm, m_chartData, m_timingCache, m_parentPath, createInfo.playOption.effectiveAudioProcDelayMs() / 1000.0)
 		, m_graphicsMain(m_chartData, m_parentPath, createInfo.playOption)
 	{
 	}

@@ -370,10 +370,10 @@ namespace MusicGame::Audio
 		return audioEffectInvocation;
 	}
 
-	AudioEffectMain::AudioEffectMain(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache, const FilePath& parentPath, double audioEffectDelaySec)
+	AudioEffectMain::AudioEffectMain(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache, const FilePath& parentPath, double audioProcDelaySec)
 		: m_longFXNoteInvocations((RegisterAudioEffects(bgm, chartData, timingCache, parentPath), CreateLongFXNoteAudioEffectInvocations(bgm, chartData))) // 先に登録しておく必要があるので、分かりにくいがカンマ演算子を使用している(TODO: もうちょっとどうにかする)
 		, m_laserPulseInvocations(CreateLaserPulseAudioEffectInvocations(bgm, chartData))
-		, m_audioEffectDelaySec(audioEffectDelaySec)
+		, m_audioProcDelaySec(audioProcDelaySec)
 	{
 	}
 
@@ -381,7 +381,7 @@ namespace MusicGame::Audio
 	{
 		// TODO: SecondsFに統一
 		const double currentTimeSec = bgm.posSec().count();
-		const double currentTimeSecForAudio = (currentTimeSec - m_audioEffectDelaySec) + bgm.latency().count(); // Note: In BASS v2.4.13 and later, for unknown reasons, the effects are out of sync even after adding this latency.
+		const double currentTimeSecForAudio = (currentTimeSec - m_audioProcDelaySec) + bgm.latency().count(); // Note: In BASS v2.4.13 and later, for unknown reasons, the effects are out of sync even after adding this latency.
 		const kson::Pulse currentPulseForAudio = kson::SecToPulse(currentTimeSecForAudio, chartData.beat, timingCache);
 		const double currentBPMForAudio = kson::TempoAt(currentPulseForAudio, chartData.beat);
 
