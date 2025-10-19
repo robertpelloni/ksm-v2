@@ -30,7 +30,7 @@ namespace MusicGame::Audio
 				continue;
 			}
 
-			if (laneStatus.lastLaserSlamJudgedTimeSec > gameStatus.currentTimeSec + kSELatencySec)
+			if (laneStatus.lastLaserSlamJudgedTimeSec > gameStatus.currentTimeSecForSE + kSELatencySec)
 			{
 				// 最後に判定した直角LASERのタイミングがまだ先にある場合は何もしない
 				continue;

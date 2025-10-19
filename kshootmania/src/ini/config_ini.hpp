@@ -64,7 +64,7 @@ namespace ConfigIni
 
 		// Other advanced audio settings
 		constexpr StringView kGlobalOffset = U"globaloffset";
-		constexpr StringView kAudioFXDelay = U"soundfx_delay";
+		constexpr StringView kSEDelay = U"soundfx_delay";
 		constexpr StringView kVisualOffset = U"visual_offset";
 		constexpr StringView kAutoPlaySE = U"auto_play_se";
 

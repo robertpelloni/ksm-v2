@@ -148,6 +148,7 @@ namespace MusicGame
 		double currentTimeSec = 0.0;
 		double currentTimeSecForButtonJudgment = 0.0;
 		double currentTimeSecForLaserJudgment = 0.0;
+		double currentTimeSecForSE = 0.0;
 		kson::Pulse currentPulse = 0;
 		double currentPulseDouble = 0.0;
 		kson::Pulse currentPulseForButtonJudgment = 0;
