@@ -101,9 +101,36 @@ namespace MusicGame::Judgment
 			}
 			return false;
 		}
+
+		bool HasFXChipKeySound(const kson::ChartData& chartData, KeyConfig::Button button, kson::Pulse pulse)
+		{
+			if (button != KeyConfig::kFX_L && button != KeyConfig::kFX_R)
+			{
+				// FXレーンでない場合は対象外
+				return false;
+			}
+
+			const std::size_t laneIdx = button - KeyConfig::kFX_L;
+			const auto& chipEvent = chartData.audio.keySound.fx.chipEvent;
+
+			for (const auto& [filename, lanes] : chipEvent)
+			{
+				if (laneIdx >= lanes.size())
+				{
+					continue;
+				}
+
+				if (lanes[laneIdx].contains(pulse))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
-	void ButtonLaneJudgment::processKeyDown(const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, double currentTimeSecForDraw, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
+	void ButtonLaneJudgment::processKeyDown(const kson::ChartData& chartData, const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, double currentTimeSecForDraw, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
 	{
 		using namespace TimingWindow;
 
@@ -175,11 +202,23 @@ namespace MusicGame::Judgment
 			else if (minDistance < ChipNote::kWindowSecNear)
 			{
 				// NEAR判定
-				const auto judgmentResult = isFast ? JudgmentResult::kNearFast : JudgmentResult::kNearSlow;
-				m_chipJudgmentArray.at(nearestNotePulse) = judgmentResult;
-				judgmentHandlerRef.onChipJudged(judgmentResult);
-				laneStatusRef.keyBeamType = KeyBeamType::kNear; // TODO: fast/slow
-				chipAnimType = judgmentResult;
+				if (isFast && HasFXChipKeySound(chartData, m_keyConfigButton, nearestNotePulse))
+				{
+					// 効果音付きチップFXノーツの場合、FAST NEARは出さずCRITICAL判定扱いとする
+					// (効果音の再生遅延を気にして早押しした場合にNEARにならないようにするための仕様)
+					m_chipJudgmentArray.at(nearestNotePulse) = JudgmentResult::kCritical;
+					judgmentHandlerRef.onChipJudged(JudgmentResult::kCritical);
+					laneStatusRef.keyBeamType = KeyBeamType::kCritical;
+					chipAnimType = JudgmentResult::kCritical;
+				}
+				else
+				{
+					const auto judgmentResult = isFast ? JudgmentResult::kNearFast : JudgmentResult::kNearSlow;
+					m_chipJudgmentArray.at(nearestNotePulse) = judgmentResult;
+					judgmentHandlerRef.onChipJudged(judgmentResult);
+					laneStatusRef.keyBeamType = KeyBeamType::kNear; // TODO: fast/slow
+					chipAnimType = judgmentResult;
+				}
 			}
 			else if (minDistance < ChipNote::kWindowSecError) // TODO: easy gauge
 			{
@@ -310,14 +349,14 @@ namespace MusicGame::Judgment
 	{
 	}
 
-	void ButtonLaneJudgment::update(const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, double currentTimeSecForDraw, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
+	void ButtonLaneJudgment::update(const kson::ChartData& chartData, const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, double currentTimeSecForDraw, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
 	{
 		if (m_judgmentPlayMode == JudgmentPlayMode::kOn)
 		{
 			// チップノーツとロングノーツの始点の判定処理
 			if (!m_isLockedForExit && KeyConfig::Down(m_keyConfigButton))
 			{
-				processKeyDown(lane, currentPulse, currentTimeSec, currentTimeSecForDraw, laneStatusRef, judgmentHandlerRef);
+				processKeyDown(chartData, lane, currentPulse, currentTimeSec, currentTimeSecForDraw, laneStatusRef, judgmentHandlerRef);
 			}
 
 			// ロングノーツ押下中の判定処理
