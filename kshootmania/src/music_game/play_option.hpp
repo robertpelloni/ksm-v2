@@ -18,6 +18,8 @@ namespace MusicGame
 
 		int32 visualOffsetMs = 0;
 
+		bool isAutoPlaySE = false; // FXチップ・直角の効果音のみオートプレイ
+
 		JudgmentPlayMode btJudgmentPlayMode() const
 		{
 			return isAutoPlay ? JudgmentPlayMode::kAuto : JudgmentPlayMode::kOn;

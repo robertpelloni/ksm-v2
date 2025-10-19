@@ -94,8 +94,8 @@ namespace MusicGame
 		, m_highwayScroll(m_chartData)
 		, m_bgm(FileSystem::PathAppend(m_parentPath, Unicode::FromUTF8(m_chartData.audio.bgm.filename)), m_chartData.audio.bgm.vol, SecondsF{ static_cast<double>(m_chartData.audio.bgm.offset + createInfo.playOption.effectiveGlobalOffsetMs()) / 1000 })
 		, m_assistTick(createInfo.assistTickEnabled)
-		, m_laserSlamSE(m_chartData)
-		, m_fxChipSE(m_chartData, m_parentPath)
+		, m_laserSlamSE(m_chartData, m_timingCache, createInfo.playOption.isAutoPlaySE)
+		, m_fxChipSE(m_chartData, m_timingCache, m_parentPath, createInfo.playOption.isAutoPlaySE)
 		, m_audioEffectMain(m_bgm, m_chartData, m_timingCache, m_parentPath, createInfo.playOption.effectiveAudioProcDelayMs() / 1000.0)
 		, m_graphicsMain(m_chartData, m_parentPath, createInfo.playOption)
 	{
