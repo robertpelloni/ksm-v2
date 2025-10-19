@@ -111,32 +111,10 @@ const SelectChartInfo* SelectMenuSongItem::chartInfoPtr(int difficultyIdx) const
 
 void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx) const
 {
-	// 最初に見つかった譜面情報から共通情報を取得
-	const SelectChartInfo* pFirstChartInfo = nullptr;
-	for (const auto& chartInfo : m_chartInfos)
-	{
-		if (chartInfo != nullptr)
-		{
-			pFirstChartInfo = chartInfo.get();
-			break;
-		}
-	}
-
-	if (pFirstChartInfo == nullptr)
-	{
-		return;
-	}
-
-	// 共通パラメータを設定
 	canvas.setParamValues({
 		{ U"center_isSong", true },
 		{ U"center_isDirectory", false },
 		{ U"center_isSubDirectory", false },
-		{ U"center_title", pFirstChartInfo->title() },
-		{ U"center_artist", pFirstChartInfo->artist() },
-		{ U"center_bpm", pFirstChartInfo->dispBPM() },
-		{ U"center_jacketAuthor", pFirstChartInfo->jacketAuthor() },
-		{ U"center_information", pFirstChartInfo->information() },
 	});
 
 	// 各難易度の存在有無とレベルを設定
@@ -160,6 +138,11 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 		const GaugeType gaugeType = GaugeType::kNormalGauge;
 
 		canvas.setParamValues({
+			{ U"center_title", pChartInfo->title() },
+			{ U"center_artist", pChartInfo->artist() },
+			{ U"center_bpm", pChartInfo->dispBPM() },
+			{ U"center_jacketAuthor", pChartInfo->jacketAuthor() },
+			{ U"center_information", pChartInfo->information() },
 			{ U"center_chartAuthor", pChartInfo->chartAuthor() },
 			{ U"center_difficultyCursorState", U"difficulty{}"_fmt(difficultyIdx) },
 			{ U"center_medalIndex", static_cast<int32>(highScoreInfo.medal()) },
