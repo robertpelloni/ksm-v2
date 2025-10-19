@@ -27,6 +27,8 @@ struct SelectMenuEventContext
 	std::function<void()> fnCloseFolder;
 	std::function<const Texture&(FilePathView)> fnGetJacketTexture;
 	std::function<const Texture&(FilePathView)> fnGetIconTexture;
+	std::function<void()> fnMoveToNextSubDirSection;
+	std::function<void()> fnMoveToPrevSubDirSection;
 };
 
 class SelectMenu
@@ -75,6 +77,10 @@ private:
 	void playShakeUpTween();
 
 	void playShakeDownTween();
+
+	void moveToNextSubDirSection();
+
+	void moveToPrevSubDirSection();
 
 public:
 	explicit SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, std::function<void(FilePathView, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene);

@@ -13,6 +13,13 @@ public:
 
 	virtual void decide(const SelectMenuEventContext& context, int32 difficultyIdx) override;
 
+	virtual void decideAutoPlay(const SelectMenuEventContext& context, int32 difficultyIdx) override;
+
+	virtual bool isSubDirHeading() const override
+	{
+		return true;
+	}
+
 	virtual FilePathView fullPath() const override
 	{
 		return m_displayName;

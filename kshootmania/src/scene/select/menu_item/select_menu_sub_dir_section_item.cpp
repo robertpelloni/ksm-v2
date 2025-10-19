@@ -7,9 +7,14 @@ SelectMenuSubDirSectionItem::SelectMenuSubDirSectionItem(FilePathView fullPath, 
 {
 }
 
-void SelectMenuSubDirSectionItem::decide([[maybe_unused]] const SelectMenuEventContext& context, [[maybe_unused]] int32 difficultyIdx)
+void SelectMenuSubDirSectionItem::decide(const SelectMenuEventContext& context, [[maybe_unused]] int32 difficultyIdx)
 {
-	//Print << U"Not Implemented (SelectMenuSubDirSectionItem::decide)";
+	context.fnMoveToNextSubDirSection();
+}
+
+void SelectMenuSubDirSectionItem::decideAutoPlay(const SelectMenuEventContext& context, [[maybe_unused]] int32 difficultyIdx)
+{
+	context.fnMoveToPrevSubDirSection();
 }
 
 void SelectMenuSubDirSectionItem::setCanvasParamsCenter([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const

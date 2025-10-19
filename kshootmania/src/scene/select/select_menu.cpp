@@ -408,6 +408,8 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 			.fnCloseFolder = [this]() { closeFolder(PlaySeYN::Yes); },
 			.fnGetJacketTexture = [this](FilePathView path) -> const Texture& { return getJacketTexture(path); },
 			.fnGetIconTexture = [this](FilePathView path) -> const Texture& { return getIconTexture(path); },
+			.fnMoveToNextSubDirSection = [this]() { moveToNextSubDirSection(); },
+			.fnMoveToPrevSubDirSection = [this]() { moveToPrevSubDirSection(); },
 		}
 	, m_selectSceneCanvas(selectSceneCanvas)
 	, m_menu(
@@ -672,6 +674,82 @@ const Texture& SelectMenu::getIconTexture(FilePathView filePath)
 	}
 
 	return m_iconTextureCache.emplace(filePath, std::move(texture)).first->second;
+}
+
+void SelectMenu::moveToNextSubDirSection()
+{
+	if (m_menu.empty())
+	{
+		return;
+	}
+
+	const int32 currentCursor = m_menu.cursor();
+
+	// 現在のカーソル位置の次から検索
+	for (std::size_t i = static_cast<std::size_t>(currentCursor) + 1; i < m_menu.size(); ++i)
+	{
+		const auto& pItem = m_menu[i];
+
+		if (pItem == nullptr)
+		{
+			continue;
+		}
+
+		// サブフォルダ見出し項目またはレベル見出し項目かどうかをチェック
+		if (pItem->isSubDirHeading())
+		{
+			// 次の見出し項目が見つかった
+			setCursorAndSave(static_cast<int32>(i));
+			m_folderSelectSe.play();
+			refreshContentCanvasParams();
+			refreshSongPreview();
+			return;
+		}
+	}
+
+	// 見出し項目が見つからなかった場合、先頭のフォルダ項目(index=0)に移動
+	setCursorAndSave(0);
+	m_folderSelectSe.play();
+	refreshContentCanvasParams();
+	refreshSongPreview();
+}
+
+void SelectMenu::moveToPrevSubDirSection()
+{
+	if (m_menu.empty())
+	{
+		return;
+	}
+
+	const int32 currentCursor = m_menu.cursor();
+
+	// 現在のカーソル位置の前から逆向きに検索
+	for (int32 i = currentCursor - 1; i >= 0; --i)
+	{
+		const auto& pItem = m_menu[static_cast<std::size_t>(i)];
+
+		if (pItem == nullptr)
+		{
+			continue;
+		}
+
+		// サブフォルダ見出し項目またはレベル見出し項目かどうかをチェック
+		if (pItem->isSubDirHeading())
+		{
+			// 前の見出し項目が見つかった
+			setCursorAndSave(i);
+			m_folderSelectSe.play();
+			refreshContentCanvasParams();
+			refreshSongPreview();
+			return;
+		}
+	}
+
+	// 見出し項目が見つからなかった場合、先頭のフォルダ項目(index=0)に移動
+	setCursorAndSave(0);
+	m_folderSelectSe.play();
+	refreshContentCanvasParams();
+	refreshSongPreview();
 }
 
 bool SelectMenu::openDirectoryWithLevelSort(FilePathView directoryPath)

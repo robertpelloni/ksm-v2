@@ -56,6 +56,11 @@ public:
 		return false;
 	}
 
+	virtual bool isSubDirHeading() const
+	{
+		return false;
+	}
+
 	/// @brief Canvasのパラメータを設定(中央の項目)
 	/// @param context イベントコンテキスト
 	/// @param canvas 設定対象のCanvas
