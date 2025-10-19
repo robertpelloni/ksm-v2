@@ -19,7 +19,7 @@ namespace
 				.globalOffsetMs = ConfigIni::GetInt(ConfigIni::Key::kGlobalOffset),
 				.inputDelayMs = ConfigIni::GetInt(ConfigIni::Key::kInputDelay),
 				.laserInputDelayMs = ConfigIni::GetInt(ConfigIni::Key::kLaserInputDelay),
-				.seDelayMs = ConfigIni::GetInt(ConfigIni::Key::kSEDelay),
+				.audioEffectDelayMs = ConfigIni::GetInt(ConfigIni::Key::kAudioEffectDelay),
 				.visualOffsetMs = ConfigIni::GetInt(ConfigIni::Key::kVisualOffset),
 			},
 			.assistTickEnabled = ConfigIni::GetBool(ConfigIni::Key::kAssistTick),

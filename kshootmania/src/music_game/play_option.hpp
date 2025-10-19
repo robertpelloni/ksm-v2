@@ -14,7 +14,7 @@ namespace MusicGame
 
 		int32 laserInputDelayMs = 0;
 
-		int32 seDelayMs = 0;
+		int32 audioEffectDelayMs = 0; // v1のsoundfx_delayにあたる
 
 		int32 visualOffsetMs = 0;
 
@@ -58,10 +58,10 @@ namespace MusicGame
 			return isAutoPlay ? 0 : laserInputDelayMs;
 		}
 
-		// visualOffsetを考慮したseDelayを取得
-		int32 effectiveSEDelayMs() const
+		// visualOffsetを考慮したオーディオエフェクト遅延を取得
+		int32 effectiveAudioEffectDelayMs() const
 		{
-			return seDelayMs + visualOffsetMs;
+			return audioEffectDelayMs + visualOffsetMs;
 		}
 	};
 }

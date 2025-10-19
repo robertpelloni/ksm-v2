@@ -41,6 +41,8 @@ namespace MusicGame::Audio
 		const kson::FXLane<Optional<AudioEffectInvocation>> m_longFXNoteInvocations;
 		const kson::ByPulse<Optional<AudioEffectInvocation>> m_laserPulseInvocations;
 
+		const double m_audioEffectDelaySec;
+
 		std::array<bool, kson::kNumFXLanesSZ> m_longFXPressedPrev = { false, false };
 
 		std::size_t m_lastPressedLongFXNoteLaneIdx = 0U;
@@ -52,7 +54,7 @@ namespace MusicGame::Audio
 		const Optional<AudioEffectInvocation>& getActiveLaserAudioEffectInvocation(kson::Pulse currentPulseForAudio) const;
 		
 	public:
-		AudioEffectMain(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache, const FilePath& parentPath);
+		AudioEffectMain(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache, const FilePath& parentPath, double audioEffectDelaySec);
 
 		void update(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache, const AudioEffectInputStatus& inputStatus);
 	};

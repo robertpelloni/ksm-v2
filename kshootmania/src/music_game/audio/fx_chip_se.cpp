@@ -74,7 +74,7 @@ namespace MusicGame::Audio
 				continue;
 			}
 
-			if (judgmentTimeSec > gameStatus.currentTimeSecForSE + kSELatencySec)
+			if (judgmentTimeSec > gameStatus.currentTimeSec + kSELatencySec)
 			{
 				// 最後に判定したチップのタイミングがまだ先にある場合は何もしない
 				continue;
