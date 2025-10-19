@@ -52,8 +52,8 @@ namespace MusicGame::Graphics
 		// HSP版の該当箇所: https://github.com/m4saka/kshootmania-v1-hsp/blob/d2811a09e2d75dad5cc152d7c4073897061addb7/src/scene/play/play_draw_frame.hsp#L779-L821
 
 		const auto& camStatus = viewStatus.camStatus;
-		const double zoom = Camera::ScaledCamZoomValue(camStatus.zoom);
-		const double rotationX = ToRadians(camStatus.rotationX * 360 / 2400);
+		const double zoom = Camera::ScaledCamZoomValue(camStatus.zoomBottom);
+		const double rotationX = ToRadians(camStatus.zoomTop * 360 / 2400);
 		const double sinRotationX = Sin(rotationX);
 		const double cosRotationX = Cos(rotationX);
 

@@ -17,14 +17,9 @@ namespace MusicGame::Camera
 		}
 	}
 
-	inline constexpr double ScaledCamShiftXValue(double shiftX)
-	{
-		return shiftX / 6;
-	}
-
 	inline Mat4x4 CamShiftXMatrix(double shiftX)
 	{
-		return Mat4x4::Translate(Vec3::Right(ScaledCamShiftXValue(shiftX)));
+		return Mat4x4::Translate(Vec3::Right(shiftX));
 	}
 
 	inline constexpr double JdglineScale(double zoom)

@@ -154,7 +154,10 @@ namespace MusicGame::Judgment
 
 		if (result != JudgmentResult::kError)
 		{
-			m_laserSlamShakeStatus.onLaserSlamJudged(prevTimeSec, direction);
+			if (!m_camPatternMain.hasSwingEvent(laserSlamPulse, direction))
+			{
+				m_laserSlamShakeStatus.onLaserSlamJudged(prevTimeSec, direction);
+			}
 			m_camPatternMain.onLaserSlamJudged(laserSlamPulse, direction, prevPulse);
 		}
 	}

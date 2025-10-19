@@ -5,9 +5,9 @@ namespace MusicGame::Camera
 {
 	struct CamStatus
 	{
-		double zoom = 0.0;
+		double zoomBottom = 0.0;
 		double shiftX = 0.0;
-		double rotationX = 0.0;
+		double zoomTop = 0.0;
 		double rotationZ = 0.0;
 		double rotationZHighway = 0.0;
 		double rotationZJdgline = 0.0;

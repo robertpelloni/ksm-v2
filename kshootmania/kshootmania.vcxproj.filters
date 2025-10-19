@@ -459,6 +459,9 @@
     <ClCompile Include="src\music_game\camera\cam_pattern\cam_pattern_main.cpp">
       <Filter>Source Files\music_game\camera\cam_pattern</Filter>
     </ClCompile>
+    <ClCompile Include="src\music_game\camera\cam_pattern\cam_pattern_swing.cpp">
+      <Filter>Source Files\music_game\camera\cam_pattern</Filter>
+    </ClCompile>
     <ClCompile Include="src\scene\select\select_song_preview.cpp">
       <Filter>Source Files\scene\select</Filter>
     </ClCompile>
@@ -1043,6 +1046,9 @@
       <Filter>Header Files\music_game\camera\cam_pattern</Filter>
     </ClInclude>
     <ClInclude Include="src\music_game\camera\cam_pattern\cam_pattern_main.hpp">
+      <Filter>Header Files\music_game\camera\cam_pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="src\music_game\camera\cam_pattern\cam_pattern_swing.hpp">
       <Filter>Header Files\music_game\camera\cam_pattern</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\select\select_song_preview.hpp">
