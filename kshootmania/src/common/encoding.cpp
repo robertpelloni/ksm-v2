@@ -1,4 +1,4 @@
-#include "encoding.hpp"
+﻿#include "encoding.hpp"
 #include "kson/encoding/encoding.hpp"
 #include <fstream>
 #include <sstream>
