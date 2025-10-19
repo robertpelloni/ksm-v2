@@ -483,6 +483,12 @@
     <ClCompile Include="src\scene\select\menu_item\select_menu_sub_dir_section_item.cpp">
       <Filter>Source Files\scene\select\menu_item</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\select\menu_item\select_menu_level_section_item.cpp">
+      <Filter>Source Files\scene\select\menu_item</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\select\menu_item\select_menu_song_item_for_level.cpp">
+      <Filter>Source Files\scene\select\menu_item</Filter>
+    </ClCompile>
     <ClCompile Include="src\scene\result\result_scene.cpp">
       <Filter>Source Files\scene\result</Filter>
     </ClCompile>
@@ -1061,6 +1067,12 @@
       <Filter>Header Files\scene\select\menu_item</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\select\menu_item\select_menu_sub_dir_section_item.hpp">
+      <Filter>Header Files\scene\select\menu_item</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\select\menu_item\select_menu_level_section_item.hpp">
+      <Filter>Header Files\scene\select\menu_item</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\select\menu_item\select_menu_song_item_for_level.hpp">
       <Filter>Header Files\scene\select\menu_item</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\select\menu_item\select_menu_fav_folder_item.hpp">

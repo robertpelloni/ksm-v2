@@ -60,6 +60,10 @@ private:
 
 	bool openDirectory(FilePathView directoryPath, PlaySeYN playSe, RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::Yes, SaveToConfigIniYN saveToConfigIni = SaveToConfigIniYN::Yes);
 
+	bool openDirectoryWithNameSort(FilePathView directoryPath);
+
+	bool openDirectoryWithLevelSort(FilePathView directoryPath);
+
 	void setCursorAndSave(int32 cursor);
 
 	void setCursorToItemByFullPath(FilePathView fullPath);
