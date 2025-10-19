@@ -128,6 +128,7 @@ namespace MusicGame::Graphics
 	void GraphicsMain::update(const ViewStatus& viewStatus)
 	{
 		m_comboOverlay.update(viewStatus);
+		m_scorePanel.update(viewStatus.score);
 		m_highway3DGraphics.update(viewStatus);
 	}
 
@@ -149,7 +150,7 @@ namespace MusicGame::Graphics
 
 		// 手前に表示する2DのHUDを描画
 		m_songInfoPanel.draw(gameStatus.currentBPM, highwayScrollContext);
-		m_scorePanel.draw(viewStatus.score);
+		m_scorePanel.draw();
 		m_gaugePanel.draw(viewStatus.gaugePercentage, gameStatus.currentPulse);
 		m_comboOverlay.draw();
 		m_frameRateMonitor.draw();
