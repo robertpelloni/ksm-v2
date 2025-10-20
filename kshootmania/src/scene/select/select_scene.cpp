@@ -99,17 +99,36 @@ void SelectScene::updatePlayerSwitching()
 
 void SelectScene::updateAlphabetJump()
 {
-	m_fxLSingleButtonUpDetection.update(KeyConfig::kFX_L);
-	m_fxRSingleButtonUpDetection.update(KeyConfig::kFX_R);
+	m_fxButtonUpDetection.update();
 
-	// FX-Lを離した時は前のアルファベットグループにジャンプ(単独押下の場合のみ)
-	if (m_fxLSingleButtonUpDetection.up(KeyConfig::kFX_L))
+	// いずれかのBTボタンが押されているかをチェック
+	bool btButtonPressed = false;
+	for (KeyConfig::Button btButton = KeyConfig::kBT_A; btButton <= KeyConfig::kBT_D; ++btButton)
+	{
+		if (KeyConfig::Pressed(btButton))
+		{
+			btButtonPressed = true;
+			break;
+		}
+	}
+
+	// BTボタン押下中 + FX-Lを離した時はリスト先頭へジャンプ
+	if (btButtonPressed && m_fxButtonUpDetection.up(KeyConfig::kFX_L))
+	{
+		m_menu.jumpToFirst();
+	}
+	// BTボタン押下中 + FX-Rを離した時はリスト末尾へジャンプ
+	else if (btButtonPressed && m_fxButtonUpDetection.up(KeyConfig::kFX_R))
+	{
+		m_menu.jumpToLast();
+	}
+	// FX-Lを単独で離した時は前のアルファベットグループにジャンプ
+	else if (m_fxButtonUpDetection.up(KeyConfig::kFX_L))
 	{
 		m_menu.jumpToPrevAlphabet();
 	}
-
-	// FX-Rを離した時は次のアルファベットグループにジャンプ(単独押下の場合のみ)
-	if (m_fxRSingleButtonUpDetection.up(KeyConfig::kFX_R))
+	// FX-Rを単独で離した時は次のアルファベットグループにジャンプ
+	else if (m_fxButtonUpDetection.up(KeyConfig::kFX_R))
 	{
 		m_menu.jumpToNextAlphabet();
 	}

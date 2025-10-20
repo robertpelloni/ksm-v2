@@ -279,7 +279,7 @@
     <ClCompile Include="src\scene\option\option_top_menu.cpp">
       <Filter>Source Files\scene\option</Filter>
     </ClCompile>
-    <ClCompile Include="src\input\single_button_up_detection.cpp">
+    <ClCompile Include="src\input\fx_button_up_detection.cpp">
       <Filter>Source Files\input</Filter>
     </ClCompile>
     <ClCompile Include="src\input\key_config.cpp">
@@ -832,7 +832,7 @@
     <ClInclude Include="src\ui\linear_menu.hpp">
       <Filter>Header Files\ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\input\single_button_up_detection.hpp">
+    <ClInclude Include="src\input\fx_button_up_detection.hpp">
       <Filter>Header Files\input</Filter>
     </ClInclude>
     <ClInclude Include="src\input\key_config.hpp">

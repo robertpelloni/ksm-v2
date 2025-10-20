@@ -485,37 +485,13 @@ void SelectMenu::update()
 	// Homeキーで先頭に移動
 	if (KeyHome.down() && !m_menu.empty())
 	{
-		setCursorAndSave(0);
-		m_folderSelectSe.play();
-		refreshContentCanvasParams();
-		refreshSongPreview();
+		jumpToFirst();
 	}
 
 	// Endキーで末尾に移動
 	if (KeyEnd.down() && !m_menu.empty())
 	{
-		int32 targetIndex = static_cast<int32>(m_menu.size() - 1);
-
-		// フォルダを開いている場合、フォルダ内の最後の項目に移動
-		if (isFolderOpen())
-		{
-			// 後ろから検索して、フォルダ項目でない最初の項目を見つける
-			// (他のフォルダ項目をスキップして、曲項目またはサブフォルダ見出し項目の最後を探す)
-			for (std::size_t i = m_menu.size() - 1; i >= 1; --i)
-			{
-				const auto& pItem = m_menu[i];
-				if (pItem != nullptr && !pItem->isFolder())
-				{
-					targetIndex = static_cast<int32>(i);
-					break;
-				}
-			}
-		}
-
-		setCursorAndSave(targetIndex);
-		m_folderSelectSe.play();
-		refreshContentCanvasParams();
-		refreshSongPreview();
+		jumpToLast();
 	}
 
 	m_songPreview.update();
@@ -1476,4 +1452,48 @@ void SelectMenu::addOtherFolderItemsSimple()
 	// (現在開いているのでスキップ)
 
 	// TODO: "Courses"フォルダの項目を追加
+}
+
+void SelectMenu::jumpToFirst()
+{
+	if (m_menu.empty())
+	{
+		return;
+	}
+
+	setCursorAndSave(0);
+	m_folderSelectSe.play();
+	refreshContentCanvasParams();
+	refreshSongPreview();
+}
+
+void SelectMenu::jumpToLast()
+{
+	if (m_menu.empty())
+	{
+		return;
+	}
+
+	int32 targetIndex = static_cast<int32>(m_menu.size() - 1);
+
+	// フォルダを開いている場合、フォルダ内の最後の項目に移動
+	if (isFolderOpen())
+	{
+		// 後ろから検索して、フォルダ項目でない最初の項目を見つける
+		// (他のフォルダ項目をスキップして、曲項目またはサブフォルダ見出し項目の最後を探す)
+		for (std::size_t i = m_menu.size() - 1; i >= 1; --i)
+		{
+			const auto& pItem = m_menu[i];
+			if (pItem != nullptr && !pItem->isFolder())
+			{
+				targetIndex = static_cast<int32>(i);
+				break;
+			}
+		}
+	}
+
+	setCursorAndSave(targetIndex);
+	m_folderSelectSe.play();
+	refreshContentCanvasParams();
+	refreshSongPreview();
 }

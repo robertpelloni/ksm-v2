@@ -127,4 +127,8 @@ public:
 	void jumpToNextAlphabet();
 
 	void jumpToPrevAlphabet();
+
+	void jumpToFirst();
+
+	void jumpToLast();
 };
