@@ -2,6 +2,7 @@
 #include <CoTaskLib.hpp>
 #include "select_menu.hpp"
 #include "select_folder_state.hpp"
+#include "input/single_button_up_detection.hpp"
 
 class SelectScene : public Co::UpdaterSceneBase
 {
@@ -18,11 +19,17 @@ private:
 
 	Array<String> m_playerNames;
 
+	SingleButtonUpDetection m_fxLSingleButtonUpDetection;
+
+	SingleButtonUpDetection m_fxRSingleButtonUpDetection;
+
 	void moveToPlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay);
 
 	void refreshCanvasPlayerName();
 
 	void updatePlayerSwitching();
+
+	void updateAlphabetJump();
 
 public:
 	SelectScene();

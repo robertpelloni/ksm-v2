@@ -97,6 +97,24 @@ void SelectScene::updatePlayerSwitching()
 	m_menu.reloadCurrentDirectory();
 }
 
+void SelectScene::updateAlphabetJump()
+{
+	m_fxLSingleButtonUpDetection.update(KeyConfig::kFX_L);
+	m_fxRSingleButtonUpDetection.update(KeyConfig::kFX_R);
+
+	// FX-Lを離した時は前のアルファベットグループにジャンプ(単独押下の場合のみ)
+	if (m_fxLSingleButtonUpDetection.up(KeyConfig::kFX_L))
+	{
+		m_menu.jumpToPrevAlphabet();
+	}
+
+	// FX-Rを離した時は次のアルファベットグループにジャンプ(単独押下の場合のみ)
+	if (m_fxRSingleButtonUpDetection.up(KeyConfig::kFX_R))
+	{
+		m_menu.jumpToNextAlphabet();
+	}
+}
+
 SelectScene::SelectScene()
 	: m_folderCloseButton(
 		ConfigIni::GetInt(ConfigIni::Key::kSelectCloseFolderKey) == ConfigIni::Value::SelectCloseFolderKey::kBackButton
@@ -167,6 +185,39 @@ void SelectScene::update()
 	{
 		m_menu.decideAutoPlay();
 	}
+
+	// Shift+A〜Zでアルファベットジャンプ
+	if (KeyShift.pressed())
+	{
+		if (KeyA.down()) m_menu.jumpToAlphabetItem(U'A');
+		else if (KeyB.down()) m_menu.jumpToAlphabetItem(U'B');
+		else if (KeyC.down()) m_menu.jumpToAlphabetItem(U'C');
+		else if (KeyD.down()) m_menu.jumpToAlphabetItem(U'D');
+		else if (KeyE.down()) m_menu.jumpToAlphabetItem(U'E');
+		else if (KeyF.down()) m_menu.jumpToAlphabetItem(U'F');
+		else if (KeyG.down()) m_menu.jumpToAlphabetItem(U'G');
+		else if (KeyH.down()) m_menu.jumpToAlphabetItem(U'H');
+		else if (KeyI.down()) m_menu.jumpToAlphabetItem(U'I');
+		else if (KeyJ.down()) m_menu.jumpToAlphabetItem(U'J');
+		else if (KeyK.down()) m_menu.jumpToAlphabetItem(U'K');
+		else if (KeyL.down()) m_menu.jumpToAlphabetItem(U'L');
+		else if (KeyM.down()) m_menu.jumpToAlphabetItem(U'M');
+		else if (KeyN.down()) m_menu.jumpToAlphabetItem(U'N');
+		else if (KeyO.down()) m_menu.jumpToAlphabetItem(U'O');
+		else if (KeyP.down()) m_menu.jumpToAlphabetItem(U'P');
+		else if (KeyQ.down()) m_menu.jumpToAlphabetItem(U'Q');
+		else if (KeyR.down()) m_menu.jumpToAlphabetItem(U'R');
+		else if (KeyS.down()) m_menu.jumpToAlphabetItem(U'S');
+		else if (KeyT.down()) m_menu.jumpToAlphabetItem(U'T');
+		else if (KeyU.down()) m_menu.jumpToAlphabetItem(U'U');
+		else if (KeyV.down()) m_menu.jumpToAlphabetItem(U'V');
+		else if (KeyW.down()) m_menu.jumpToAlphabetItem(U'W');
+		else if (KeyX.down()) m_menu.jumpToAlphabetItem(U'X');
+		else if (KeyY.down()) m_menu.jumpToAlphabetItem(U'Y');
+		else if (KeyZ.down()) m_menu.jumpToAlphabetItem(U'Z');
+	}
+
+	updateAlphabetJump();
 
 	m_canvas->update();
 }

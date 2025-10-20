@@ -761,6 +761,221 @@ void SelectMenu::moveToPrevSubDirSection()
 	refreshSongPreview();
 }
 
+void SelectMenu::jumpToAlphabetItem(char32 letter)
+{
+	if (m_menu.empty())
+	{
+		return;
+	}
+
+	const int32 currentCursor = m_menu.cursor();
+	const auto& currentItem = m_menu.cursorValue();
+
+	// 走査開始位置を決定
+	int32 scanStartIdx = 0;
+	if (currentItem && !currentItem->isSubFolderHeading())
+	{
+		// 現在の項目が通常の楽曲の場合、上に遡ってセクション見出しを探す
+		for (int32 i = currentCursor - 1; i >= 0; --i)
+		{
+			if (m_menu[static_cast<std::size_t>(i)]->isSubFolderHeading())
+			{
+				scanStartIdx = i;
+				break;
+			}
+		}
+	}
+	else if (currentItem && currentItem->isSubFolderHeading())
+	{
+		// 現在がセクション見出しの場合、その次から開始
+		scanStartIdx = currentCursor + 1;
+	}
+
+	// 現在のセクション内を走査(次のセクション見出しまで)
+	for (std::size_t i = static_cast<std::size_t>(scanStartIdx); i < m_menu.size(); ++i)
+	{
+		const auto& pItem = m_menu[i];
+
+		if (pItem == nullptr)
+		{
+			continue;
+		}
+
+		// 次のセクション見出しに到達したら終了
+		if (i > static_cast<std::size_t>(scanStartIdx) && pItem->isSubFolderHeading())
+		{
+			break;
+		}
+
+		// フォルダ項目はスキップ
+		if (pItem->isFolder())
+		{
+			continue;
+		}
+
+		// fullPath()から楽曲フォルダ名を抽出して先頭文字を比較
+		const String folderName = FsUtils::DirectoryNameByDirectoryPath(pItem->fullPath());
+
+		if (!folderName.isEmpty() &&
+			ToLower(folderName[0]) == ToLower(letter))
+		{
+			setCursorAndSave(static_cast<int32>(i));
+			m_songSelectSe.play();
+			refreshContentCanvasParams();
+			refreshSongPreview();
+			return;
+		}
+	}
+}
+
+void SelectMenu::jumpToNextAlphabet()
+{
+	if (m_menu.empty())
+	{
+		return;
+	}
+
+	const int32 currentCursor = m_menu.cursor();
+	const auto& currentItem = m_menu.cursorValue();
+
+	// 現在の項目がフォルダまたはセクション見出しの場合は何もしない
+	if (!currentItem || currentItem->isFolder() || currentItem->isSubFolderHeading())
+	{
+		return;
+	}
+
+	// 現在の楽曲の先頭文字を取得
+	const String currentFolderName = FsUtils::DirectoryNameByDirectoryPath(currentItem->fullPath());
+	if (currentFolderName.isEmpty())
+	{
+		return;
+	}
+	const char32 currentFirstChar = ToLower(currentFolderName[0]);
+
+	// 走査範囲の終了位置を決定(次のセクション見出しまで)
+	std::size_t scanEndIdx = m_menu.size();
+	for (std::size_t i = static_cast<std::size_t>(currentCursor) + 1; i < m_menu.size(); ++i)
+	{
+		const auto& pItem = m_menu[i];
+		if (pItem && pItem->isSubFolderHeading())
+		{
+			scanEndIdx = i;
+			break;
+		}
+	}
+
+	// 現在の項目の次から走査
+	for (std::size_t i = static_cast<std::size_t>(currentCursor) + 1; i < scanEndIdx; ++i)
+	{
+		const auto& pItem = m_menu[i];
+
+		if (pItem == nullptr || pItem->isFolder())
+		{
+			continue;
+		}
+
+		const String folderName = FsUtils::DirectoryNameByDirectoryPath(pItem->fullPath());
+		if (folderName.isEmpty())
+		{
+			continue;
+		}
+
+		const char32 firstChar = ToLower(folderName[0]);
+
+		if (firstChar != currentFirstChar)
+		{
+			// 異なる先頭文字が見つかった
+			setCursorAndSave(static_cast<int32>(i));
+			m_songSelectSe.play();
+			refreshContentCanvasParams();
+			refreshSongPreview();
+			return;
+		}
+	}
+}
+
+void SelectMenu::jumpToPrevAlphabet()
+{
+	if (m_menu.empty())
+	{
+		return;
+	}
+
+	const int32 currentCursor = m_menu.cursor();
+	const auto& currentItem = m_menu.cursorValue();
+
+	// 現在の項目がフォルダまたはセクション見出しの場合は何もしない
+	if (!currentItem || currentItem->isFolder() || currentItem->isSubFolderHeading())
+	{
+		return;
+	}
+
+	// 現在の楽曲の先頭文字を取得
+	const String currentFolderName = FsUtils::DirectoryNameByDirectoryPath(currentItem->fullPath());
+	if (currentFolderName.isEmpty())
+	{
+		return;
+	}
+	const char32 currentFirstChar = ToLower(currentFolderName[0]);
+
+	// 走査範囲の開始位置を決定(前のセクション見出しまで)
+	int32 scanStartIdx = 0;
+	for (int32 i = currentCursor - 1; i >= 0; --i)
+	{
+		const auto& pItem = m_menu[static_cast<std::size_t>(i)];
+		if (pItem && pItem->isSubFolderHeading())
+		{
+			scanStartIdx = i + 1;
+			break;
+		}
+	}
+
+	// 現在の項目の前から逆向きに走査
+	int32 targetIdx = -1;
+	char32 targetFirstChar = U'\0';
+	for (int32 i = currentCursor - 1; i >= scanStartIdx; --i)
+	{
+		const auto& pItem = m_menu[static_cast<std::size_t>(i)];
+
+		if (pItem == nullptr || pItem->isFolder())
+		{
+			continue;
+		}
+
+		const String folderName = FsUtils::DirectoryNameByDirectoryPath(pItem->fullPath());
+		if (folderName.isEmpty())
+		{
+			continue;
+		}
+
+		const char32 firstChar = ToLower(folderName[0]);
+
+		if (firstChar != currentFirstChar)
+		{
+			// 異なる先頭文字が見つかった
+			if (targetFirstChar == U'\0' || firstChar == targetFirstChar)
+			{
+				// 最初に見つかった異なる文字、またはその文字と同じ文字
+				targetFirstChar = firstChar;
+				targetIdx = i;
+			}
+			else
+			{
+				// さらに異なる文字が見つかったので、前回の位置で停止
+				break;
+			}
+		}
+	}
+
+	if (targetIdx >= 0)
+	{
+		setCursorAndSave(targetIdx);
+		m_songSelectSe.play();
+		refreshContentCanvasParams();
+		refreshSongPreview();
+	}
+}
+
 bool SelectMenu::openDirectoryWithLevelSort(FilePathView directoryPath)
 {
 	if (!directoryPath.empty())

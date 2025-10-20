@@ -121,4 +121,10 @@ public:
 	const Texture& getIconTexture(FilePathView filePath);
 
 	void reloadCurrentDirectory();
+
+	void jumpToAlphabetItem(char32 letter);
+
+	void jumpToNextAlphabet();
+
+	void jumpToPrevAlphabet();
 };

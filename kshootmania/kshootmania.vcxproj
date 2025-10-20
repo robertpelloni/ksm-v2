@@ -138,6 +138,7 @@
     <ClCompile Include="src\i18n\i18n.cpp" />
     <ClCompile Include="src\ini\config_ini.cpp" />
     <ClCompile Include="src\ini\ksm_ini_data.cpp" />
+    <ClCompile Include="src\input\single_button_up_detection.cpp" />
     <ClCompile Include="src\input\cursor\button_cursor_input_device.cpp" />
     <ClCompile Include="src\input\cursor\cursor_input.cpp" />
     <ClCompile Include="src\input\key_config.cpp" />
@@ -326,6 +327,7 @@
     <ClInclude Include="src\i18n\i18n.hpp" />
     <ClInclude Include="src\ini\config_ini.hpp" />
     <ClInclude Include="src\ini\ksm_ini_data.hpp" />
+    <ClInclude Include="src\input\single_button_up_detection.hpp" />
     <ClInclude Include="src\input\cursor\button_cursor_input_device.hpp" />
     <ClInclude Include="src\input\cursor\cursor_input.hpp" />
     <ClInclude Include="src\input\cursor\icursor_input_device.hpp" />
