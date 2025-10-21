@@ -103,6 +103,7 @@ namespace MusicGame
 		// 折り返し時・終了時・直角判定時のアニメーション
 		AnimRingBuffer<LaserAnimStatus, Graphics::kLaserRippleAnimMaxPlaying> rippleAnim;
 
+		// カーソルがCritical判定範囲内にあるかを返す
 		bool isCursorInCriticalJudgmentRange() const
 		{
 			return cursorX.has_value() && noteCursorX.has_value() && Judgment::IsLaserCursorInCriticalJudgmentRange(cursorX.value(), noteCursorX.value());

@@ -116,8 +116,14 @@ namespace MusicGame::Judgment
 
 		using LineJudgment = LaserLaneJudgment::LineJudgment;
 
-		kson::ByPulse<LineJudgment> CreateLineJudgmentResultArray(const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo)
+		kson::ByPulse<LineJudgment> CreateLineJudgmentResultArray(const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, JudgmentPlayMode judgmentPlayMode)
 		{
+			// Offモードの場合は空配列を返す
+			if (judgmentPlayMode == JudgmentPlayMode::kOff)
+			{
+				return {};
+			}
+
 			// まずはbutton_lane_judgment.cppのCreateLongNoteJudgmentArray関数と同じやり方で生成
 
 			kson::ByPulse<LineJudgment> judgmentArray;
@@ -187,8 +193,14 @@ namespace MusicGame::Judgment
 			return judgmentArray;
 		}
 
-		kson::ByPulse<LaserSlamJudgment> CreateSlamJudgmentArray(const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache)
+		kson::ByPulse<LaserSlamJudgment> CreateSlamJudgmentArray(const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache, JudgmentPlayMode judgmentPlayMode)
 		{
+			// Offモードの場合は空配列を返す
+			if (judgmentPlayMode == JudgmentPlayMode::kOff)
+			{
+				return {};
+			}
+
 			kson::ByPulse<LaserSlamJudgment> judgmentArray;
 
 			for (const auto& [y, section] : lane)
@@ -664,9 +676,9 @@ namespace MusicGame::Judgment
 		, m_laserLineDirectionMapForRippleEffect(CreateLaserLineDirectionMapForRippleEffect(m_laserLineDirectionMap, lane))
 		, m_laserLineDirectionChangeSecArray(CreateLaserLineDirectionChangeSecArray(lane, beatInfo, timingCache))
 		, m_laserLineDirectionChangeSecArrayCursor(m_laserLineDirectionChangeSecArray.begin())
-		, m_lineJudgmentArray(CreateLineJudgmentResultArray(lane, beatInfo))
+		, m_lineJudgmentArray(CreateLineJudgmentResultArray(lane, beatInfo, judgmentPlayMode))
 		, m_passedLineJudgmentCursor(m_lineJudgmentArray.begin())
-		, m_slamJudgmentArray(CreateSlamJudgmentArray(lane, beatInfo, timingCache))
+		, m_slamJudgmentArray(CreateSlamJudgmentArray(lane, beatInfo, timingCache, judgmentPlayMode))
 		, m_slamJudgmentArrayCursor(m_slamJudgmentArray.begin())
 	{
 	}
@@ -803,6 +815,11 @@ namespace MusicGame::Judgment
 
 			// 通過済みのLASER判定をCRITICALにする
 			processPassedLineJudgment(lane, currentPulse, laneStatusRef, judgmentHandlerRef, IsAutoPlayYN::Yes);
+		}
+		else if (m_judgmentPlayMode == JudgmentPlayMode::kOff)
+		{
+			// Offモード時もカーソルを自動追従させる
+			processAutoCursorMovementForAutoPlay(currentTimeSec, laneStatusRef);
 		}
 
 		// LASER折り返し波紋(描画用Critical範囲で判定、かつセクション内にいる場合のみ)

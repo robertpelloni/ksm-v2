@@ -507,6 +507,9 @@
     <ClCompile Include="src\scene\result\result_panel.cpp">
       <Filter>Source Files\scene\result</Filter>
     </ClCompile>
+    <ClCompile Include="src\music_game\play_mode_util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\music_game\play_result.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1104,6 +1107,9 @@
     </ClInclude>
     <ClInclude Include="src\scene\result\result_scene_args.hpp">
       <Filter>Header Files\scene\result</Filter>
+    </ClInclude>
+    <ClInclude Include="src\music_game\play_mode_util.hpp">
+      <Filter>Header Files\music_game</Filter>
     </ClInclude>
     <ClInclude Include="src\music_game\play_result.hpp">
       <Filter>Header Files\music_game</Filter>

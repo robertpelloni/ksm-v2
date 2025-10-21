@@ -183,6 +183,7 @@
     <ClCompile Include="src\music_game\judgment\laser_lane_judgment.cpp" />
     <ClCompile Include="src\music_game\judgment\laser_slam_shake.cpp" />
     <ClCompile Include="src\music_game\judgment\scoring_status.cpp" />
+    <ClCompile Include="src\music_game\play_mode_util.cpp" />
     <ClCompile Include="src\music_game\play_result.cpp" />
     <ClCompile Include="src\music_game\scroll\highway_scroll.cpp" />
     <ClCompile Include="src\music_game\ui\hispeed_setting_menu.cpp" />
@@ -379,6 +380,7 @@
     <ClInclude Include="src\music_game\judgment\laser_lane_judgment.hpp" />
     <ClInclude Include="src\music_game\judgment\laser_slam_shake.hpp" />
     <ClInclude Include="src\music_game\judgment\scoring_status.hpp" />
+    <ClInclude Include="src\music_game\play_mode_util.hpp" />
     <ClInclude Include="src\music_game\play_option.hpp" />
     <ClInclude Include="src\music_game\turn_util.hpp" />
     <ClInclude Include="src\music_game\play_result.hpp" />

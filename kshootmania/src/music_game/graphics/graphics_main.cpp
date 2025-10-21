@@ -210,7 +210,7 @@ namespace MusicGame::Graphics
 	void GraphicsMain::draw(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const GameStatus& gameStatus, const ViewStatus& viewStatus, const Scroll::HighwayScrollContext& highwayScrollContext) const
 	{
 		// 各レンダーテクスチャを用意
-		m_highway3DGraphics.draw2D(chartData, timingCache, gameStatus, viewStatus, highwayScrollContext);
+		m_highway3DGraphics.draw2D(chartData, m_playOption, timingCache, gameStatus, viewStatus, highwayScrollContext);
 		m_jdgoverlay3DGraphics.draw2D(gameStatus, viewStatus);
 		Graphics2D::Flush();
 

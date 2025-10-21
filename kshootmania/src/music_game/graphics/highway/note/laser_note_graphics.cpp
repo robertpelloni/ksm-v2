@@ -226,7 +226,7 @@ namespace MusicGame::Graphics
 	{
 	}
 
-	void LaserNoteGraphics::draw(const kson::ChartData& chartData, const GameStatus& gameStatus, const Scroll::HighwayScrollContext& highwayScrollContext, const HighwayRenderTexture& target) const
+	void LaserNoteGraphics::draw(const kson::ChartData& chartData, const PlayOption& playOption, const GameStatus& gameStatus, const Scroll::HighwayScrollContext& highwayScrollContext, const HighwayRenderTexture& target) const
 	{
 		const ScopedRenderStates2D samplerState(SamplerState::ClampNearest);
 		const ScopedRenderStates2D renderState(BlendState::Additive);
@@ -248,7 +248,7 @@ namespace MusicGame::Graphics
 					// レーザーのセクション全体が描画範囲より下にある場合は描画しない
 					continue;
 				}
-				
+
 				const int32 sectionStartPositionY = highwayScrollContext.getPositionY(y) + kLaserShiftY;
 				if (sectionStartPositionY + kLaserStartTextureSize.y < 0)
 				{
@@ -257,7 +257,8 @@ namespace MusicGame::Graphics
 				}
 
 				// LASERセクションの判定状況をもとに描画すべきテクスチャの行を取得
-				const JudgmentStatus judgmentStatus = GetLaserSectionJudgmentStatus(laneStatus, y);
+				// Offモードの場合は常に通常状態のUVを使用
+				const JudgmentStatus judgmentStatus = (playOption.laserJudgmentPlayMode == JudgmentPlayMode::kOff) ? JudgmentStatus::kNormal : GetLaserSectionJudgmentStatus(laneStatus, y);
 				const int32 textureRow = LaserTextureRow(judgmentStatus, gameStatus.currentTimeSec);
 
 				// LASERセクションを描画

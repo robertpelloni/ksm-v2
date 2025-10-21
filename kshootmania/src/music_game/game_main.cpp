@@ -1,6 +1,7 @@
 ﻿#include "game_main.hpp"
 #include "game_defines.hpp"
 #include "turn_util.hpp"
+#include "play_mode_util.hpp"
 #include "kson/kson.hpp"
 #include "input/platform_key.hpp"
 
@@ -21,7 +22,7 @@ namespace MusicGame
 			return secSincePlayFinishPrev >= kPlayFinishFadeOutStartSec;
 		}
 
-		// 譜面データを読み込み、Turn変換を適用
+		// 譜面データを読み込み、Turn変換とPlayModeフィルタを適用
 		kson::ChartData LoadChartDataWithTurn(const GameCreateInfo& createInfo)
 		{
 			auto chartData = kson::LoadKSHChartData(createInfo.chartFilePath.narrow());
@@ -29,6 +30,9 @@ namespace MusicGame
 			// Turn変換を適用
 			const TurnTable turnTable = MakeTurnTable(createInfo.playOption.turnMode);
 			ApplyTurnTable(chartData, turnTable);
+
+			// Off/Hideモードフィルタを適用
+			ApplyPlayModeFilter(chartData, createInfo.playOption);
 
 			return chartData;
 		}

@@ -26,8 +26,14 @@ namespace MusicGame::Judgment
 			return pulseToSec;
 		}
 
-		kson::ByPulse<JudgmentResult> CreateChipNoteJudgmentArray(const kson::ByPulse<kson::Interval>& lane)
+		kson::ByPulse<JudgmentResult> CreateChipNoteJudgmentArray(const kson::ByPulse<kson::Interval>& lane, JudgmentPlayMode judgmentPlayMode)
 		{
+			// Offモードの場合は空配列を返す
+			if (judgmentPlayMode == JudgmentPlayMode::kOff)
+			{
+				return {};
+			}
+
 			kson::ByPulse<JudgmentResult> judgmentArray;
 
 			for (const auto& [y, note] : lane)
@@ -43,8 +49,14 @@ namespace MusicGame::Judgment
 
 		using LongNoteJudgment = ButtonLaneJudgment::LongNoteJudgment;
 
-		kson::ByPulse<ButtonLaneJudgment::LongNoteJudgment> CreateLongNoteJudgmentArray(const kson::ByPulse<kson::Interval>& lane, const kson::BeatInfo& beatInfo)
+		kson::ByPulse<ButtonLaneJudgment::LongNoteJudgment> CreateLongNoteJudgmentArray(const kson::ByPulse<kson::Interval>& lane, const kson::BeatInfo& beatInfo, JudgmentPlayMode judgmentPlayMode)
 		{
+			// Offモードの場合は空配列を返す
+			if (judgmentPlayMode == JudgmentPlayMode::kOff)
+			{
+				return {};
+			}
+
 			// HSP版: https://github.com/kshootmania/ksm-v1/blob/8deaf1fd147f6e13ac6665731e1ff1e00c5b4176/src/scene/play/play_chart_load.hsp#L1707-L1761
 
 			kson::ByPulse<LongNoteJudgment> judgmentArray;
@@ -342,8 +354,8 @@ namespace MusicGame::Judgment
 		: m_judgmentPlayMode(judgmentPlayMode)
 		, m_keyConfigButton(keyConfigButton)
 		, m_pulseToSec(CreatePulseToSec(lane, beatInfo, timingCache))
-		, m_chipJudgmentArray(CreateChipNoteJudgmentArray(lane))
-		, m_longJudgmentArray(CreateLongNoteJudgmentArray(lane, beatInfo))
+		, m_chipJudgmentArray(CreateChipNoteJudgmentArray(lane, judgmentPlayMode))
+		, m_longJudgmentArray(CreateLongNoteJudgmentArray(lane, beatInfo, judgmentPlayMode))
 		, m_passedNoteCursor(lane.begin())
 		, m_passedLongJudgmentCursor(m_longJudgmentArray.begin())
 	{
@@ -408,6 +420,27 @@ namespace MusicGame::Judgment
 				}
 				laneStatusRef.longNotePressed = none;
 				laneStatusRef.currentLongNotePulse = none;
+			}
+		}
+		else if (m_judgmentPlayMode == JudgmentPlayMode::kOff)
+		{
+			// Offモード時もボタン入力を受け付けてアニメーションを表示
+			kson::Pulse currentLongNoteY;
+			if (IsDuringLongNote(lane, currentPulse, &currentLongNoteY) && KeyConfig::Pressed(m_keyConfigButton))
+			{
+				// ロングノーツ中でボタンを押している場合
+				laneStatusRef.currentLongNotePulse = currentLongNoteY;
+				laneStatusRef.currentLongNoteAnimOffsetTimeSec = m_pulseToSec.at(currentLongNoteY);
+			}
+			else
+			{
+				// ロングノーツ中でない、またはボタンを押していない場合
+				if (laneStatusRef.currentLongNotePulse.has_value())
+				{
+					// 前フレームでロングノーツが存在し、現在フレームで存在しない場合は離した扱いにする(アニメーション用)
+					laneStatusRef.currentLongNotePulse = none;
+					laneStatusRef.currentLongNoteAnimOffsetTimeSec = currentTimeSec;
+				}
 			}
 		}
 
