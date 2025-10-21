@@ -23,7 +23,7 @@ namespace
 				.visualOffsetMs = ConfigIni::GetInt(ConfigIni::Key::kVisualOffset),
 				.isAutoPlaySE = ConfigIni::GetBool(ConfigIni::Key::kAutoPlaySE),
 			},
-			.assistTickEnabled = ConfigIni::GetBool(ConfigIni::Key::kAssistTick),
+			.assistTickMode = static_cast<AssistTickMode>(ConfigIni::GetInt(ConfigIni::Key::kAssistTick, static_cast<int32>(AssistTickMode::kOff))),
 		};
 	}
 }

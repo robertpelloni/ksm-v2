@@ -66,6 +66,7 @@ namespace I18n
 		kTurnRandom = 18,
 		kAssistTick = 30,
 		kAssistTickOn = 31,
+		kAssistTickOff = 32,
 		kAutoSync = 37,
 		kAutoSyncOnHigh = 38,
 		kAutoSyncOnMid = 39,

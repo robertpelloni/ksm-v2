@@ -23,7 +23,7 @@ namespace MusicGame
 
 		PlayOption playOption;
 
-		bool assistTickEnabled = false;
+		AssistTickMode assistTickMode = AssistTickMode::kOff;
 	};
 
 	class GameMain

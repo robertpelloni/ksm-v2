@@ -3,6 +3,7 @@
 #include "select_menu.hpp"
 #include "select_folder_state.hpp"
 #include "input/fx_button_up_detection.hpp"
+#include "bt_option_panel.hpp"
 
 class SelectScene : public Co::UpdaterSceneBase
 {
@@ -20,6 +21,8 @@ private:
 	Array<String> m_playerNames;
 
 	FXButtonUpDetection m_fxButtonUpDetection;
+
+	BTOptionPanel m_btOptionPanel;
 
 	void moveToPlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay);
 

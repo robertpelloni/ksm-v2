@@ -142,6 +142,7 @@ SelectScene::SelectScene()
 	, m_canvas(LoadSelectSceneCanvas())
 	, m_menu(m_canvas, [this](FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlayYN) { moveToPlayScene(chartFilePath, isAutoPlayYN); })
 	, m_playerNames(GetPlayerNames())
+	, m_btOptionPanel(m_canvas)
 {
 	AutoMuteAddon::SetEnabled(true);
 
@@ -164,6 +165,17 @@ SelectScene::SelectScene()
 
 void SelectScene::update()
 {
+	// BTオプションパネル更新
+	m_btOptionPanel.update();
+	if (m_btOptionPanel.isVisible())
+	{
+		// BTオプションパネル表示中は選曲画面の操作を無効化
+		// ただし、アルファベット前後ジャンプ(BTを押しながらFX-/R)は有効にする
+		updateAlphabetJump();
+		m_canvas->update();
+		return;
+	}
+
 	updatePlayerSwitching();
 
 	const bool closeFolder = m_menu.isFolderOpen() && KeyConfig::Down(m_folderCloseButton/* ← kBackspace・kBackのいずれかが入っている */);

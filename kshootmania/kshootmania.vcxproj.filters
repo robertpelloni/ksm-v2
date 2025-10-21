@@ -303,6 +303,9 @@
     <ClCompile Include="src\scene\option\option_menu.cpp">
       <Filter>Source Files\scene\option</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\select\bt_option_panel.cpp">
+      <Filter>Source Files\scene\select</Filter>
+    </ClCompile>
     <ClCompile Include="src\scene\select\select_scene.cpp">
       <Filter>Source Files\scene\select</Filter>
     </ClCompile>
@@ -858,6 +861,9 @@
     </ClInclude>
     <ClInclude Include="src\scene\title\title_scene.hpp">
       <Filter>Header Files\scene\title</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\select\bt_option_panel.hpp">
+      <Filter>Header Files\scene\select</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\select\select_scene.hpp">
       <Filter>Header Files\scene\select</Filter>

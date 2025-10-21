@@ -69,6 +69,8 @@ enum class TurnMode : int32
 	kNormal = 0,
 	kMirror,
 	kRandom,
+
+	kCount,
 };
 
 enum class JudgmentPlayMode : int32
@@ -77,4 +79,50 @@ enum class JudgmentPlayMode : int32
 	kOff,
 	kAuto,
 	kHide,
+};
+
+enum class AssistTickMode : int32
+{
+	kOff = 0,
+	kOn,
+
+	kCount,
+};
+
+// TODO: プレイ側で実装
+enum class AutoSyncMode : int32
+{
+	kOff = 0,
+	kLow,
+	kMid,
+	kHigh,
+
+	kCount,
+};
+
+// TODO: プレイ側で実装
+enum class FastSlowMode : int32
+{
+	kHide = 0,
+	kShow,
+
+	kCount,
+};
+
+// TODO: プレイ側で実装
+enum class NoteSkinType : int32
+{
+	kDefault = 0,
+	kNote,
+
+	kCount,
+};
+
+// TODO: プレイ側で実装
+enum class MovieMode : int32
+{
+	kOff = 0,
+	kOn,
+
+	kCount,
 };
