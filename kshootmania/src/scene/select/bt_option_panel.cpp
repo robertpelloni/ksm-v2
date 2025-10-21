@@ -3,6 +3,7 @@
 #include "common/math_utils.hpp"
 #include "i18n/i18n.hpp"
 #include "ini/config_ini.hpp"
+#include "runtime_config.hpp"
 #include "input/cursor/cursor_input.hpp"
 
 namespace
@@ -550,11 +551,19 @@ void BTOptionPanel::update()
 			{
 				m_gaugeType.update();
 				valueChanged = m_gaugeType.deltaCursor() != 0;
+				if (valueChanged)
+				{
+					RuntimeConfig::SetGaugeType(m_gaugeType.cursorAs<GaugeType>());
+				}
 			}
 			else if (currentItem == BTBMenuItem::kTurn)
 			{
 				m_turnMode.update();
 				valueChanged = m_turnMode.deltaCursor() != 0;
+				if (valueChanged)
+				{
+					RuntimeConfig::SetTurnMode(m_turnMode.cursorAs<TurnMode>());
+				}
 			}
 
 			if (valueChanged)
@@ -664,16 +673,16 @@ bool BTOptionPanel::isVisible() const
 void BTOptionPanel::loadFromConfigIni()
 {
 
-	// BT-Aメニューの設定を読み込み
-	m_judgmentModeBT.setCursor(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeBT, ConfigIni::Value::JudgmentMode::kOn));
-	m_judgmentModeFX.setCursor(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeFX, ConfigIni::Value::JudgmentMode::kOn));
-	m_judgmentModeLaser.setCursor(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeLaser, ConfigIni::Value::JudgmentMode::kOn));
+	// BT-Aメニューの設定(config.iniには保存しない)
+	m_judgmentModeBT.setCursor(static_cast<int32>(RuntimeConfig::GetJudgmentPlayModeBT()));
+	m_judgmentModeFX.setCursor(static_cast<int32>(RuntimeConfig::GetJudgmentPlayModeFX()));
+	m_judgmentModeLaser.setCursor(static_cast<int32>(RuntimeConfig::GetJudgmentPlayModeLaser()));
 
-	// BT-Bメニューの設定を読み込み
-	m_gaugeType.setCursor(ConfigIni::GetInt(ConfigIni::Key::kEffRateType, static_cast<int32>(GaugeType::kNormalGauge)));
-	m_turnMode.setCursor(ConfigIni::GetInt(ConfigIni::Key::kTurn, static_cast<int32>(TurnMode::kNormal)));
+	// BT-Bメニューの設定(config.iniには保存しない)
+	m_gaugeType.setCursor(static_cast<int32>(RuntimeConfig::GetGaugeType()));
+	m_turnMode.setCursor(static_cast<int32>(RuntimeConfig::GetTurnMode()));
 
-	// BT-Cメニューの設定を読み込み
+	// BT-Cメニューの設定
 	m_assistTick.setCursor(ConfigIni::GetInt(ConfigIni::Key::kAssistTick, static_cast<int32>(AssistTickMode::kOff)));
 
 	// TODO: AutoSync設定を実装
@@ -692,23 +701,23 @@ void BTOptionPanel::loadFromConfigIni()
 
 	m_movie.setCursor(ConfigIni::GetInt(ConfigIni::Key::kBGMovie, static_cast<int32>(MovieMode::kOn)));
 
-	// BT-Dメニュー(ハイスピード)の設定を読み込み
+	// BT-Dメニュー(ハイスピード)の設定
 	// TODO: ハイスピード値の読み込み処理を実装
 }
 
 void BTOptionPanel::saveToConfigIni()
 {
 
-	// BT-Aメニューの設定を保存
-	ConfigIni::SetInt(ConfigIni::Key::kJudgmentModeBT, m_judgmentModeBT.cursor());
-	ConfigIni::SetInt(ConfigIni::Key::kJudgmentModeFX, m_judgmentModeFX.cursor());
-	ConfigIni::SetInt(ConfigIni::Key::kJudgmentModeLaser, m_judgmentModeLaser.cursor());
+	// BT-Aメニューの設定(config.iniには保存しない)
+	RuntimeConfig::SetJudgmentPlayModeBT(m_judgmentModeBT.cursorAs<JudgmentPlayMode>());
+	RuntimeConfig::SetJudgmentPlayModeFX(m_judgmentModeFX.cursorAs<JudgmentPlayMode>());
+	RuntimeConfig::SetJudgmentPlayModeLaser(m_judgmentModeLaser.cursorAs<JudgmentPlayMode>());
 
-	// BT-Bメニューの設定を保存
-	ConfigIni::SetInt(ConfigIni::Key::kEffRateType, m_gaugeType.cursor());
-	ConfigIni::SetInt(ConfigIni::Key::kTurn, m_turnMode.cursor());
+	// BT-Bメニューの設定(config.iniには保存しない)
+	RuntimeConfig::SetGaugeType(m_gaugeType.cursorAs<GaugeType>());
+	RuntimeConfig::SetTurnMode(m_turnMode.cursorAs<TurnMode>());
 
-	// BT-Cメニューの設定を保存
+	// BT-Cメニューの設定
 	ConfigIni::SetInt(ConfigIni::Key::kAssistTick, m_assistTick.cursor());
 
 	// TODO: AutoSync設定を実装
@@ -726,7 +735,7 @@ void BTOptionPanel::saveToConfigIni()
 
 	ConfigIni::SetInt(ConfigIni::Key::kBGMovie, m_movie.cursor());
 
-	// BT-Dメニュー(ハイスピード)の設定を保存
+	// BT-Dメニュー(ハイスピード)の設定
 	// TODO: ハイスピード値の保存処理を実装
 
 	// ConfigIniをファイルに書き込み

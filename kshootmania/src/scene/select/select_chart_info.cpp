@@ -2,6 +2,7 @@
 #include "high_score/ksc_io.hpp"
 #include "ini/config_ini.hpp"
 #include "kson/io/ksh_io.hpp"
+#include "runtime_config.hpp"
 
 namespace
 {
@@ -9,11 +10,11 @@ namespace
 	{
 		const KscKey condition
 		{
-			.gaugeType = static_cast<GaugeType>(ConfigIni::GetInt(ConfigIni::Key::kEffRateType, static_cast<int32>(GaugeType::kNormalGauge))),
-			.turnMode = static_cast<TurnMode>(ConfigIni::GetInt(ConfigIni::Key::kTurn, static_cast<int32>(TurnMode::kNormal))),
-			.btPlayMode = static_cast<JudgmentPlayMode>(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeBT, ConfigIni::Value::JudgmentMode::kOn)),
-			.fxPlayMode = static_cast<JudgmentPlayMode>(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeFX, ConfigIni::Value::JudgmentMode::kOn)),
-			.laserPlayMode = static_cast<JudgmentPlayMode>(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeLaser, ConfigIni::Value::JudgmentMode::kOn)),
+			.gaugeType = RuntimeConfig::GetGaugeType(),
+			.turnMode = RuntimeConfig::GetTurnMode(),
+			.btPlayMode = RuntimeConfig::GetJudgmentPlayModeBT(),
+			.fxPlayMode = RuntimeConfig::GetJudgmentPlayModeFX(),
+			.laserPlayMode = RuntimeConfig::GetJudgmentPlayModeLaser(),
 		};
 
 		return KscIo::ReadHighScoreInfo(chartFilePath, condition);

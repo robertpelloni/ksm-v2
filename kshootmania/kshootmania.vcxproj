@@ -143,6 +143,7 @@
     <ClCompile Include="src\input\cursor\cursor_input.cpp" />
     <ClCompile Include="src\input\key_config.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\runtime_config.cpp" />
     <ClCompile Include="src\music_game\audio\assist_tick.cpp" />
     <ClCompile Include="src\music_game\audio\audio_effect_main.cpp" />
     <ClCompile Include="src\music_game\audio\audio_effect_utils.cpp" />
@@ -389,6 +390,7 @@
     <ClInclude Include="src\music_game\timeline.hpp" />
     <ClInclude Include="src\music_game\ui\hispeed_setting_menu.hpp" />
     <ClInclude Include="src\music_game\view_status.hpp" />
+    <ClInclude Include="src\runtime_config.hpp" />
     <ClInclude Include="src\scene\common\common_assets.hpp" />
     <ClInclude Include="src\scene\common\show_loading_one_frame.hpp" />
     <ClInclude Include="src\scene\option\option_assets.hpp" />

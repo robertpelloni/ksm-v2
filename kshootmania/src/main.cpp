@@ -6,6 +6,7 @@
 #include "common/asset_management.hpp"
 #include "addon/auto_mute_addon.hpp"
 #include "ksmaudio/ksmaudio.hpp"
+#include "runtime_config.hpp"
 #include "scene/title/title_scene.hpp"
 
 void CreateHighScoreBackup()
@@ -49,6 +50,9 @@ void KSMMain()
 
 	// config.iniを読み込み
 	ConfigIni::Load();
+
+	// ランタイム設定を初期化
+	RuntimeConfig::RestoreJudgmentModesFromConfigIni();
 
 	// 言語ファイルを読み込み
 	I18n::LoadLanguage(ConfigIni::GetString(ConfigIni::Key::kLanguage));

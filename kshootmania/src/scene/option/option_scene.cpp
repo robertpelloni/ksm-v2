@@ -1,6 +1,7 @@
 ﻿#include "option_scene.hpp"
 #include "option_assets.hpp"
 #include "common/ime_utils.hpp"
+#include "runtime_config.hpp"
 #include "scene/title/title_scene.hpp"
 
 // TODO: TextureIdxまわりどうにかする
@@ -104,25 +105,31 @@ namespace
 				}),*/
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueInputJudgment, {
-				/*CreateInfo::Enum(ConfigIni::Key::kJudgmentModeBT, Array<StringView>{
+				CreateInfo::Enum(ConfigIni::Key::kJudgmentModeBT, Array<StringView>{
 					I18n::Get(I18n::Option::kJudgmentOn),
 					I18n::Get(I18n::Option::kJudgmentOff),
 					I18n::Get(I18n::Option::kJudgmentAuto),
 					I18n::Get(I18n::Option::kJudgmentHide),
+				}).setOnChangeCallback([]() {
+					RuntimeConfig::SetJudgmentPlayModeBT(static_cast<JudgmentPlayMode>(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeBT)));
 				}),
 				CreateInfo::Enum(ConfigIni::Key::kJudgmentModeFX, Array<StringView>{
 					I18n::Get(I18n::Option::kJudgmentOn),
 					I18n::Get(I18n::Option::kJudgmentOff),
 					I18n::Get(I18n::Option::kJudgmentAuto),
 					I18n::Get(I18n::Option::kJudgmentHide),
+				}).setOnChangeCallback([]() {
+					RuntimeConfig::SetJudgmentPlayModeFX(static_cast<JudgmentPlayMode>(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeFX)));
 				}),
 				CreateInfo::Enum(ConfigIni::Key::kJudgmentModeLaser, Array<StringView>{
 					I18n::Get(I18n::Option::kJudgmentOn),
 					I18n::Get(I18n::Option::kJudgmentOff),
 					I18n::Get(I18n::Option::kJudgmentAuto),
 					I18n::Get(I18n::Option::kJudgmentHide),
+				}).setOnChangeCallback([]() {
+					RuntimeConfig::SetJudgmentPlayModeLaser(static_cast<JudgmentPlayMode>(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeLaser)));
 				}),
-				CreateInfo::Enum(ConfigIni::Key::kLaserInputType, Array<IntStrPair>{
+				/*CreateInfo::Enum(ConfigIni::Key::kLaserInputType, Array<IntStrPair>{
 					IntStrPair{ ConfigIni::Value::LaserInputType::kKeyboard, I18n::Get(I18n::Option::kLaserInputTypeKeyboard) },
 					IntStrPair{ ConfigIni::Value::LaserInputType::kSlider, I18n::Get(I18n::Option::kLaserInputTypeSlider) },
 					IntStrPair{ ConfigIni::Value::LaserInputType::kMouseXY, I18n::Get(I18n::Option::kLaserInputTypeMouseXY) },
@@ -131,7 +138,7 @@ namespace
 				CreateInfo::Enum(ConfigIni::Key::kAssistTick, Array<StringView>{
 					I18n::Get(I18n::Option::kAssistTickOff),
 					I18n::Get(I18n::Option::kAssistTickOn),
-				}).setKeyTextureIdx(4),
+				}).setKeyTextureIdx(3),
 				CreateInfo::Int(ConfigIni::Key::kInputDelay, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
 				.setAdditionalSuffixes(
 					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),

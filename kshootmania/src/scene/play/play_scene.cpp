@@ -1,6 +1,7 @@
 ﻿#include "play_scene.hpp"
 #include "scene/select/select_scene.hpp"
 #include "scene/result/result_scene.hpp"
+#include "runtime_config.hpp"
 
 namespace
 {
@@ -16,11 +17,11 @@ namespace
 			.playOption = MusicGame::PlayOption
 			{
 				.isAutoPlay = isAutoPlay,
-				.gaugeType = static_cast<GaugeType>(ConfigIni::GetInt(ConfigIni::Key::kEffRateType, static_cast<int32>(GaugeType::kNormalGauge))),
-				.turnMode = static_cast<TurnMode>(ConfigIni::GetInt(ConfigIni::Key::kTurn, static_cast<int32>(TurnMode::kNormal))),
-				.btJudgmentPlayMode = static_cast<JudgmentPlayMode>(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeBT, ConfigIni::Value::JudgmentMode::kOn)),
-				.fxJudgmentPlayMode = static_cast<JudgmentPlayMode>(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeFX, ConfigIni::Value::JudgmentMode::kOn)),
-				.laserJudgmentPlayMode = static_cast<JudgmentPlayMode>(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeLaser, ConfigIni::Value::JudgmentMode::kOn)),
+				.gaugeType = RuntimeConfig::GetGaugeType(),
+				.turnMode = RuntimeConfig::GetTurnMode(),
+				.btJudgmentPlayMode = RuntimeConfig::GetJudgmentPlayModeBT(),
+				.fxJudgmentPlayMode = RuntimeConfig::GetJudgmentPlayModeFX(),
+				.laserJudgmentPlayMode = RuntimeConfig::GetJudgmentPlayModeLaser(),
 				.globalOffsetMs = ConfigIni::GetInt(ConfigIni::Key::kGlobalOffset),
 				.inputDelayMs = ConfigIni::GetInt(ConfigIni::Key::kInputDelay),
 				.laserInputDelayMs = ConfigIni::GetInt(ConfigIni::Key::kLaserInputDelay),
