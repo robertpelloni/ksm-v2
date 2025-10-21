@@ -53,9 +53,12 @@ void PlayScene::update()
 {
 	const auto startFadeOut = m_gameMain.update();
 
-	// 譜面終了時、またはBackボタンでリザルト画面に遷移
+	// Backボタンでリザルト画面に遷移(lockForExit中でも有効)
+	processBackButtonInput();
+
 	if (startFadeOut)
 	{
+		// 譜面終了時にリザルト画面に遷移
 		m_fadeOutDuration = kPlayFinishFadeOutDuration;
 
 		if (m_isAutoPlay)
@@ -73,31 +76,46 @@ void PlayScene::update()
 			requestNextScene<ResultScene>(args);
 		}
 	}
-	else if (KeyConfig::Down(KeyConfig::kBack))
+}
+
+void PlayScene::processBackButtonInput()
+{
+	if (!KeyConfig::Down(KeyConfig::kBack))
 	{
-		m_fadeOutDuration = 0s;
-
-		// Backボタンの場合はスコアが変動しないようロック
-		m_gameMain.lockForExit();
-
-		// 次のシーンで多重に反応しないよう、Backボタンの入力をクリア
-		KeyConfig::ClearInput(KeyConfig::kBack);
-
-		if (m_isAutoPlay)
-		{
-			requestNextScene<SelectScene>();
-		}
-		else
-		{
-			const ResultSceneArgs args =
-			{
-				.chartFilePath = FilePath(m_gameMain.chartFilePath()),
-				.chartData = m_gameMain.chartData(), // TODO: shared_ptrでコピーを避ける?
-				.playResult = m_gameMain.playResult(),
-			};
-			requestNextScene<ResultScene>(args);
-		}
+		return;
 	}
+
+	m_fadeOutDuration = 0s;
+
+	// Backボタンを押した後は以降の処理でスコア変動しないようロック
+	m_gameMain.lockForExit();
+
+	// 次のシーンで多重に反応しないよう、Backボタンの入力をクリア
+	KeyConfig::ClearInput(KeyConfig::kBack);
+
+	if (m_isAutoPlay)
+	{
+		requestNextScene<SelectScene>();
+	}
+	else
+	{
+		const ResultSceneArgs args =
+		{
+			.chartFilePath = FilePath(m_gameMain.chartFilePath()),
+			.chartData = m_gameMain.chartData(), // TODO: shared_ptrでコピーを避ける?
+			.playResult = m_gameMain.playResult(),
+		};
+		requestNextScene<ResultScene>(args);
+	}
+}
+
+void PlayScene::updateFadeOut()
+{
+	// フェードアウト中もゲームの更新は継続
+	m_gameMain.update();
+
+	// Backボタンでフェードアウトをスキップしてリザルト画面に遷移
+	processBackButtonInput();
 }
 
 void PlayScene::draw() const
@@ -112,8 +130,8 @@ inline Co::Task<void> PlayScene::fadeIn()
 
 Co::Task<void> PlayScene::fadeOut()
 {
-	// 再生時間の進行を止めないためにフェードアウト中もGameMainのupdateは実行
-	const auto updateRunner = Co::UpdaterTask([this] { m_gameMain.update(); }).runScoped();
+	// フェードアウト中もBack入力を受け付けるため、updateFadeOutを実行
+	const auto updateRunner = Co::UpdaterTask([this] { updateFadeOut(); }).runScoped();
 
 	m_gameMain.startBGMFadeOut(m_fadeOutDuration);
 	co_await Co::ScreenFadeOut(m_fadeOutDuration);
