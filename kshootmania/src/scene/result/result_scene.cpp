@@ -19,9 +19,9 @@ ResultScene::ResultScene(const ResultSceneArgs& args)
 		{
 			.gaugeType = m_playResult.playOption.gaugeType,
 			.turnMode = m_playResult.playOption.turnMode,
-			.btPlayMode = m_playResult.playOption.btJudgmentPlayMode(),
-			.fxPlayMode = m_playResult.playOption.fxJudgmentPlayMode(),
-			.laserPlayMode = m_playResult.playOption.laserJudgmentPlayMode(),
+			.btPlayMode = m_playResult.playOption.effectiveBtJudgmentPlayMode(),
+			.fxPlayMode = m_playResult.playOption.effectiveFxJudgmentPlayMode(),
+			.laserPlayMode = m_playResult.playOption.effectiveLaserJudgmentPlayMode(),
 		};
 		const FilePathView chartFilePath = args.chartFilePath;
 		KscIo::WriteHighScoreInfo(chartFilePath, m_playResult, condition);

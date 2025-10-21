@@ -10,6 +10,12 @@ namespace MusicGame
 
 		TurnMode turnMode = TurnMode::kNormal;
 
+		JudgmentPlayMode btJudgmentPlayMode = JudgmentPlayMode::kOn;
+
+		JudgmentPlayMode fxJudgmentPlayMode = JudgmentPlayMode::kOn;
+
+		JudgmentPlayMode laserJudgmentPlayMode = JudgmentPlayMode::kOn;
+
 		int32 globalOffsetMs = 0;
 
 		int32 inputDelayMs = 0;
@@ -22,19 +28,22 @@ namespace MusicGame
 
 		bool isAutoPlaySE = false; // FXチップ・直角の効果音のみオートプレイ
 
-		JudgmentPlayMode btJudgmentPlayMode() const
+		// オートプレイを考慮したBT判定モードを取得
+		JudgmentPlayMode effectiveBtJudgmentPlayMode() const
 		{
-			return isAutoPlay ? JudgmentPlayMode::kAuto : JudgmentPlayMode::kOn;
+			return isAutoPlay ? JudgmentPlayMode::kAuto : btJudgmentPlayMode;
 		}
 
-		JudgmentPlayMode fxJudgmentPlayMode() const
+		// オートプレイを考慮したFX判定モードを取得
+		JudgmentPlayMode effectiveFxJudgmentPlayMode() const
 		{
-			return isAutoPlay ? JudgmentPlayMode::kAuto : JudgmentPlayMode::kOn;
+			return isAutoPlay ? JudgmentPlayMode::kAuto : fxJudgmentPlayMode;
 		}
 
-		JudgmentPlayMode laserJudgmentPlayMode() const
+		// オートプレイを考慮したLASER判定モードを取得
+		JudgmentPlayMode effectiveLaserJudgmentPlayMode() const
 		{
-			return isAutoPlay ? JudgmentPlayMode::kAuto : JudgmentPlayMode::kOn;
+			return isAutoPlay ? JudgmentPlayMode::kAuto : laserJudgmentPlayMode;
 		}
 
 		// visualOffsetを考慮したglobalOffsetを取得
