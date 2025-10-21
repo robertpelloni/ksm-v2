@@ -44,4 +44,56 @@ namespace MusicGame
 	constexpr double kTiltRadians = 10_deg;
 
 	using IsAutoPlayYN = YesNo<struct IsAutoPlayYN_tag>;
+
+	// Turn変換テーブル
+	struct TurnTable
+	{
+		std::array<std::size_t, kson::kNumBTLanesSZ> btLaneTable; // BTレーン変換テーブル
+
+		bool invertFXLane; // FXレーン左右反転
+
+		bool invertLaserLane; // LASERレーン左右反転
+
+		bool invertLaserValue; // LASER値左右反転(カメラエフェクト左右反転にも使用)
+	};
+
+	// TurnMode から TurnTable を生成
+	inline TurnTable MakeTurnTable(TurnMode turnMode)
+	{
+		if (turnMode == TurnMode::kNormal)
+		{
+			return TurnTable{
+				.btLaneTable = { 0, 1, 2, 3 },
+				.invertFXLane = false,
+				.invertLaserLane = false,
+				.invertLaserValue = false,
+			};
+		}
+		else if (turnMode == TurnMode::kMirror)
+		{
+			return TurnTable{
+				.btLaneTable = { 3, 2, 1, 0 }, // D,C,B,A
+				.invertFXLane = true, // R,L
+				.invertLaserLane = true, // R,L
+				.invertLaserValue = true, // 1.0 - 値
+			};
+		}
+		else // TurnMode::kRandom
+		{
+			// BTレーンのランダムテーブル生成
+			std::array<std::size_t, kson::kNumBTLanesSZ> btLaneTable = { 0, 1, 2, 3 };
+			std::shuffle(btLaneTable.begin(), btLaneTable.end(), GetDefaultRNG());
+
+			// FX/LASERレーンのランダム左右反転
+			const bool invertFXLane = Random(0, 1) == 1;
+			const bool invertLaserLane = Random(0, 1) == 1;
+
+			return TurnTable{
+				.btLaneTable = btLaneTable,
+				.invertFXLane = invertFXLane,
+				.invertLaserLane = invertLaserLane,
+				.invertLaserValue = invertLaserLane, // レーザー反転と同じ
+			};
+		}
+	}
 }

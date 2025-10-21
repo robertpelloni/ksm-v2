@@ -16,6 +16,8 @@ namespace
 			.playOption = MusicGame::PlayOption
 			{
 				.isAutoPlay = isAutoPlay,
+				.gaugeType = static_cast<GaugeType>(ConfigIni::GetInt(ConfigIni::Key::kEffRateType, static_cast<int32>(GaugeType::kNormalGauge))),
+				.turnMode = static_cast<TurnMode>(ConfigIni::GetInt(ConfigIni::Key::kTurn, static_cast<int32>(TurnMode::kNormal))),
 				.globalOffsetMs = ConfigIni::GetInt(ConfigIni::Key::kGlobalOffset),
 				.inputDelayMs = ConfigIni::GetInt(ConfigIni::Key::kInputDelay),
 				.laserInputDelayMs = ConfigIni::GetInt(ConfigIni::Key::kLaserInputDelay),

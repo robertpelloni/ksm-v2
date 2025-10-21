@@ -158,6 +158,7 @@
     <ClCompile Include="src\music_game\camera\highway_tilt_auto.cpp" />
     <ClCompile Include="src\music_game\camera\highway_tilt_manual.cpp" />
     <ClCompile Include="src\music_game\game_main.cpp" />
+    <ClCompile Include="src\music_game\turn_util.cpp" />
     <ClCompile Include="src\music_game\graphics\graphics_main.cpp" />
     <ClCompile Include="src\music_game\graphics\highway\highway_3d_graphics.cpp" />
     <ClCompile Include="src\music_game\graphics\highway\highway_render_texture.cpp" />
@@ -379,6 +380,7 @@
     <ClInclude Include="src\music_game\judgment\laser_slam_shake.hpp" />
     <ClInclude Include="src\music_game\judgment\scoring_status.hpp" />
     <ClInclude Include="src\music_game\play_option.hpp" />
+    <ClInclude Include="src\music_game\turn_util.hpp" />
     <ClInclude Include="src\music_game\play_result.hpp" />
     <ClInclude Include="src\music_game\scroll\highway_scroll.hpp" />
     <ClInclude Include="src\music_game\scroll\hispeed_setting.hpp" />

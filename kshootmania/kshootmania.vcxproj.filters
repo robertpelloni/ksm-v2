@@ -330,6 +330,9 @@
     <ClCompile Include="src\music_game\game_main.cpp">
       <Filter>Source Files\music_game</Filter>
     </ClCompile>
+    <ClCompile Include="src\music_game\turn_util.cpp">
+      <Filter>Source Files\music_game</Filter>
+    </ClCompile>
     <ClCompile Include="src\music_game\audio\assist_tick.cpp">
       <Filter>Source Files\music_game\audio</Filter>
     </ClCompile>
@@ -1136,6 +1139,9 @@
       <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="src\music_game\play_option.hpp">
+      <Filter>Header Files\music_game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\music_game\turn_util.hpp">
       <Filter>Header Files\music_game</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\font_utils.hpp">

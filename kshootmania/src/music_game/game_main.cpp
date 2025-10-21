@@ -1,5 +1,6 @@
 ﻿#include "game_main.hpp"
 #include "game_defines.hpp"
+#include "turn_util.hpp"
 #include "kson/kson.hpp"
 #include "input/platform_key.hpp"
 
@@ -18,6 +19,18 @@ namespace MusicGame
 
 			const double secSincePlayFinishPrev = gameStatus.currentTimeSec - gameStatus.playFinishStatus->finishTimeSec;
 			return secSincePlayFinishPrev >= kPlayFinishFadeOutStartSec;
+		}
+
+		// 譜面データを読み込み、Turn変換を適用
+		kson::ChartData LoadChartDataWithTurn(const GameCreateInfo& createInfo)
+		{
+			auto chartData = kson::LoadKSHChartData(createInfo.chartFilePath.narrow());
+
+			// Turn変換を適用
+			const TurnTable turnTable = MakeTurnTable(createInfo.playOption.turnMode);
+			ApplyTurnTable(chartData, turnTable);
+
+			return chartData;
 		}
 	}
 
@@ -87,7 +100,7 @@ namespace MusicGame
 	GameMain::GameMain(const GameCreateInfo& createInfo)
 		: m_chartFilePath(createInfo.chartFilePath)
 		, m_parentPath(FileSystem::ParentPath(createInfo.chartFilePath))
-		, m_chartData(kson::LoadKSHChartData(createInfo.chartFilePath.narrow()))
+		, m_chartData(LoadChartDataWithTurn(createInfo))
 		, m_timingCache(kson::CreateTimingCache(m_chartData.beat))
 		, m_playOption(createInfo.playOption)
 		, m_judgmentMain(m_chartData, m_timingCache, createInfo.playOption)

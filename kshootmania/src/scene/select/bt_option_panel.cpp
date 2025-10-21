@@ -671,8 +671,7 @@ void BTOptionPanel::loadFromConfigIni()
 
 	// BT-Bメニューの設定を読み込み
 	m_gaugeType.setCursor(ConfigIni::GetInt(ConfigIni::Key::kEffRateType, static_cast<int32>(GaugeType::kNormalGauge)));
-
-	// TODO: Turn設定を実装
+	m_turnMode.setCursor(ConfigIni::GetInt(ConfigIni::Key::kTurn, static_cast<int32>(TurnMode::kNormal)));
 
 	// BT-Cメニューの設定を読み込み
 	m_assistTick.setCursor(ConfigIni::GetInt(ConfigIni::Key::kAssistTick, static_cast<int32>(AssistTickMode::kOff)));
@@ -696,8 +695,7 @@ void BTOptionPanel::saveToConfigIni()
 
 	// BT-Bメニューの設定を保存
 	ConfigIni::SetInt(ConfigIni::Key::kEffRateType, m_gaugeType.cursor());
-
-	// TODO: Turn設定を実装
+	ConfigIni::SetInt(ConfigIni::Key::kTurn, m_turnMode.cursor());
 
 	// BT-Cメニューの設定を保存
 	ConfigIni::SetInt(ConfigIni::Key::kAssistTick, m_assistTick.cursor());

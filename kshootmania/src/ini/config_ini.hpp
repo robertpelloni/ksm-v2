@@ -55,6 +55,7 @@ namespace ConfigIni
 		constexpr StringView kSelectSortType = U"mselview";
 		constexpr StringView kHispeed = U"hispeed";
 		constexpr StringView kEffRateType = U"effratetype";
+		constexpr StringView kTurn = U"turn";
 		constexpr StringView kShowFastSlow = U"viewtiming";
 		constexpr StringView kNoteSkin = U"noteskin";
 		constexpr StringView kBGMovie = U"backgroundmovie";

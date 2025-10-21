@@ -8,6 +8,8 @@ namespace MusicGame
 
 		GaugeType gaugeType = GaugeType::kNormalGauge;
 
+		TurnMode turnMode = TurnMode::kNormal;
+
 		int32 globalOffsetMs = 0;
 
 		int32 inputDelayMs = 0;

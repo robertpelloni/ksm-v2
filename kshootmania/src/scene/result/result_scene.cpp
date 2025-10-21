@@ -15,14 +15,13 @@ ResultScene::ResultScene(const ResultSceneArgs& args)
 {
 	if (!m_playResult.playOption.isAutoPlay) // オートプレイの場合はスコアを保存しない(オートプレイではリザルト画面を出さないので不要だが一応チェックはする)
 	{
-		// TODO(alphaまで): 実際の設定を反映
 		const KscKey condition
 		{
-			.gaugeType = GaugeType::kNormalGauge,
-			.turnMode = TurnMode::kNormal,
-			.btPlayMode = JudgmentPlayMode::kOn,
-			.fxPlayMode = JudgmentPlayMode::kOn,
-			.laserPlayMode = JudgmentPlayMode::kOn,
+			.gaugeType = m_playResult.playOption.gaugeType,
+			.turnMode = m_playResult.playOption.turnMode,
+			.btPlayMode = m_playResult.playOption.btJudgmentPlayMode(),
+			.fxPlayMode = m_playResult.playOption.fxJudgmentPlayMode(),
+			.laserPlayMode = m_playResult.playOption.laserJudgmentPlayMode(),
 		};
 		const FilePathView chartFilePath = args.chartFilePath;
 		KscIo::WriteHighScoreInfo(chartFilePath, m_playResult, condition);
