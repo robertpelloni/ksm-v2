@@ -57,13 +57,13 @@ void KeyConfig::SetConfigValueByCommaSeparated(ConfigSet targetConfigSet, String
 
 	if (targetConfigSet < 0 || kConfigSetEnumCount <= targetConfigSet)
 	{
-		Print << U"Warning: Invalid key config target '{}'!"_fmt(static_cast<std::underlying_type_t<ConfigSet>>(targetConfigSet));
+		Logger << U"[ksm warning] Invalid key config target '{}'!"_fmt(static_cast<std::underlying_type_t<ConfigSet>>(targetConfigSet));
 		return;
 	}
 
 	if (values.size() != kConfigurableButtonEnumCount)
 	{
-		Print << U"Warning: Key configuration ({}) is ignored because value count does not match! (expected:{}, actual:{})"_fmt(kConfigSetNames[targetConfigSet], static_cast<int32>(kConfigurableButtonEnumCount), values.size());
+		Logger << U"[ksm warning] Key configuration ({}) is ignored because value count does not match! (expected:{}, actual:{})"_fmt(kConfigSetNames[targetConfigSet], static_cast<int32>(kConfigurableButtonEnumCount), values.size());
 		values = String(kDefaultConfigValues[targetConfigSet]).split(U',');
 	}
 

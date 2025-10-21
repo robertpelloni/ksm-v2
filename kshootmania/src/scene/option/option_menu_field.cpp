@@ -231,7 +231,7 @@ void OptionMenuField::update()
 			}
 			else
 			{
-				Print << U"Warning[ OptionMenuField::update() ]: Option enum value index is out of range! (func=OptionMenuField::draw(), index={}, min=0, max={})"_fmt(cursor, enumCount - 1);
+				Logger << U"[ksm warning] OptionMenuField::update(): Option enum value index is out of range! (func=OptionMenuField::draw(), index={}, min=0, max={})"_fmt(cursor, enumCount - 1);
 			}
 		}
 		else
@@ -264,7 +264,7 @@ void OptionMenuField::draw(const Vec2& position, const TiledTexture& valueTiledT
 		const int32 enumCount = static_cast<int32>(m_valueDisplayNamePairs.size());
 		if (cursor < 0 || enumCount <= cursor)
 		{
-			Print << U"Warning[ OptionMenuField::draw() ]: Option enum value index is out of range! (func=OptionMenuField::draw(), index={}, min=0, max={})"_fmt(cursor, enumCount - 1);
+			Logger << U"[ksm warning] OptionMenuField::draw(): Option enum value index is out of range! (func=OptionMenuField::draw(), index={}, min=0, max={})"_fmt(cursor, enumCount - 1);
 			return;
 		}
 
