@@ -10,6 +10,7 @@ namespace MusicGame::Judgment
 	private:
 		const int32 m_scoreValueMax = 0;
 		const int32 m_gaugeValueMax = 0;
+		const GaugeType m_gaugeType = GaugeType::kNormalGauge;
 
 		int32 m_scoreValue = 0;
 		int32 m_gaugeValue = 0;
@@ -21,7 +22,7 @@ namespace MusicGame::Judgment
 		void subtractGaugeValue(int32 sub);
 
 	public:
-		ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax);
+		ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType);
 
 		void onChipOrLaserSlamJudgment(Judgment::JudgmentResult result);
 

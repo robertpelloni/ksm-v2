@@ -41,6 +41,16 @@ namespace MusicGame
 	constexpr double kGaugeDecreasePercentByChipError = 2.0;
 	constexpr double kGaugeDecreasePercentByLongError = 0.5;
 
+	// ゲージ種類別の上昇率倍率
+	constexpr double kGaugeIncreaseRateEasy = 1.10; // EASY
+	constexpr double kGaugeIncreaseRateNormal = 1.00; // NORMAL
+	constexpr double kGaugeIncreaseRateHard = 0.60; // HARD
+
+	// ゲージ種類別の下降率倍率
+	constexpr double kGaugeDecreaseRateEasy = 0.75; // EASY: 25%減
+	constexpr double kGaugeDecreaseRateNormal = 1.00; // NORMAL: 基準
+	constexpr double kGaugeDecreaseRateHard = 2.25; // HARD: 2.25倍
+
 	constexpr double kTiltRadians = 10_deg;
 
 	using IsAutoPlayYN = YesNo<struct IsAutoPlayYN_tag>;

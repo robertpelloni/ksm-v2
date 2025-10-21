@@ -2,19 +2,59 @@
 
 namespace MusicGame::Judgment
 {
+	namespace
+	{
+		// ゲージ種類に応じた上昇率倍率を取得
+		double GetGaugeIncreaseRate(GaugeType gaugeType)
+		{
+			switch (gaugeType)
+			{
+			case GaugeType::kEasyGauge:
+				return kGaugeIncreaseRateEasy;
+			case GaugeType::kNormalGauge:
+				return kGaugeIncreaseRateNormal;
+			case GaugeType::kHardGauge:
+				return kGaugeIncreaseRateHard;
+			default:
+				throw Error{ U"GetGaugeIncreaseRate(): Invalid gauge type (gaugeType:{})"_fmt(static_cast<std::underlying_type_t<GaugeType>>(gaugeType)) };
+			}
+		}
+
+		// ゲージ種類に応じた下降率倍率を取得
+		double GetGaugeDecreaseRate(GaugeType gaugeType)
+		{
+			switch (gaugeType)
+			{
+			case GaugeType::kEasyGauge:
+				return kGaugeDecreaseRateEasy;
+			case GaugeType::kNormalGauge:
+				return kGaugeDecreaseRateNormal;
+			case GaugeType::kHardGauge:
+				return kGaugeDecreaseRateHard;
+			default:
+				throw Error{ U"GetGaugeDecreaseRate(): Invalid gauge type (gaugeType:{})"_fmt(static_cast<std::underlying_type_t<GaugeType>>(gaugeType)) };
+			}
+		}
+	}
+
 	void ScoringStatus::addGaugeValue(int32 add)
 	{
-		m_gaugeValue = Min(m_gaugeValue + add, m_gaugeValueMax);
+		const double rate = GetGaugeIncreaseRate(m_gaugeType);
+		const int32 adjustedAdd = static_cast<int32>(add * rate);
+		m_gaugeValue = Min(m_gaugeValue + adjustedAdd, m_gaugeValueMax);
 	}
 
 	void ScoringStatus::subtractGaugeValue(int32 sub)
 	{
-		m_gaugeValue = Max(m_gaugeValue - sub, 0);
+		const double rate = GetGaugeDecreaseRate(m_gaugeType);
+		const int32 adjustedSub = static_cast<int32>(sub * rate);
+		m_gaugeValue = Max(m_gaugeValue - adjustedSub, 0);
 	}
 
-	ScoringStatus::ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax)
+	ScoringStatus::ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType)
 		: m_scoreValueMax(scoreValueMax)
 		, m_gaugeValueMax(gaugeValueMax)
+		, m_gaugeType(gaugeType)
 	{
 	}
 

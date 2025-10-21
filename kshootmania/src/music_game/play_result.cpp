@@ -25,8 +25,8 @@ namespace MusicGame
 
 	Achievement PlayResult::achievement() const
 	{
-		// TODO(alphaまで): EASY/HARDゲージ
-		if (playOption.gaugeType != GaugeType::kNormalGauge)
+		// TODO(alphaまで): HARDゲージ
+		if (playOption.gaugeType == GaugeType::kHardGauge)
 		{
 			throw Error(U"Not implemented");
 		}
@@ -37,6 +37,7 @@ namespace MusicGame
 			return Achievement::kNone;
 		}
 
+		// EASY/NORMALゲージの場合、70%以上でクリア
 		if (gaugePercentage < kGaugePercentageThreshold)
 		{
 			return Achievement::kNone; // ゲージがクリアラインを下回った場合

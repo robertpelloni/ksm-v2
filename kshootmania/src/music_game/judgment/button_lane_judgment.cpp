@@ -142,6 +142,11 @@ namespace MusicGame::Judgment
 		}
 	}
 
+	double ButtonLaneJudgment::errorWindowSec() const
+	{
+		return m_gaugeType == GaugeType::kEasyGauge ? TimingWindow::ChipNote::kWindowSecErrorEasy : TimingWindow::ChipNote::kWindowSecError;
+	}
+
 	void ButtonLaneJudgment::processKeyDown(const kson::ChartData& chartData, const kson::ByPulse<kson::Interval>& lane, kson::Pulse currentPulse, double currentTimeSec, double currentTimeSecForDraw, ButtonLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
 	{
 		using namespace TimingWindow;
@@ -156,7 +161,7 @@ namespace MusicGame::Judgment
 			const auto& [y, note] = *itr;
 			const double sec = m_pulseToSec.at(y);
 			const double endSec = (note.length == 0) ? sec : m_pulseToSec.at(y + note.length);
-			if (currentTimeSec - endSec >= ChipNote::kWindowSecError)
+			if (currentTimeSec - endSec >= errorWindowSec())
 			{
 				continue;
 			}
@@ -232,7 +237,7 @@ namespace MusicGame::Judgment
 					chipAnimType = judgmentResult;
 				}
 			}
-			else if (minDistance < ChipNote::kWindowSecError) // TODO: easy gauge
+			else if (minDistance < errorWindowSec())
 			{
 				// ERROR判定
 				m_chipJudgmentArray.at(nearestNotePulse) = JudgmentResult::kError;
@@ -298,7 +303,7 @@ namespace MusicGame::Judgment
 		using namespace TimingWindow;
 
 		const JudgmentResult result = isAutoPlay ? JudgmentResult::kCritical : JudgmentResult::kError;
-		const double thresholdSec = isAutoPlay ? 0.0 : ChipNote::kWindowSecError;
+		const double thresholdSec = isAutoPlay ? 0.0 : errorWindowSec();
 
 		for (auto itr = m_passedNoteCursor; itr != lane.end(); ++itr)
 		{
@@ -350,8 +355,9 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	ButtonLaneJudgment::ButtonLaneJudgment(JudgmentPlayMode judgmentPlayMode, KeyConfig::Button keyConfigButton, const kson::ByPulse<kson::Interval>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache)
+	ButtonLaneJudgment::ButtonLaneJudgment(JudgmentPlayMode judgmentPlayMode, GaugeType gaugeType, KeyConfig::Button keyConfigButton, const kson::ByPulse<kson::Interval>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache)
 		: m_judgmentPlayMode(judgmentPlayMode)
+		, m_gaugeType(gaugeType)
 		, m_keyConfigButton(keyConfigButton)
 		, m_pulseToSec(CreatePulseToSec(lane, beatInfo, timingCache))
 		, m_chipJudgmentArray(CreateChipNoteJudgmentArray(lane, judgmentPlayMode))
