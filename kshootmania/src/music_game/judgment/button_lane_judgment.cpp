@@ -463,10 +463,30 @@ namespace MusicGame::Judgment
 		return m_longJudgmentArray.size();
 	}
 
-	void ButtonLaneJudgment::lockForExit()
+	void ButtonLaneJudgment::lockForExit(JudgmentHandler& judgmentHandlerRef)
 	{
 		// ButtonLaneJudgmentではKeyDownの処理のみスキップする
 		// (フェードアウト中に押したキーでCRITICALやNEARの判定ビームが見えると気になるので)
 		m_isLockedForExit = true;
+
+		// チップノーツの未判定をERRORにする
+		for (auto& [pulse, result] : m_chipJudgmentArray)
+		{
+			if (result == JudgmentResult::kUnspecified)
+			{
+				result = JudgmentResult::kError;
+				judgmentHandlerRef.onChipJudged(JudgmentResult::kError);
+			}
+		}
+
+		// ロングノーツの未判定をERRORにする
+		for (auto& [pulse, longJudgment] : m_longJudgmentArray)
+		{
+			if (longJudgment.result == JudgmentResult::kUnspecified)
+			{
+				longJudgment.result = JudgmentResult::kError;
+				judgmentHandlerRef.onLongJudged(JudgmentResult::kError);
+			}
+		}
 	}
 }

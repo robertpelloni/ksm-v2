@@ -50,6 +50,8 @@ namespace MusicGame::Judgment
 
 		std::size_t longJudgmentCount() const;
 
-		void lockForExit();
+		/// @brief プレイ終了のために判定処理をロックし、残りの未判定ノーツをERROR判定にする
+		/// @param judgmentHandlerRef 判定ハンドラへの参照
+		void lockForExit(JudgmentHandler& judgmentHandlerRef);
 	};
 }

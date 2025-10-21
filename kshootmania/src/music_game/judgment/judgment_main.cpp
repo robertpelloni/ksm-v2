@@ -45,17 +45,18 @@ namespace MusicGame::Judgment
 
 	void JudgmentMain::lockForExit()
 	{
+		// 残りの未判定ノーツを全てERROR判定にする
 		for (std::size_t i = 0U; i < kson::kNumBTLanesSZ; ++i)
 		{
-			m_btLaneJudgments[i].lockForExit();
+			m_btLaneJudgments[i].lockForExit(m_judgmentHandler);
 		}
 		for (std::size_t i = 0U; i < kson::kNumFXLanesSZ; ++i)
 		{
-			m_fxLaneJudgments[i].lockForExit();
+			m_fxLaneJudgments[i].lockForExit(m_judgmentHandler);
 		}
 		for (std::size_t i = 0U; i < kson::kNumLaserLanesSZ; ++i)
 		{
-			m_laserLaneJudgments[i].lockForExit();
+			m_laserLaneJudgments[i].lockForExit(m_judgmentHandler);
 		}
 		m_judgmentHandler.lockForExit();
 	}

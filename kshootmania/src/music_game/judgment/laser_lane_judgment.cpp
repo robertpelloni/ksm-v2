@@ -856,9 +856,26 @@ namespace MusicGame::Judgment
 		m_prevTimeSecForDraw = currentTimeSecForDraw;
 	}
 
-	void LaserLaneJudgment::lockForExit()
+	void LaserLaneJudgment::lockForExit(JudgmentHandler& judgmentHandlerRef)
 	{
 		m_isLockedForExit = true;
+
+		// ラインノーツの未判定をERRORにする
+		for (auto& [pulse, lineJudgment] : m_lineJudgmentArray)
+		{
+			if (lineJudgment.result == JudgmentResult::kUnspecified)
+			{
+				lineJudgment.result = JudgmentResult::kError;
+				judgmentHandlerRef.onLaserLineJudged(JudgmentResult::kError);
+			}
+		}
+
+		// 直角LASERの未判定をERRORにする
+		for (auto it = m_slamJudgmentArrayCursor; it != m_slamJudgmentArray.end(); ++it)
+		{
+			const auto& [pulse, slamJudgment] = *it;
+			judgmentHandlerRef.onLaserSlamJudged(JudgmentResult::kError, pulse, m_prevTimeSec, m_prevPulse, slamJudgment.direction());
+		}
 	}
 
 	std::size_t LaserLaneJudgment::lineJudgmentCount() const

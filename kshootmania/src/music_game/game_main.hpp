@@ -97,6 +97,7 @@ namespace MusicGame
 
 		void draw() const;
 
+		/// @brief プレイ終了のために判定処理をロックし、残りの未判定ノーツをERROR判定にする
 		void lockForExit();
 
 		void terminate();
