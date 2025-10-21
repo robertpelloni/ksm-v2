@@ -95,8 +95,9 @@ namespace
 			.sourceSize = kGaugeBarTextureSize,
 		});
 		constexpr Vec2 kGaugeBarPosition{ 4, 4 };
-		const double percentThreshold = (playResult.playOption.gaugeType == GaugeType::kHardGauge) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
-		const int32 gaugeBarColumn = static_cast<int32>(playResult.playOption.gaugeType) * 2 + ((playResult.gaugePercentage < percentThreshold) ? 0 : 1);
+		const int32 percentThreshold = (playResult.playOption.gaugeType == GaugeType::kHardGauge) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
+		const int32 gaugePercentageInt = static_cast<int32>(playResult.gaugePercentage);
+		const int32 gaugeBarColumn = static_cast<int32>(playResult.playOption.gaugeType) * 2 + (gaugePercentageInt < percentThreshold ? 0 : 1);
 		const int32 gaugeBarHeight = static_cast<int32>(kGaugeBarSize.y * playResult.gaugePercentage / 100);
 		gaugeBarTiledTexture(0, gaugeBarColumn).resized(kGaugeBarSize).drawClipped(kGaugeBarPosition, { kGaugeBarPosition.x, kGaugeBarPosition.y + kGaugeBarSize.y - gaugeBarHeight, kGaugeBarSize.x, gaugeBarHeight });
 
@@ -130,8 +131,6 @@ namespace
 	int32 TopTextureRow(const MusicGame::PlayResult& playResult)
 	{
 		const Achievement achievement = playResult.achievement();
-		const bool isEasyGauge = playResult.playOption.gaugeType == GaugeType::kEasyGauge;
-		const bool isHardGauge = playResult.playOption.gaugeType == GaugeType::kHardGauge;
 		const bool isAssist = false; // TODO: アシストかどうかを代入
 		switch (achievement)
 		{

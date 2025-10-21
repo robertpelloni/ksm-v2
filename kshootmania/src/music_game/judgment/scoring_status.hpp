@@ -13,13 +13,16 @@ namespace MusicGame::Judgment
 		const GaugeType m_gaugeType = GaugeType::kNormalGauge;
 
 		int32 m_scoreValue = 0;
-		int32 m_gaugeValue = 0;
+		int32 m_gaugeValue;
+		int32 m_gaugeValueNormal = 0; // NORMAL基準ゲージ値(HARDのGrade計算用)
 
 		ComboStatus m_comboStatus;
 
 		void addGaugeValue(int32 add);
 
 		void subtractGaugeValue(int32 sub);
+
+		double calcGaugePercentageFromValue(int32 gaugeValue, GaugeType gaugeType) const;
 
 	public:
 		ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType);
@@ -30,11 +33,17 @@ namespace MusicGame::Judgment
 
 		int32 score() const;
 
-		/// @brief NORMAL/EASYゲージのパーセンテージを返す
+		/// @brief ゲージのパーセンテージを返す
 		/// @return パーセンテージ(0.0～100.0)
-		double gaugePercentage() const;
+		double gaugePercentage(GaugeType gaugeType) const;
 
-		// TODO: HARDゲージのパーセンテージを返す
+		/// @brief ゲージのパーセンテージを整数で返す(切り捨て)
+		/// @return パーセンテージ(0～100)
+		int32 gaugePercentageInt(GaugeType gaugeType) const;
+
+		/// @brief Grade計算用のゲージパーセンテージを返す
+		/// @return パーセンテージ(0.0～100.0)
+		double gaugePercentageForGrade() const;
 
 		int32 combo() const;
 

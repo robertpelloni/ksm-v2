@@ -62,6 +62,7 @@ namespace MusicGame
 		Audio::AssistTick m_assistTick;
 		Audio::LaserSlamSE m_laserSlamSE;
 		Audio::FXChipSE m_fxChipSE;
+		ksmaudio::Sample m_hardFailedSound;
 
 		// 音声エフェクト
 		Audio::AudioEffectMain m_audioEffectMain;

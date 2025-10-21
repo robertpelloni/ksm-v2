@@ -127,8 +127,8 @@ namespace MusicGame::Graphics
 		const ScopedRenderStates3D samplerState(SamplerState::ClampNearest);
 
 		// ゲージパーセンテージに応じてBGテクスチャのインデックスを決定
-		const double percentThreshold = (m_playOption.gaugeType == GaugeType::kHardGauge) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
-		const int32 bgTextureIndex = (viewStatus.gaugePercentage >= percentThreshold) ? 1 : 0;
+		const int32 percentThreshold = (m_playOption.gaugeType == GaugeType::kHardGauge) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
+		const int32 bgTextureIndex = viewStatus.gaugePercentageInt >= percentThreshold ? 1 : 0;
 
 		double bgTiltRadians = viewStatus.tiltRadians / 3;
 		m_bgBillboardMesh.draw(m_bgTransform * TiltTransformMatrix(bgTiltRadians, kBGBillboardPosition), m_bgTextures[bgTextureIndex]);
@@ -150,8 +150,8 @@ namespace MusicGame::Graphics
 		}
 
 		// ゲージパーセンテージに応じてレイヤーテクスチャのインデックスを決定
-		const double percentThreshold = (m_playOption.gaugeType == GaugeType::kHardGauge) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
-		const int32 layerTextureIndex = (viewStatus.gaugePercentage >= percentThreshold) ? 1 : 0;
+		const int32 percentThreshold = (m_playOption.gaugeType == GaugeType::kHardGauge) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
+		const int32 layerTextureIndex = viewStatus.gaugePercentageInt >= percentThreshold ? 1 : 0;
 
 		if (!m_layerFrameTextures[layerTextureIndex].empty())
 		{
@@ -230,5 +230,18 @@ namespace MusicGame::Graphics
 		m_comboOverlay.draw();
 		m_frameRateMonitor.draw();
 		m_achievementPanel.draw(gameStatus);
+
+		// HARDゲージ落ち時の赤色オーバーレイ
+		if (gameStatus.playFinishStatus.has_value() && gameStatus.playFinishStatus->isHardGaugeFailed)
+		{
+			constexpr double kFadeTimeSec = 0.75;
+			const double elapsedSec = gameStatus.currentTimeSec - gameStatus.playFinishStatus->finishTimeSec;
+			const double t = Clamp(elapsedSec / kFadeTimeSec, 0.0, 1.0);
+			const uint8 g = static_cast<uint8>(48 + 128 - static_cast<int32>(128 * t));
+			const Color overlayColor{ 255, g, 0 };
+
+			const ScopedRenderStates2D blend{ BlendState::Additive };
+			Scene::Rect().draw(overlayColor);
+		}
 	}
 }

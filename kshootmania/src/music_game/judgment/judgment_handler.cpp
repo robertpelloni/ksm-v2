@@ -167,7 +167,8 @@ namespace MusicGame::Judgment
 	{
 		// ScoringStatusをViewStatusに反映
 		viewStatusRef.score = m_scoringStatus.score();
-		viewStatusRef.gaugePercentage = m_scoringStatus.gaugePercentage(); // TODO: HARDゲージ
+		viewStatusRef.gaugePercentage = m_scoringStatus.gaugePercentage(m_playOption.gaugeType);
+		viewStatusRef.gaugePercentageInt = m_scoringStatus.gaugePercentageInt(m_playOption.gaugeType);
 		viewStatusRef.combo = m_scoringStatus.combo();
 		viewStatusRef.isNoError = m_scoringStatus.isNoError();
 
@@ -197,8 +198,8 @@ namespace MusicGame::Judgment
 			.totalCombo = m_totalCombo,
 			.comboStats = m_scoringStatus.comboStats(),
 			.playOption = m_playOption,
-			.gaugePercentage = m_scoringStatus.gaugePercentage(),
-			.gaugePercentageHard = 0.0, // TODO: HARDゲージ
+			.gaugePercentage = m_scoringStatus.gaugePercentage(m_playOption.gaugeType),
+			.gaugePercentageForGrade = m_scoringStatus.gaugePercentageForGrade(),
 		};
 	}
 }

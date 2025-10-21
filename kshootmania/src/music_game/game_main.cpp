@@ -78,6 +78,26 @@ namespace MusicGame
 
 		// 判定の更新
 		m_judgmentMain.update(m_chartData, m_gameStatus, m_viewStatus);
+
+		// HARDゲージ落ち判定
+		if (!m_gameStatus.playFinishStatus.has_value() &&
+			m_playOption.gaugeType == GaugeType::kHardGauge &&
+			m_viewStatus.gaugePercentageInt <= kGaugePercentageThresholdHard)
+		{
+			m_gameStatus.playFinishStatus = PlayFinishStatus
+			{
+				.finishTimeSec = currentTimeSec,
+				.achievement = Achievement::kNone,
+				.isHardGaugeFailed = true,
+			};
+
+			// HARD落ち効果音を再生
+			m_hardFailedSound.play();
+
+			// HARD落ち以降の入力は無視
+			m_judgmentMain.lockForExit();
+		}
+
 		if (!m_gameStatus.playFinishStatus.has_value() && m_judgmentMain.isFinished())
 		{
 			m_gameStatus.playFinishStatus = PlayFinishStatus
@@ -113,6 +133,7 @@ namespace MusicGame
 		, m_assistTick(createInfo.assistTickMode)
 		, m_laserSlamSE(m_chartData, m_timingCache, createInfo.playOption.isAutoPlaySE)
 		, m_fxChipSE(m_chartData, m_timingCache, m_parentPath, createInfo.playOption.isAutoPlaySE)
+		, m_hardFailedSound("se/play_hardfailed.wav")
 		, m_audioEffectMain(m_bgm, m_chartData, m_timingCache, m_parentPath, createInfo.playOption.effectiveAudioProcDelayMs() / 1000.0)
 		, m_graphicsMain(m_chartData, m_parentPath, createInfo.playOption)
 	{
