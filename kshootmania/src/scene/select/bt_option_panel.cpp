@@ -678,7 +678,18 @@ void BTOptionPanel::loadFromConfigIni()
 
 	// TODO: AutoSync設定を実装
 	m_fastSlow.setCursor(ConfigIni::GetInt(ConfigIni::Key::kShowFastSlow, static_cast<int32>(FastSlowMode::kHide)));
-	m_noteSkin.setCursor(ConfigIni::GetInt(ConfigIni::Key::kNoteSkin, static_cast<int32>(NoteSkinType::kDefault)));
+
+	// noteskinは文字列として保存される
+	const StringView noteSkinStr = ConfigIni::GetString(ConfigIni::Key::kNoteSkin, U"default");
+	if (noteSkinStr == U"note")
+	{
+		m_noteSkin.setCursor(static_cast<int32>(NoteSkinType::kNote));
+	}
+	else
+	{
+		m_noteSkin.setCursor(static_cast<int32>(NoteSkinType::kDefault));
+	}
+
 	m_movie.setCursor(ConfigIni::GetInt(ConfigIni::Key::kBGMovie, static_cast<int32>(MovieMode::kOn)));
 
 	// BT-Dメニュー(ハイスピード)の設定を読み込み
@@ -702,7 +713,17 @@ void BTOptionPanel::saveToConfigIni()
 
 	// TODO: AutoSync設定を実装
 	ConfigIni::SetInt(ConfigIni::Key::kShowFastSlow, m_fastSlow.cursor());
-	ConfigIni::SetInt(ConfigIni::Key::kNoteSkin, m_noteSkin.cursor());
+
+	// noteskinは文字列として保存
+	if (m_noteSkin.cursorAs<NoteSkinType>() == NoteSkinType::kNote)
+	{
+		ConfigIni::SetString(ConfigIni::Key::kNoteSkin, U"note");
+	}
+	else
+	{
+		ConfigIni::SetString(ConfigIni::Key::kNoteSkin, U"default");
+	}
+
 	ConfigIni::SetInt(ConfigIni::Key::kBGMovie, m_movie.cursor());
 
 	// BT-Dメニュー(ハイスピード)の設定を保存
