@@ -303,7 +303,7 @@ namespace MusicGame::Judgment
 		using namespace TimingWindow;
 
 		const JudgmentResult result = isAutoPlay ? JudgmentResult::kCritical : JudgmentResult::kError;
-		const double thresholdSec = isAutoPlay ? 0.0 : errorWindowSec();
+		const double thresholdSec = isAutoPlay ? 0.0 : ChipNote::kWindowSecLateErrorBegin;
 
 		for (auto itr = m_passedNoteCursor; itr != lane.end(); ++itr)
 		{

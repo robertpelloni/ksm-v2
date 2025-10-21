@@ -31,6 +31,11 @@ namespace MusicGame::Judgment
 			constexpr double kWindowSecNear = 0.114;
 			constexpr double kWindowSecError = 0.260;
 			constexpr double kWindowSecErrorEasy = 0.160;
+
+			// 遅ERROR判定開始タイミング(ノート時刻からの経過時間)
+			// 本来見逃しERRORになる時間はNEAR幅と同じ+114msだが、v1の実装を再現して+110msとする
+			// そのため、NEAR判定幅は早NEARは-114ms~-42ms、遅NEARは+42ms~+110msと非対称になっている
+			constexpr double kWindowSecLateErrorBegin = 0.110;
 		}
 
 		namespace LongNote
