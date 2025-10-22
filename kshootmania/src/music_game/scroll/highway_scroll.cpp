@@ -135,6 +135,65 @@ namespace MusicGame::Scroll
 				return static_cast<int32>(currentBPM);
 			}
 		}
+
+		/// @brief scrollSpeedを考慮したノーツの相対Pulse値を計算
+		/// @param notePulse ノーツのPulse位置
+		/// @param currentPulseDouble 現在のPulse位置
+		/// @param scrollSpeed scrollSpeedグラフ
+		/// @return scrollSpeedを考慮した相対Pulse値
+		double CalcScrollSpeedAdjustedRelPulse(kson::Pulse notePulse, double currentPulseDouble, const kson::Graph& scrollSpeed)
+		{
+			if (notePulse <= currentPulseDouble)
+			{
+				return static_cast<double>(notePulse - currentPulseDouble);
+			}
+
+			if (scrollSpeed.empty())
+			{
+				return static_cast<double>(notePulse - currentPulseDouble);
+			}
+
+			double totalRelPulse = 0.0;
+			kson::Pulse segmentStartPulse = static_cast<kson::Pulse>(currentPulseDouble);
+
+			double currentSpeed = kson::GraphValueAt(scrollSpeed, segmentStartPulse);
+
+			while (segmentStartPulse < notePulse)
+			{
+				auto nextItr = scrollSpeed.upper_bound(segmentStartPulse);
+
+				kson::Pulse segmentEndPulse;
+				double nextSpeed;
+				if (nextItr != scrollSpeed.end() && nextItr->first <= notePulse)
+				{
+					segmentEndPulse = nextItr->first;
+					nextSpeed = nextItr->second.v;
+				}
+				else
+				{
+					segmentEndPulse = notePulse;
+					nextSpeed = currentSpeed;
+				}
+
+				// 台形則で積分
+				const kson::Pulse length = segmentEndPulse - segmentStartPulse;
+				totalRelPulse += length * (currentSpeed + nextSpeed) / 2.0;
+
+				// 次の区間の開始速度を設定
+				if (nextItr != scrollSpeed.end() && nextItr->first == segmentEndPulse)
+				{
+					currentSpeed = nextItr->second.vf;
+				}
+				else
+				{
+					currentSpeed = nextSpeed;
+				}
+
+				segmentStartPulse = segmentEndPulse;
+			}
+
+			return totalRelPulse;
+		}
 	}
 
 	HighwayScrollContext::HighwayScrollContext(const HighwayScroll* pHighwayScroll, const kson::BeatInfo* pBeatInfo, const kson::TimingCache* pTimingCache, const GameStatus* pGameStatus)
@@ -184,7 +243,14 @@ namespace MusicGame::Scroll
 		}
 		else
 		{
-			return static_cast<double>(pulse) - gameStatus.currentPulseDouble;
+			// scrollSpeedがなければ単純な差分計算
+			if (beatInfo.scrollSpeed.empty())
+			{
+				return static_cast<double>(pulse) - gameStatus.currentPulseDouble;
+			}
+
+			// scrollSpeedがあれば現在地点からノーツ地点までの区間を積分計算
+			return CalcScrollSpeedAdjustedRelPulse(pulse, gameStatus.currentPulseDouble, beatInfo.scrollSpeed);
 		}
 	}
 
