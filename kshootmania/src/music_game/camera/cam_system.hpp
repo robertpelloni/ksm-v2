@@ -20,8 +20,14 @@ namespace MusicGame::Camera
 	private:
 		CamStatus m_status;
 
+		// KSHバージョン167未満での視点変更の緩和時間適用
+		bool m_useLegacyZoomRelaxation = false;
+		double m_legacyCurrentZoomTop = 0.0;
+		double m_legacyCurrentZoomBottom = 0.0;
+		double m_legacyCurrentZoomSide = 0.0;
+
 	public:
-		CamSystem() = default;
+		explicit CamSystem(const kson::ChartData& chartData);
 
 		void update(const kson::ChartData& chartData, kson::Pulse currentPulse);
 
