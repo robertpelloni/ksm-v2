@@ -155,7 +155,7 @@ namespace MusicGame
 		double currentPulseDouble = 0.0;
 		kson::Pulse currentPulseForButtonJudgment = 0;
 		kson::Pulse currentPulseForLaserJudgment = 0;
-		double currentBPM = 120.0;
+		double currentBPM = kDefaultBPM;
 		
 		std::array<ButtonLaneStatus, kson::kNumBTLanesSZ> btLaneStatus;
 		std::array<ButtonLaneStatus, kson::kNumFXLanesSZ> fxLaneStatus;

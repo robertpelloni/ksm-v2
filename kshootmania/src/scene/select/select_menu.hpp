@@ -131,4 +131,6 @@ public:
 	void jumpToFirst();
 
 	void jumpToLast();
+
+	double getCurrentChartStdBPM() const;
 };

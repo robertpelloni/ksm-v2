@@ -166,7 +166,7 @@ SelectScene::SelectScene()
 void SelectScene::update()
 {
 	// BTオプションパネル更新
-	m_btOptionPanel.update();
+	m_btOptionPanel.update(m_menu.getCurrentChartStdBPM());
 	if (m_btOptionPanel.isVisible())
 	{
 		// BTオプションパネル表示中は選曲画面の操作を無効化

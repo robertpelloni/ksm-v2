@@ -60,7 +60,7 @@ private:
 public:
 	explicit BTOptionPanel(std::shared_ptr<noco::Canvas> canvas);
 
-	void update();
+	void update(double currentChartStdBPM);
 
 	// メニューが表示されているかどうか
 	bool isVisible() const;

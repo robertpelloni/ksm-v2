@@ -1497,3 +1497,19 @@ void SelectMenu::jumpToLast()
 	refreshContentCanvasParams();
 	refreshSongPreview();
 }
+
+double SelectMenu::getCurrentChartStdBPM() const
+{
+	if (m_menu.empty())
+	{
+		return kDefaultBPM;
+	}
+
+	const SelectChartInfo* chartInfo = m_menu.cursorValue()->chartInfoPtr(m_difficultyMenu.cursor());
+	if (chartInfo == nullptr)
+	{
+		return kDefaultBPM;
+	}
+
+	return chartInfo->stdBPMForHispeedTypeChange();
+}

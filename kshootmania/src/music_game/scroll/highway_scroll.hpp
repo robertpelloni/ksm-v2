@@ -48,8 +48,8 @@ namespace MusicGame::Scroll
 		/// @brief ハイスピード設定
 		HispeedSetting m_hispeedSetting;
 
-		/// @brief 現在のハイスピード値
-		double m_currentBPM = 120.0;
+		/// @brief 現在のBPM
+		double m_currentBPM = kDefaultBPM;
 
 		/// @brief ハイスピード係数
 		double m_hispeedFactor = 0.0;

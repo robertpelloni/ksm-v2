@@ -34,6 +34,10 @@ public:
 
 	String dispBPM() const;
 
+	double stdBPM() const;
+
+	double stdBPMForHispeedTypeChange() const;
+
 	FilePath previewBGMFilePath() const;
 
 	SecondsF previewBGMOffset() const;

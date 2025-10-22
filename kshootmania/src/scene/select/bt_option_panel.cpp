@@ -491,7 +491,7 @@ String BTOptionPanel::generateBTDMenuText() const
 	return text;
 }
 
-void BTOptionPanel::update()
+void BTOptionPanel::update(double currentChartStdBPM)
 {
 	const auto currentButton = getCurrentSingleBTButton();
 
@@ -624,18 +624,45 @@ void BTOptionPanel::update()
 			// 種類が変更された場合、値の範囲を更新し、現在の値に最も近い値に設定
 			if (m_hispeedTypeMenu.deltaCursor() != 0)
 			{
-				refreshHispeedValueMenuConstraints();
-
-				// TODO: 実際のBPMを取得して、現在の値に最も近い値を計算
-				const HispeedType newType = m_hispeedTypeMenu.cursorValue();
-				if (newType == HispeedType::XMod)
+				double bpm = currentChartStdBPM;
+				if (bpm <= 0.0)
 				{
-					m_hispeedValueMenu.setCursor(10); // x1.0
+					Logger << U"[ksm error] Invalid BPM value ({}) for hispeed type change. Using default BPM ({})."_fmt(bpm, kDefaultBPM);
+					bpm = kDefaultBPM;
+				}
+
+				// 変更前の実際のハイスピード値を計算
+				const HispeedType oldType = m_hispeedTypeMenu.atCyclic(m_hispeedTypeMenu.cursor() - m_hispeedTypeMenu.deltaCursor());
+				const int32 oldValue = m_hispeedValueMenu.cursor();
+				double actualHispeed;
+
+				if (oldType == HispeedType::XMod)
+				{
+					actualHispeed = bpm * oldValue / 10.0;
 				}
 				else
 				{
-					m_hispeedValueMenu.setCursor(150); // 150 or C150
+					actualHispeed = static_cast<double>(oldValue);
 				}
+
+				// 新しい種類での値を計算
+				const HispeedType newType = m_hispeedTypeMenu.cursorValue();
+				int32 newValue;
+
+				if (newType == HispeedType::XMod)
+				{
+					newValue = static_cast<int32>(Math::Round(actualHispeed / bpm * 10.0));
+					newValue = Clamp(newValue, kHispeedXModMin, kHispeedXModMax);
+				}
+				else
+				{
+					// o-mod, c-mod: 25刻みに丸める
+					newValue = static_cast<int32>(Math::Round(actualHispeed / 25.0)) * 25;
+					newValue = Clamp(newValue, kHispeedOCModMin, kHispeedOCModMax);
+				}
+
+				refreshHispeedValueMenuConstraints();
+				m_hispeedValueMenu.setCursor(newValue);
 
 				valueChanged = true;
 			}
@@ -702,7 +729,44 @@ void BTOptionPanel::loadFromConfigIni()
 	m_movie.setCursor(ConfigIni::GetInt(ConfigIni::Key::kBGMovie, static_cast<int32>(MovieMode::kOn)));
 
 	// BT-Dメニュー(ハイスピード)の設定
-	// TODO: ハイスピード値の読み込み処理を実装
+	const StringView hispeedStr = ConfigIni::GetString(ConfigIni::Key::kHispeed, U"x10");
+	HispeedType loadedType = HispeedType::XMod;
+	int32 loadedValue = 10;
+
+	if (hispeedStr.starts_with(U'x'))
+	{
+		// x-mod: 0始まりだと8進数扱いされるため、先頭のゼロを除去
+		loadedType = HispeedType::XMod;
+		const int32 value = ParseOr<int32>(hispeedStr.substr(hispeedStr.starts_with(U"x0") ? 2U : 1U), 10);
+		loadedValue = Clamp(value, kHispeedXModMin, kHispeedXModMax);
+	}
+	else if (hispeedStr.starts_with(U'C'))
+	{
+		// c-mod
+		loadedType = HispeedType::CMod;
+		const int32 value = ParseOr<int32>(hispeedStr.substr(1), 150);
+		loadedValue = Clamp(value, kHispeedOCModMin, kHispeedOCModMax);
+	}
+	else
+	{
+		// o-mod(数字のみ)
+		loadedType = HispeedType::OMod;
+		const int32 value = ParseOr<int32>(hispeedStr, 150);
+		loadedValue = Clamp(value, kHispeedOCModMin, kHispeedOCModMax);
+	}
+
+	// ハイスピード種類の配列から該当するインデックスを探して設定
+	for (int32 i = 0; i < static_cast<int32>(m_hispeedTypeMenu.size()); ++i)
+	{
+		if (m_hispeedTypeMenu[i] == loadedType)
+		{
+			m_hispeedTypeMenu.setCursor(i);
+			break;
+		}
+	}
+
+	refreshHispeedValueMenuConstraints();
+	m_hispeedValueMenu.setCursor(loadedValue);
 }
 
 void BTOptionPanel::saveToConfigIni()
@@ -736,7 +800,27 @@ void BTOptionPanel::saveToConfigIni()
 	ConfigIni::SetInt(ConfigIni::Key::kBGMovie, m_movie.cursor());
 
 	// BT-Dメニュー(ハイスピード)の設定
-	// TODO: ハイスピード値の保存処理を実装
+	const HispeedType hispeedType = m_hispeedTypeMenu.cursorValue();
+	const int32 hispeedValue = m_hispeedValueMenu.cursor();
+	String hispeedStr;
+
+	switch (hispeedType)
+	{
+	case HispeedType::XMod:
+		hispeedStr = U"x{:0>2}"_fmt(hispeedValue);
+		break;
+	case HispeedType::OMod:
+		hispeedStr = U"{}"_fmt(hispeedValue);
+		break;
+	case HispeedType::CMod:
+		hispeedStr = U"C{}"_fmt(hispeedValue);
+		break;
+	default:
+		hispeedStr = U"x10";
+		break;
+	}
+
+	ConfigIni::SetString(ConfigIni::Key::kHispeed, hispeedStr);
 
 	// ConfigIniをファイルに書き込み
 	ConfigIni::Save();

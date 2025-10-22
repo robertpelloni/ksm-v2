@@ -78,6 +78,36 @@ String SelectChartInfo::dispBPM() const
 	return Unicode::FromUTF8(m_chartData.meta.dispBPM);
 }
 
+double SelectChartInfo::stdBPM() const
+{
+	return m_chartData.meta.stdBPM;
+}
+
+double SelectChartInfo::stdBPMForHispeedTypeChange() const
+{
+	// TODO: kson形式はksh形式とは異なりフルで読み込む前提のため、bpmの先頭要素を採用できる見込み
+
+	const double std = stdBPM();
+	if (std > 0.0)
+	{
+		return std;
+	}
+
+	const String dispBPMStr = dispBPM();
+	if (dispBPMStr.isEmpty())
+	{
+		return kDefaultBPM;
+	}
+
+	const Array<String> parts = dispBPMStr.split(U'-');
+	if (parts.empty())
+	{
+		return kDefaultBPM;
+	}
+
+	return ParseOr<double>(parts.back(), kDefaultBPM);
+}
+
 FilePath SelectChartInfo::previewBGMFilePath() const
 {
 	return toFullPath(m_chartData.audio.bgm.filename);

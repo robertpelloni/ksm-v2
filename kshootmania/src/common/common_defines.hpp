@@ -19,6 +19,8 @@ inline constexpr StringView kKSONExtension = U"kson";
 
 constexpr double kPastTimeSec = -100000.0;
 
+constexpr double kDefaultBPM = 120.0;
+
 enum class Medal : int32
 {
 	kNoMedal = 0,
