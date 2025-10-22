@@ -34,6 +34,6 @@ namespace MusicGame::Graphics
 
 		void draw2D(const kson::ChartData& chartData, const PlayOption& playOption, const kson::TimingCache& timingCache, const GameStatus& gameStatus, const ViewStatus& viewStatus, const Scroll::HighwayScrollContext& highwayScrollContext) const;
 
-		void draw3D(const GameStatus& gameStatus, const ViewStatus& viewStatus) const;
+		void draw3D(const ViewStatus& viewStatus) const;
 	};
 }

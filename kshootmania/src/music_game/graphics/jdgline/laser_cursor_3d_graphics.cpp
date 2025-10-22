@@ -14,12 +14,6 @@ namespace MusicGame::Graphics
 		constexpr Float3 kPlaneCenter = { 0.0f, 3.5f, -kHighwayPlaneSize.y / 2 - 1.8f };
 		constexpr Float2 kPlaneSize = { 4.5f, 4.5f };
 
-		Mat4x4 CursorTransform(bool wide, double cursorX, double jdgoverlayScale)
-		{
-			const int32 xScale = wide ? kLaserXScaleWide : kLaserXScaleNormal;
-			return Mat4x4::Translate((cursorX - 0.5) * 282 / 8 * xScale * jdgoverlayScale, 0.0, 0.0);
-		}
-
 		Vec3 CursorVec(bool wide, double cursorX, double jdgoverlayScale)
 		{
 			const int32 xScale = wide ? kLaserXScaleWide : kLaserXScaleNormal;

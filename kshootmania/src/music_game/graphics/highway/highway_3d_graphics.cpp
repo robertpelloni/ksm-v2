@@ -181,7 +181,7 @@ namespace MusicGame::Graphics
 		m_laserNoteGraphics.draw(chartData, playOption, gameStatus, highwayScrollContext, m_renderTexture);
 	}
 
-	void Highway3DGraphics::draw3D(const GameStatus& gameStatus, const ViewStatus& viewStatus) const
+	void Highway3DGraphics::draw3D(const ViewStatus& viewStatus) const
 	{
 		// レンダーテクスチャを3D空間上へ描画
 		const double radians = Math::ToRadians(viewStatus.camStatus.rotationZ + viewStatus.camStatus.rotationZHighway) + viewStatus.tiltRadians;

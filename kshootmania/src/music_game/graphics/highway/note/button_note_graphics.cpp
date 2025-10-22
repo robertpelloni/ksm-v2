@@ -99,7 +99,7 @@ namespace MusicGame::Graphics
 		const ScopedRenderStates2D samplerState(SamplerState::ClampNearest);
 
 		const std::size_t numLanes = isBT ? kson::kNumBTLanesSZ : kson::kNumFXLanesSZ;
-		for (int32 laneIdx = 0; laneIdx < numLanes; ++laneIdx)
+		for (std::size_t laneIdx = 0; laneIdx < numLanes; ++laneIdx)
 		{
 			const auto& lane = isBT ? chartData.note.bt[laneIdx] : chartData.note.fx[laneIdx];
 			const double centerSplitShiftX = Camera::CenterSplitShiftX(viewStatus.camStatus.centerSplit) * ((laneIdx >= numLanes / 2) ? 1 : -1);

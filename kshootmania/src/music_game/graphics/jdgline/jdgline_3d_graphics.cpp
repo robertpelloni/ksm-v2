@@ -17,7 +17,7 @@ namespace MusicGame::Graphics
 	{
 	}
 
-	void Jdgline3DGraphics::draw3D(const GameStatus& gameStatus, const ViewStatus& viewStatus) const
+	void Jdgline3DGraphics::draw3D(const ViewStatus& viewStatus) const
 	{
 		// 3Dの板に判定ラインのテクスチャを描画
 		const ScopedRenderStates3D blendState(BlendState::NonPremultiplied);

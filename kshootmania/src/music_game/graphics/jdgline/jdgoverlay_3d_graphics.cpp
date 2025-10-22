@@ -277,7 +277,7 @@ namespace MusicGame::Graphics
 		drawLaserRippleAnim(gameStatus);
 	}
 
-	void Jdgoverlay3DGraphics::draw3D(const GameStatus& gameStatus, const ViewStatus& viewStatus) const
+	void Jdgoverlay3DGraphics::draw3D(const ViewStatus& viewStatus) const
 	{
 		// レンダーテクスチャを3D空間上に描画
 		const ScopedRenderStates3D blendState(BlendState::Additive);
