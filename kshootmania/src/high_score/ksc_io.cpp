@@ -35,6 +35,11 @@ namespace KscIo
 				return false;
 			}
 
+			if (!FileSystem::Exists(kscFilePath))
+			{
+				return false;
+			}
+
 			TextReader reader(kscFilePath);
 			if (!reader)
 			{
