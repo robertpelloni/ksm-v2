@@ -78,7 +78,7 @@ namespace MusicGame::Scroll
 		/// @param gameStatus ゲーム状態
 		/// @param hispeedSetting ハイスピード設定
 		/// @return 相対Pulse数換算値
-		/// @note HSP版: https://github.com/m4saka/kshootmania-v1-hsp/blob/1c75880b545d1232eeffc4bb3fc19704a3622f73/src/scene/play/play_utils.hsp#L246-L269
+		/// @note HSP版: https://github.com/kshootmania/ksm-v1/blob/1c75880b545d1232eeffc4bb3fc19704a3622f73/src/scene/play/play_utils.hsp#L246-L269
 		double getRelPulseEquvalent(kson::Pulse pulse, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache, const GameStatus& gameStatus) const;
 
 	public:

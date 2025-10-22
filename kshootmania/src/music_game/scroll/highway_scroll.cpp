@@ -6,8 +6,8 @@ namespace MusicGame::Scroll
 	{
 		// ハイスピードの基準ピクセル数
 		// HSP版:
-		//     https://github.com/m4saka/kshootmania-v1-hsp/blob/08275836547c7792a6d4f59037e56e947f2979c3/src/scene/play/play_key_input.hsp#L429-L440
-		//     https://github.com/m4saka/kshootmania-v1-hsp/blob/d2811a09e2d75dad5cc152d7c4073897061addb7/src/scene/play/play_draw_frame.hsp#L96
+		//     https://github.com/kshootmania/ksm-v1/blob/08275836547c7792a6d4f59037e56e947f2979c3/src/scene/play/play_key_input.hsp#L429-L440
+		//     https://github.com/kshootmania/ksm-v1/blob/d2811a09e2d75dad5cc152d7c4073897061addb7/src/scene/play/play_draw_frame.hsp#L96
 		// 上記の「108/2」と「10」を乗算した値にあたる
 		constexpr double kBasePixels = 540.0;
 

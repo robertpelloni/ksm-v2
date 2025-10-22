@@ -37,7 +37,7 @@ namespace MusicGame::Camera
 	inline constexpr double JdglineScale(double zoom)
 	{
 		// 数式は見た目上の大きさがレーンとおおむね一致するように経験的に調整されたものであるため、各計算は特定の意味を持たない
-		// HSP版: https://github.com/m4saka/kshootmania-v1-hsp/blob/d2811a09e2d75dad5cc152d7c4073897061addb7/src/scene/play/play_draw_frame.hsp#L716-L723
+		// HSP版: https://github.com/kshootmania/ksm-v1/blob/d2811a09e2d75dad5cc152d7c4073897061addb7/src/scene/play/play_draw_frame.hsp#L716-L723
 		const double scaled = ScaledCamZoomValue(zoom);
 		constexpr double scaled300 = -ScaledCamZoomValue(-300.0);
 		double order = 5.0;
@@ -55,7 +55,7 @@ namespace MusicGame::Camera
 	inline constexpr double JdgoverlayScale(double zoom)
 	{
 		// 数式は見た目上の大きさがレーンとおおむね一致するように経験的に調整されたものであるため、各計算は特定の意味を持たない
-		// HSP版: https://github.com/m4saka/kshootmania-v1-hsp/blob/d2811a09e2d75dad5cc152d7c4073897061addb7/src/scene/play/play_draw_frame.hsp#L707-L714
+		// HSP版: https://github.com/kshootmania/ksm-v1/blob/d2811a09e2d75dad5cc152d7c4073897061addb7/src/scene/play/play_draw_frame.hsp#L707-L714
 		const double scaled = ScaledCamZoomValue(zoom);
 		constexpr double scaled300 = -ScaledCamZoomValue(-300.0);
 		double order = 4.0;
