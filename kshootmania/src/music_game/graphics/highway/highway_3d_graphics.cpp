@@ -52,7 +52,7 @@ namespace MusicGame::Graphics
 		// HSP版の該当箇所: https://github.com/kshootmania/ksm-v1/blob/d2811a09e2d75dad5cc152d7c4073897061addb7/src/scene/play/play_draw_frame.hsp#L779-L821
 
 		const auto& camStatus = viewStatus.camStatus;
-		const double zoom = Camera::ScaledCamZoomValue(camStatus.zoomBottom);
+		const double scaledZoomBottom = Camera::ScaledCamZoomBottomValue(camStatus.zoomBottom);
 
 		if (camStatus.useLegacyZoomTop)
 		{
@@ -66,11 +66,11 @@ namespace MusicGame::Graphics
 			m_meshData.vertices[0].pos.z = kPlaneHeight / 2 + legacyZoomTop * 100 * Cos(kCameraToJdglineRadians); // 奥の辺 手前方向(v1とZ軸の向きが逆なので符号を反転)
 			m_meshData.vertices[1].pos.z = m_meshData.vertices[0].pos.z;
 
-			m_meshData.vertices[2].pos.y = -zoom * 100 * Sin(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline // 手前の辺 上方向
+			m_meshData.vertices[2].pos.y = -scaledZoomBottom * 100 * Sin(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline // 手前の辺 上方向
 			                              + legacyZoomTop * 100 * heightRatio * Sin(kCameraToJdglineRadians);
 			m_meshData.vertices[3].pos.y = m_meshData.vertices[2].pos.y;
 			m_meshData.vertices[2].pos.z = -kPlaneHeight / 2 // 手前の辺 手前方向(v1とZ軸の向きが逆なので符号を反転)
-			                              - zoom * 100 * Cos(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline
+			                              - scaledZoomBottom * 100 * Cos(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline
 			                              - legacyZoomTop * 100 * heightRatio * Cos(kCameraToJdglineRadians);
 			m_meshData.vertices[3].pos.z = m_meshData.vertices[2].pos.z;
 		}
@@ -83,11 +83,11 @@ namespace MusicGame::Graphics
 
 			m_meshData.vertices[0].pos.y = kPlaneHeightAboveJdgline * sinRotationX / 2.5; // 奥の辺 上方向
 			m_meshData.vertices[1].pos.y = m_meshData.vertices[0].pos.y;
-			m_meshData.vertices[2].pos.y = -zoom * 100 * Sin(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline - kPlaneHeightBelowJdgline * sinRotationX / 2.5; // 手前の辺 上方向
+			m_meshData.vertices[2].pos.y = -scaledZoomBottom * 100 * Sin(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline - kPlaneHeightBelowJdgline * sinRotationX / 2.5; // 手前の辺 上方向
 			m_meshData.vertices[3].pos.y = m_meshData.vertices[2].pos.y;
 			m_meshData.vertices[0].pos.z = -kPlaneHeightAboveJdgline / 2 + kPlaneHeightAboveJdgline * cosRotationX; // 奥の辺 手前方向(v1とZ軸の向きが逆なので符号を反転)
 			m_meshData.vertices[1].pos.z = m_meshData.vertices[0].pos.z;
-			m_meshData.vertices[2].pos.z = -kPlaneHeightAboveJdgline / 2 - kPlaneHeightBelowJdgline / 2 * cosRotationX - zoom * 100 * Cos(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline; // 手前の辺 手前方向(v1とZ軸の向きが逆なので符号を反転)
+			m_meshData.vertices[2].pos.z = -kPlaneHeightAboveJdgline / 2 - kPlaneHeightBelowJdgline / 2 * cosRotationX - scaledZoomBottom * 100 * Cos(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline; // 手前の辺 手前方向(v1とZ軸の向きが逆なので符号を反転)
 			m_meshData.vertices[3].pos.z = m_meshData.vertices[2].pos.z;
 
 			const double rotationXMod = MathUtils::WrappedFmod(rotationX, Math::TwoPi);
