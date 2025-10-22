@@ -167,7 +167,7 @@ namespace MusicGame::Scroll
 				if (nextItr != scrollSpeed.end() && nextItr->first <= notePulse)
 				{
 					segmentEndPulse = nextItr->first;
-					nextSpeed = nextItr->second.v;
+					nextSpeed = nextItr->second.v.v;
 				}
 				else
 				{
@@ -182,7 +182,7 @@ namespace MusicGame::Scroll
 				// 次の区間の開始速度を設定
 				if (nextItr != scrollSpeed.end() && nextItr->first == segmentEndPulse)
 				{
-					currentSpeed = nextItr->second.vf;
+					currentSpeed = nextItr->second.v.vf;
 				}
 				else
 				{

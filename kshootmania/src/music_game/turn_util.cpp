@@ -44,8 +44,8 @@ namespace MusicGame
 				{
 					for (auto& [relPulse, value] : laserSection.v)
 					{
-						value.v = 1.0 - value.v;
-						value.vf = 1.0 - value.vf;
+						value.v.v = 1.0 - value.v.v;
+						value.v.vf = 1.0 - value.v.vf;
 					}
 				}
 			}
@@ -59,16 +59,16 @@ namespace MusicGame
 			{
 				for (auto& [relPulse, value] : graphSection.v)
 				{
-					value.v = -value.v;
-					value.vf = -value.vf;
+					value.v.v = -value.v.v;
+					value.v.vf = -value.v.vf;
 				}
 			}
 
 			// zoom_side左右反転
 			for (auto& [pulse, value] : camera.cam.body.zoomSide)
 			{
-				value.v = -value.v;
-				value.vf = -value.vf;
+				value.v.v = -value.v.v;
+				value.v.vf = -value.v.vf;
 			}
 
 			// 回転エフェクト左右反転

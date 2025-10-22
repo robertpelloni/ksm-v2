@@ -41,15 +41,15 @@ namespace MusicGame::Graphics
 			return (v * (kHighwayTextureSize.x - kLaserLineWidth) + kLaserLineWidth / 2) * xScale;
 		}
 
-		void DrawLaserLine(int32 laneIdx, int32 positionY, const kson::GraphValue& point, int32 nextPositionY, const kson::GraphValue& nextPoint, const Texture& laserNoteTexture, int32 laserNoteTextureRow, int32 xScale)
+		void DrawLaserLine(int32 laneIdx, int32 positionY, const kson::GraphPoint& point, int32 nextPositionY, const kson::GraphPoint& nextPoint, const Texture& laserNoteTexture, int32 laserNoteTextureRow, int32 xScale)
 		{
 			const Vec2 positionStart = {
-				LaserPointX(point.vf, xScale),
-				positionY - (point.v != point.vf ? kLaserTextureSize.y : 0)
+				LaserPointX(point.v.vf, xScale),
+				positionY - (point.v.v != point.v.vf ? kLaserTextureSize.y : 0)
 			};
 
 			const Vec2 positionEnd = {
-				LaserPointX(nextPoint.v, xScale),
+				LaserPointX(nextPoint.v.v, xScale),
 				nextPositionY
 			};
 
@@ -74,20 +74,20 @@ namespace MusicGame::Graphics
 			};
 		}
 
-		void DrawLaserSlam(int32 laneIdx, int32 positionY, const kson::GraphValue& point, const Texture& laserNoteTexture, int32 laserNoteTextureRow, int32 xScale)
+		void DrawLaserSlam(int32 laneIdx, int32 positionY, const kson::GraphPoint& point, const Texture& laserNoteTexture, int32 laserNoteTextureRow, int32 xScale)
 		{
 			const Vec2 positionStart = {
-				LaserPointX(point.v, xScale),
+				LaserPointX(point.v.v, xScale),
 				positionY
 			};
 
 			const Vec2 positionEnd = {
-				LaserPointX(point.vf, xScale),
+				LaserPointX(point.v.vf, xScale),
 				positionY
 			};
 
 			// 直角レーザーの角のテクスチャを描画
-			const bool isLeftToRight = (point.v < point.vf);
+			const bool isLeftToRight = (point.v.v < point.v.vf);
 			laserNoteTexture(kLaserTextureSize.x * laneIdx, kLaserTextureSize.y * laserNoteTextureRow, kLaserTextureSize).mirrored(isLeftToRight).drawAt(positionStart + Vec2{ 0, -kLaserLineWidth / 2 });
 			laserNoteTexture(kLaserTextureSize.x * laneIdx, kLaserTextureSize.y * laserNoteTextureRow, kLaserTextureSize).mirrored(!isLeftToRight).flipped().drawAt(positionEnd + Vec2{ 0, -kLaserLineWidth / 2 });
 
@@ -96,10 +96,10 @@ namespace MusicGame::Graphics
 			quad(laserNoteTexture(kLaserTextureSize.x * laneIdx + kOnePixelTextureSourceOffset, kLaserTextureSize.y * laserNoteTextureRow, kOnePixelTextureSourceSize, kLaserTextureSize.y)).draw();
 		}
 
-		void DrawLaserSlamTail(int32 laneIdx, int32 positionY, const kson::GraphValue& point, const Texture& laserNoteTexture, int32 laserNoteTextureRow, int32 xScale)
+		void DrawLaserSlamTail(int32 laneIdx, int32 positionY, const kson::GraphPoint& point, const Texture& laserNoteTexture, int32 laserNoteTextureRow, int32 xScale)
 		{
 			const Vec2 positionStart = {
-				LaserPointX(point.vf, xScale),
+				LaserPointX(point.v.vf, xScale),
 				positionY
 			};
 			const Quad quad = LaserLineQuad(positionStart + Vec2{ 0.0, -kLaserTextureSize.y }, positionStart + Vec2{ 0.0, -kLaserTextureSize.y - kLaserTailHeight });
@@ -144,7 +144,7 @@ namespace MusicGame::Graphics
 				if (itr == laserSection.v.begin())
 				{
 					const Vec2 positionStart = {
-						LaserPointX(point.v, xScale),
+						LaserPointX(point.v.v, xScale),
 						positionY
 					};
 					laserStartTexture.draw(Arg::topCenter = positionStart);
@@ -158,7 +158,7 @@ namespace MusicGame::Graphics
 				}
 
 				// 直角レーザーを描画
-				if (point.v != point.vf)
+				if (point.v.v != point.v.vf)
 				{
 					DrawLaserSlam(laneIdx, positionY, point, laserNoteTexture, laserNoteTextureRow, xScale);
 				}
@@ -168,7 +168,7 @@ namespace MusicGame::Graphics
 				if (nextItr == laserSection.v.end())
 				{
 					// 終端が直角の場合は終端を伸ばす
-					if (point.v != point.vf)
+					if (point.v.v != point.v.vf)
 					{
 						DrawLaserSlamTail(laneIdx, positionY, point, laserNoteTexture, laserNoteTextureRow, xScale);
 					}

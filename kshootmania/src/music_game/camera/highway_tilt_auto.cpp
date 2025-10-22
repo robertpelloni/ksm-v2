@@ -41,8 +41,8 @@ namespace MusicGame::Camera
 						const auto& [_, section] = *itr;
 						if (!section.v.empty())
 						{
-							const auto& [_, v] = *section.v.begin();
-							tiltFactor += isLeftLaser ? v.v : -(1.0 - v.v);
+							const auto& [_, point] = *section.v.begin();
+							tiltFactor += isLeftLaser ? point.v.v : -(1.0 - point.v.v);
 						}
 					}
 				}

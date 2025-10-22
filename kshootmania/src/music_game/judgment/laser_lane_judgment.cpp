@@ -17,15 +17,15 @@ namespace MusicGame::Judgment
 			{
 				kson::Pulse prevPulse = y;
 				Optional<double> prevValue = none;
-				for (const auto& [ry, v] : section.v)
+				for (const auto& [ry, point] : section.v)
 				{
 					if (prevValue.has_value())
 					{
-						const int32 direction = Sign(v.v - prevValue.value());
+						const int32 direction = Sign(point.v.v - prevValue.value());
 						directionMap.insert_or_assign(prevPulse, direction);
 					}
 					prevPulse = y + ry;
-					prevValue = v.vf;
+					prevValue = point.v.vf;
 				}
 				directionMap.insert_or_assign(prevPulse, 0);
 			}
@@ -54,12 +54,12 @@ namespace MusicGame::Judgment
 						continue;
 					}
 					const auto& point = pointOpt.value();
-					if (MathUtils::AlmostEquals(point.vf, 0.0))
+					if (MathUtils::AlmostEquals(point.v.vf, 0.0))
 					{
 						// 左端は右側方向として扱う
 						replacedDirection = 1;
 					}
-					else if (MathUtils::AlmostEquals(point.vf, 1.0))
+					else if (MathUtils::AlmostEquals(point.v.vf, 1.0))
 					{
 						// 右端は左側方向として扱う
 						replacedDirection = -1;
@@ -90,11 +90,11 @@ namespace MusicGame::Judgment
 				Optional<double> prevV = none;
 				Optional<double> prevVf = none;
 				int32 prevDirection = 0;
-				for (const auto& [ry, v] : sec.v)
+				for (const auto& [ry, point] : sec.v)
 				{
 					if (prevV.has_value() && prevVf.has_value())
 					{
-						const int32 direction = Sign(v.v - prevVf.value());
+						const int32 direction = Sign(point.v.v - prevVf.value());
 						if (direction != prevDirection || !kson::AlmostEquals(prevV.value(), prevVf.value()))
 						{
 							// 折り返しまたは直角があった場合はタイミングを配列に挿入
@@ -103,8 +103,8 @@ namespace MusicGame::Judgment
 						}
 					}
 					prevPulse = y + ry;
-					prevV = v.v;
-					prevVf = v.vf;
+					prevV = point.v.v;
+					prevVf = point.v.vf;
 				}
 
 				// セクション末尾のタイミングも折り返しとして配列に挿入
@@ -171,7 +171,7 @@ namespace MusicGame::Judgment
 			{
 				for (const auto& [ry, point] : section.v)
 				{
-					const bool isSlam = !kson::AlmostEquals(point.v, point.vf);
+					const bool isSlam = !kson::AlmostEquals(point.v.v, point.v.vf);
 					if (isSlam)
 					{
 						const kson::Pulse slamPulse = y + ry;
@@ -207,11 +207,11 @@ namespace MusicGame::Judgment
 			{
 				for (const auto& [ry, point] : section.v)
 				{
-					const bool isSlam = !kson::AlmostEquals(point.v, point.vf);
+					const bool isSlam = !kson::AlmostEquals(point.v.v, point.v.vf);
 					if (isSlam)
 					{
 						const double slamTimeSec = kson::PulseToSec(y + ry, beatInfo, timingCache);
-						const int32 slamDirection = Sign(point.vf - point.v);
+						const int32 slamDirection = Sign(point.v.vf - point.v.v);
 						judgmentArray.emplace(y + ry, LaserSlamJudgment{ slamTimeSec, slamDirection });
 					}
 				}
@@ -229,8 +229,8 @@ namespace MusicGame::Judgment
 				const auto& [_, section] = *itr;
 				if (!section.v.empty())
 				{
-					const auto& [_, v] = *section.v.begin();
-					return std::pair<double, bool>{ v.v, section.wide() };
+					const auto& [_, point] = *section.v.begin();
+					return std::pair<double, bool>{ point.v.v, section.wide() };
 				}
 			}
 
@@ -412,7 +412,7 @@ namespace MusicGame::Judgment
 				laneStatusRef.rippleAnim.push({
 					.startTimeSec = Max(laserSlamJudgmentRef.sec(), m_prevTimeSecForDraw),
 					.wide = section.wide(),
-					.x = point.vf,
+					.x = point.v.vf,
 				});
 			}
 			else
@@ -721,13 +721,13 @@ namespace MusicGame::Judgment
 				const auto& section = lane.at(m_prevCurrentLaserSectionPulseForDraw.value());
 				assert(!section.v.empty() && "Laser section must not be empty");
 				const auto& [lastPointRy, lastPoint] = *section.v.rbegin();
-				const bool isLastPointSlam = !MathUtils::AlmostEquals(lastPoint.v, lastPoint.vf);
+				const bool isLastPointSlam = !MathUtils::AlmostEquals(lastPoint.v.v, lastPoint.v.vf);
 				if (!isLastPointSlam)
 				{
 					laneStatusRef.rippleAnim.push({
 						.startTimeSec = m_prevTimeSecForDraw,
 						.wide = section.wide(),
-						.x = lastPoint.vf,
+						.x = lastPoint.v.vf,
 					});
 				}
 			}
@@ -747,7 +747,7 @@ namespace MusicGame::Judgment
 				// カーソルを出現させ、LASERセクションの始点の値に合わせる
 				// (※現在の理想位置に合わせるのではない理由は、始点が直角の場合に直角の移動先にカーソルが合ってしまうため)
 				const auto& laserSection = lane.at(laneStatusRef.currentLaserSectionPulse.value());
-				laneStatusRef.cursorX = laserSection.v.begin()->second.v;
+				laneStatusRef.cursorX = laserSection.v.begin()->second.v.v;
 				laneStatusRef.cursorWide = laserSection.wide();
 			}
 		}

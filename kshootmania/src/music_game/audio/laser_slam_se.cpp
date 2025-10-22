@@ -25,9 +25,9 @@ namespace MusicGame::Audio
 				const auto& lane = chartData.note.laser.at(laneIdx);
 				for (const auto& [graphSectionY, graphSection] : lane)
 				{
-					for (const auto& [slamRy, graphValue] : graphSection.v)
+					for (const auto& [slamRy, graphPoint] : graphSection.v)
 					{
-						if (graphValue.vf == graphValue.v)
+						if (graphPoint.v.vf == graphPoint.v.v)
 						{
 							// 直角ではない
 							continue;
@@ -85,8 +85,8 @@ namespace MusicGame::Audio
 				assert(false && "graph value must exist here");
 				return 1.0;
 			}
-			const auto& graphValue = graphSection.v.at(slamRy);
-			const double width = AbsDiff(graphValue.v, graphValue.vf) * graphSection.w;
+			const auto& graphPoint = graphSection.v.at(slamRy);
+			const double width = AbsDiff(graphPoint.v.v, graphPoint.v.vf) * graphSection.w;
 			return Clamp(width * 2, 0.0, 1.0);
 		};
 
@@ -97,9 +97,9 @@ namespace MusicGame::Audio
 
 			for (const auto& [graphSectionY, graphSection] : lane)
 			{
-				for (const auto& [slamRy, graphValue] : graphSection.v)
+				for (const auto& [slamRy, graphPoint] : graphSection.v)
 				{
-					if (graphValue.vf == graphValue.v)
+					if (graphPoint.v.vf == graphPoint.v.v)
 					{
 						// 直角ではない
 						continue;
@@ -208,8 +208,8 @@ namespace MusicGame::Audio
 					assert(false && "graph value must exist here");
 					return 1.0;
 				}
-				const auto& graphValue = graphSection.v.at(slamRy);
-				const double width = AbsDiff(graphValue.v, graphValue.vf) * graphSection.w;
+				const auto& graphPoint = graphSection.v.at(slamRy);
+				const double width = AbsDiff(graphPoint.v.v, graphPoint.v.vf) * graphSection.w;
 				return Clamp(width * 2, 0.0, 1.0);
 			};
 
