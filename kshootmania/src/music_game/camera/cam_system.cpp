@@ -1,4 +1,5 @@
 ﻿#include "cam_system.hpp"
+#include "camera_math.hpp"
 #include "kson/util/graph_utils.hpp"
 
 namespace MusicGame::Camera
@@ -35,7 +36,8 @@ namespace MusicGame::Camera
 
 			const double targetZoomTop = kson::GraphValueAt(body.zoomTop, currentPulse);
 			m_legacyCurrentZoomTop = m_legacyCurrentZoomTop * (1.0 - targetRate) + targetZoomTop * targetRate;
-			m_status.zoomTop = m_legacyCurrentZoomTop;
+			m_status.zoomTop = ScaledLegacyZoomTop(m_legacyCurrentZoomTop);
+			m_status.useLegacyZoomTop = true;
 
 			const double targetZoomBottom = kson::GraphValueAt(body.zoomBottom, currentPulse);
 			m_legacyCurrentZoomBottom = m_legacyCurrentZoomBottom * (1.0 - targetRate) + targetZoomBottom * targetRate;
@@ -49,6 +51,7 @@ namespace MusicGame::Camera
 		{
 			// KSHバージョン167以上の場合、緩和時間なしで即時反映
 			m_status.zoomTop = kson::GraphValueAt(body.zoomTop, currentPulse);
+			m_status.useLegacyZoomTop = false;
 			m_status.zoomBottom = kson::GraphValueAt(body.zoomBottom, currentPulse);
 			m_status.shiftX = ZoomSideToShiftX(kson::GraphValueAt(body.zoomSide, currentPulse));
 		}

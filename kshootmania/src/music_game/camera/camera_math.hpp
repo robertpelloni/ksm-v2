@@ -17,6 +17,18 @@ namespace MusicGame::Camera
 		}
 	}
 
+	inline constexpr double ScaledLegacyZoomTop(double zoomTop)
+	{
+		// KSHバージョン167未満でのzoom_top値の変換
+		// HSP版: https://github.com/kshootmania/ksm-v1/blob/ea05374a3ece796612b29d927cb3c6f5aabb266e/src/scene/play/play_draw_frame.hsp#L700-L705
+		double scaled = zoomTop / 1.5 / 50.0;
+		if (scaled <= 0.0)
+		{
+			scaled /= 2.5;
+		}
+		return scaled;
+	}
+
 	inline Mat4x4 CamShiftXMatrix(double shiftX)
 	{
 		return Mat4x4::Translate(Vec3::Right(shiftX));
