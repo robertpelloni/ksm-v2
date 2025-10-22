@@ -214,7 +214,7 @@ namespace
 		switch (type)
 		{
 		case HispeedType::XMod:
-			return U"x{:0>2}"_fmt(value); // x01, x10など2桁ゼロ埋め
+			return U"x{:.1f}"_fmt(value / 10.0); // 表示時はx2.5のように小数表示
 		case HispeedType::OMod:
 			return U"{}"_fmt(value);
 		case HispeedType::CMod:
