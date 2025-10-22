@@ -9,6 +9,7 @@ namespace MusicGame::Camera
 		double shiftX = 0.0;
 		double zoomTop = 0.0;
 		bool useLegacyZoomTop = false;
+		bool useLegacyJdgScale = false;
 		double rotationZ = 0.0;
 		double rotationZHighway = 0.0;
 		double rotationZJdgline = 0.0;

@@ -52,6 +52,24 @@ namespace MusicGame::Camera
 		return Max((Pow(Max(scaled + scaled300, 0.0) / scaled300, order) + 0.5) / 1.5, 1.0);
 	}
 
+	inline constexpr double LegacyJdglineScale(double zoomBottom)
+	{
+		// KSHバージョン167未満での判定ラインの大きさ計算
+		// HSP版: https://github.com/kshootmania/ksm-v1/blob/ea05374a3ece796612b29d927cb3c6f5aabb266e/src/scene/play/play_draw_frame.hsp#L730-L737
+		const double scaled = ScaledCamZoomBottomValue(zoomBottom);
+		constexpr double scaled300 = -ScaledCamZoomBottomValue(-300.0);
+		double order = 5.0;
+		if (zoomBottom < 0.0)
+		{
+			order -= 3.0;
+		}
+		if (zoomBottom > 200.0)
+		{
+			order += 10.0 * (scaled - ScaledCamZoomBottomValue(200.0));
+		}
+		return (Pow((scaled + scaled300) / scaled300, order) + 0.5) / 1.5;
+	}
+
 	inline constexpr double JdgoverlayScale(double zoomBottom)
 	{
 		// 数式は見た目上の大きさがレーンとおおむね一致するように経験的に調整されたものであるため、各計算は特定の意味を持たない
@@ -68,6 +86,24 @@ namespace MusicGame::Camera
 			order += 10.0 * (scaled - ScaledCamZoomBottomValue(200.0));
 		}
 		return (Pow(Max(scaled + scaled300, 0.0) / scaled300, order) + 0.4545 * Pow(1.1, Min((scaled - scaled300) / scaled300, 1.0))) / 1.5;
+	}
+
+	inline constexpr double LegacyJdgoverlayScale(double zoomBottom)
+	{
+		// KSHバージョン167未満での判定アニメーションの大きさ計算
+		// HSP版: https://github.com/kshootmania/ksm-v1/blob/ea05374a3ece796612b29d927cb3c6f5aabb266e/src/scene/play/play_draw_frame.hsp#L721-L728
+		const double scaled = ScaledCamZoomBottomValue(zoomBottom);
+		constexpr double scaled300 = -ScaledCamZoomBottomValue(-300.0);
+		double order = 4.0;
+		if (zoomBottom < 0.0)
+		{
+			order -= 2.0;
+		}
+		if (zoomBottom > 200.0)
+		{
+			order += 10.0 * (scaled - ScaledCamZoomBottomValue(200.0));
+		}
+		return (Pow((scaled + scaled300) / scaled300, order) + 0.5) / 1.5;
 	}
 
 	inline constexpr double CenterSplitShiftX(double centerSplit, double btLaneDiffX = Graphics::kBTLanePositionDiff.x)

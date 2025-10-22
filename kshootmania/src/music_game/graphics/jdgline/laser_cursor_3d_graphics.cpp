@@ -36,7 +36,9 @@ namespace MusicGame::Graphics
 	{
 		// LASERカーソルを3D空間上に描画
 		const ScopedRenderStates3D blendState(kEnableAlphaBlend);
-		const double jdglineScale = Camera::JdglineScale(viewStatus.camStatus.zoomBottom);
+		const double jdglineScale = viewStatus.camStatus.useLegacyJdgScale
+			? Camera::LegacyJdglineScale(viewStatus.camStatus.zoomBottom)
+			: Camera::JdglineScale(viewStatus.camStatus.zoomBottom);
 		for (int32 i = 0; i < kson::kNumLaserLanes; ++i)
 		{
 			const auto& laneStatus = gameStatus.laserLaneStatus[i];
@@ -49,7 +51,9 @@ namespace MusicGame::Graphics
 
 			// カーソルを描画
 			const double cursorX = cursorXOpt.value();
-			const double jdgoverlayScale = Camera::JdgoverlayScale(viewStatus.camStatus.zoomBottom);
+			const double jdgoverlayScale = viewStatus.camStatus.useLegacyJdgScale
+				? Camera::LegacyJdgoverlayScale(viewStatus.camStatus.zoomBottom)
+				: Camera::JdgoverlayScale(viewStatus.camStatus.zoomBottom);
 			const Vec3 shiftXVec = Vec3::Right(viewStatus.camStatus.shiftX);
 			const Vec3 center = kPlaneCenter + CursorVec(laneStatus.cursorWide, cursorX, jdgoverlayScale) + shiftXVec * jdgoverlayScale;
 			const double radians = Math::ToRadians(viewStatus.camStatus.rotationZHighway) + viewStatus.tiltRadians;

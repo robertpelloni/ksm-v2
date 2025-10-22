@@ -281,7 +281,9 @@ namespace MusicGame::Graphics
 	{
 		// レンダーテクスチャを3D空間上に描画
 		const ScopedRenderStates3D blendState(BlendState::Additive);
-		const double scale = Camera::JdgoverlayScale(viewStatus.camStatus.zoomBottom);
+		const double scale = viewStatus.camStatus.useLegacyJdgScale
+			? Camera::LegacyJdgoverlayScale(viewStatus.camStatus.zoomBottom)
+			: Camera::JdgoverlayScale(viewStatus.camStatus.zoomBottom);
 		const double shiftX = viewStatus.camStatus.shiftX;
 		const Vec3 shiftXVec = Vec3::Right(shiftX);
 		const double radians = Math::ToRadians(viewStatus.camStatus.rotationZHighway) + viewStatus.tiltRadians;
