@@ -22,6 +22,59 @@ namespace MusicGame
 			return secSincePlayFinishPrev >= kPlayFinishFadeOutStartSec;
 		}
 
+		// stopをscroll_speedへ焼き込む
+		kson::Graph BakeStopIntoScrollSpeed(const kson::Graph& scrollSpeed, const kson::ByPulse<kson::RelPulse>& stop)
+		{
+			if (stop.empty())
+			{
+				return scrollSpeed;
+			}
+
+			kson::Graph baseScrollSpeed = scrollSpeed;
+			if (baseScrollSpeed.empty())
+			{
+				baseScrollSpeed.emplace(0, kson::GraphValue{ 1.0 });
+			}
+
+			// stopの重なりを解決(区間をマージ)
+			std::vector<std::pair<kson::Pulse, kson::Pulse>> mergedStopRanges;
+			for (const auto& [stopY, stopLength] : stop)
+			{
+				const kson::Pulse start = stopY;
+				const kson::Pulse end = stopY + stopLength;
+
+				if (mergedStopRanges.empty() || mergedStopRanges.back().second < start)
+				{
+					mergedStopRanges.emplace_back(start, end);
+				}
+				else
+				{
+					mergedStopRanges.back().second = std::max(mergedStopRanges.back().second, end);
+				}
+			}
+
+			kson::Graph result = baseScrollSpeed;
+
+			// マージされたstop区間を焼き込む
+			for (const auto& [stopStart, stopEnd] : mergedStopRanges)
+			{
+				const double speedBeforeStop = kson::GraphValueAt(baseScrollSpeed, stopStart);
+				const double speedAfterStop = kson::GraphValueAt(baseScrollSpeed, stopEnd);
+
+				result.insert_or_assign(stopStart, kson::GraphValue{ speedBeforeStop, 0.0 });
+				result.insert_or_assign(stopEnd, kson::GraphValue{ 0.0, speedAfterStop });
+
+				// stop区間内のscroll_speed変更点を削除
+				auto it = result.upper_bound(stopStart);
+				while (it != result.end() && it->first < stopEnd)
+				{
+					it = result.erase(it);
+				}
+			}
+
+			return result;
+		}
+
 		// 譜面データを読み込み、Turn変換とPlayModeフィルタを適用
 		kson::ChartData LoadChartDataWithTurn(const GameCreateInfo& createInfo)
 		{
@@ -45,6 +98,9 @@ namespace MusicGame
 
 			// scroll_speedを非カーブのみのグラフへ展開
 			chartData.beat.scrollSpeed = kson::ExpandCurveSegments(chartData.beat.scrollSpeed, kson::kCurveSubdivisionInterval);
+
+			// stopをscroll_speedへ焼き込む
+			chartData.beat.scrollSpeed = BakeStopIntoScrollSpeed(chartData.beat.scrollSpeed, chartData.beat.stop);
 
 			return chartData;
 		}
