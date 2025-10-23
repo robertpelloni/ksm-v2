@@ -34,6 +34,18 @@ namespace MusicGame
 			// Off/Hideモードフィルタを適用
 			ApplyPlayModeFilter(chartData, createInfo.playOption);
 
+			// レーザーを非カーブのみのグラフへ展開
+			for (auto& lane : chartData.note.laser)
+			{
+				for (auto& [y, section] : lane)
+				{
+					section = kson::ExpandCurveSegments(section, kson::kCurveSubdivisionInterval);
+				}
+			}
+
+			// scroll_speedを非カーブのみのグラフへ展開
+			chartData.beat.scrollSpeed = kson::ExpandCurveSegments(chartData.beat.scrollSpeed, kson::kCurveSubdivisionInterval);
+
 			return chartData;
 		}
 	}
