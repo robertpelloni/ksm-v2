@@ -468,9 +468,9 @@ void SelectMenu::update()
 	}
 	fxLRPressed = fxLRPressedNow;
 
-	// BT-B+C押下中は無視(プレイヤー切り替えと干渉しないようにするため)
+	// プレイヤー切り替え(BT-B+C)、アルファベットジャンプ(Shift)と干渉しないよう除外
 	const bool btBCPressed = KeyConfig::Pressed(KeyConfig::kBT_B) && KeyConfig::Pressed(KeyConfig::kBT_C);
-	if (!btBCPressed)
+	if (!btBCPressed && !KeyShift.pressed())
 	{
 		m_difficultyMenu.update();
 		if (m_difficultyMenu.deltaCursor() != 0)

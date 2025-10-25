@@ -392,6 +392,12 @@ BTOptionPanel::BTOptionPanel(std::shared_ptr<noco::Canvas> canvas)
 
 Optional<KeyConfig::Button> BTOptionPanel::getCurrentSingleBTButton() const
 {
+	// Shift押下中はBTメニューを開かない(アルファベットジャンプを優先)
+	if (KeyShift.pressed())
+	{
+		return none;
+	}
+
 	int32 pressedCount = 0;
 	Optional<KeyConfig::Button> pressedButton;
 

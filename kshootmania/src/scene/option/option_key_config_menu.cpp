@@ -922,6 +922,41 @@ namespace
 
 		return Texture{ image };
 	}
+
+	// 指定したConfigurableButtonのキーが他のボタンと重複しているかチェック
+	bool HasDuplicateKey(KeyConfig::ConfigSet targetConfigSet, KeyConfig::ConfigurableButton targetButton)
+	{
+		const Input& targetInput = KeyConfig::GetConfigValue(targetConfigSet, targetButton);
+
+		// 未割り当て(code == 0)の場合は重複扱いにしない
+		if (targetInput.deviceType() == InputDeviceType::Undefined || targetInput.code() == 0)
+		{
+			return false;
+		}
+
+		// 全てのConfigSetについてチェック
+		for (int32 configSetIdx = 0; configSetIdx < KeyConfig::kConfigSetEnumCount; ++configSetIdx)
+		{
+			const auto configSet = static_cast<KeyConfig::ConfigSet>(configSetIdx);
+
+			for (int32 i = 0; i < KeyConfig::kConfigurableButtonEnumCount; ++i)
+			{
+				// 自分自身は除外
+				if (configSet == targetConfigSet && i == targetButton)
+				{
+					continue;
+				}
+
+				const Input& otherInput = KeyConfig::GetConfigValue(configSet, static_cast<KeyConfig::ConfigurableButton>(i));
+				if (otherInput.deviceType() == targetInput.deviceType() && otherInput.code() == targetInput.code())
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 }
 
 void OptionKeyConfigMenu::updateNoneState()
@@ -1123,8 +1158,10 @@ void OptionKeyConfigMenu::draw() const
 		}
 		rect.draw(Palette::White);
 
-		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kBT_A + i));
-		m_font(KeyCodeToString(input.code())).drawAt(Scaled(16), rect.center(), Palette::Black);
+		const auto button = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kBT_A + i);
+		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, button);
+		const Color textColor = HasDuplicateKey(m_targetConfigSet, button) ? Palette::Red : Palette::Black;
+		m_font(KeyCodeToString(input.code())).drawAt(Scaled(16), rect.center(), textColor);
 	}
 
 	// FX
@@ -1139,8 +1176,10 @@ void OptionKeyConfigMenu::draw() const
 		}
 		rect.draw(Color{ 96, 96, 96 });
 
-		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kFX_L + i));
-		m_font(KeyCodeToString(input.code())).drawAt(Scaled(16), rect.center(), Palette::White);
+		const auto button = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kFX_L + i);
+		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, button);
+		const Color textColor = HasDuplicateKey(m_targetConfigSet, button) ? Palette::Red : Palette::White;
+		m_font(KeyCodeToString(input.code())).drawAt(Scaled(16), rect.center(), textColor);
 	}
 
 	// FX-L+R
@@ -1160,7 +1199,8 @@ void OptionKeyConfigMenu::draw() const
 		m_fxLRTexture(0, column).resized(Scaled(96, 96)).drawAt(position);
 
 		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, KeyConfig::ConfigurableButton::kFX_LR);
-		m_font(KeyCodeToString(input.code())).drawAt(Scaled(16), position + Scaled(0, 58), Palette::White);
+		const Color textColor = HasDuplicateKey(m_targetConfigSet, KeyConfig::ConfigurableButton::kFX_LR) ? Palette::Red : Palette::White;
+		m_font(KeyCodeToString(input.code())).drawAt(Scaled(16), position + Scaled(0, 58), textColor);
 	}
 
 	// Laser
@@ -1178,9 +1218,14 @@ void OptionKeyConfigMenu::draw() const
 		const Color fillColor = i == 0 ? Color{ 64, 96, 255 } : Color{ 255, 64, 96 };
 		circle.draw(fillColor);
 
-		const Input& inputL = KeyConfig::GetConfigValue(m_targetConfigSet, static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kLeftLaserL + i * 2));
-		const Input& inputR = KeyConfig::GetConfigValue(m_targetConfigSet, static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kLeftLaserL + i * 2 + 1));
-		m_font(U"{} {} {}"_fmt(KeyCodeToString(inputL.code()), I18n::Get(I18n::Option::kKeyConfigLaserKeySeparator), KeyCodeToString(inputR.code()))).drawAt(Scaled(16), circle.center + Scaled(0, -50), Palette::White);
+		const auto buttonL = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kLeftLaserL + i * 2);
+		const auto buttonR = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kLeftLaserL + i * 2 + 1);
+		const Input& inputL = KeyConfig::GetConfigValue(m_targetConfigSet, buttonL);
+		const Input& inputR = KeyConfig::GetConfigValue(m_targetConfigSet, buttonR);
+
+		// どちらかのキーが重複していたら赤色で表示
+		const Color textColor = (HasDuplicateKey(m_targetConfigSet, buttonL) || HasDuplicateKey(m_targetConfigSet, buttonR)) ? Palette::Red : Palette::White;
+		m_font(U"{} {} {}"_fmt(KeyCodeToString(inputL.code()), I18n::Get(I18n::Option::kKeyConfigLaserKeySeparator), KeyCodeToString(inputR.code()))).drawAt(Scaled(16), circle.center + Scaled(0, -50), textColor);
 	}
 
 	// Start/Back
@@ -1195,10 +1240,12 @@ void OptionKeyConfigMenu::draw() const
 		}
 		rect.draw(Color{ 0, 24, 128 });
 
-		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kStart + i));
+		const auto button = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kStart + i);
+		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, button);
 		const StringView prefix1Sv = m_targetConfigSet == KeyConfig::ConfigSet::kKeyboard1 ? U"*" : U"";
 		const StringView prefix2Sv = i == 0 ? I18n::Get(I18n::Option::kKeyConfigStart) : I18n::Get(I18n::Option::kKeyConfigBack);
-		m_font(prefix1Sv + prefix2Sv + KeyCodeToString(input.code())).drawAt(Scaled(16), rect.center(), Palette::White);
+		const Color textColor = HasDuplicateKey(m_targetConfigSet, button) ? Palette::Red : Palette::White;
+		m_font(prefix1Sv + prefix2Sv + KeyCodeToString(input.code())).drawAt(Scaled(16), rect.center(), textColor);
 	}
 
 	// ConfigSet

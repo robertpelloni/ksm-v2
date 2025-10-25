@@ -142,6 +142,7 @@ SelectScene::SelectScene()
 	, m_canvas(LoadSelectSceneCanvas())
 	, m_menu(m_canvas, [this](FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlayYN) { moveToPlayScene(chartFilePath, isAutoPlayYN); })
 	, m_playerNames(GetPlayerNames())
+	, m_fxButtonUpDetection({ KeyShift })
 	, m_btOptionPanel(m_canvas)
 {
 	AutoMuteAddon::SetEnabled(true);
@@ -189,7 +190,11 @@ void SelectScene::update()
 		return;
 	}
 
-	m_menu.update();
+	// Shift押下中はメニューを更新しない(アルファベットジャンプを優先)
+	if (!KeyShift.pressed())
+	{
+		m_menu.update();
+	}
 
 	// BackSpaceキーまたはBackボタン(Escキー)でフォルダを閉じる
 	if (closeFolder)
