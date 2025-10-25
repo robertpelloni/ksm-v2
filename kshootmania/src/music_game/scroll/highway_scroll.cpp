@@ -143,56 +143,113 @@ namespace MusicGame::Scroll
 		/// @return scrollSpeedを考慮した相対Pulse値
 		double CalcScrollSpeedAdjustedRelPulse(kson::Pulse notePulse, double currentPulseDouble, const kson::Graph& scrollSpeed)
 		{
-			if (notePulse <= currentPulseDouble)
-			{
-				return static_cast<double>(notePulse - currentPulseDouble);
-			}
-
 			if (scrollSpeed.empty())
 			{
 				return static_cast<double>(notePulse - currentPulseDouble);
 			}
 
-			double totalRelPulse = 0.0;
-			kson::Pulse segmentStartPulse = static_cast<kson::Pulse>(currentPulseDouble);
+			const kson::Pulse currentPulse = static_cast<kson::Pulse>(currentPulseDouble);
 
-			double currentSpeed = kson::GraphValueAt(scrollSpeed, segmentStartPulse);
-
-			while (segmentStartPulse < notePulse)
+			// notePulseが現在位置より未来の場合
+			if (notePulse > currentPulse)
 			{
-				auto nextItr = scrollSpeed.upper_bound(segmentStartPulse);
+				double totalRelPulse = 0.0;
+				kson::Pulse segmentStartPulse = currentPulse;
+				double currentSpeed = kson::GraphValueAt(scrollSpeed, segmentStartPulse);
 
-				kson::Pulse segmentEndPulse;
-				double nextSpeed;
-				if (nextItr != scrollSpeed.end() && nextItr->first <= notePulse)
+				while (segmentStartPulse < notePulse)
 				{
-					segmentEndPulse = nextItr->first;
-					nextSpeed = nextItr->second.v.v;
-				}
-				else
-				{
-					segmentEndPulse = notePulse;
-					nextSpeed = currentSpeed;
+					auto nextItr = scrollSpeed.upper_bound(segmentStartPulse);
+
+					kson::Pulse segmentEndPulse;
+					double nextSpeed;
+					if (nextItr != scrollSpeed.end() && nextItr->first <= notePulse)
+					{
+						segmentEndPulse = nextItr->first;
+						nextSpeed = nextItr->second.v.v;
+					}
+					else
+					{
+						segmentEndPulse = notePulse;
+						nextSpeed = currentSpeed;
+					}
+
+					// 台形則で積分
+					const kson::Pulse length = segmentEndPulse - segmentStartPulse;
+					totalRelPulse += length * (currentSpeed + nextSpeed) / 2.0;
+
+					// 次の区間の開始速度を設定
+					if (nextItr != scrollSpeed.end() && nextItr->first == segmentEndPulse)
+					{
+						currentSpeed = nextItr->second.v.vf;
+					}
+					else
+					{
+						currentSpeed = nextSpeed;
+					}
+
+					segmentStartPulse = segmentEndPulse;
 				}
 
-				// 台形則で積分
-				const kson::Pulse length = segmentEndPulse - segmentStartPulse;
-				totalRelPulse += length * (currentSpeed + nextSpeed) / 2.0;
-
-				// 次の区間の開始速度を設定
-				if (nextItr != scrollSpeed.end() && nextItr->first == segmentEndPulse)
-				{
-					currentSpeed = nextItr->second.v.vf;
-				}
-				else
-				{
-					currentSpeed = nextSpeed;
-				}
-
-				segmentStartPulse = segmentEndPulse;
+				return totalRelPulse;
 			}
+			// notePulseが現在位置より過去の場合
+			else
+			{
+				double totalRelPulse = 0.0;
+				kson::Pulse segmentEndPulse = currentPulse;
+				double endSpeed = kson::GraphValueAt(scrollSpeed, segmentEndPulse);
 
-			return totalRelPulse;
+				while (segmentEndPulse > notePulse)
+				{
+					// segmentEndPulse未満で最大のscroll_speed変更点を探す
+					auto itr = scrollSpeed.lower_bound(segmentEndPulse);
+					if (itr != scrollSpeed.begin())
+					{
+						--itr;
+					}
+
+					kson::Pulse segmentStartPulse;
+					double startSpeed;
+					if (itr != scrollSpeed.end() && itr->first > notePulse)
+					{
+						segmentStartPulse = itr->first;
+						// 区間の開始点での速度はv.vfではなくv.v
+						startSpeed = itr->second.v.v;
+					}
+					else
+					{
+						segmentStartPulse = notePulse;
+						startSpeed = endSpeed;
+					}
+
+					// 台形則で積分(負の方向)
+					const kson::Pulse length = segmentEndPulse - segmentStartPulse;
+					totalRelPulse -= length * (startSpeed + endSpeed) / 2.0;
+
+					// 次の区間へ移動
+					// 次の区間の終了速度を設定(scroll_speed変更点がある場合はその直前の速度)
+					if (itr != scrollSpeed.end() && itr->first == segmentStartPulse)
+					{
+						// itrがbeginの場合、これ以上前に戻れないのでループ終了
+						if (itr == scrollSpeed.begin())
+						{
+							break;
+						}
+						// 一つ前のscroll_speed変更点の終了速度を取得
+						auto prevItr = std::prev(itr);
+						endSpeed = prevItr->second.v.vf;
+					}
+					else
+					{
+						endSpeed = startSpeed;
+					}
+
+					segmentEndPulse = segmentStartPulse;
+				}
+
+				return totalRelPulse;
+			}
 		}
 	}
 
