@@ -146,7 +146,7 @@ namespace MusicGame::Graphics
 		}
 		if (chartData.bg.legacy.layer.rotation.spin)
 		{
-			layerTiltRadians += Math::ToRadians(viewStatus.camStatus.rotationZLayer);
+			layerTiltRadians += Math::ToRadians(viewStatus.camStatus.rotationDegLayer);
 		}
 
 		// ゲージパーセンテージに応じてレイヤーテクスチャのインデックスを決定

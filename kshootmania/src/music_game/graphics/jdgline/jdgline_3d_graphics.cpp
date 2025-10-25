@@ -29,7 +29,7 @@ namespace MusicGame::Graphics
 			: Camera::JdglineScale(viewStatus.camStatus.zoomBottom);
 		const double shiftX = viewStatus.camStatus.shiftX;
 		const Vec3 shiftXVec = Vec3::Right(shiftX * jdgoverlayScale);
-		const double radians = Math::ToRadians(viewStatus.camStatus.rotationZJdgline) + viewStatus.tiltRadians;
+		const double radians = Math::ToRadians(viewStatus.camStatus.rotationDegJdgline) + viewStatus.tiltRadians;
 		const Transformer3D transform(Mat4x4::Scale(jdglineScale) * Mat4x4::Translate(shiftXVec) * JudgmentPlaneTransformMatrix(radians) * Mat4x4::Translate(kPlaneCenter));
 		m_mesh.draw(m_jdglineTexture);
 	}

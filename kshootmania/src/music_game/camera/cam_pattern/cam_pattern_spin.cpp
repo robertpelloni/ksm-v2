@@ -69,20 +69,20 @@ namespace MusicGame::Camera
             }
 
             const double degrees = -m_direction * absDegrees;
-            camStatusRef.rotationZHighway += degrees;
+            camStatusRef.rotationDegHighway += degrees;
 		}
 
 		// 判定ラインの角度計算
 		if (rate < 1.5)
 		{
 			const double decayRate = (rate > 1.0) ? ((1.5 - rate) / (1.5 - 1.0)) : 1.0;
-			camStatusRef.rotationZJdgline += -m_direction * Sin(Math::TwoPi * rate) * 20 * decayRate;
+			camStatusRef.rotationDegJdgline += -m_direction * Sin(Math::TwoPi * rate) * 20 * decayRate;
 		}
 
 		// 背景アニメーションの角度計算
 		if (rate < 0.75)
 		{
-			camStatusRef.rotationZLayer += -m_direction * Sin(rate * 1.1 / 0.75) / Sin(1.1) * 360 * 2;
+			camStatusRef.rotationDegLayer += -m_direction * Sin(rate * 1.1 / 0.75) / Sin(1.1) * 360 * 2;
 		}
     }
 }

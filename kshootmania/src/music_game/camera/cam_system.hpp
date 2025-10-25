@@ -10,10 +10,10 @@ namespace MusicGame::Camera
 		double zoomTop = 0.0;
 		bool useLegacyZoomTop = false;
 		bool useLegacyJdgScale = false;
-		double rotationZ = 0.0;
-		double rotationZHighway = 0.0;
-		double rotationZJdgline = 0.0;
-		double rotationZLayer = 0.0;
+		double rotationDeg = 0.0;
+		double rotationDegHighway = 0.0;
+		double rotationDegJdgline = 0.0;
+		double rotationDegLayer = 0.0;
 		double centerSplit = 0.0;
 	};
 
