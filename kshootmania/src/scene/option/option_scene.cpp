@@ -138,7 +138,7 @@ namespace
 				CreateInfo::Enum(ConfigIni::Key::kAssistTick, Array<StringView>{
 					I18n::Get(I18n::Option::kAssistTickOff),
 					I18n::Get(I18n::Option::kAssistTickOn),
-				}).setKeyTextureIdx(3),
+				}).setKeyTextureIdx(4),
 				CreateInfo::Int(ConfigIni::Key::kInputDelay, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
 				.setAdditionalSuffixes(
 					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),
