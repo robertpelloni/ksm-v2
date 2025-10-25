@@ -143,6 +143,11 @@ const HighScoreInfo& SelectChartInfo::highScoreInfo() const
 	return m_highScoreInfo;
 }
 
+void SelectChartInfo::reloadHighScoreInfo()
+{
+	m_highScoreInfo = LoadHighScoreInfo(m_chartFilePath);
+}
+
 bool SelectChartInfo::hasError() const
 {
 	return m_chartData.error != kson::ErrorType::None;

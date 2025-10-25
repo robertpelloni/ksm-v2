@@ -60,7 +60,9 @@ private:
 public:
 	explicit BTOptionPanel(std::shared_ptr<noco::Canvas> canvas);
 
-	void update(double currentChartStdBPM);
+	// BTメニューの更新
+	// ハイスコア再更新が必要な設定変更があった場合はtrueを返す
+	bool update(double currentChartStdBPM);
 
 	// メニューが表示されているかどうか
 	bool isVisible() const;

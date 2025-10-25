@@ -497,9 +497,12 @@ String BTOptionPanel::generateBTDMenuText() const
 	return text;
 }
 
-void BTOptionPanel::update(double currentChartStdBPM)
+bool BTOptionPanel::update(double currentChartStdBPM)
 {
 	const auto currentButton = getCurrentSingleBTButton();
+
+	// ハイスコア再読み込みが必要な変更があったか
+	bool needsHighScoreReload = false;
 
 	// いずれかのBTボタンが単独で押されている場合
 	if (currentButton)
@@ -540,6 +543,7 @@ void BTOptionPanel::update(double currentChartStdBPM)
 			if (valueChanged)
 			{
 				saveToConfigIni();
+				needsHighScoreReload = true;
 			}
 
 			m_canvas->setParamValue(U"overlay_btOptionPanelText_A", generateBTAMenuText());
@@ -574,6 +578,7 @@ void BTOptionPanel::update(double currentChartStdBPM)
 			if (valueChanged)
 			{
 				saveToConfigIni();
+				needsHighScoreReload = true;
 			}
 
 			m_canvas->setParamValue(U"overlay_btOptionPanelText_B", generateBTBMenuText());
@@ -694,6 +699,8 @@ void BTOptionPanel::update(double currentChartStdBPM)
 		m_canvas->setParamValue(U"overlay_btOptionPanelVisible_C", false);
 		m_canvas->setParamValue(U"overlay_btOptionPanelVisible_D", false);
 	}
+
+	return needsHighScoreReload;
 }
 
 bool BTOptionPanel::isVisible() const

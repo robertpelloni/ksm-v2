@@ -52,6 +52,9 @@ public:
 
 	const HighScoreInfo& highScoreInfo() const;
 
+	// 現在のプレイ設定でハイスコア情報を再読み込み
+	void reloadHighScoreInfo();
+
 	bool hasError() const;
 
 	String errorString() const;

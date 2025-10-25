@@ -169,7 +169,12 @@ SelectScene::SelectScene()
 void SelectScene::update()
 {
 	// BTオプションパネル更新
-	m_btOptionPanel.update(m_menu.getCurrentChartStdBPM());
+	const bool needsHighScoreReload = m_btOptionPanel.update(m_menu.getCurrentChartStdBPM());
+	if (needsHighScoreReload)
+	{
+		// ハイスコア情報再読み込み
+		m_menu.reloadCurrentDirectory();
+	}
 
 	// プレイ統計パネル更新
 	m_playStatsPanel.update(m_menu.getCurrentHighScoreInfo(), RuntimeConfig::GetGaugeType());
