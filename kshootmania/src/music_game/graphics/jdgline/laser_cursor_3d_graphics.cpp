@@ -56,7 +56,7 @@ namespace MusicGame::Graphics
 				: Camera::JdgoverlayScale(viewStatus.camStatus.zoomBottom);
 			const Vec3 shiftXVec = Vec3::Right(viewStatus.camStatus.shiftX);
 			const Vec3 center = kPlaneCenter + CursorVec(laneStatus.cursorWide, cursorX, jdgoverlayScale) + shiftXVec * jdgoverlayScale;
-			const double radians = Math::ToRadians(viewStatus.camStatus.rotationDegHighway) + viewStatus.tiltRadians;
+			const double radians = Math::ToRadians(viewStatus.camStatus.rotationDeg + viewStatus.camStatus.rotationDegHighway) + viewStatus.tiltRadians;
 			const Transformer3D transform(Mat4x4::Scale(jdglineScale, center) * TiltTransformMatrix(radians));
 			m_mesh.draw(camera.billboard(center, kPlaneSize), m_texture(i));
 		}
