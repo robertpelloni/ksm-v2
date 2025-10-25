@@ -5,6 +5,30 @@ namespace MusicGame::Audio
 {
 	namespace
 	{
+		constexpr const char* kDefaultSlamSoundPath = "se/chokkaku.wav";
+
+		bool IsBuiltInSlamSoundName(const std::string& filename)
+		{
+			return filename == "up" ||
+				filename == "down" ||
+				filename == "swing" ||
+				filename == "mute";
+		}
+
+		String GetFilePath(FilePathView parentPath, const std::string& filename)
+		{
+			if (IsBuiltInSlamSoundName(filename))
+			{
+				// ビルトインの直角音
+				return U"se/chokkaku_{}.wav"_fmt(Unicode::FromUTF8(filename));
+			}
+			else
+			{
+				// 譜面と同じフォルダの音声ファイル
+				return FileSystem::PathAppend(parentPath, Unicode::FromUTF8(filename));
+			}
+		}
+
 		DWORD GetMaxPolyphony(const kson::ChartData& chartData)
 		{
 			// 旧バージョンの譜面では最大同時再生数が異なる
@@ -13,8 +37,8 @@ namespace MusicGame::Audio
 		}
 	}
 
-	LaserSlamSE::LaserSlamSE(const kson::ChartData& chartData, const kson::TimingCache& timingCache, bool isAutoPlaySE)
-		: m_sample("se/chokkaku.wav", GetMaxPolyphony(chartData)) // TODO: 直角音の種類
+	LaserSlamSE::LaserSlamSE(const kson::ChartData& chartData, const kson::TimingCache& timingCache, FilePathView parentPath, bool isAutoPlaySE)
+		: m_defaultSlamSound(kDefaultSlamSoundPath, GetMaxPolyphony(chartData))
 		, m_isAutoPlaySE(isAutoPlaySE)
 	{
 		// SE自動再生モード用にPulseから秒数への変換マップを作成
@@ -41,6 +65,25 @@ namespace MusicGame::Audio
 					}
 				}
 			}
+		}
+
+		// slamEventで指定された直角音ファイルを読み込み
+		const auto& slamEvent = chartData.audio.keySound.laser.slamEvent;
+		for (const auto& [filename, pulseSet] : slamEvent)
+		{
+			if (m_slamSounds.contains(filename))
+			{
+				continue;
+			}
+
+			const FilePath filePath = GetFilePath(parentPath, filename);
+			if (!FileSystem::Exists(filePath))
+			{
+				Logger << U"[ksm warning] failed to open slam sound '{}' (filePath:'{}')"_fmt(Unicode::FromUTF8(filename), filePath);
+				continue;
+			}
+
+			m_slamSounds.emplace(filename, ksmaudio::Sample{ filePath.narrow(), GetMaxPolyphony(chartData) });
 		}
 	}
 
@@ -150,8 +193,27 @@ namespace MusicGame::Audio
 						}
 					}
 
+					// このパルス位置に対応する直角音の種類を検索
+					const auto& slamEvent = chartData.audio.keySound.laser.slamEvent;
+					ksmaudio::Sample* pSlamSound = &m_defaultSlamSound;
+					for (const auto& [filename, pulseSet] : slamEvent)
+					{
+						if (pulseSet.contains(slamY))
+						{
+							if (m_slamSounds.contains(filename))
+							{
+								pSlamSound = &m_slamSounds.at(filename);
+							}
+							else
+							{
+								Logger << U"[ksm warning] slam sound not found: '{}'"_fmt(Unicode::FromUTF8(filename));
+							}
+							break;
+						}
+					}
+
 					// 直角音を再生
-					m_sample.play(volume * volumeScaleByNote);
+					pSlamSound->play(volume * volumeScaleByNote);
 					m_lastPlayedTimeSecs[i] = slamTimeSec;
 					m_autoPlaySELastPulses[i] = slamY;
 				}
@@ -229,8 +291,27 @@ namespace MusicGame::Audio
 				}
 			}
 
+			// このパルス位置に対応する直角音の種類を検索
+			const auto& slamEvent = chartData.audio.keySound.laser.slamEvent;
+			ksmaudio::Sample* pSlamSound = &m_defaultSlamSound;
+			for (const auto& [filename, pulseSet] : slamEvent)
+			{
+				if (pulseSet.contains(slamY))
+				{
+					if (m_slamSounds.contains(filename))
+					{
+						pSlamSound = &m_slamSounds.at(filename);
+					}
+					else
+					{
+						Logger << U"[ksm warning] slam sound not found: '{}'"_fmt(Unicode::FromUTF8(filename));
+					}
+					break;
+				}
+			}
+
 			// 直角音を再生
-			m_sample.play(volume * volumeScaleByNote);
+			pSlamSound->play(volume * volumeScaleByNote);
 			m_lastPlayedTimeSecs[i] = laneStatus.lastLaserSlamJudgedTimeSec;
 		}
 	}

@@ -10,7 +10,9 @@ namespace MusicGame::Audio
 	class LaserSlamSE
 	{
 	private:
-		ksmaudio::Sample m_sample;
+		ksmaudio::Sample m_defaultSlamSound;
+
+		std::unordered_map<std::string, ksmaudio::Sample> m_slamSounds;
 
 		std::array<double, kson::kNumLaserLanesSZ> m_lastPlayedTimeSecs = { kPastTimeSec, kPastTimeSec };
 
@@ -25,7 +27,7 @@ namespace MusicGame::Audio
 		void updateByJudgment(const kson::ChartData& chartData, const GameStatus& gameStatus);
 
 	public:
-		explicit LaserSlamSE(const kson::ChartData& chartData, const kson::TimingCache& timingCache, bool isAutoPlaySE);
+		explicit LaserSlamSE(const kson::ChartData& chartData, const kson::TimingCache& timingCache, FilePathView parentPath, bool isAutoPlaySE);
 
 		void update(const kson::ChartData& chartData, const GameStatus& gameStatus);
 	};
