@@ -1037,6 +1037,10 @@ void OptionKeyConfigMenu::setInput(const Input& input)
 		{
 			KeyConfig::SetConfigValue(m_targetConfigSet, button.value(), input);
 			KeyConfig::SaveToConfigIni();
+
+			// 設定時のキー押下が反応しないよう入力クリア
+			KeyConfig::ClearInput(button.value());
+
 			if (CursorToButton2(m_cursor).has_value())
 			{
 				m_state = OptionKeyConfigMenuState::SettingButton2;
@@ -1058,6 +1062,10 @@ void OptionKeyConfigMenu::setInput(const Input& input)
 		{
 			KeyConfig::SetConfigValue(m_targetConfigSet, button.value(), input);
 			KeyConfig::SaveToConfigIni();
+
+			// 設定時のキー押下が反応しないよう入力クリア
+			KeyConfig::ClearInput(button.value());
+
 			m_state = OptionKeyConfigMenuState::None;
 		}
 		else
