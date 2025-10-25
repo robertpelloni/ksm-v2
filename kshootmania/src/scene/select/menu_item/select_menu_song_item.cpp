@@ -159,6 +159,14 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 			if (const auto sprite = jacketNode->getComponent<noco::Sprite>())
 			{
 				sprite->setTexture(jacketTexture);
+				if (jacketTexture.isEmpty())
+				{
+					sprite->setColor(ColorF{ 0.0, 0.0 });
+				}
+				else
+				{
+					sprite->setColor(Palette::White);
+				}
 			}
 		}
 
@@ -231,6 +239,14 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 		if (const auto sprite = jacketNode->getComponent<noco::Sprite>())
 		{
 			sprite->setTexture(jacketTexture);
+			if (jacketTexture.isEmpty())
+			{
+				sprite->setColor(ColorF{ 0.0, 0.0 });
+			}
+			else
+			{
+				sprite->setColor(Palette::White);
+			}
 		}
 	}
 
