@@ -6,148 +6,329 @@ using namespace ksmaudio::AudioEffect;
 
 TEST_CASE("Parse length type parameters", "[AudioEffect][Param][Length]")
 {
+	bool success = false;
+
 	// 分数形式(テンポ同期)
-	REQUIRE(StrToValue(Type::kLength, "1/4") == 0.25f);
-	REQUIRE(StrToValue(Type::kLength, "1/2") == 0.5f);
-	REQUIRE(StrToValue(Type::kLength, "1/1") == 1.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "1/4", &success) == 0.25f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "1/2", &success) == 0.5f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "1/1", &success) == 1.0f);
+	REQUIRE(success == true);
 
 	// 小数形式(テンポ同期)
-	REQUIRE(StrToValue(Type::kLength, "2.0") == 2.0f);
-	REQUIRE(StrToValue(Type::kLength, "0.25") == 0.25f);
-	REQUIRE(StrToValue(Type::kLength, "0") == 0.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "2.0", &success) == 2.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "0.25", &success) == 0.25f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "0", &success) == 0.0f);
+	REQUIRE(success == true);
 
 	// ミリ秒形式(非テンポ同期、区別のため負の値として扱う)
-	REQUIRE(StrToValue(Type::kLength, "100ms") == -0.1f);
-	REQUIRE(StrToValue(Type::kLength, "10.5ms") == Approx(-0.0105f));
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "100ms", &success) == -0.1f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "10.5ms", &success) == Approx(-0.0105f));
+	REQUIRE(success == true);
 
 	// 秒形式(非テンポ同期、区別のため負の値として扱う)
-	REQUIRE(StrToValue(Type::kLength, "1s") == -1.0f);
-	REQUIRE(StrToValue(Type::kLength, "0.1s") == Approx(-0.1f));
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "1s", &success) == -1.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "0.1s", &success) == Approx(-0.1f));
+	REQUIRE(success == true);
 
 	// 範囲外の値は丸める
-	REQUIRE(StrToValue(Type::kLength, "-1.0") == 0.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kLength, "-1.0", &success) == 0.0f);
+	REQUIRE(success == true);
+
+	// 無効な文字列
+	success = true;
+	REQUIRE(StrToValue(Type::kLength, "10invalidms", &success) == 0.0f);
+	REQUIRE(success == false);
+	success = true;
+	REQUIRE(StrToValue(Type::kLength, "10invalids", &success) == 0.0f);
+	REQUIRE(success == false);
+	success = true;
+	REQUIRE(StrToValue(Type::kLength, "1/0", &success) == 0.0f);
+	REQUIRE(success == false);
 }
 
 TEST_CASE("Parse sample type parameters", "[AudioEffect][Param][Sample]")
 {
+	bool success = false;
+
 	// samples形式
-	REQUIRE(StrToValue(Type::kSample, "40samples") == 40.0f);
-	REQUIRE(StrToValue(Type::kSample, "0samples") == 0.0f);
-	REQUIRE(StrToValue(Type::kSample, "44100samples") == 44100.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kSample, "40samples", &success) == 40.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kSample, "0samples", &success) == 0.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kSample, "44100samples", &success) == 44100.0f);
+	REQUIRE(success == true);
 
 	// 範囲外の値は丸める
-	REQUIRE(StrToValue(Type::kSample, "50000samples") == 44100.0f);
-	REQUIRE(StrToValue(Type::kSample, "-100samples") == 0.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kSample, "50000samples", &success) == 44100.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kSample, "-100samples", &success) == 0.0f);
+	REQUIRE(success == true);
+
+	// 1の場合も"samples"しか受け付けない
+	success = true;
+	REQUIRE(StrToValue(Type::kSample, "1sample", &success) == 0.0f);
+	REQUIRE(success == false);
 }
 
 TEST_CASE("Parse switch type parameters", "[AudioEffect][Param][Switch]")
 {
+	bool success = false;
+
 	// on/off
-	REQUIRE(StrToValue(Type::kSwitch, "on") == 1.0f);
-	REQUIRE(StrToValue(Type::kSwitch, "off") == 0.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kSwitch, "on", &success) == 1.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kSwitch, "off", &success) == 0.0f);
+	REQUIRE(success == true);
 }
 
 TEST_CASE("Parse rate type parameters", "[AudioEffect][Param][Rate]")
 {
+	bool success = false;
+
 	// 分数形式
-	REQUIRE(StrToValue(Type::kRate, "1/2") == 0.5f);
-	REQUIRE(StrToValue(Type::kRate, "1/4") == 0.25f);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "1/2", &success) == 0.5f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "1/4", &success) == 0.25f);
+	REQUIRE(success == true);
 
 	// パーセント形式
-	REQUIRE(StrToValue(Type::kRate, "50%") == 0.5f);
-	REQUIRE(StrToValue(Type::kRate, "0%") == 0.0f);
-	REQUIRE(StrToValue(Type::kRate, "100%") == 1.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "50%", &success) == 0.5f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "0%", &success) == 0.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "100%", &success) == 1.0f);
+	REQUIRE(success == true);
 
 	// 小数形式
-	REQUIRE(StrToValue(Type::kRate, "0.5") == 0.5f);
-	REQUIRE(StrToValue(Type::kRate, "0.0") == 0.0f);
-	REQUIRE(StrToValue(Type::kRate, "1.0") == 1.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "0.5", &success) == 0.5f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "0.0", &success) == 0.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "1.0", &success) == 1.0f);
+	REQUIRE(success == true);
 
 	// 範囲外の値は丸める
-	REQUIRE(StrToValue(Type::kRate, "150%") == 1.0f);
-	REQUIRE(StrToValue(Type::kRate, "-10%") == 0.0f);
-	REQUIRE(StrToValue(Type::kRate, "1.5") == 1.0f);
-	REQUIRE(StrToValue(Type::kRate, "-0.5") == 0.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "150%", &success) == 1.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "-10%", &success) == 0.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "1.5", &success) == 1.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kRate, "-0.5", &success) == 0.0f);
+	REQUIRE(success == true);
+
+	// 無効な文字列
+	success = true;
+	REQUIRE(StrToValue(Type::kRate, "50invalid%", &success) == 0.0f);
+	REQUIRE(success == false);
+	success = true;
+	REQUIRE(StrToValue(Type::kRate, "abc", &success) == 0.0f);
+	REQUIRE(success == false);
+	success = true;
+	REQUIRE(StrToValue(Type::kRate, "", &success) == 0.0f);
+	REQUIRE(success == false);
 }
 
 TEST_CASE("Parse freq type parameters", "[AudioEffect][Param][Freq]")
 {
+	bool success = false;
+
 	// Hz形式
-	REQUIRE(StrToValue(Type::kFreq, "1500Hz") == 1500.0f);
-	REQUIRE(StrToValue(Type::kFreq, "10Hz") == 10.0f);
-	REQUIRE(StrToValue(Type::kFreq, "20000Hz") == 20000.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kFreq, "1500Hz", &success) == 1500.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kFreq, "10Hz", &success) == 10.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kFreq, "20000Hz", &success) == 20000.0f);
+	REQUIRE(success == true);
 
 	// kHz形式
-	REQUIRE(StrToValue(Type::kFreq, "1.5kHz") == 1500.0f);
-	REQUIRE(StrToValue(Type::kFreq, "0.01kHz") == 10.0f);
-	REQUIRE(StrToValue(Type::kFreq, "20.0kHz") == 20000.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kFreq, "1.5kHz", &success) == 1500.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kFreq, "0.01kHz", &success) == 10.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kFreq, "20.0kHz", &success) == 20000.0f);
+	REQUIRE(success == true);
 
 	// 範囲外の値は丸める
-	REQUIRE(StrToValue(Type::kFreq, "5Hz") == 10.0f);
-	REQUIRE(StrToValue(Type::kFreq, "30000Hz") == 20000.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kFreq, "5Hz", &success) == 10.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kFreq, "30000Hz", &success) == 20000.0f);
+	REQUIRE(success == true);
+
+	// 無効な文字列
+	success = true;
+	REQUIRE(StrToValue(Type::kFreq, "10invalidHz", &success) == 10.0f);
+	REQUIRE(success == false);
+	success = true;
+	REQUIRE(StrToValue(Type::kFreq, "10invalidkHz", &success) == 10.0f);
+	REQUIRE(success == false);
 }
 
 TEST_CASE("Parse pitch type parameters", "[AudioEffect][Param][Pitch]")
 {
+	bool success = false;
+
 	// 浮動小数点形式(量子化なし、正の値で返される)
-	REQUIRE(StrToValue(Type::kPitch, "12.0") == Approx(60.0f)); // 12.0 + 48.0
-	REQUIRE(StrToValue(Type::kPitch, "-6.5") == Approx(41.5f)); // -6.5 + 48.0
-	REQUIRE(StrToValue(Type::kPitch, "0.0") == Approx(48.0f)); // 0.0 + 48.0
+	success = false;
+	REQUIRE(StrToValue(Type::kPitch, "12.0", &success) == Approx(60.0f)); // 12.0 + 48.0
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kPitch, "-6.5", &success) == Approx(41.5f)); // -6.5 + 48.0
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kPitch, "0.0", &success) == Approx(48.0f)); // 0.0 + 48.0
+	REQUIRE(success == true);
 
 	// 整数形式(量子化あり、負の値で返される)
-	REQUIRE(StrToValue(Type::kPitch, "12") == Approx(-60.0f)); // -(12 + 48.0)
-	REQUIRE(StrToValue(Type::kPitch, "-6") == Approx(-42.0f)); // -(-6 + 48.0)
-	REQUIRE(StrToValue(Type::kPitch, "0") == Approx(-48.0f)); // -(0 + 48.0)
+	success = false;
+	REQUIRE(StrToValue(Type::kPitch, "12", &success) == Approx(-60.0f)); // -(12 + 48.0)
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kPitch, "-6", &success) == Approx(-42.0f)); // -(-6 + 48.0)
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kPitch, "0", &success) == Approx(-48.0f)); // -(0 + 48.0)
+	REQUIRE(success == true);
 
 	// 境界値
-	REQUIRE(StrToValue(Type::kPitch, "48.0") == Approx(96.0f)); // 48.0 + 48.0
-	REQUIRE(StrToValue(Type::kPitch, "-48.0") == Approx(0.0f)); // -48.0 + 48.0
+	success = false;
+	REQUIRE(StrToValue(Type::kPitch, "48.0", &success) == Approx(96.0f)); // 48.0 + 48.0
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kPitch, "-48.0", &success) == Approx(0.0f)); // -48.0 + 48.0
+	REQUIRE(success == true);
 
 	// 範囲外の値は0にする
-	REQUIRE(StrToValue(Type::kPitch, "50.0") == 0.0f);
-	REQUIRE(StrToValue(Type::kPitch, "-50.0") == 0.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kPitch, "50.0", &success) == 0.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kPitch, "-50.0", &success) == 0.0f);
+	REQUIRE(success == true);
 }
 
 TEST_CASE("Parse int type parameters", "[AudioEffect][Param][Int]")
 {
+	bool success = false;
+
 	// 整数値
-	REQUIRE(StrToValue(Type::kInt, "10") == 10.0f);
-	REQUIRE(StrToValue(Type::kInt, "-5") == -5.0f);
-	REQUIRE(StrToValue(Type::kInt, "0") == 0.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kInt, "10", &success) == 10.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kInt, "-5", &success) == -5.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kInt, "0", &success) == 0.0f);
+	REQUIRE(success == true);
 }
 
 TEST_CASE("Parse float type parameters", "[AudioEffect][Param][Float]")
 {
+	bool success = false;
+
 	// 浮動小数点値
-	REQUIRE(StrToValue(Type::kFloat, "2.5") == 2.5f);
-	REQUIRE(StrToValue(Type::kFloat, "-10") == -10.0f);
-	REQUIRE(StrToValue(Type::kFloat, "0.707") == Approx(0.707f));
+	success = false;
+	REQUIRE(StrToValue(Type::kFloat, "2.5", &success) == 2.5f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kFloat, "-10", &success) == -10.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kFloat, "0.707", &success) == Approx(0.707f));
+	REQUIRE(success == true);
 }
 
 TEST_CASE("Parse dB type parameters", "[AudioEffect][Param][DB]")
 {
+	bool success = false;
+
 	// dB形式
-	REQUIRE(StrToValue(Type::kDB, "-8.0dB") == -8.0f);
-	REQUIRE(StrToValue(Type::kDB, "0dB") == 0.0f);
-	REQUIRE(StrToValue(Type::kDB, "3.5dB") == 3.5f);
+	success = false;
+	REQUIRE(StrToValue(Type::kDB, "-8.0dB", &success) == -8.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kDB, "0dB", &success) == 0.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kDB, "3.5dB", &success) == 3.5f);
+	REQUIRE(success == true);
 
 	// dBサフィックスがない場合は0.0fを返す
-	REQUIRE(StrToValue(Type::kDB, "-8.0") == 0.0f);
-	REQUIRE(StrToValue(Type::kDB, "3.5") == 0.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kDB, "-8.0", &success) == 0.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kDB, "3.5", &success) == 0.0f);
+	REQUIRE(success == true);
 }
 
 TEST_CASE("Parse unspecified type parameters", "[AudioEffect][Param][Unspecified]")
 {
+	bool success = false;
+
 	// kUnspecifiedは常に0.0fを返す
-	REQUIRE(StrToValue(Type::kUnspecified, "any value") == 0.0f);
-	REQUIRE(StrToValue(Type::kUnspecified, "123") == 0.0f);
+	success = false;
+	REQUIRE(StrToValue(Type::kUnspecified, "any value", &success) == 0.0f);
+	REQUIRE(success == true);
+	success = false;
+	REQUIRE(StrToValue(Type::kUnspecified, "123", &success) == 0.0f);
+	REQUIRE(success == true);
 }
 
 TEST_CASE("Parse parameter value sets (Off/OnMin/OnMax)", "[AudioEffect][Param][ValueSet]")
 {
+	bool success = false;
+
 	// 単一値(OnMin/OnMaxがOffを継承)
 	{
-		const ValueSet vs = StrToValueSet(Type::kRate, "50%");
+		success = false;
+		const ValueSet vs = StrToValueSet(Type::kRate, "50%", &success);
+		REQUIRE(success == true);
 		REQUIRE(vs.off == 0.5f);
 		REQUIRE(vs.onMin == 0.5f);
 		REQUIRE(vs.onMax == 0.5f);
@@ -155,7 +336,9 @@ TEST_CASE("Parse parameter value sets (Off/OnMin/OnMax)", "[AudioEffect][Param][
 
 	// ">"区切り(OnMaxがOnMinを継承)
 	{
-		const ValueSet vs = StrToValueSet(Type::kRate, "20%>100%");
+		success = false;
+		const ValueSet vs = StrToValueSet(Type::kRate, "20%>100%", &success);
+		REQUIRE(success == true);
 		REQUIRE(vs.off == 0.2f);
 		REQUIRE(vs.onMin == 1.0f);
 		REQUIRE(vs.onMax == 1.0f);
@@ -163,7 +346,9 @@ TEST_CASE("Parse parameter value sets (Off/OnMin/OnMax)", "[AudioEffect][Param][
 
 	// "-"区切り(OffがOnMinを継承)
 	{
-		const ValueSet vs = StrToValueSet(Type::kRate, "50%-100%");
+		success = false;
+		const ValueSet vs = StrToValueSet(Type::kRate, "50%-100%", &success);
+		REQUIRE(success == true);
 		REQUIRE(vs.off == 0.5f);
 		REQUIRE(vs.onMin == 0.5f);
 		REQUIRE(vs.onMax == 1.0f);
@@ -171,7 +356,9 @@ TEST_CASE("Parse parameter value sets (Off/OnMin/OnMax)", "[AudioEffect][Param][
 
 	// フル指定
 	{
-		const ValueSet vs = StrToValueSet(Type::kRate, "10%>50%-100%");
+		success = false;
+		const ValueSet vs = StrToValueSet(Type::kRate, "10%>50%-100%", &success);
+		REQUIRE(success == true);
 		REQUIRE(vs.off == 0.1f);
 		REQUIRE(vs.onMin == 0.5f);
 		REQUIRE(vs.onMax == 1.0f);
@@ -179,7 +366,9 @@ TEST_CASE("Parse parameter value sets (Off/OnMin/OnMax)", "[AudioEffect][Param][
 
 	// pitch型で負の値を含む"-"区切り
 	{
-		const ValueSet vs = StrToValueSet(Type::kPitch, "-24.0-24.0");
+		success = false;
+		const ValueSet vs = StrToValueSet(Type::kPitch, "-24.0-24.0", &success);
+		REQUIRE(success == true);
 		REQUIRE(vs.off == Approx(24.0f));
 		REQUIRE(vs.onMin == Approx(24.0f));
 		REQUIRE(vs.onMax == Approx(72.0f));
@@ -187,7 +376,9 @@ TEST_CASE("Parse parameter value sets (Off/OnMin/OnMax)", "[AudioEffect][Param][
 
 	// pitch型で負の値を含むフル指定
 	{
-		const ValueSet vs = StrToValueSet(Type::kPitch, "-12.0>-6.0-6.0");
+		success = false;
+		const ValueSet vs = StrToValueSet(Type::kPitch, "-12.0>-6.0-6.0", &success);
+		REQUIRE(success == true);
 		REQUIRE(vs.off == Approx(36.0f));
 		REQUIRE(vs.onMin == Approx(42.0f));
 		REQUIRE(vs.onMax == Approx(54.0f));
@@ -195,7 +386,9 @@ TEST_CASE("Parse parameter value sets (Off/OnMin/OnMax)", "[AudioEffect][Param][
 
 	// dB型で負の値を含むフル指定
 	{
-		const ValueSet vs = StrToValueSet(Type::kDB, "-8.0dB>-3.0dB--1.0dB");
+		success = false;
+		const ValueSet vs = StrToValueSet(Type::kDB, "-8.0dB>-3.0dB--1.0dB", &success);
+		REQUIRE(success == true);
 		REQUIRE(vs.off == -8.0f);
 		REQUIRE(vs.onMin == -3.0f);
 		REQUIRE(vs.onMax == -1.0f);
@@ -203,7 +396,9 @@ TEST_CASE("Parse parameter value sets (Off/OnMin/OnMax)", "[AudioEffect][Param][
 
 	// pitch型で負の整数値(量子化あり)
 	{
-		const ValueSet vs = StrToValueSet(Type::kPitch, "-12>-6-6");
+		success = false;
+		const ValueSet vs = StrToValueSet(Type::kPitch, "-12>-6-6", &success);
+		REQUIRE(success == true);
 		REQUIRE(vs.off == Approx(-36.0f));
 		REQUIRE(vs.onMin == Approx(-42.0f));
 		REQUIRE(vs.onMax == Approx(-54.0f));
@@ -212,13 +407,17 @@ TEST_CASE("Parse parameter value sets (Off/OnMin/OnMax)", "[AudioEffect][Param][
 	// pitch型でOnMin/OnMax同士は量子化の有無が統一される
 	{
 		// OnMinのみ小数
-		const ValueSet vs1 = StrToValueSet(Type::kPitch, "0>6.0-12");
+		success = false;
+		const ValueSet vs1 = StrToValueSet(Type::kPitch, "0>6.0-12", &success);
+		REQUIRE(success == true);
 		REQUIRE(vs1.off == Approx(-48.0f)); // offは影響を受けない
 		REQUIRE(vs1.onMin == Approx(54.0f));
 		REQUIRE(vs1.onMax == Approx(60.0f)); // 12.0(量子化あり)ではなく60.0(量子化なし)
 
 		// OnMaxのみ小数
-		const ValueSet vs2 = StrToValueSet(Type::kPitch, "0>6-12.0");
+		success = false;
+		const ValueSet vs2 = StrToValueSet(Type::kPitch, "0>6-12.0", &success);
+		REQUIRE(success == true);
 		REQUIRE(vs2.off == Approx(-48.0f)); // offは影響を受けない
 		REQUIRE(vs2.onMin == Approx(54.0f)); // 6.0(量子化あり)ではなく54.0(量子化なし)
 		REQUIRE(vs2.onMax == Approx(60.0f));
