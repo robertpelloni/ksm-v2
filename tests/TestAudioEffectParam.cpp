@@ -142,3 +142,113 @@ TEST_CASE("Parse unspecified type parameters", "[AudioEffect][Param][Unspecified
 	REQUIRE(StrToValue(Type::kUnspecified, "any value") == 0.0f);
 	REQUIRE(StrToValue(Type::kUnspecified, "123") == 0.0f);
 }
+
+TEST_CASE("Parse parameter value sets (Off/OnMin/OnMax)", "[AudioEffect][Param][ValueSet]")
+{
+	// 単一値(OnMin/OnMaxがOffを継承)
+	{
+		const ValueSet vs = StrToValueSet(Type::kRate, "50%");
+		REQUIRE(vs.off == 0.5f);
+		REQUIRE(vs.onMin == 0.5f);
+		REQUIRE(vs.onMax == 0.5f);
+	}
+
+	// ">"区切り(OnMaxがOnMinを継承)
+	{
+		const ValueSet vs = StrToValueSet(Type::kRate, "20%>100%");
+		REQUIRE(vs.off == 0.2f);
+		REQUIRE(vs.onMin == 1.0f);
+		REQUIRE(vs.onMax == 1.0f);
+	}
+
+	// "-"区切り(OffがOnMinを継承)
+	{
+		const ValueSet vs = StrToValueSet(Type::kRate, "50%-100%");
+		REQUIRE(vs.off == 0.5f);
+		REQUIRE(vs.onMin == 0.5f);
+		REQUIRE(vs.onMax == 1.0f);
+	}
+
+	// フル指定
+	{
+		const ValueSet vs = StrToValueSet(Type::kRate, "10%>50%-100%");
+		REQUIRE(vs.off == 0.1f);
+		REQUIRE(vs.onMin == 0.5f);
+		REQUIRE(vs.onMax == 1.0f);
+	}
+
+	// pitch型で負の値を含む"-"区切り
+	{
+		const ValueSet vs = StrToValueSet(Type::kPitch, "-24.0-24.0");
+		REQUIRE(vs.off == Approx(24.0f));
+		REQUIRE(vs.onMin == Approx(24.0f));
+		REQUIRE(vs.onMax == Approx(72.0f));
+	}
+
+	// pitch型で負の値を含むフル指定
+	{
+		const ValueSet vs = StrToValueSet(Type::kPitch, "-12.0>-6.0-6.0");
+		REQUIRE(vs.off == Approx(36.0f));
+		REQUIRE(vs.onMin == Approx(42.0f));
+		REQUIRE(vs.onMax == Approx(54.0f));
+	}
+
+	// dB型で負の値を含むフル指定
+	{
+		const ValueSet vs = StrToValueSet(Type::kDB, "-8.0dB>-3.0dB--1.0dB");
+		REQUIRE(vs.off == -8.0f);
+		REQUIRE(vs.onMin == -3.0f);
+		REQUIRE(vs.onMax == -1.0f);
+	}
+
+	// pitch型で負の整数値(量子化あり)
+	{
+		const ValueSet vs = StrToValueSet(Type::kPitch, "-12>-6-6");
+		REQUIRE(vs.off == Approx(-36.0f));
+		REQUIRE(vs.onMin == Approx(-42.0f));
+		REQUIRE(vs.onMax == Approx(-54.0f));
+	}
+
+	// pitch型でOnMin/OnMax同士は量子化の有無が統一される
+	{
+		// OnMinのみ小数
+		const ValueSet vs1 = StrToValueSet(Type::kPitch, "0>6.0-12");
+		REQUIRE(vs1.off == Approx(-48.0f)); // offは影響を受けない
+		REQUIRE(vs1.onMin == Approx(54.0f));
+		REQUIRE(vs1.onMax == Approx(60.0f)); // 12.0(量子化あり)ではなく60.0(量子化なし)
+
+		// OnMaxのみ小数
+		const ValueSet vs2 = StrToValueSet(Type::kPitch, "0>6-12.0");
+		REQUIRE(vs2.off == Approx(-48.0f)); // offは影響を受けない
+		REQUIRE(vs2.onMin == Approx(54.0f)); // 6.0(量子化あり)ではなく54.0(量子化なし)
+		REQUIRE(vs2.onMax == Approx(60.0f));
+	}
+
+	// length型でOnMin/OnMaxの符号が異なる場合は失敗
+	{
+		bool success = true;
+
+		// テンポ同期と非テンポ同期の混在は失敗
+		const ValueSet vs1 = StrToValueSet(Type::kLength, "1/4-100ms", &success);
+		REQUIRE(success == false);
+		REQUIRE(vs1.off == 0.0f);
+		REQUIRE(vs1.onMin == 0.0f);
+		REQUIRE(vs1.onMax == 0.0f);
+
+		// 両方が非テンポ同期なら成功
+		success = false;
+		const ValueSet vs2 = StrToValueSet(Type::kLength, "100ms-200ms", &success);
+		REQUIRE(success == true);
+		REQUIRE(vs2.off == Approx(-0.1f));
+		REQUIRE(vs2.onMin == Approx(-0.1f));
+		REQUIRE(vs2.onMax == Approx(-0.2f));
+
+		// 両方がテンポ同期なら成功
+		success = false;
+		const ValueSet vs3 = StrToValueSet(Type::kLength, "1/4-1/2", &success);
+		REQUIRE(success == true);
+		REQUIRE(vs3.off == 0.25f);
+		REQUIRE(vs3.onMin == 0.25f);
+		REQUIRE(vs3.onMax == 0.5f);
+	}
+}
