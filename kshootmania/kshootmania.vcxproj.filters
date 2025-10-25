@@ -534,6 +534,9 @@
     <ClCompile Include="src\music_game\graphics\hud\achievement_panel.cpp">
       <Filter>Source Files\music_game\graphics\hud</Filter>
     </ClCompile>
+    <ClCompile Include="src\music_game\graphics\hud\laser_approach_indicator.cpp">
+      <Filter>Source Files\music_game\graphics\hud</Filter>
+    </ClCompile>
     <ClCompile Include="src\scene\option\option_key_config_menu.cpp">
       <Filter>Source Files\scene\option</Filter>
     </ClCompile>
@@ -1145,6 +1148,9 @@
       <Filter>Header Files\high_score</Filter>
     </ClInclude>
     <ClInclude Include="src\music_game\graphics\hud\achievement_panel.hpp">
+      <Filter>Header Files\music_game\graphics\hud</Filter>
+    </ClInclude>
+    <ClInclude Include="src\music_game\graphics\hud\laser_approach_indicator.hpp">
       <Filter>Header Files\music_game\graphics\hud</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\option\option_key_config_menu.hpp">

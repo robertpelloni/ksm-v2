@@ -197,7 +197,7 @@ namespace MusicGame
 		m_fxChipSE.update(m_chartData, m_gameStatus);
 
 		// グラフィックの更新
-		m_graphicsMain.update(m_viewStatus);
+		m_graphicsMain.update(m_gameStatus, m_viewStatus, m_timingCache);
 
 		m_isFirstUpdate = false;
 

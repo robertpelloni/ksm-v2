@@ -196,15 +196,17 @@ namespace MusicGame::Graphics
 		, m_jdgoverlay3DGraphics(m_camera)
 		, m_songInfoPanel(chartData, parentPath)
 		, m_gaugePanel(playOption.gaugeType)
+		, m_laserApproachIndicator(chartData)
 		, m_playOption(playOption)
 	{
 	}
 
-	void GraphicsMain::update(const ViewStatus& viewStatus)
+	void GraphicsMain::update(const GameStatus& gameStatus, const ViewStatus& viewStatus, const kson::TimingCache& timingCache)
 	{
 		m_comboOverlay.update(viewStatus);
 		m_scorePanel.update(viewStatus.score);
 		m_highway3DGraphics.update(viewStatus);
+		m_laserApproachIndicator.update(gameStatus, timingCache);
 	}
 
 	void GraphicsMain::draw(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const GameStatus& gameStatus, const ViewStatus& viewStatus, const Scroll::HighwayScrollContext& highwayScrollContext) const
@@ -230,6 +232,7 @@ namespace MusicGame::Graphics
 		m_comboOverlay.draw();
 		m_frameRateMonitor.draw();
 		m_achievementPanel.draw(gameStatus);
+		m_laserApproachIndicator.draw(gameStatus.currentTimeSec);
 
 		// HARDゲージ落ち時の赤色オーバーレイ
 		if (gameStatus.playFinishStatus.has_value() && gameStatus.playFinishStatus->isHardGaugeFailed)
