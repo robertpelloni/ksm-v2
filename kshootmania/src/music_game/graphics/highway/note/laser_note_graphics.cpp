@@ -188,21 +188,29 @@ namespace MusicGame::Graphics
 				const bool isScrollSpeedPositive = highwayScrollContext.isScrollSpeedPositiveAt(y + ry);
 
 				// レーザー開始テクスチャを描画
-				if (itr == laserSection.v.begin() && isInRange)
+				if (itr == laserSection.v.begin())
 				{
-					const Vec2 positionStart = {
-						LaserPointX(point.v.v, xScale),
-						positionY
-					};
+					// 開始テクスチャの描画範囲を計算
+					const int32 startTextureMinY = isScrollSpeedPositive ? positionY : positionY - kLaserStartTextureSize.y;
+					const int32 startTextureMaxY = isScrollSpeedPositive ? positionY + kLaserStartTextureSize.y : positionY;
+					const bool isStartTextureInRange = startTextureMaxY >= 0 && startTextureMinY < kHighwayTextureSize.y;
 
-					// scroll_speedが正の場合は下方向、負の場合は上方向にテクスチャを配置
-					if (isScrollSpeedPositive)
+					if (isStartTextureInRange)
 					{
-						laserStartTexture.draw(Arg::topCenter = positionStart);
-					}
-					else
-					{
-						laserStartTexture.flipped().draw(Arg::bottomCenter = positionStart);
+						const Vec2 positionStart = {
+							LaserPointX(point.v.v, xScale),
+							positionY
+						};
+
+						// scroll_speedが正の場合は下方向、負の場合は上方向にテクスチャを配置
+						if (isScrollSpeedPositive)
+						{
+							laserStartTexture.draw(Arg::topCenter = positionStart);
+						}
+						else
+						{
+							laserStartTexture.flipped().draw(Arg::bottomCenter = positionStart);
+						}
 					}
 				}
 
@@ -217,9 +225,17 @@ namespace MusicGame::Graphics
 				if (nextItr == laserSection.v.end())
 				{
 					// 終端が直角の場合は終端を伸ばす
-					if (isInRange && point.v.v != point.v.vf)
+					if (point.v.v != point.v.vf)
 					{
-						DrawLaserSlamTail(laneIdx, positionY, point, laserNoteTexture, laserNoteTextureRow, xScale, isScrollSpeedPositive);
+						// tailの描画範囲を計算
+						const int32 tailMinY = isScrollSpeedPositive ? positionY - kLaserTextureSize.y - kLaserTailHeight : positionY + kLaserTextureSize.y;
+						const int32 tailMaxY = isScrollSpeedPositive ? positionY - kLaserTextureSize.y : positionY + kLaserTextureSize.y + kLaserTailHeight;
+						const bool isTailInRange = tailMaxY >= 0 && tailMinY < kHighwayTextureSize.y;
+
+						if (isTailInRange)
+						{
+							DrawLaserSlamTail(laneIdx, positionY, point, laserNoteTexture, laserNoteTextureRow, xScale, isScrollSpeedPositive);
+						}
 					}
 
 					break;
@@ -306,17 +322,35 @@ namespace MusicGame::Graphics
 				const auto& [y, laserSection] = *itr;
 
 				const kson::RelPulse lengthRy = laserSection.v.rbegin()->first;
-				const int32 sectionEndPositionY = highwayScrollContext.getPositionY(y + lengthRy) + kLaserShiftY - kLaserTailHeight;
 				const int32 sectionStartPositionY = highwayScrollContext.getPositionY(y) + kLaserShiftY;
+				const int32 sectionEndPositionY = highwayScrollContext.getPositionY(y + lengthRy) + kLaserShiftY;
 
-				// scroll_speedが負の場合、始点と終点が逆転する可能性があるため両方チェック
-				const int32 minY = Min(sectionStartPositionY, sectionEndPositionY);
-				const int32 maxY = Max(sectionStartPositionY, sectionEndPositionY);
+				// セクション開始位置と終了位置でのscroll_speedの符号を取得
+				const bool isStartScrollSpeedPositive = highwayScrollContext.isScrollSpeedPositiveAt(y);
+				const bool isEndScrollSpeedPositive = highwayScrollContext.isScrollSpeedPositiveAt(y + lengthRy);
+
+				// 開始テクスチャの描画範囲を計算
+				const int32 startTextureMinY = isStartScrollSpeedPositive ? sectionStartPositionY : sectionStartPositionY - kLaserStartTextureSize.y;
+				const int32 startTextureMaxY = isStartScrollSpeedPositive ? sectionStartPositionY + kLaserStartTextureSize.y : sectionStartPositionY;
+
+				// 終端が直角の場合のtailの描画範囲を計算
+				const bool isEndSlam = (laserSection.v.rbegin()->second.v.v != laserSection.v.rbegin()->second.v.vf);
+				int32 tailMinY = sectionEndPositionY;
+				int32 tailMaxY = sectionEndPositionY;
+				if (isEndSlam)
+				{
+					tailMinY = isEndScrollSpeedPositive ? sectionEndPositionY - kLaserTextureSize.y - kLaserTailHeight : sectionEndPositionY + kLaserTextureSize.y;
+					tailMaxY = isEndScrollSpeedPositive ? sectionEndPositionY - kLaserTextureSize.y : sectionEndPositionY + kLaserTextureSize.y + kLaserTailHeight;
+				}
+
+				// セクション全体の描画範囲を計算
+				const int32 minY = Min(sectionStartPositionY, Min(sectionEndPositionY, Min(startTextureMinY, tailMinY)));
+				const int32 maxY = Max(sectionStartPositionY, Max(sectionEndPositionY, Max(startTextureMaxY, tailMaxY)));
 
 				// LASERセクション全体が描画範囲外の場合はスキップ
-				if (maxY + kLaserStartTextureSize.y < 0 || minY >= kHighwayTextureSize.y)
+				if (maxY < 0 || minY >= kHighwayTextureSize.y)
 				{
-					if (!hasNegativeScrollSpeed && maxY + kLaserStartTextureSize.y < 0)
+					if (!hasNegativeScrollSpeed && maxY < 0)
 					{
 						// scroll_speedに負の値がなく、セクション全体が上にある場合はループを抜ける
 						break;
