@@ -37,15 +37,21 @@ namespace MusicGame::Graphics
 			const double centerSplitShiftX = Camera::CenterSplitShiftX(viewStatus.camStatus.centerSplit) * ((laneIdx >= numLanes / 2) ? 1 : -1);
 			const Vec2 offsetPosition = kLanePositionOffset + (isBT ? kBTLanePositionDiff : kFXLanePositionDiff) * static_cast<double>(laneIdx);
 
+			// scroll_speedに負の値が含まれている場合は描画範囲外の判定を変更
+			const bool hasNegativeScrollSpeed = highwayScrollContext.hasNegativeScrollSpeed();
+
 			for (const auto& [y, note] : lane)
 			{
 				const int32 positionStartY = highwayScrollContext.getPositionY(y);
-				if (positionStartY < 0)
+
+				// 描画範囲外チェック
+				if (positionStartY < 0 || positionStartY >= kHighwayTextureSize.y)
 				{
-					break;
-				}
-				if (positionStartY >= kHighwayTextureSize.y)
-				{
+					if (!hasNegativeScrollSpeed && positionStartY < 0)
+					{
+						// scroll_speedに負の値がなく、ノーツが上にある場合はループを抜ける
+						break;
+					}
 					continue;
 				}
 
@@ -104,17 +110,33 @@ namespace MusicGame::Graphics
 			const auto& lane = isBT ? chartData.note.bt[laneIdx] : chartData.note.fx[laneIdx];
 			const double centerSplitShiftX = Camera::CenterSplitShiftX(viewStatus.camStatus.centerSplit) * ((laneIdx >= numLanes / 2) ? 1 : -1);
 			const Vec2 offsetPosition = kLanePositionOffset + (isBT ? kBTLanePositionDiff : kFXLanePositionDiff) * laneIdx;
+
+			// scroll_speedに負の値が含まれている場合は描画範囲外の判定を変更
+			const bool hasNegativeScrollSpeed = highwayScrollContext.hasNegativeScrollSpeed();
+
 			for (const auto& [y, note] : lane)
 			{
 				const int32 positionStartY = highwayScrollContext.getPositionY(y);
-				if (positionStartY < 0)
+				if (!hasNegativeScrollSpeed && positionStartY < 0)
 				{
+					// scroll_speedに負の値がない場合は、positionStartY < 0でループを抜ける
 					break;
 				}
 
 				const int32 positionEndY = note.length == 0 ? positionStartY : highwayScrollContext.getPositionY(y + note.length);
-				if (positionEndY >= kHighwayTextureSize.y)
+
+				// scroll_speedが負の場合、始点と終点が逆転する可能性があるため両方チェック
+				const int32 minY = Min(positionStartY, positionEndY);
+				const int32 maxY = Max(positionStartY, positionEndY);
+
+				// ノーツ全体が描画範囲外の場合はスキップ
+				if (maxY < 0 || minY >= kHighwayTextureSize.y)
 				{
+					if (!hasNegativeScrollSpeed && maxY < 0)
+					{
+						// scroll_speedに負の値がなく、ノーツ全体が上にある場合はループを抜ける
+						break;
+					}
 					continue;
 				}
 
@@ -125,9 +147,16 @@ namespace MusicGame::Graphics
 				}
 
 				const int32 height = positionStartY - positionEndY;
-				if (height <= 0)
+				if (height == 0)
 				{
-					// TODO: scroll_speedに逆再生を実装すると負の高さを考慮する必要が出てくる
+					// 高さが0の場合は描画しない
+					continue;
+				}
+
+				// scroll_speedが負の場合、heightが負になる可能性がある
+				const int32 absHeight = Abs(height);
+				if (absHeight <= 0)
+				{
 					continue;
 				}
 
@@ -156,9 +185,10 @@ namespace MusicGame::Graphics
 					// TODO: 始点テクスチャの描画
 					const Texture& sourceTexture = isBT ? m_longBTNoteTexture : m_longFXNoteTexture;
 					const int32 width = isBT ? 40 : 82;
-					const Vec2 position = offsetPosition + Vec2::Right(centerSplitShiftX) + Vec2::Down(positionEndY);
+					// scroll_speedが負の場合、positionStartYとpositionEndYが逆転するため、小さい方を使用
+					const Vec2 position = offsetPosition + Vec2::Right(centerSplitShiftX) + Vec2::Down(Min(positionStartY, positionEndY));
 					sourceTexture(width * i, sourceY + kOnePixelTextureSourceOffset, width, kOnePixelTextureSourceSize)
-						.resized(width, height)
+						.resized(width, absHeight)
 						.draw(position);
 				}
 			}

@@ -11,6 +11,22 @@ namespace MusicGame::Scroll
 		// 上記の「108/2」と「10」を乗算した値にあたる
 		constexpr double kBasePixels = 540.0;
 
+		/// @brief scrollSpeedに負の値が含まれているかを判定
+		/// @param beatInfo kson.beat
+		/// @return 負の値が含まれていればtrue
+		bool HasNegativeScrollSpeed(const kson::BeatInfo& beatInfo)
+		{
+			// scrollSpeedグラフに負の値が1つでも含まれていればtrueを返す
+			for (const auto& [pulse, graphValue] : beatInfo.scrollSpeed)
+			{
+				if (graphValue.v.v < 0.0 || graphValue.v.vf < 0.0)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		/// @brief BPMの最頻値(累計Pulse値が最も大きいBPM)を返す
 		/// @param chartData 譜面データ
 		/// @return BPM
@@ -258,6 +274,7 @@ namespace MusicGame::Scroll
 		, m_pBeatInfo(pBeatInfo)
 		, m_pTimingCache(pTimingCache)
 		, m_pGameStatus(pGameStatus)
+		, m_hasNegativeScrollSpeed(HasNegativeScrollSpeed(*pBeatInfo))
 	{
 	}
 
@@ -271,6 +288,22 @@ namespace MusicGame::Scroll
 	const HighwayScroll& HighwayScrollContext::highwayScroll() const
 	{
 		return *m_pHighwayScroll;
+	}
+
+	bool HighwayScrollContext::hasNegativeScrollSpeed() const
+	{
+		return m_hasNegativeScrollSpeed;
+	}
+
+	bool HighwayScrollContext::isScrollSpeedPositiveAt(kson::Pulse pulse) const
+	{
+		// 負のscroll_speedが存在しない場合は常に正
+		if (!m_hasNegativeScrollSpeed)
+		{
+			return true;
+		}
+
+		return kson::GraphValueAt(m_pBeatInfo->scrollSpeed, pulse) >= 0.0;
 	}
 
 	double HighwayScroll::pulseToSec(kson::Pulse pulse, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache) const

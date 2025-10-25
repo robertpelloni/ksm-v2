@@ -18,6 +18,9 @@ namespace MusicGame::Scroll
 		const kson::TimingCache* const m_pTimingCache;
 		const GameStatus* const m_pGameStatus;
 
+		/// @brief scrollSpeedに負の値が含まれているか(コンストラクタで事前計算)
+		const bool m_hasNegativeScrollSpeed;
+
 	public:
 		/// @brief コンストラクタ
 		/// @param pHighwayScroll HighwayScrollのポインタ(メンバ関数呼出時点で有効なポインタであること)
@@ -36,6 +39,15 @@ namespace MusicGame::Scroll
 		/// @brief HighwayScrollへの参照を返す
 		/// @return HighwayScrollへの参照
 		const HighwayScroll& highwayScroll() const;
+
+		/// @brief scrollSpeedに負の値が含まれているかを返す
+		/// @return 負の値が含まれていればtrue
+		bool hasNegativeScrollSpeed() const;
+
+		/// @brief 指定したPulse位置でのscrollSpeedが正であるかを返す
+		/// @param pulse Pulse位置
+		/// @return scrollSpeedが0以上ならtrue
+		bool isScrollSpeedPositiveAt(kson::Pulse pulse) const;
 	};
 
 	/// @brief Highway上のスクロール計算(ハイスピードおよびscroll_speedの計算)
