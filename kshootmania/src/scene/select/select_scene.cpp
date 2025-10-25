@@ -3,6 +3,7 @@
 #include "scene/title/title_scene.hpp"
 #include "ini/config_ini.hpp"
 #include "common/fs_utils.hpp"
+#include "runtime_config.hpp"
 
 namespace
 {
@@ -144,6 +145,7 @@ SelectScene::SelectScene()
 	, m_playerNames(GetPlayerNames())
 	, m_fxButtonUpDetection({ KeyShift })
 	, m_btOptionPanel(m_canvas)
+	, m_playStatsPanel(m_canvas)
 {
 	AutoMuteAddon::SetEnabled(true);
 
@@ -168,9 +170,17 @@ void SelectScene::update()
 {
 	// BTオプションパネル更新
 	m_btOptionPanel.update(m_menu.getCurrentChartStdBPM());
-	if (m_btOptionPanel.isVisible())
+
+	// プレイ統計パネル更新
+	m_playStatsPanel.update(m_menu.getCurrentHighScoreInfo(), RuntimeConfig::GetGaugeType());
+
+	// いずれかのパネルが表示中の場合、オーバーレイを表示
+	const bool anyPanelVisible = m_btOptionPanel.isVisible() || m_playStatsPanel.isVisible();
+	m_canvas->setParamValue(U"overlay_visible", anyPanelVisible);
+
+	if (anyPanelVisible)
 	{
-		// BTオプションパネル表示中は選曲画面の操作を無効化
+		// パネル表示中は選曲画面の操作を無効化
 		// ただし、アルファベット前後ジャンプ(BTを押しながらFX-/R)は有効にする
 		updateAlphabetJump();
 		m_canvas->update();

@@ -5,6 +5,8 @@
 #include "select_song_preview.hpp"
 #include "ksmaudio/ksmaudio.hpp"
 
+struct HighScoreInfo;
+
 using PlaySeYN = YesNo<struct PlaySeYN_tag>;
 using RefreshSongPreviewYN = YesNo<struct RefreshSongPreviewYN_tag>;
 using SaveToConfigIniYN = YesNo<struct SaveToConfigIniYN_tag>;
@@ -133,4 +135,6 @@ public:
 	void jumpToLast();
 
 	double getCurrentChartStdBPM() const;
+
+	const HighScoreInfo& getCurrentHighScoreInfo() const;
 };

@@ -505,7 +505,6 @@ void BTOptionPanel::update(double currentChartStdBPM)
 	if (currentButton)
 	{
 		m_isVisible = true;
-		m_canvas->setParamValue(U"overlay_visible", true);
 
 		// 対応するパネルを表示
 		m_canvas->setParamValue(U"overlay_btOptionPanelVisible_A", currentButton == KeyConfig::kBT_A);
@@ -690,7 +689,6 @@ void BTOptionPanel::update(double currentChartStdBPM)
 		m_isVisible = false;
 
 		// BTボタンが押されていない場合はすべて非表示
-		m_canvas->setParamValue(U"overlay_visible", false);
 		m_canvas->setParamValue(U"overlay_btOptionPanelVisible_A", false);
 		m_canvas->setParamValue(U"overlay_btOptionPanelVisible_B", false);
 		m_canvas->setParamValue(U"overlay_btOptionPanelVisible_C", false);

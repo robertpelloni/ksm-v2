@@ -306,6 +306,9 @@
     <ClCompile Include="src\scene\select\bt_option_panel.cpp">
       <Filter>Source Files\scene\select</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\select\play_stats_panel.cpp">
+      <Filter>Source Files\scene\select</Filter>
+    </ClCompile>
     <ClCompile Include="src\scene\select\select_scene.cpp">
       <Filter>Source Files\scene\select</Filter>
     </ClCompile>
@@ -875,6 +878,9 @@
       <Filter>Header Files\scene\title</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\select\bt_option_panel.hpp">
+      <Filter>Header Files\scene\select</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\select\play_stats_panel.hpp">
       <Filter>Header Files\scene\select</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\select\select_scene.hpp">
