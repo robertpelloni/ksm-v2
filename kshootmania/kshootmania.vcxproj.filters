@@ -543,6 +543,9 @@
     <ClCompile Include="src\addon\auto_mute_addon.cpp">
       <Filter>Source Files\addon</Filter>
     </ClCompile>
+    <ClCompile Include="src\addon\disable_ime_addon.cpp">
+      <Filter>Source Files\addon</Filter>
+    </ClCompile>
     <ClCompile Include="src\common\fs_utils.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
@@ -1157,6 +1160,9 @@
       <Filter>Header Files\scene\option</Filter>
     </ClInclude>
     <ClInclude Include="src\addon\auto_mute_addon.hpp">
+      <Filter>Header Files\addon</Filter>
+    </ClInclude>
+    <ClInclude Include="src\addon\disable_ime_addon.hpp">
       <Filter>Header Files\addon</Filter>
     </ClInclude>
     <ClInclude Include="src\common\fs_utils.hpp">

@@ -5,6 +5,7 @@
 #include "common/ime_utils.hpp"
 #include "common/asset_management.hpp"
 #include "addon/auto_mute_addon.hpp"
+#include "addon/disable_ime_addon.hpp"
 #include "ksmaudio/ksmaudio.hpp"
 #include "runtime_config.hpp"
 #include "scene/title/title_scene.hpp"
@@ -73,12 +74,17 @@ void KSMMain()
 
 	Addon::Register(AutoMuteAddon::kAddonName, std::make_unique<AutoMuteAddon>(), 1);
 
+#if defined(_WIN32) || defined(__APPLE__)
+	Addon::Register(DisableIMEAddon::kAddonName, std::make_unique<DisableIMEAddon>(), 2);
+#endif
+
 	// 毎フレーム連続してアセット生成した時の警告を無効化
 	// (楽曲選択でのスクロールにおいては、正常系でもテクスチャ読み込みが毎フレーム発生するため)
 	Profiler::EnableAssetCreationWarning(false);
 
 #if defined(_WIN32) || defined(__APPLE__)
-	// IME無効化
+	// 起動時はIME無効化を一度実行
+	// (これは起動時のものなので、IME無効化設定とは関係なく必ず実行)
 	IMEUtils::DetachIMEContext();
 #endif
 

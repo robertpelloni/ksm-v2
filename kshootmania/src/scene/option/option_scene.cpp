@@ -139,6 +139,12 @@ namespace
 					I18n::Get(I18n::Option::kAssistTickOff),
 					I18n::Get(I18n::Option::kAssistTickOn),
 				}).setKeyTextureIdx(4),
+				CreateInfo::Enum(ConfigIni::Key::kDisableIME, Array<StringView>{
+					I18n::Get(I18n::Option::kDisableIMEOff),
+					I18n::Get(I18n::Option::kDisableIMEOnLow),
+					I18n::Get(I18n::Option::kDisableIMEOnMid),
+					I18n::Get(I18n::Option::kDisableIMEOnHigh),
+				}).setKeyTextureIdx(5),
 				CreateInfo::Int(ConfigIni::Key::kInputDelay, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
 				.setAdditionalSuffixes(
 					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),
