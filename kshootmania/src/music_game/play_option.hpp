@@ -28,6 +28,8 @@ namespace MusicGame
 
 		bool isAutoPlaySE = false; // FXチップ・直角の効果音のみオートプレイ
 
+		NoteSkinType noteSkin = NoteSkinType::kDefault;
+
 		// オートプレイを考慮したBT判定モードを取得
 		JudgmentPlayMode effectiveBtJudgmentPlayMode() const
 		{

@@ -172,7 +172,7 @@ namespace MusicGame::Graphics
 		}
 
 		// BT/FXノーツの描画
-		m_buttonNoteGraphics.draw(chartData, gameStatus, viewStatus, highwayScrollContext, m_renderTexture);
+		m_buttonNoteGraphics.draw(chartData, gameStatus, viewStatus, playOption, highwayScrollContext, m_renderTexture);
 
 		// キービームの描画
 		m_keyBeamGraphics.draw(gameStatus, viewStatus, m_renderTexture);

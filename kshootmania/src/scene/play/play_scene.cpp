@@ -28,6 +28,11 @@ namespace
 				.audioProcDelayMs = ConfigIni::GetInt(ConfigIni::Key::kAudioProcDelay),
 				.visualOffsetMs = ConfigIni::GetInt(ConfigIni::Key::kVisualOffset),
 				.isAutoPlaySE = ConfigIni::GetBool(ConfigIni::Key::kAutoPlaySE),
+				.noteSkin = [&]()
+				{
+					const StringView noteSkinStr = ConfigIni::GetString(ConfigIni::Key::kNoteSkin, U"default");
+					return noteSkinStr == U"note" ? NoteSkinType::kNote : NoteSkinType::kDefault;
+				}(),
 			},
 			.assistTickMode = static_cast<AssistTickMode>(ConfigIni::GetInt(ConfigIni::Key::kAssistTick, static_cast<int32>(AssistTickMode::kOff))),
 		};
