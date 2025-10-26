@@ -120,12 +120,16 @@ target_include_directories(kshootmania PRIVATE
 )
 
 find_package(Siv3D REQUIRED)
-target_link_libraries(kshootmania PRIVATE 
+target_link_libraries(kshootmania PRIVATE
     Siv3D::Siv3D
     kson
     ksmaudio
     NocoUI
 )
+
+if(APPLE)
+	target_link_libraries(kshootmania PRIVATE ksmplatform_macos)
+endif()
 
 target_compile_features(kshootmania PRIVATE cxx_std_20)
 

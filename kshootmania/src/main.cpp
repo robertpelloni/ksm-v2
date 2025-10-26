@@ -77,7 +77,7 @@ void KSMMain()
 	// (楽曲選択でのスクロールにおいては、正常系でもテクスチャ読み込みが毎フレーム発生するため)
 	Profiler::EnableAssetCreationWarning(false);
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__APPLE__)
 	// IME無効化
 	IMEUtils::DetachIMEContext();
 #endif

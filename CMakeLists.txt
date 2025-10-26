@@ -31,6 +31,11 @@ endif()
 add_subdirectory(kson)
 add_subdirectory(ksmaudio)
 add_subdirectory(kshootmania/third_party/NocoUI)
+
+if(APPLE)
+	add_subdirectory(ksmplatform_macos)
+endif()
+
 add_subdirectory(kshootmania)
 add_subdirectory(tests)
 

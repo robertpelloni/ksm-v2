@@ -62,6 +62,10 @@ target_link_libraries(${TARGET_NAME} PRIVATE
     Catch2::Catch2
 )
 
+if(APPLE)
+	target_link_libraries(${TARGET_NAME} PRIVATE ksmplatform_macos)
+endif()
+
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_20)
 
 if(APPLE)
