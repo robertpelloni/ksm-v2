@@ -168,10 +168,10 @@ namespace
 					I18n::Get(I18n::Option::kSelectCloseFolderKeyBackspace),
 					I18n::Get(I18n::Option::kSelectCloseFolderKeyEsc),
 				}).setKeyTextureIdx(12),
-				/*CreateInfo::Enum(ConfigIni::Key::kUse3BTsPlusStartAsBack, Array<StringView>{
+				CreateInfo::Enum(ConfigIni::Key::kUse3BTsPlusStartAsBack, Array<StringView>{
 					I18n::Get(I18n::Option::kDisabled),
 					I18n::Get(I18n::Option::kEnabled),
-				}).setKeyTextureIdx(13),*/
+				}).setKeyTextureIdx(13),
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueOther, {
 				CreateInfo::Enum(ConfigIni::Key::kHispeedShowXMod, Array<StringView>{

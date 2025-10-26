@@ -1,4 +1,5 @@
 ﻿#include "key_config.hpp"
+#include "ini/config_ini.hpp"
 
 namespace
 {
@@ -48,6 +49,101 @@ namespace
 		s_configSetArray[KeyConfig::kKeyboard1][KeyConfig::kLeft] = KeyLeft;
 		s_configSetArray[KeyConfig::kKeyboard1][KeyConfig::kRight] = KeyRight;
 		s_configSetArray[KeyConfig::kKeyboard1][KeyConfig::kBackspace] = KeyBackspace;
+	}
+
+	bool IsBT3PlusStartPressed()
+	{
+		if (!ConfigIni::GetBool(ConfigIni::Key::kUse3BTsPlusStartAsBack, true))
+		{
+			return false;
+		}
+
+		bool startPressed = false;
+		for (const auto& configSet : s_configSetArray)
+		{
+			if (configSet[KeyConfig::kStart].pressed())
+			{
+				startPressed = true;
+				break;
+			}
+		}
+		if (!startPressed)
+		{
+			return false;
+		}
+
+		int32 btPressedCount = 0;
+		for (int32 btIdx = KeyConfig::kBT_A; btIdx <= KeyConfig::kBT_D; ++btIdx)
+		{
+			for (const auto& configSet : s_configSetArray)
+			{
+				if (configSet[btIdx].pressed())
+				{
+					++btPressedCount;
+					break;
+				}
+			}
+		}
+
+		return btPressedCount >= 3;
+	}
+
+	bool IsBT3PlusStartDown()
+	{
+		if (!IsBT3PlusStartPressed())
+		{
+			return false;
+		}
+
+		for (const auto& configSet : s_configSetArray)
+		{
+			if (configSet[KeyConfig::kStart].down())
+			{
+				return true;
+			}
+		}
+
+		for (int32 btIdx = KeyConfig::kBT_A; btIdx <= KeyConfig::kBT_D; ++btIdx)
+		{
+			for (const auto& configSet : s_configSetArray)
+			{
+				if (configSet[btIdx].down())
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	bool IsBT3PlusStartUp()
+	{
+		if (IsBT3PlusStartPressed())
+		{
+			return false;
+		}
+
+		for (const auto& configSet : s_configSetArray)
+		{
+			if (configSet[KeyConfig::kStart].up())
+			{
+				return true;
+			}
+		}
+
+		for (int32 btIdx = KeyConfig::kBT_A; btIdx <= KeyConfig::kBT_D; ++btIdx)
+		{
+			for (const auto& configSet : s_configSetArray)
+			{
+				if (configSet[btIdx].up())
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }
 
@@ -187,7 +283,15 @@ bool KeyConfig::Pressed(Button button)
 			}
 		}
 	}
-	
+
+	if (button == kBack)
+	{
+		if (IsBT3PlusStartPressed())
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -244,6 +348,14 @@ bool KeyConfig::Down(Button button)
 		}
 	}
 
+	if (button == kBack)
+	{
+		if (IsBT3PlusStartDown())
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -297,5 +409,14 @@ bool KeyConfig::Up(Button button)
 			return true;
 		}
 	}
+
+	if (button == kBack)
+	{
+		if (IsBT3PlusStartUp())
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
