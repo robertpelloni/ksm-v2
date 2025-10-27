@@ -1,5 +1,7 @@
 ﻿#include "ksmplatform_macos/input_method.h"
 #include <Carbon/Carbon.h>
+#include <IOKit/hidsystem/ev_keymap.h>
+#include <CoreGraphics/CoreGraphics.h>
 
 void KSMPlatformMacOS_DisableIME()
 {
@@ -20,4 +22,15 @@ void KSMPlatformMacOS_DisableIME()
 	}
 
 	CFRelease(asciiSources);
+}
+
+bool KSMPlatformMacOS_IsKeyPressed(int keyCode)
+{
+	// CGKeyCodeは0〜127の範囲なので、範囲チェック
+	if (keyCode < 0 || keyCode > 127)
+	{
+		return false;
+	}
+
+	return CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState, static_cast<CGKeyCode>(keyCode));
 }

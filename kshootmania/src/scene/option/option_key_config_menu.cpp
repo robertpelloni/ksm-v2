@@ -1,5 +1,9 @@
 ﻿#include "option_key_config_menu.hpp"
 
+#ifdef __APPLE__
+#include <ksmplatform_macos/input_method.h>
+#endif
+
 namespace
 {
 	enum class Direction
@@ -256,6 +260,23 @@ namespace
 		{
 			return String(I18n::Get(I18n::Option::kKeyConfigKeyboardNoAssign));
 		}
+#ifdef __APPLE__
+		// macOSプラットフォームキーのチェック
+		for (const auto& platformKey : kPlatformKeys)
+		{
+			if (keyCode == (platformKey.code - kPlatformKeyCodeOffset))
+			{
+				if (platformKey.nativeCode == 0x66)
+				{
+					return U"英数";
+				}
+				else if (platformKey.nativeCode == 0x68)
+				{
+					return U"かな";
+				}
+			}
+		}
+#endif
 		if (keyCode == 0x08)
 		{
 			return U"BackSpace";
@@ -1088,6 +1109,21 @@ void OptionKeyConfigMenu::updateSettingButtonState()
 				break;
 			}
 		}
+
+#ifdef __APPLE__
+		// macOSプラットフォーム特有のキーもチェック
+		for (const auto& key : kPlatformKeys)
+		{
+			const bool pressed = KSMPlatformMacOS_IsKeyPressed(key.nativeCode);
+			const bool wasPressed = m_platformKeyWasPressed[key.nativeCode];
+
+			if (pressed && !wasPressed)
+			{
+				setInput(Input(InputDeviceType::Keyboard, key.code));
+			}
+			m_platformKeyWasPressed[key.nativeCode] = pressed;
+		}
+#endif
 	}
 	else
 	{

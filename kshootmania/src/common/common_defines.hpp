@@ -128,3 +128,23 @@ enum class MovieMode : int32
 
 	kCount,
 };
+
+#ifdef __APPLE__
+// macOSプラットフォーム特有のキー定義
+constexpr int32 kPlatformKeyCodeOffset = 0x10000;
+
+struct PlatformKeyDef
+{
+	// config.iniに保存される値(0x10000 + 仮想キーコード)
+	int32 code;
+
+	// macOSの仮想キーコード
+	int nativeCode;
+};
+
+// macOSの仮想キーコードは IOKit/hidsystem/ev_keymap.h で定義
+inline constexpr std::array<PlatformKeyDef, 2> kPlatformKeys = {{
+	{ kPlatformKeyCodeOffset + 0x66, 0x66 }, // kVK_JIS_Eisu(英数)
+	{ kPlatformKeyCodeOffset + 0x68, 0x68 }, // kVK_JIS_Kana(かな)
+}};
+#endif

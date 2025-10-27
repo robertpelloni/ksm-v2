@@ -9,6 +9,7 @@
 #include "ksmaudio/ksmaudio.hpp"
 #include "runtime_config.hpp"
 #include "scene/title/title_scene.hpp"
+#include "input/key_config.hpp"
 
 void CreateHighScoreBackup()
 {
@@ -105,6 +106,11 @@ void KSMMain()
 	
 	while (System::Update())
 	{
+#ifdef __APPLE__
+		// macOSプラットフォーム特有のキーボード状態を更新
+		KeyConfig::UpdatePlatformKeyboard();
+#endif
+
 		if (sceneRunner.done())
 		{
 			break;

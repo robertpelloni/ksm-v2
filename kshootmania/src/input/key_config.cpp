@@ -7,6 +7,26 @@ namespace
 	using ConfigSetArray = std::array<Input, KeyConfig::kButtonEnumCount>;
 	std::array<ConfigSetArray, KeyConfig::kConfigSetEnumCount> s_configSetArray;
 
+#ifdef __APPLE__
+	struct PlatformKeyState
+	{
+		bool previousPressed = false;
+		bool currentPressed = false;
+
+		void update(bool pressed)
+		{
+			previousPressed = currentPressed;
+			currentPressed = pressed;
+		}
+
+		bool pressed() const { return currentPressed; }
+		bool down() const { return currentPressed && !previousPressed; }
+		bool up() const { return !currentPressed && previousPressed; }
+	};
+
+	std::array<PlatformKeyState, kPlatformKeys.size()> s_platformKeyStates;
+#endif
+
 	constexpr std::array<InputDeviceType, KeyConfig::kConfigSetEnumCount> kConfigSetDeviceTypes = {
 		InputDeviceType::Keyboard,
 		InputDeviceType::Keyboard,
@@ -183,9 +203,10 @@ void KeyConfig::SetConfigValueByCommaSeparated(ConfigSet targetConfigSet, String
 
 	for (int32 i = 0; i < kConfigurableButtonEnumCount; ++i)
 	{
-		if (0 <= intValues[i] && intValues[i] < 0x100)
+		const int32 code = intValues[i];
+		if (code >= 0)
 		{
-			s_configSetArray[targetConfigSet][i] = Input(kConfigSetDeviceTypes[targetConfigSet], static_cast<uint8>(intValues[i]));
+			s_configSetArray[targetConfigSet][i] = Input(kConfigSetDeviceTypes[targetConfigSet], static_cast<uint8>(code));
 		}
 		else
 		{
@@ -228,6 +249,17 @@ const Input& KeyConfig::GetConfigValue(ConfigSet targetConfigSet, ConfigurableBu
 	return s_configSetArray[targetConfigSet][button];
 }
 
+#ifdef __APPLE__
+void KeyConfig::UpdatePlatformKeyboard()
+{
+	for (size_t i = 0; i < kPlatformKeys.size(); ++i)
+	{
+		const bool pressed = KSMPlatformMacOS_IsKeyPressed(kPlatformKeys[i].nativeCode);
+		s_platformKeyStates[i].update(pressed);
+	}
+}
+#endif
+
 void KeyConfig::SaveToConfigIni()
 {
 	for (int32 configSetIdx = 0; configSetIdx < kConfigSetEnumCount; ++configSetIdx)
@@ -266,7 +298,35 @@ bool KeyConfig::Pressed(Button button)
 
 	for (const auto& configSet : s_configSetArray)
 	{
-		if (configSet[button].pressed())
+		const auto& input = configSet[button];
+		if (input.deviceType() == InputDeviceType::Keyboard)
+		{
+#ifdef __APPLE__
+			bool isPlatformKey = false;
+			for (size_t i = 0; i < kPlatformKeys.size(); ++i)
+			{
+				if (input.code() == (kPlatformKeys[i].code - kPlatformKeyCodeOffset))
+				{
+					if (s_platformKeyStates[i].pressed())
+					{
+						return true;
+					}
+					isPlatformKey = true;
+					break;
+				}
+			}
+			if (!isPlatformKey && input.pressed())
+			{
+				return true;
+			}
+#else
+			if (input.pressed())
+			{
+				return true;
+			}
+#endif
+		}
+		else if (input.pressed())
 		{
 			return true;
 		}
@@ -330,7 +390,35 @@ bool KeyConfig::Down(Button button)
 
 	for (const auto& configSet : s_configSetArray)
 	{
-		if (configSet[button].down())
+		const auto& input = configSet[button];
+		if (input.deviceType() == InputDeviceType::Keyboard)
+		{
+#ifdef __APPLE__
+			bool isPlatformKey = false;
+			for (size_t i = 0; i < kPlatformKeys.size(); ++i)
+			{
+				if (input.code() == (kPlatformKeys[i].code - kPlatformKeyCodeOffset))
+				{
+					if (s_platformKeyStates[i].down())
+					{
+						return true;
+					}
+					isPlatformKey = true;
+					break;
+				}
+			}
+			if (!isPlatformKey && input.down())
+			{
+				return true;
+			}
+#else
+			if (input.down())
+			{
+				return true;
+			}
+#endif
+		}
+		else if (input.down())
 		{
 			return true;
 		}
@@ -404,7 +492,35 @@ bool KeyConfig::Up(Button button)
 
 	for (const auto& configSet : s_configSetArray)
 	{
-		if (configSet[button].up())
+		const auto& input = configSet[button];
+		if (input.deviceType() == InputDeviceType::Keyboard)
+		{
+#ifdef __APPLE__
+			bool isPlatformKey = false;
+			for (size_t i = 0; i < kPlatformKeys.size(); ++i)
+			{
+				if (input.code() == (kPlatformKeys[i].code - kPlatformKeyCodeOffset))
+				{
+					if (s_platformKeyStates[i].up())
+					{
+						return true;
+					}
+					isPlatformKey = true;
+					break;
+				}
+			}
+			if (!isPlatformKey && input.up())
+			{
+				return true;
+			}
+#else
+			if (input.up())
+			{
+				return true;
+			}
+#endif
+		}
+		else if (input.up())
 		{
 			return true;
 		}

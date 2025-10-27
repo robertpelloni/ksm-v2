@@ -1,5 +1,10 @@
 ﻿#pragma once
 #include <CoTaskLib.hpp>
+#include "common/common_defines.hpp"
+
+#ifdef __APPLE__
+#include <ksmplatform_macos/input_method.h>
+#endif
 
 using StartRequiredForBTFXLaserYN = YesNo<struct StartRequiredForBTFXLaserYN_tag>;
 
@@ -87,6 +92,11 @@ namespace KeyConfig
 	const Input& GetConfigValue(ConfigSet targetConfigSet, ConfigurableButton button);
 
 	void SaveToConfigIni();
+
+#ifdef __APPLE__
+	// macOSプラットフォーム特有のキーボード状態を更新(毎フレーム呼び出す)
+	void UpdatePlatformKeyboard();
+#endif
 
 	bool Pressed(Button button);
 
