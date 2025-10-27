@@ -183,18 +183,14 @@ void SelectScene::update()
 	const bool anyPanelVisible = m_btOptionPanel.isVisible() || m_playStatsPanel.isVisible();
 	m_canvas->setParamValue(U"overlay_visible", anyPanelVisible);
 
-	if (anyPanelVisible)
-	{
-		// パネル表示中は選曲画面の操作を無効化
-		// ただし、アルファベット前後ジャンプ(BTを押しながらFX-/R)は有効にする
-		updateAlphabetJump();
-		m_canvas->update();
-		return;
-	}
-
-	updatePlayerSwitching();
-
+	// Backキー処理(パネル表示中でも有効にする)
 	const bool closeFolder = m_menu.isFolderOpen() && KeyConfig::Down(m_folderCloseButton/* ← kBackspace・kBackのいずれかが入っている */);
+
+	// BackSpaceキーまたはBackボタン(Escキー)でフォルダを閉じる
+	if (closeFolder)
+	{
+		m_menu.closeFolder(PlaySeYN::No);
+	}
 
 	// Backボタン(Escキー)を押した場合、(フォルダを閉じる状況でなければ)タイトル画面へ戻る
 	if (!closeFolder && KeyConfig::Down(KeyConfig::kBack))
@@ -205,16 +201,21 @@ void SelectScene::update()
 		return;
 	}
 
+	if (anyPanelVisible)
+	{
+		// パネル表示中は選曲画面の操作を無効化
+		// ただし、アルファベット前後ジャンプ(BTを押しながらFX-L/R)とBackキーは有効にする
+		updateAlphabetJump();
+		m_canvas->update();
+		return;
+	}
+
+	updatePlayerSwitching();
+
 	// Shift押下中はメニューを更新しない(アルファベットジャンプを優先)
 	if (!KeyShift.pressed())
 	{
 		m_menu.update();
-	}
-
-	// BackSpaceキーまたはBackボタン(Escキー)でフォルダを閉じる
-	if (closeFolder)
-	{
-		m_menu.closeFolder(PlaySeYN::No);
 	}
 
 	// スタートボタンを押した場合、フォルダを開く または プレイ開始
