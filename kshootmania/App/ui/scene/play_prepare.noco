@@ -381,7 +381,7 @@
                 0,
                 255
               ],
-              "fontAssetName": "",
+              "fontAssetName": "SystemBold",
               "fontSize": 40.0,
               "gradationColor1": [
                 255,
@@ -536,7 +536,7 @@
                 255
               ],
               "fontAssetName": "",
-              "fontSize": 24.0,
+              "fontSize": 30.0,
               "gradationColor1": [
                 255,
                 255,
@@ -564,8 +564,8 @@
               "padding": [
                 10.0,
                 10.0,
-                2.0,
-                2.0
+                0.0,
+                0.0
               ],
               "shadowColor": [
                 0,
