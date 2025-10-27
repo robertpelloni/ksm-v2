@@ -2,6 +2,8 @@
 #include <CoTaskLib.hpp>
 #include "ksmaudio/ksmaudio.hpp"
 #include "play_prepare_assets.hpp"
+#include "music_game/ui/hispeed_setting_menu.hpp"
+#include "music_game/scroll/highway_scroll.hpp"
 
 class PlayPrepareScene : public Co::SceneBase
 {
@@ -15,6 +17,10 @@ private:
 	const kson::ChartData m_chartData;
 
 	std::shared_ptr<noco::Canvas> m_canvas;
+
+	MusicGame::HispeedSettingMenu m_hispeedMenu;
+
+	MusicGame::Scroll::HighwayScroll m_highwayScroll;
 
 	Stopwatch m_stopwatchSinceHispeedChange{ StartImmediately::Yes };
 

@@ -5,6 +5,7 @@
 #include "ini/config_ini.hpp"
 #include "runtime_config.hpp"
 #include "input/cursor/cursor_input.hpp"
+#include "music_game/hispeed_utils.hpp"
 
 namespace
 {
@@ -50,35 +51,6 @@ namespace
 	constexpr int32 kHispeedOCModMin = 25; // o/c-modの最小値
 	constexpr int32 kHispeedOCModMax = 2000; // o/c-modの最大値
 	constexpr int32 kHispeedOCModStep = 25; // o/c-modの刻み幅
-
-	// ConfigIniから「表示」設定になっているハイスピード種類を取得
-	Array<HispeedType> LoadAvailableHispeedTypesFromConfigIni()
-	{
-		Array<HispeedType> availableTypes;
-		availableTypes.reserve(static_cast<std::size_t>(HispeedType::EnumCount));
-
-		if (ConfigIni::GetBool(ConfigIni::Key::kHispeedShowXMod, true))
-		{
-			availableTypes.push_back(HispeedType::XMod);
-		}
-		if (ConfigIni::GetBool(ConfigIni::Key::kHispeedShowOMod, true))
-		{
-			availableTypes.push_back(HispeedType::OMod);
-		}
-		if (ConfigIni::GetBool(ConfigIni::Key::kHispeedShowCMod, false))
-		{
-			availableTypes.push_back(HispeedType::CMod);
-		}
-
-		// 1つも有効でない場合はデフォルト(x-mod、o-mod)を追加
-		if (availableTypes.empty())
-		{
-			availableTypes.push_back(HispeedType::XMod);
-			availableTypes.push_back(HispeedType::OMod);
-		}
-
-		return availableTypes;
-	}
 
 	int32 CursorMin(HispeedType hispeedType)
 	{
@@ -208,21 +180,6 @@ namespace
 		}
 	}
 
-	// ハイスピード値をフォーマット
-	String FormatHispeedValue(HispeedType type, int32 value)
-	{
-		switch (type)
-		{
-		case HispeedType::XMod:
-			return U"x{:.1f}"_fmt(value / 10.0); // 表示時はx2.5のように小数表示
-		case HispeedType::OMod:
-			return U"{}"_fmt(value);
-		case HispeedType::CMod:
-			return U"C{}"_fmt(value);
-		default:
-			return U"";
-		}
-	}
 
 	String FormatMenuLine(StringView label, StringView value, bool isSelected, int32 currentCursor, int32 minCursor, int32 maxCursor)
 	{
@@ -359,7 +316,7 @@ BTOptionPanel::BTOptionPanel(std::shared_ptr<noco::Canvas> canvas)
 
 	// BT-Dメニュー(ハイスピード)用
 	, m_hispeedTypeMenu(
-		LoadAvailableHispeedTypesFromConfigIni(),
+		ConfigIni::LoadAvailableHispeedTypes(),
 		LinearMenu::CreateInfoWithCursorMinMax{
 			.cursorInputCreateInfo = {
 				.type = CursorInput::Type::Horizontal,
@@ -381,11 +338,6 @@ BTOptionPanel::BTOptionPanel(std::shared_ptr<noco::Canvas> canvas)
 			.cyclic = IsCyclicMenuYN::No,
 		})
 {
-
-	// ハイスピードのデフォルト値を設定
-	m_hispeedValueMenu.setCursor(10); // x1.0
-	refreshHispeedValueMenuConstraints();
-
 	// ConfigIniから設定値を読み込み
 	loadFromConfigIni();
 }
@@ -492,7 +444,7 @@ String BTOptionPanel::generateBTDMenuText() const
 	String text{ I18n::Get(I18n::Select::kHispeed) };
 	text += U"\n";
 	text += U"          ";
-	text += FormatHispeedValue(hispeedType, hispeedValue);
+	text += MusicGame::HispeedUtils::ToDisplayString(MusicGame::HispeedSetting{ .type = hispeedType, .value = hispeedValue });
 
 	return text;
 }
@@ -744,27 +696,9 @@ void BTOptionPanel::loadFromConfigIni()
 	HispeedType loadedType = HispeedType::XMod;
 	int32 loadedValue = 10;
 
-	if (hispeedStr.starts_with(U'x'))
-	{
-		// x-mod: 0始まりだと8進数扱いされるため、先頭のゼロを除去
-		loadedType = HispeedType::XMod;
-		const int32 value = ParseOr<int32>(hispeedStr.substr(hispeedStr.starts_with(U"x0") ? 2U : 1U), 10);
-		loadedValue = Clamp(value, kHispeedXModMin, kHispeedXModMax);
-	}
-	else if (hispeedStr.starts_with(U'C'))
-	{
-		// c-mod
-		loadedType = HispeedType::CMod;
-		const int32 value = ParseOr<int32>(hispeedStr.substr(1), 150);
-		loadedValue = Clamp(value, kHispeedOCModMin, kHispeedOCModMax);
-	}
-	else
-	{
-		// o-mod(数字のみ)
-		loadedType = HispeedType::OMod;
-		const int32 value = ParseOr<int32>(hispeedStr, 150);
-		loadedValue = Clamp(value, kHispeedOCModMin, kHispeedOCModMax);
-	}
+	const MusicGame::HispeedSetting hispeedSetting = MusicGame::HispeedUtils::FromConfigStringValue(hispeedStr);
+	loadedType = hispeedSetting.type;
+	loadedValue = hispeedSetting.value;
 
 	// ハイスピード種類の配列から該当するインデックスを探して設定
 	for (int32 i = 0; i < static_cast<int32>(m_hispeedTypeMenu.size()); ++i)
@@ -813,25 +747,7 @@ void BTOptionPanel::saveToConfigIni()
 	// BT-Dメニュー(ハイスピード)の設定
 	const HispeedType hispeedType = m_hispeedTypeMenu.cursorValue();
 	const int32 hispeedValue = m_hispeedValueMenu.cursor();
-	String hispeedStr;
-
-	switch (hispeedType)
-	{
-	case HispeedType::XMod:
-		hispeedStr = U"x{:0>2}"_fmt(hispeedValue);
-		break;
-	case HispeedType::OMod:
-		hispeedStr = U"{}"_fmt(hispeedValue);
-		break;
-	case HispeedType::CMod:
-		hispeedStr = U"C{}"_fmt(hispeedValue);
-		break;
-	default:
-		hispeedStr = U"x10";
-		break;
-	}
-
-	ConfigIni::SetString(ConfigIni::Key::kHispeed, hispeedStr);
+	ConfigIni::SetString(ConfigIni::Key::kHispeed, MusicGame::HispeedUtils::ToConfigStringValue(MusicGame::HispeedSetting{ .type = hispeedType, .value = hispeedValue }));
 
 	// ConfigIniをファイルに書き込み
 	ConfigIni::Save();

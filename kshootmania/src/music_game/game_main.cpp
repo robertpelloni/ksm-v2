@@ -22,6 +22,11 @@ namespace MusicGame
 			return secSincePlayFinishPrev >= kPlayFinishFadeOutStartSec;
 		}
 
+		double GetInitialBPM(const kson::ChartData& chartData)
+		{
+			return chartData.beat.bpm.contains(0) ? chartData.beat.bpm.at(0) : kDefaultBPM;
+		}
+
 		// 譜面データを読み込み、Turn変換とPlayModeフィルタを適用
 		kson::ChartData LoadChartDataWithTurn(const GameCreateInfo& createInfo)
 		{
@@ -128,11 +133,10 @@ namespace MusicGame
 		// ハイスピードを更新
 		if (m_isFirstUpdate)
 		{
-			// HighwayScrollはHispeedSettingMenuの更新に必要だが、事前に一度は更新しておかないとBPMが入らないので、初回は追加で先に更新
-			// TODO: 消したい
+			// ハイスピードメニュー更新前にHighwayScrollを更新してBPMを設定
 			m_highwayScroll.update(m_hispeedSettingMenu.hispeedSetting(), m_gameStatus.currentBPM);
 		}
-		m_hispeedSettingMenu.update(m_highwayScroll);
+		m_hispeedSettingMenu.update(m_gameStatus.currentBPM);
 		m_highwayScroll.update(m_hispeedSettingMenu.hispeedSetting(), m_gameStatus.currentBPM);
 	}
 
@@ -151,6 +155,7 @@ namespace MusicGame
 		, m_fxChipSE(m_chartData, m_timingCache, m_parentPath, createInfo.playOption.isAutoPlaySE)
 		, m_hardFailedSound("se/play_hardfailed.wav")
 		, m_audioEffectMain(m_bgm, m_chartData, m_timingCache, m_parentPath, createInfo.playOption.effectiveAudioProcDelayMs() / 1000.0)
+		, m_hispeedSettingMenu(createInfo.playOption.availableHispeedTypes, createInfo.playOption.hispeedSetting, kson::GetEffectiveStdBPM(m_chartData), GetInitialBPM(m_chartData))
 		, m_graphicsMain(m_chartData, m_parentPath, createInfo.playOption)
 	{
 	}

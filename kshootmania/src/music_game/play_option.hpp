@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "scroll/hispeed_setting.hpp"
 
 namespace MusicGame
 {
@@ -29,6 +30,10 @@ namespace MusicGame
 		bool isAutoPlaySE = false; // FXチップ・直角の効果音のみオートプレイ
 
 		NoteSkinType noteSkin = NoteSkinType::kDefault;
+
+		Array<HispeedType> availableHispeedTypes = { HispeedType::OMod };
+
+		HispeedSetting hispeedSetting = HispeedSetting{ .type = HispeedType::OMod, .value = 500 };
 
 		// オートプレイを考慮したBT判定モードを取得
 		JudgmentPlayMode effectiveBtJudgmentPlayMode() const

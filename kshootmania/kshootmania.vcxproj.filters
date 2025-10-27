@@ -423,6 +423,9 @@
     <ClCompile Include="src\music_game\graphics\hud\hispeed_setting_panel.cpp">
       <Filter>Source Files\music_game\graphics\hud</Filter>
     </ClCompile>
+    <ClCompile Include="src\music_game\hispeed_utils.cpp">
+      <Filter>Source Files\music_game</Filter>
+    </ClCompile>
     <ClCompile Include="src\music_game\ui\hispeed_setting_menu.cpp">
       <Filter>Source Files\music_game\ui</Filter>
     </ClCompile>
@@ -1023,6 +1026,9 @@
     </ClInclude>
     <ClInclude Include="src\music_game\graphics\hud\hispeed_setting_panel.hpp">
       <Filter>Header Files\music_game\graphics\hud</Filter>
+    </ClInclude>
+    <ClInclude Include="src\music_game\hispeed_utils.hpp">
+      <Filter>Header Files\music_game</Filter>
     </ClInclude>
     <ClInclude Include="src\music_game\ui\hispeed_setting_menu.hpp">
       <Filter>Header Files\music_game\ui</Filter>

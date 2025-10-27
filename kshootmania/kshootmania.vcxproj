@@ -179,6 +179,7 @@
     <ClCompile Include="src\music_game\graphics\jdgline\jdgline_3d_graphics.cpp" />
     <ClCompile Include="src\music_game\graphics\jdgline\jdgoverlay_3d_graphics.cpp" />
     <ClCompile Include="src\music_game\graphics\jdgline\laser_cursor_3d_graphics.cpp" />
+    <ClCompile Include="src\music_game\hispeed_utils.cpp" />
     <ClCompile Include="src\music_game\judgment\button_lane_judgment.cpp" />
     <ClCompile Include="src\music_game\judgment\combo_status.cpp" />
     <ClCompile Include="src\music_game\judgment\judgment_handler.cpp" />
@@ -375,6 +376,7 @@
     <ClInclude Include="src\music_game\graphics\jdgline\jdgline_3d_graphics.hpp" />
     <ClInclude Include="src\music_game\graphics\jdgline\jdgoverlay_3d_graphics.hpp" />
     <ClInclude Include="src\music_game\graphics\jdgline\laser_cursor_3d_graphics.hpp" />
+    <ClInclude Include="src\music_game\hispeed_utils.hpp" />
     <ClInclude Include="src\music_game\judgment\button_lane_judgment.hpp" />
     <ClInclude Include="src\music_game\judgment\combo_status.hpp" />
     <ClInclude Include="src\music_game\judgment\judgment_defines.hpp" />

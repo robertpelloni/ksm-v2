@@ -27,83 +27,6 @@ namespace MusicGame::Scroll
 			return false;
 		}
 
-		/// @brief BPMの最頻値(累計Pulse値が最も大きいBPM)を返す
-		/// @param chartData 譜面データ
-		/// @return BPM
-		/// @remarks BPM変更が2個以上ある場合、小数部分は無視する(そのため、BPMが整数でない場合にハイスピード値に若干の誤差が出るが、仕様)
-		double GetModeBPM(const kson::ChartData& chartData)
-		{
-			constexpr double kErrorBPM = 120.0;
-
-			if (chartData.beat.bpm.empty())
-			{
-				// BPMは1個以上存在するはず
-				assert(false && "kson.beat.bpm is empty");
-				return kErrorBPM;
-			}
-
-			if (chartData.beat.bpm.size() == 1U)
-			{
-				// BPMが1個の場合はその値を返せばOK
-				return chartData.beat.bpm.begin()->second;
-			}
-
-			// 各BPM値が占めるPulse値の合計を調べる
-			std::unordered_map<int32, kson::RelPulse> bpmTotalPulses;
-			kson::Pulse prevY = kson::Pulse{ 0 };
-			Optional<int32> prevBPMInt = none;
-			for (const auto& [y, bpm] : chartData.beat.bpm)
-			{
-				if (y < prevY)
-				{
-					assert(false && "y must be larger than or equal to prevY in kson.beat.bpm");
-					return kErrorBPM;
-				}
-				if (prevBPMInt.has_value())
-				{
-					// 存在しない場合はoperator[]でゼロ初期化されるので明示的な代入不要
-					bpmTotalPulses[prevBPMInt.value()] += y - prevY;
-				}
-
-				prevY = y;
-				prevBPMInt = static_cast<int32>(bpm);
-			}
-
-			// 最終BPM変化を加味する
-			// (最終ノーツのPulse値を調べ、最終BPM変化より後ろであれば加味)
-			const kson::Pulse lastNoteEndY = kson::LastNoteEndY(chartData.note);
-			if (lastNoteEndY > prevY)
-			{
-				if (!prevBPMInt.has_value())
-				{
-					assert(false && "prevBPMInt must not be none after the loop");
-					return kErrorBPM;
-				}
-				bpmTotalPulses[prevBPMInt.value()] += lastNoteEndY - prevY;
-			}
-
-			if (bpmTotalPulses.empty())
-			{
-				assert(false && "bpmPulses must not be empty");
-				return kErrorBPM;
-			}
-
-			// 最も累計Pulse値が大きいBPMを調べる
-			const auto itr = std::max_element(
-				bpmTotalPulses.begin(),
-				bpmTotalPulses.end(),
-				[](const auto& a, const auto& b) { return a.second < b.second; });
-
-			if (itr == bpmTotalPulses.end())
-			{
-				assert(false && "max_element must not return end iterator because bpmPulses must not be empty");
-				return kErrorBPM;
-			}
-
-			const auto& [modeBPM, modeBPMTotalPulse] = *itr;
-			return static_cast<double>(modeBPM);
-		}
-
 		/// @brief ハイスピード係数を求める
 		/// @param hispeedSetting ハイスピード設定
 		/// @param stdBPM 基準BPM
@@ -345,7 +268,7 @@ namespace MusicGame::Scroll
 	}
 
 	HighwayScroll::HighwayScroll(const kson::ChartData& chartData)
-		: m_stdBPM(chartData.meta.stdBPM > 0.0 ? chartData.meta.stdBPM : GetModeBPM(chartData))
+		: m_stdBPM(kson::GetEffectiveStdBPM(chartData))
 	{
 	}
 
@@ -368,25 +291,6 @@ namespace MusicGame::Scroll
 	const HispeedSetting& HighwayScroll::hispeedSetting() const
 	{
 		return m_hispeedSetting;
-	}
-
-	int32 HighwayScroll::nearestHispeedSettingValue(HispeedType targetHispeedType) const
-	{
-		switch (targetHispeedType)
-		{
-		case HispeedType::XMod:
-			return MathUtils::RoundToInt(m_currentHispeed * 10 / Max(m_currentBPM, 1.0));
-
-		case HispeedType::OMod:
-			return MathUtils::RoundToInt(m_currentHispeed * m_stdBPM / Max(m_currentBPM, 1.0));
-
-		case HispeedType::CMod:
-			return m_currentHispeed;
-
-		default:
-			assert(false && "Unknown hispeed type");
-			return 0;
-		}
 	}
 
 	int32 HighwayScroll::currentHispeed() const

@@ -9,6 +9,77 @@ namespace
 
 	constexpr Duration kPlayFinishFadeOutDuration = 2.4s;
 
+	Array<MusicGame::HispeedType> LoadAvailableHispeedTypesFromConfigIni()
+	{
+		Array<MusicGame::HispeedType> availableTypes;
+		availableTypes.reserve(static_cast<std::size_t>(MusicGame::HispeedType::EnumCount));
+
+		if (ConfigIni::GetBool(ConfigIni::Key::kHispeedShowXMod, true))
+		{
+			availableTypes.push_back(MusicGame::HispeedType::XMod);
+		}
+		if (ConfigIni::GetBool(ConfigIni::Key::kHispeedShowOMod, true))
+		{
+			availableTypes.push_back(MusicGame::HispeedType::OMod);
+		}
+		if (ConfigIni::GetBool(ConfigIni::Key::kHispeedShowCMod, false))
+		{
+			availableTypes.push_back(MusicGame::HispeedType::CMod);
+		}
+
+		if (availableTypes.empty())
+		{
+			availableTypes.push_back(MusicGame::HispeedType::OMod);
+		}
+
+		return availableTypes;
+	}
+
+	MusicGame::HispeedSetting ParseHispeedSetting(StringView sv)
+	{
+		if (sv.length() <= 1U)
+		{
+			return MusicGame::HispeedSetting{};
+		}
+
+		switch (sv[0])
+		{
+		case U'x':
+		{
+			const int32 value = ParseOr<int32>(sv.substr(sv.starts_with(U"x0") ? 2U : 1U), 0);
+			return MusicGame::HispeedSetting{
+				.type = MusicGame::HispeedType::XMod,
+				.value = value,
+			};
+		}
+		case U'O':
+		case U'o':
+		{
+			const int32 value = ParseOr<int32>(sv.substr(1U), 0);
+			return MusicGame::HispeedSetting{
+				.type = MusicGame::HispeedType::OMod,
+				.value = value,
+			};
+		}
+		case U'C':
+		case U'c':
+		{
+			const int32 value = ParseOr<int32>(sv.substr(1U), 0);
+			return MusicGame::HispeedSetting{
+				.type = MusicGame::HispeedType::CMod,
+				.value = value,
+			};
+		}
+		default:
+			return MusicGame::HispeedSetting{};
+		}
+	}
+
+	MusicGame::HispeedSetting LoadHispeedSettingFromConfigIni()
+	{
+		return ParseHispeedSetting(ConfigIni::GetString(ConfigIni::Key::kHispeed));
+	}
+
 	MusicGame::GameCreateInfo MakeGameCreateInfo(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)
 	{
 		return
@@ -33,6 +104,8 @@ namespace
 					const StringView noteSkinStr = ConfigIni::GetString(ConfigIni::Key::kNoteSkin, U"default");
 					return noteSkinStr == U"note" ? NoteSkinType::kNote : NoteSkinType::kDefault;
 				}(),
+				.availableHispeedTypes = LoadAvailableHispeedTypesFromConfigIni(),
+				.hispeedSetting = LoadHispeedSettingFromConfigIni(),
 			},
 			.assistTickMode = static_cast<AssistTickMode>(ConfigIni::GetInt(ConfigIni::Key::kAssistTick, static_cast<int32>(AssistTickMode::kOff))),
 		};

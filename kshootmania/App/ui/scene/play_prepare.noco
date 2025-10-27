@@ -1290,6 +1290,7 @@
               "preserveAspect": true,
               "sizingMode": "AutoShrinkWidth",
               "text": "725",
+              "text_paramRef": "hispeedValue",
               "textureAddressMode": "Default",
               "textureAssetName": "",
               "textureCellSize": [
@@ -1428,6 +1429,7 @@
               "preserveAspect": true,
               "sizingMode": "AutoShrinkWidth",
               "text": "725",
+              "text_paramRef": "hispeedValueEffective",
               "textureAddressMode": "Default",
               "textureAssetName": "",
               "textureCellSize": [
@@ -1688,6 +1690,14 @@
     "difficultyIndex": {
       "type": "Number",
       "value": 2.0
+    },
+    "hispeedValue": {
+      "type": "String",
+      "value": "725"
+    },
+    "hispeedValueEffective": {
+      "type": "String",
+      "value": "725"
     },
     "levelNumber": {
       "type": "String",

@@ -2,6 +2,7 @@
 #include "scene/select/select_scene.hpp"
 #include "scene/play/play_scene.hpp"
 #include "scene/common/show_loading_one_frame.hpp"
+#include "music_game/hispeed_utils.hpp"
 
 namespace
 {
@@ -15,7 +16,7 @@ namespace
 
 	constexpr Duration kAutoEndTime = 3.0s;
 
-	constexpr Duration kExtendableTime = 2.9s;
+	constexpr Duration kExtendableTime = 1.7s;
 
 	constexpr FilePathView kPlayPrepareSceneUIFilePath = U"ui/scene/play_prepare.noco";
 
@@ -28,6 +29,21 @@ namespace
 		}
 		return canvas;
 	}
+
+	double GetInitialBPM(const kson::ChartData& chartData)
+	{
+		return chartData.beat.bpm.contains(0) ? chartData.beat.bpm.at(0) : kDefaultBPM;
+	}
+
+	MusicGame::HispeedSetting LoadHispeedSettingFromConfigIni()
+	{
+		return MusicGame::HispeedUtils::FromConfigStringValue(ConfigIni::GetString(ConfigIni::Key::kHispeed));
+	}
+
+	void SaveHispeedSettingToConfigIni(const MusicGame::HispeedSetting& hispeedSetting)
+	{
+		ConfigIni::SetString(ConfigIni::Key::kHispeed, MusicGame::HispeedUtils::ToConfigStringValue(hispeedSetting));
+	}
 }
 
 PlayPrepareScene::PlayPrepareScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)
@@ -35,8 +51,13 @@ PlayPrepareScene::PlayPrepareScene(FilePathView chartFilePath, MusicGame::IsAuto
 	, m_isAutoPlay(isAutoPlay)
 	, m_chartData(kson::LoadKSHChartData(chartFilePath.narrow()))
 	, m_canvas(LoadPlayPrepareSceneCanvas())
+	, m_hispeedMenu(ConfigIni::LoadAvailableHispeedTypes(), LoadHispeedSettingFromConfigIni(), kson::GetEffectiveStdBPM(m_chartData), GetInitialBPM(m_chartData))
+	, m_highwayScroll(m_chartData)
 {
-	const double startBPM = m_chartData.beat.bpm.contains(0) ? m_chartData.beat.bpm.at(0) : kDefaultBPM;
+	const double startBPM = GetInitialBPM(m_chartData);
+
+	// ハイスピード設定でHighwayScrollを更新
+	m_highwayScroll.update(m_hispeedMenu.hispeedSetting(), startBPM);
 
 	m_canvas->setParamValues({
 		{ U"title", Unicode::FromUTF8(m_chartData.meta.title) },
@@ -44,6 +65,8 @@ PlayPrepareScene::PlayPrepareScene(FilePathView chartFilePath, MusicGame::IsAuto
 		{ U"levelNumber", Format(m_chartData.meta.level) },
 		{ U"bpmNumber", Format(static_cast<int32>(startBPM)) },
 		{ U"difficultyIndex", m_chartData.meta.difficulty.idx },
+		{ U"hispeedValue", MusicGame::HispeedUtils::ToDisplayString(m_hispeedMenu.hispeedSetting()) },
+		{ U"hispeedValueEffective", Format(m_highwayScroll.currentHispeed()) },
 	});
 
 	// ジャケット画像を設定
@@ -71,6 +94,7 @@ Co::Task<void> PlayPrepareScene::start()
 		if (elapsed >= kAutoEndTime)
 		{
 			// 自動終了
+			SaveHispeedSettingToConfigIni(m_hispeedMenu.hispeedSetting());
 			requestNextScene<PlayScene>(m_chartFilePath, m_isAutoPlay);
 			break;
 		}
@@ -78,6 +102,7 @@ Co::Task<void> PlayPrepareScene::start()
 		if (KeyConfig::Down(KeyConfig::kBack))
 		{
 			// Backボタンで選曲画面へ戻る
+			SaveHispeedSettingToConfigIni(m_hispeedMenu.hispeedSetting());
 			requestNextScene<SelectScene>();
 			break;
 		}
@@ -85,6 +110,7 @@ Co::Task<void> PlayPrepareScene::start()
 		if (elapsed >= kMinDisplayTime && KeyConfig::Down(KeyConfig::kStart))
 		{
 			// 一定時間経過後はStartボタンでスキップ可能
+			SaveHispeedSettingToConfigIni(m_hispeedMenu.hispeedSetting());
 			requestNextScene<PlayScene>(m_chartFilePath, m_isAutoPlay);
 			break;
 		}
@@ -97,14 +123,22 @@ void PlayPrepareScene::update()
 {
 	m_canvas->update();
 
-	// TODO: ハイスピードによる表示時間延長を一旦スペースキーで仮実装しているので、ハイスピードメニュー追加したら変更
-	if (KeySpace.down())
+	const double startBPM = m_chartData.beat.bpm.contains(0) ? m_chartData.beat.bpm.at(0) : kDefaultBPM;
+
+	// ハイスピードメニューの更新
+	if (m_hispeedMenu.update(startBPM))
 	{
-		const Duration elapsed = m_stopwatchSinceHispeedChange.elapsed();
-		if (elapsed < kExtendableTime)
-		{
-			m_stopwatchSinceHispeedChange.restart();
-		}
+		// ハイスピード設定が変更された場合、タイマーをリセット
+		m_stopwatchSinceHispeedChange.restart();
+
+		// HighwayScrollを更新
+		m_highwayScroll.update(m_hispeedMenu.hispeedSetting(), startBPM);
+
+		// ハイスピード表示を更新
+		m_canvas->setParamValues({
+			{ U"hispeedValue", MusicGame::HispeedUtils::ToDisplayString(m_hispeedMenu.hispeedSetting()) },
+			{ U"hispeedValueEffective", Format(m_highwayScroll.currentHispeed()) },
+		});
 	}
 }
 

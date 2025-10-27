@@ -1,5 +1,10 @@
 ﻿#pragma once
 
+namespace MusicGame
+{
+	enum class HispeedType;
+}
+
 namespace ConfigIni
 {
 	namespace Key
@@ -160,4 +165,8 @@ namespace ConfigIni
 	void SetDouble(StringView key, double value);
 
 	void SetString(StringView key, StringView value);
+
+	/// @brief ConfigIniから利用可能なハイスピードタイプを読み込み
+	/// @return 利用可能なハイスピードタイプの配列
+	Array<MusicGame::HispeedType> LoadAvailableHispeedTypes();
 }
