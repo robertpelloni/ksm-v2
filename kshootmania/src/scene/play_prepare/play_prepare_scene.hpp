@@ -14,11 +14,9 @@ private:
 
 	const kson::ChartData m_chartData;
 
-	const Texture m_bgTexture{ TextureAsset(PlayPrepareTexture::kBG) };
+	std::shared_ptr<noco::Canvas> m_canvas;
 
-	const Texture m_jacketTexture;
-
-	double m_jacketScale = 1.0;
+	Stopwatch m_stopwatchSinceHispeedChange{ StartImmediately::Yes };
 
 public:
 	explicit PlayPrepareScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay);
@@ -26,6 +24,8 @@ public:
 	virtual ~PlayPrepareScene() = default;
 
 	virtual Co::Task<void> start() override;
+
+	void update();
 
 	virtual void draw() const override;
 

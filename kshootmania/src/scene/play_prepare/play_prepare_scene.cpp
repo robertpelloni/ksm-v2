@@ -7,50 +7,125 @@ namespace
 {
 	constexpr Duration kFadeDuration = 1s;
 
-	constexpr Vec2 kJacketPos{ 0, -80 };
-	constexpr SizeF kJacketSize{ 300.0, 300.0 };
+	constexpr Duration kMinDisplayTime = 1.2s;
+
+	constexpr Duration kFadeOutStartTime = 2.7s;
+
+	constexpr Duration kFadeOutDuration = 0.3s;
+
+	constexpr Duration kAutoEndTime = 3.0s;
+
+	constexpr Duration kExtendableTime = 2.9s;
+
+	constexpr FilePathView kPlayPrepareSceneUIFilePath = U"ui/scene/play_prepare.noco";
+
+	std::shared_ptr<noco::Canvas> LoadPlayPrepareSceneCanvas()
+	{
+		const auto canvas = noco::Canvas::LoadFromFile(kPlayPrepareSceneUIFilePath);
+		if (!canvas)
+		{
+			throw Error{ U"Failed to load '{}'"_fmt(kPlayPrepareSceneUIFilePath) };
+		}
+		return canvas;
+	}
 }
 
 PlayPrepareScene::PlayPrepareScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)
 	: m_chartFilePath(chartFilePath)
 	, m_isAutoPlay(isAutoPlay)
 	, m_chartData(kson::LoadKSHChartData(chartFilePath.narrow()))
-	, m_jacketTexture(FileSystem::ParentPath(chartFilePath) + Unicode::FromUTF8(m_chartData.meta.jacketFilename))
+	, m_canvas(LoadPlayPrepareSceneCanvas())
 {
+	const double startBPM = m_chartData.beat.bpm.contains(0) ? m_chartData.beat.bpm.at(0) : kDefaultBPM;
+
+	m_canvas->setParamValues({
+		{ U"title", Unicode::FromUTF8(m_chartData.meta.title) },
+		{ U"artist", Unicode::FromUTF8(m_chartData.meta.artist) },
+		{ U"levelNumber", Format(m_chartData.meta.level) },
+		{ U"bpmNumber", Format(static_cast<int32>(startBPM)) },
+		{ U"difficultyIndex", m_chartData.meta.difficulty.idx },
+	});
+
+	// ジャケット画像を設定
+	const FilePath jacketPath = FileSystem::ParentPath(chartFilePath) + Unicode::FromUTF8(m_chartData.meta.jacketFilename);
+	const Texture jacketTexture{ jacketPath };
+	if (const auto jacketNode = m_canvas->findByName(U"Jacket"))
+	{
+		if (const auto sprite = jacketNode->getComponent<noco::Sprite>())
+		{
+			sprite->setTexture(jacketTexture);
+		}
+	}
 }
 
 Co::Task<void> PlayPrepareScene::start()
 {
+	const auto updateRunner = Co::UpdaterTask([this] { update(); }).runScoped();
+
 	m_seStream.play();
 
-	// ジャケットのスケールアニメーション
-	const auto runner = Co::Ease(&m_jacketScale, 2s).fromTo(1.2, 1.0).play().runScoped();
-
-	const auto [isWait, isStart, isBack] = co_await Co::Any(
-		Co::Delay(2s),
-		KeyConfig::WaitUntilDown(KeyConfig::kStart),
-		KeyConfig::WaitUntilDown(KeyConfig::kBack));
-
-	if (isBack)
+	// ハイスピード変更から一定時間経過、またはBackキーで終了
+	while (true)
 	{
-		requestNextScene<SelectScene>();
+		const Duration elapsed = m_stopwatchSinceHispeedChange.elapsed();
+		if (elapsed >= kAutoEndTime)
+		{
+			// 自動終了
+			requestNextScene<PlayScene>(m_chartFilePath, m_isAutoPlay);
+			break;
+		}
+
+		if (KeyConfig::Down(KeyConfig::kBack))
+		{
+			// Backボタンで選曲画面へ戻る
+			requestNextScene<SelectScene>();
+			break;
+		}
+
+		if (elapsed >= kMinDisplayTime && KeyConfig::Down(KeyConfig::kStart))
+		{
+			// 一定時間経過後はStartボタンでスキップ可能
+			requestNextScene<PlayScene>(m_chartFilePath, m_isAutoPlay);
+			break;
+		}
+
+		co_await Co::NextFrame();
 	}
-	else
+}
+
+void PlayPrepareScene::update()
+{
+	m_canvas->update();
+
+	// TODO: ハイスピードによる表示時間延長を一旦スペースキーで仮実装しているので、ハイスピードメニュー追加したら変更
+	if (KeySpace.down())
 	{
-		requestNextScene<PlayScene>(m_chartFilePath, m_isAutoPlay);
+		const Duration elapsed = m_stopwatchSinceHispeedChange.elapsed();
+		if (elapsed < kExtendableTime)
+		{
+			m_stopwatchSinceHispeedChange.restart();
+		}
 	}
 }
 
 void PlayPrepareScene::draw() const
 {
-	FitToHeight(m_bgTexture).drawAt(Scene::Center());
+	m_canvas->draw();
 
-	const SizeF jacketSize = kJacketSize * m_jacketScale;
-	m_jacketTexture.resized(jacketSize).drawAt(Scene::Center().movedBy(Scaled(kJacketPos)));
+	// フェードアウト描画
+	// (途中でハイスピード変更したときにフェードアウトを途中で戻す必要があるため、Co::ScreenFadeOutを使わずに毎フレームの処理で描画)
+	const double elapsedSec = m_stopwatchSinceHispeedChange.sF();
+	if (elapsedSec >= kFadeOutStartTime.count())
+	{
+		const double fadeOutProgress = Min((elapsedSec - kFadeOutStartTime.count()) / kFadeOutDuration.count(), 1.0);
+		Scene::Rect().draw(ColorF{ 0.0, fadeOutProgress });
+	}
 }
 
 Co::Task<void> PlayPrepareScene::fadeIn()
 {
+	const auto canvasUpdateRunner = Co::UpdaterTask([this] { m_canvas->update(); }).runScoped();
+
 	co_await Co::ScreenFadeIn(kFadeDuration, Palette::White);
 }
 
