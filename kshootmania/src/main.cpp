@@ -11,6 +11,10 @@
 #include "scene/title/title_scene.hpp"
 #include "input/key_config.hpp"
 
+#ifdef __APPLE__
+#include <ksmplatform_macos/input_method.h>
+#endif
+
 void CreateHighScoreBackup()
 {
 	// 既にバックアップフォルダが存在する場合は何もしない
@@ -89,6 +93,11 @@ void KSMMain()
 	IMEUtils::DetachIMEContext();
 #endif
 
+#ifdef __APPLE__
+	// macOS: 英数・かなキーのイベントタップを開始してIME切り替えを防ぐ
+	KSMPlatformMacOS_StartBlockingIMEKeys();
+#endif
+
 #ifdef _DEBUG
 	// ライブラリ側のデバッグ用にコンソール表示(Debugビルドの場合のみ)
 	Console.open();
@@ -109,6 +118,9 @@ void KSMMain()
 #ifdef __APPLE__
 		// macOSプラットフォーム特有のキーボード状態を更新
 		KeyConfig::UpdatePlatformKeyboard();
+
+		// テキスト編集中かどうかを設定(テキスト編集中はIMEキーをブロックしない)
+		KSMPlatformMacOS_SetIsEditingText(noco::IsEditingTextBox());
 #endif
 
 		if (sceneRunner.done())
@@ -119,6 +131,11 @@ void KSMMain()
 
 	// config.iniを保存
 	ConfigIni::Save();
+
+#ifdef __APPLE__
+	// macOS: 英数・かなキーのイベントタップを停止
+	KSMPlatformMacOS_StopBlockingIMEKeys();
+#endif
 
 	// 音声のバックエンドを終了
 	ksmaudio::Terminate();
