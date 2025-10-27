@@ -426,8 +426,15 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 
 SelectMenu::~SelectMenu() = default;
 
-void SelectMenu::update()
+void SelectMenu::update(SongPreviewOnlyYN songPreviewOnly)
 {
+	if (songPreviewOnly)
+	{
+		// 楽曲プレビューのみ更新
+		m_songPreview.update();
+		return;
+	}
+
 	m_menu.update();
 	if (const int32 deltaCursor = m_menu.deltaCursor(); deltaCursor != 0)
 	{

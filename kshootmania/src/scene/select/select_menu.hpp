@@ -10,6 +10,7 @@ struct HighScoreInfo;
 using PlaySeYN = YesNo<struct PlaySeYN_tag>;
 using RefreshSongPreviewYN = YesNo<struct RefreshSongPreviewYN_tag>;
 using SaveToConfigIniYN = YesNo<struct SaveToConfigIniYN_tag>;
+using SongPreviewOnlyYN = YesNo<struct SongPreviewOnlyYN_tag>;
 
 enum class SelectMenuShakeDirection
 {
@@ -102,7 +103,7 @@ public:
 
 	~SelectMenu(); // ヘッダではISelectMenuItemが不完全型なのでソースファイル側で定義
 
-	void update();
+	void update(SongPreviewOnlyYN songPreviewOnly = SongPreviewOnlyYN::No);
 
 	void decide();
 

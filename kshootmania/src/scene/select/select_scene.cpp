@@ -206,6 +206,10 @@ void SelectScene::update()
 		// パネル表示中は選曲画面の操作を無効化
 		// ただし、アルファベット前後ジャンプ(BTを押しながらFX-L/R)とBackキーは有効にする
 		updateAlphabetJump();
+
+		// 楽曲プレビューの更新は実行
+		m_menu.update(SongPreviewOnlyYN::Yes);
+
 		m_canvas->update();
 		return;
 	}
