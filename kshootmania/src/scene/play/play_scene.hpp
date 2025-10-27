@@ -13,6 +13,8 @@ private:
 
 	Duration m_fadeOutDuration;
 
+	bool m_backButtonPressedDuringFadeOut = false;
+
 	void updateFadeOut();
 
 	void processBackButtonInput();

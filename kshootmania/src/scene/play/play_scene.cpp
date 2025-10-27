@@ -92,6 +92,7 @@ void PlayScene::processBackButtonInput()
 	}
 
 	m_fadeOutDuration = 0s;
+	m_backButtonPressedDuringFadeOut = true;
 
 	// Backボタンを押した後は以降の処理でスコア変動しないようロック
 	m_gameMain.lockForExit();
@@ -140,5 +141,8 @@ Co::Task<void> PlayScene::fadeOut()
 	const auto updateRunner = Co::UpdaterTask([this] { updateFadeOut(); }).runScoped();
 
 	m_gameMain.startBGMFadeOut(m_fadeOutDuration);
-	co_await Co::ScreenFadeOut(m_fadeOutDuration);
+
+	co_await Co::Any(
+		Co::ScreenFadeOut(m_fadeOutDuration),
+		Co::WaitUntil([this] { return m_backButtonPressedDuringFadeOut; }));
 }
