@@ -28,15 +28,10 @@ void TitleMenu::update()
 	// (LinearMenu::deltaCursor() != 0 だとsetCursorでの直接指定による変化を検出できないため、cursor値の比較を利用している)
 	const auto beforeCursor = m_menu.cursor();
 
-	if (!m_isAlreadySelected)
+	const bool backPressed = !m_isAlreadySelected && KeyConfig::Down(KeyConfig::kBack);
+	if (!m_isAlreadySelected && !backPressed)
 	{
-		const auto prevCursor = m_menu.cursor();
 		m_menu.update();
-		const auto cursor = m_menu.cursor();
-		if (prevCursor != cursor)
-		{
-			m_selectSe.play();
-		}
 
 		if (KeyConfig::Down(KeyConfig::kStart))
 		{
@@ -44,15 +39,18 @@ void TitleMenu::update()
 			m_selectedMenuItemSource.requestFinish(selectedItem);
 			m_isAlreadySelected = true;
 		}
-		else if (KeyConfig::Down(KeyConfig::kBack))
-		{
-			m_menu.setCursor(kExit);
-		}
+	}
+
+	// BackボタンでEXITへフォーカス
+	if (backPressed)
+	{
+		m_menu.setCursor(kExit);
 	}
 
 	if (m_menu.cursor() != beforeCursor)
 	{
-		// カーソル位置が変化した場合はCanvasへ反映
+		// カーソル位置が変化した場合は効果音を鳴らしてCanvasへ反映
+		m_selectSe.play();
 		refreshCanvasMenuCursor();
 	}
 }
