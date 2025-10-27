@@ -41,6 +41,17 @@ DisableIMEAddon::DisableIMEAddon()
 
 bool DisableIMEAddon::update()
 {
+	// ウィンドウが非アクティブの場合は処理しない
+	if (!Window::GetState().focused)
+	{
+		if (m_detachStopwatch.isStarted())
+		{
+			m_detachStopwatch.reset();
+		}
+
+		return true;
+	}
+
 	if (m_mode == DisableIMEMode::kOff)
 	{
 		if (m_detachStopwatch.isStarted())
