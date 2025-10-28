@@ -20,10 +20,23 @@ namespace MusicGame::Graphics
 		constexpr Vec2 kJacketPosition = { -286.5, 45.5 };
 		constexpr Point kTitlePanelBasePosition = { -155, 45 };
 		constexpr Point kDetailPanelBasePosition = { -295, 69 };
+
+		FilePath GetJacketPath(FilePathView parentPath, const String& jacketFilename)
+		{
+			// 拡張子なしの場合はimgs/jacket内の画像を使用
+			if (FileSystem::Extension(jacketFilename).isEmpty())
+			{
+				return FileSystem::PathAppend(U"imgs/jacket", jacketFilename + U".jpg");
+			}
+			else
+			{
+				return FileSystem::PathAppend(parentPath, jacketFilename);
+			}
+		}
 	}
 
 	SongInfoPanel::SongInfoPanel(const kson::ChartData& chartData, FilePathView parentPath)
-		: m_jacketTexture(parentPath + Unicode::FromUTF8(chartData.meta.jacketFilename))
+		: m_jacketTexture(GetJacketPath(parentPath, Unicode::FromUTF8(chartData.meta.jacketFilename)))
 		, m_jacketPosition(Scene::Width() / 2 + static_cast<int32>(Scaled(kJacketPosition.x)), static_cast<int32>(Scaled(kJacketPosition.y)))
 		, m_scaledJacketSize(RectSizeInSquare(m_jacketTexture.size(), Scaled(kJacketWidth) ))
 		, m_titlePanelBaseTexture(kTitlePanelSize * 2, kTransparent)

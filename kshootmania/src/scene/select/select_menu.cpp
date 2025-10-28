@@ -636,9 +636,21 @@ const Texture& SelectMenu::getJacketTexture(FilePathView filePath)
 	}
 
 	Texture texture;
-	if (FileSystem::IsFile(filePath))
+	FilePath actualFilePath{ filePath };
+
+	// 拡張子なしの場合はimgs/jacket内の画像を使用
+	if (FileSystem::Extension(actualFilePath).isEmpty())
 	{
-		texture = Texture{ filePath };
+		const String baseName = FileSystem::BaseName(actualFilePath);
+		if (!baseName.isEmpty())
+		{
+			actualFilePath = FileSystem::PathAppend(U"imgs/jacket", baseName + U".jpg");
+		}
+	}
+
+	if (FileSystem::IsFile(actualFilePath))
+	{
+		texture = Texture{ actualFilePath };
 	}
 	else
 	{
@@ -656,9 +668,21 @@ const Texture& SelectMenu::getIconTexture(FilePathView filePath)
 	}
 
 	Texture texture;
-	if (FileSystem::IsFile(filePath))
+	FilePath actualFilePath{ filePath };
+
+	// 拡張子なしの場合はimgs/icon内の画像を使用
+	if (FileSystem::Extension(actualFilePath).isEmpty())
 	{
-		texture = Texture{ filePath };
+		const String baseName = FileSystem::BaseName(actualFilePath);
+		if (!baseName.isEmpty())
+		{
+			actualFilePath = FileSystem::PathAppend(U"imgs/icon", baseName + U".png");
+		}
+	}
+
+	if (FileSystem::IsFile(actualFilePath))
+	{
+		texture = Texture{ actualFilePath };
 	}
 	else
 	{

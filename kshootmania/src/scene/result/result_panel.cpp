@@ -42,7 +42,20 @@ namespace
 
 		// ジャケットを表示
 		const FilePath parentPath = FileSystem::ParentPath(chartFilePath);
-		const Texture jacketTexture(parentPath + Unicode::FromUTF8(chartData.meta.jacketFilename));
+		const String jacketFilename = Unicode::FromUTF8(chartData.meta.jacketFilename);
+		FilePath jacketPath;
+
+		// 拡張子なしの場合はimgs/jacket内の画像を使用
+		if (FileSystem::Extension(jacketFilename).isEmpty())
+		{
+			jacketPath = FileSystem::PathAppend(U"imgs/jacket", jacketFilename + U".jpg");
+		}
+		else
+		{
+			jacketPath = FileSystem::PathAppend(parentPath, jacketFilename);
+		}
+
+		const Texture jacketTexture(jacketPath);
 		if (!jacketTexture.isEmpty())
 		{
 			jacketTexture.resized(246, 246).draw(180, 85);
