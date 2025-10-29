@@ -122,7 +122,7 @@ namespace MusicGame::Camera
 		m_prevTargetTiltFactor = targetTiltFactor;
 	}
 
-	void HighwayTiltAuto::updateTiltScale(const kson::LaserLane<kson::LaserSection>& lanes, const kson::TiltInfo& tilt, kson::Pulse currentPulse)
+	void HighwayTiltAuto::updateTiltScale(const kson::TiltInfo& tilt, kson::Pulse currentPulse)
 	{
 		const double targetTiltScale = kson::ValueAtOrDefault(tilt.scale, currentPulse, 1.0);
 		m_tiltScale = Interpolate(m_tiltScale, targetTiltScale, kTiltScaleInterpolationSpeed, Scene::DeltaTime());
@@ -131,7 +131,7 @@ namespace MusicGame::Camera
 	void HighwayTiltAuto::update(const kson::LaserLane<kson::LaserSection>& lanes, const kson::TiltInfo& tilt, kson::Pulse currentPulse)
 	{
 		updateTiltFactor(lanes, tilt, currentPulse);
-		updateTiltScale(lanes, tilt, currentPulse);
+		updateTiltScale(tilt, currentPulse);
 	}
 
 	double HighwayTiltAuto::radians() const

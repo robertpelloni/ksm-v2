@@ -138,8 +138,8 @@ void SelectScene::updateAlphabetJump()
 SelectScene::SelectScene()
 	: m_folderCloseButton(
 		ConfigIni::GetInt(ConfigIni::Key::kSelectCloseFolderKey) == ConfigIni::Value::SelectCloseFolderKey::kBackButton
-			? KeyConfig::kBack
-			: KeyConfig::kBackspace)
+			? static_cast<KeyConfig::Button>(KeyConfig::kBack)
+			: static_cast<KeyConfig::Button>(KeyConfig::kBackspace))
 	, m_canvas(LoadSelectSceneCanvas())
 	, m_menu(m_canvas, [this](FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlayYN) { moveToPlayScene(chartFilePath, isAutoPlayYN); })
 	, m_playerNames(GetPlayerNames())

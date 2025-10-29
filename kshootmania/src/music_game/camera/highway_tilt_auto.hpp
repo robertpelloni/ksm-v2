@@ -12,7 +12,7 @@ namespace MusicGame::Camera
 
 		void updateTiltFactor(const kson::LaserLane<kson::LaserSection>& lanes, const kson::TiltInfo& tilt, kson::Pulse currentPulse);
 
-		void updateTiltScale(const kson::LaserLane<kson::LaserSection>& lanes, const kson::TiltInfo& tilt, kson::Pulse currentPulse);
+		void updateTiltScale(const kson::TiltInfo& tilt, kson::Pulse currentPulse);
 
 	public:
 		HighwayTiltAuto() = default;

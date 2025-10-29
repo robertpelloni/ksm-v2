@@ -208,6 +208,8 @@ namespace
 				break;
 			}
 		}
+
+		return cursor;
 	}
 
 	Optional<KeyConfig::ConfigurableButton> CursorToButton1(OptionKeyConfigCursor cursor)
@@ -1127,7 +1129,7 @@ void OptionKeyConfigMenu::updateSettingButtonState()
 	}
 	else
 	{
-		for (int32 playerIdx = 0; playerIdx < Gamepad.MaxPlayerCount; ++playerIdx)
+		for (int32 playerIdx = 0; playerIdx < static_cast<int32>(Gamepad.MaxPlayerCount); ++playerIdx)
 		{
 			if (const auto& gamepad = Gamepad(playerIdx)) // 接続されている場合のみ
 			{

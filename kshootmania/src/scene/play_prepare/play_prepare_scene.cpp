@@ -16,8 +16,6 @@ namespace
 
 	constexpr Duration kAutoEndTime = 3.0s;
 
-	constexpr Duration kExtendableTime = 1.7s;
-
 	constexpr FilePathView kPlayPrepareSceneUIFilePath = U"ui/scene/play_prepare.noco";
 
 	std::shared_ptr<noco::Canvas> LoadPlayPrepareSceneCanvas()
