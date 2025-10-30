@@ -47,6 +47,22 @@ namespace MusicGame::Audio
 				+ 1/* 最後の小節の分を足す */
 				+ 1/* インデックスを要素数にするために1を足す */;
 
+			// legacy.filterGainが存在する場合、事前にparamChangeに変換
+			kson::Dict<kson::Dict<kson::ByPulse<std::string>>> laserParamChangeDict = chartData.audio.audioEffect.laser.paramChange;
+			if (!chartData.audio.audioEffect.laser.legacy.filterGain.empty())
+			{
+				for (const auto& [pulse, filterGain] : chartData.audio.audioEffect.laser.legacy.filterGain)
+				{
+					const std::int32_t filterGainValue = static_cast<std::int32_t>(std::round(filterGain * 100.0));
+					laserParamChangeDict["peaking_filter"]["gain"][pulse] = std::to_string(filterGainValue) + "%";
+
+					const double qValue = std::lerp(0.7, 9.3, filterGain);
+					const std::string qStr = std::to_string(qValue);
+					laserParamChangeDict["high_pass_filter"]["q"][pulse] = qStr;
+					laserParamChangeDict["low_pass_filter"]["q"][pulse] = qStr;
+				}
+			}
+
 			// デフォルトのエフェクト定義を追加
 			// (もし譜面側で同名のエフェクト定義がある場合は上書きせず譜面側を優先する)
 			std::vector<AudioEffectDefWithBuiltinFlag> defFX;
@@ -158,14 +174,13 @@ namespace MusicGame::Audio
 				else
 				{
 					// 通常のDSPエフェクトの場合
-					const auto& paramChangeDict = chartData.audio.audioEffect.laser.paramChange;
 					const std::set<float> updateTriggerTiming =
-						paramChangeDict.contains(name)
-						? PrecalculateUpdateTriggerTiming(def, paramChangeDict.at(name), totalMeasures, chartData, timingCache)
+						laserParamChangeDict.contains(name)
+						? PrecalculateUpdateTriggerTiming(def, laserParamChangeDict.at(name), totalMeasures, chartData, timingCache)
 						: PrecalculateUpdateTriggerTiming(def, totalMeasures, chartData, timingCache);
 					const auto paramChanges =
-						paramChangeDict.contains(name)
-						? ConvertParamChangesFromPulseToSec(paramChangeDict.at(name), chartData, timingCache)
+						laserParamChangeDict.contains(name)
+						? ConvertParamChangesFromPulseToSec(laserParamChangeDict.at(name), chartData, timingCache)
 						: std::unordered_map<std::string, std::map<float, std::string>>{};
 
 					bgm.emplaceAudioEffectLaser(name, def, paramChanges, updateTriggerTiming);
