@@ -208,7 +208,7 @@ BTOptionPanel::BTOptionPanel(std::shared_ptr<noco::Canvas> canvas)
 			.buttonFlags = CursorButtonFlags::kArrow,
 		},
 		.enumCount = static_cast<int32>(BTAMenuItem::kCount),
-		.cyclic = IsCyclicMenuYN::Yes,
+		.cyclic = IsCyclicMenuYN::No,
 	})
 	, m_btBMenu(LinearMenu::CreateInfoWithEnumCount{
 		.cursorInputCreateInfo = {
@@ -216,7 +216,7 @@ BTOptionPanel::BTOptionPanel(std::shared_ptr<noco::Canvas> canvas)
 			.buttonFlags = CursorButtonFlags::kArrow,
 		},
 		.enumCount = static_cast<int32>(BTBMenuItem::kCount),
-		.cyclic = IsCyclicMenuYN::Yes,
+		.cyclic = IsCyclicMenuYN::No,
 	})
 	, m_btCMenu(LinearMenu::CreateInfoWithEnumCount{
 		.cursorInputCreateInfo = {
@@ -224,7 +224,7 @@ BTOptionPanel::BTOptionPanel(std::shared_ptr<noco::Canvas> canvas)
 			.buttonFlags = CursorButtonFlags::kArrow,
 		},
 		.enumCount = static_cast<int32>(BTCMenuItem::kCount),
-		.cyclic = IsCyclicMenuYN::Yes,
+		.cyclic = IsCyclicMenuYN::No,
 	})
 
 	// BT-Aメニューの値変更用
