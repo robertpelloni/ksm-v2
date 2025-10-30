@@ -2,6 +2,7 @@
 #include "scene/select/select_scene.hpp"
 #include "scene/result/result_scene.hpp"
 #include "runtime_config.hpp"
+#include "music_game/hispeed_utils.hpp"
 
 namespace
 {
@@ -35,49 +36,9 @@ namespace
 		return availableTypes;
 	}
 
-	MusicGame::HispeedSetting ParseHispeedSetting(StringView sv)
-	{
-		if (sv.length() <= 1U)
-		{
-			return MusicGame::HispeedSetting{};
-		}
-
-		switch (sv[0])
-		{
-		case U'x':
-		{
-			const int32 value = ParseOr<int32>(sv.substr(sv.starts_with(U"x0") ? 2U : 1U), 0);
-			return MusicGame::HispeedSetting{
-				.type = MusicGame::HispeedType::XMod,
-				.value = value,
-			};
-		}
-		case U'O':
-		case U'o':
-		{
-			const int32 value = ParseOr<int32>(sv.substr(1U), 0);
-			return MusicGame::HispeedSetting{
-				.type = MusicGame::HispeedType::OMod,
-				.value = value,
-			};
-		}
-		case U'C':
-		case U'c':
-		{
-			const int32 value = ParseOr<int32>(sv.substr(1U), 0);
-			return MusicGame::HispeedSetting{
-				.type = MusicGame::HispeedType::CMod,
-				.value = value,
-			};
-		}
-		default:
-			return MusicGame::HispeedSetting{};
-		}
-	}
-
 	MusicGame::HispeedSetting LoadHispeedSettingFromConfigIni()
 	{
-		return ParseHispeedSetting(ConfigIni::GetString(ConfigIni::Key::kHispeed));
+		return MusicGame::HispeedUtils::FromConfigStringValue(ConfigIni::GetString(ConfigIni::Key::kHispeed));
 	}
 
 	MusicGame::GameCreateInfo MakeGameCreateInfo(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)

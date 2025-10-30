@@ -45,7 +45,6 @@ namespace MusicGame::HispeedUtils
 			};
 		}
 		case U'C':
-		case U'c':
 		{
 			const int32 value = ParseOr<int32>(sv.substr(1U), kDefaultCModValue);
 			return HispeedSetting{
@@ -55,7 +54,7 @@ namespace MusicGame::HispeedUtils
 		}
 		default:
 		{
-			// 数字のみの場合はO-mod
+			// 数字のみの場合はo-mod
 			const int32 value = ParseOr<int32>(sv, kDefaultOModValue);
 			return HispeedSetting{
 				.type = HispeedType::OMod,
