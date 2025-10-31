@@ -47,19 +47,47 @@ namespace MusicGame::Audio
 				+ 1/* 最後の小節の分を足す */
 				+ 1/* インデックスを要素数にするために1を足す */;
 
-			// legacy.filterGainが存在する場合、事前にparamChangeに変換
+			// legacy.filterGainに0.5以外の値が存在する場合、ビルトインのフィルタエフェクトのgain・qのパラメータ変更として反映
 			kson::Dict<kson::Dict<kson::ByPulse<std::string>>> laserParamChangeDict = chartData.audio.audioEffect.laser.paramChange;
-			if (!chartData.audio.audioEffect.laser.legacy.filterGain.empty())
+			const auto& filterGain = chartData.audio.audioEffect.laser.legacy.filterGain;
+			if (!filterGain.empty())
 			{
-				for (const auto& [pulse, filterGain] : chartData.audio.audioEffect.laser.legacy.filterGain)
-				{
-					const std::int32_t filterGainValue = static_cast<std::int32_t>(std::round(filterGain * 100.0));
-					laserParamChangeDict["peaking_filter"]["gain"][pulse] = std::to_string(filterGainValue) + "%";
+				// 0.5以外の値が含まれているかチェック
+				bool hasNonDefaultValue = std::any_of(
+					filterGain.begin(),
+					filterGain.end(),
+					[](const auto& pair) { return pair.second != 0.5; });
 
-					const double qValue = std::lerp(0.7, 9.3, filterGain);
-					const std::string qStr = std::to_string(qValue);
-					laserParamChangeDict["high_pass_filter"]["q"][pulse] = qStr;
-					laserParamChangeDict["low_pass_filter"]["q"][pulse] = qStr;
+				if (hasNonDefaultValue)
+				{
+					// ユーザー定義で上書きされている場合はビルトインエフェクトとみなさない
+					const bool isPeakingFilterBuiltin = !chartData.audio.audioEffect.laser.defContains("peaking_filter");
+					const bool isHighPassFilterBuiltin = !chartData.audio.audioEffect.laser.defContains("high_pass_filter");
+					const bool isLowPassFilterBuiltin = !chartData.audio.audioEffect.laser.defContains("low_pass_filter");
+
+					for (const auto& [pulse, filterGainValue] : filterGain)
+					{
+						// peaking_filterへの適用(ビルトインの場合のみ)
+						if (isPeakingFilterBuiltin)
+						{
+							const std::int32_t gain = static_cast<std::int32_t>(std::round(filterGainValue * 100.0));
+							laserParamChangeDict["peaking_filter"]["gain"][pulse] = std::to_string(gain) + "%";
+						}
+
+						// high_pass_filter/low_pass_filterへのqパラメータ適用(ビルトインの場合のみ)
+						const double qValue = std::lerp(0.7, 9.3, filterGainValue);
+						const std::string qStr = std::to_string(qValue);
+
+						if (isHighPassFilterBuiltin)
+						{
+							laserParamChangeDict["high_pass_filter"]["q"][pulse] = qStr;
+						}
+
+						if (isLowPassFilterBuiltin)
+						{
+							laserParamChangeDict["low_pass_filter"]["q"][pulse] = qStr;
+						}
+					}
 				}
 			}
 
