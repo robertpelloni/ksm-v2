@@ -1,4 +1,5 @@
 ﻿#include "hispeed_setting_menu.hpp"
+#include "input/platform_key.hpp"
 
 namespace MusicGame
 {
@@ -255,6 +256,12 @@ namespace MusicGame
 
 	bool HispeedSettingMenu::update(double currentBPM)
 	{
+		// Ctrlキー押下中は早送り機能と干渉するため、ハイスピードメニューの操作を無効化
+		if (PlatformKey::KeyCommandControl.pressed())
+		{
+			return false;
+		}
+
 		m_typeMenu.update();
 		m_valueMenu.update();
 
