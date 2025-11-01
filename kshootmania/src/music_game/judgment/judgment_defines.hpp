@@ -23,6 +23,15 @@ namespace MusicGame::Judgment
 		kNumBeamTypes,
 	};
 
+	enum class ChipAnimType
+	{
+		kUnspecified,
+		kError,
+		kNear,
+		kNearFast,
+		kCritical,
+	};
+
 	namespace TimingWindow
 	{
 		namespace ChipNote

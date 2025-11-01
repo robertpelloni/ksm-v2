@@ -32,7 +32,7 @@ namespace MusicGame
 	struct ChipAnimStatus
 	{
 		double startTimeSec = kPastTimeSec;
-		Judgment::JudgmentResult type = Judgment::JudgmentResult::kUnspecified;
+		Judgment::ChipAnimType type = Judgment::ChipAnimType::kUnspecified;
 	};
 
 	struct ButtonLaneStatus

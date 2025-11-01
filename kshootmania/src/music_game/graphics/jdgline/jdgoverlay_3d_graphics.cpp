@@ -56,9 +56,9 @@ namespace MusicGame::Graphics
 		constexpr double kLaserRippleAnimAlpha = 133.0 / 255;
 	}
 
-	const TiledTexture& Jdgoverlay3DGraphics::chipAnimTexture(Judgment::JudgmentResult type) const
+	const TiledTexture& Jdgoverlay3DGraphics::chipAnimTexture(Judgment::ChipAnimType type) const
 	{
-		using enum Judgment::JudgmentResult;
+		using enum Judgment::ChipAnimType;
 
 		switch (type)
 		{
@@ -66,8 +66,8 @@ namespace MusicGame::Graphics
 			return m_chipCriticalTexture;
 
 		case kNearFast:
-		case kNearSlow:
-			return m_chipNearTexture; // TODO: Fast near
+		case kNear:
+			return m_chipNearTexture;
 
 		case kError:
 			return m_chipErrorTexture;
@@ -88,14 +88,15 @@ namespace MusicGame::Graphics
 			for (const auto& chipAnimState : laneStatus.chipAnim.array()) // 加算合成なので順番は気にしなくてOK
 			{
 				const double sec = gameStatus.currentTimeSec - chipAnimState.startTimeSec;
-				if (sec < 0.0 || kChipAnimDurationSec <= sec || chipAnimState.type == Judgment::JudgmentResult::kUnspecified)
+				if (sec < 0.0 || kChipAnimDurationSec <= sec || chipAnimState.type == Judgment::ChipAnimType::kUnspecified)
 				{
 					continue;
 				}
 
 				const int32 frameIdx = static_cast<int32>(sec / kChipAnimDurationSec * kChipAnimFrames);
+				const int32 columnIdx = chipAnimState.type == Judgment::ChipAnimType::kNearFast ? 1 : 0; // FASTの場合は列が異なる
 				const Vec2 position = Scaled(kTextureSize.x / 4 + 92 + (isBT ? 0 : 30) + (isBT ? kBTLaneDiffX : kFXLaneDiffX) * laneIdx + centerSplitShiftX, 17);
-				chipAnimTexture(chipAnimState.type)(frameIdx).resized(Scaled(kChipAnimSize)).draw(position);
+				chipAnimTexture(chipAnimState.type)(frameIdx, columnIdx).resized(Scaled(kChipAnimSize)).draw(position);
 			}
 		}
 	}
