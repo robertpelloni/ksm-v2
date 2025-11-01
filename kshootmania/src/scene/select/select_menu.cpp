@@ -572,6 +572,7 @@ void SelectMenu::reloadCurrentDirectory()
 	// 現在選択中の譜面ファイルパスと難易度を保持
 	FilePath currentChartFilePath;
 	int32 currentDifficulty = m_difficultyMenu.rawCursor();
+	int32 currentCursorIndex = m_menu.cursor();
 	if (!m_menu.empty() && m_menu.cursorValue() != nullptr)
 	{
 		const auto pChartInfo = m_menu.cursorValue()->chartInfoPtr(currentDifficulty);
@@ -623,6 +624,17 @@ void SelectMenu::reloadCurrentDirectory()
 				break;
 			}
 		}
+
+		// 譜面ファイルパスで復元できなかった場合はカーソルインデックスで復元
+		if (!found && currentCursorIndex < static_cast<int32>(m_menu.size()))
+		{
+			m_menu.setCursor(currentCursorIndex);
+		}
+	}
+	else if (currentCursorIndex < static_cast<int32>(m_menu.size()))
+	{
+		// 譜面ファイルパスがない場合もカーソルインデックスで復元
+		m_menu.setCursor(currentCursorIndex);
 	}
 
 	refreshContentCanvasParams();
