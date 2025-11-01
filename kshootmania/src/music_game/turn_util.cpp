@@ -55,12 +55,13 @@ namespace MusicGame
 		void InvertCameraEffects(kson::CameraInfo& camera)
 		{
 			// 手動傾き左右反転
-			for (auto& [pulse, graphSection] : camera.tilt.manual)
+			for (auto& [pulse, tiltValue] : camera.tilt)
 			{
-				for (auto& [relPulse, value] : graphSection.v)
+				if (std::holds_alternative<kson::GraphPoint>(tiltValue))
 				{
-					value.v.v = -value.v.v;
-					value.v.vf = -value.v.vf;
+					kson::GraphPoint& point = std::get<kson::GraphPoint>(tiltValue);
+					point.v.v = -point.v.v;
+					point.v.vf = -point.v.vf;
 				}
 			}
 
