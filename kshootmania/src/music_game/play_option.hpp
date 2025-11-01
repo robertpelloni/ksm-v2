@@ -85,5 +85,12 @@ namespace MusicGame
 		{
 			return audioProcDelayMs + visualOffsetMs;
 		}
+
+		bool isAssist() const
+		{
+			return btJudgmentPlayMode != JudgmentPlayMode::kOn ||
+				fxJudgmentPlayMode != JudgmentPlayMode::kOn ||
+				laserJudgmentPlayMode != JudgmentPlayMode::kOn;
+		}
 	};
 }

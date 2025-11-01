@@ -144,7 +144,7 @@ namespace
 	int32 TopTextureRow(const MusicGame::PlayResult& playResult)
 	{
 		const Achievement achievement = playResult.achievement();
-		const bool isAssist = false; // TODO: アシストかどうかを代入
+		const bool isAssist = playResult.playOption.isAssist();
 		switch (achievement)
 		{
 		case Achievement::kNone:
