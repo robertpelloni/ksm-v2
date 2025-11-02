@@ -1832,6 +1832,7 @@
                       ],
                       "textureGridColumns": 6,
                       "textureGridIndex": 3,
+                      "textureGridIndex_paramRef": "gaugeTextureIndex",
                       "textureGridRows": 1,
                       "textureOffset": [
                         0.0,
@@ -2533,6 +2534,10 @@
     "gaugePercentageNumber": {
       "type": "String",
       "value": "100"
+    },
+    "gaugeTextureIndex": {
+      "type": "Number",
+      "value": 3.0
     },
     "gradeIndex": {
       "type": "Number",

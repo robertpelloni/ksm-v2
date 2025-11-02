@@ -266,6 +266,13 @@ ResultScene::ResultScene(const ResultSceneArgs& args)
 
 void ResultScene::updateCanvasParams()
 {
+	// ゲージタイプとパーセンテージに応じてゲージの見た目を変更
+	const int32 percentThreshold = m_playResult.playOption.gaugeType == GaugeType::kHardGauge
+		? MusicGame::kGaugePercentageThresholdHardWarning
+		: MusicGame::kGaugePercentageThreshold;
+	const int32 gaugePercentageInt = static_cast<int32>(m_playResult.gaugePercentage);
+	const int32 gaugeTextureIndex = static_cast<int32>(m_playResult.playOption.gaugeType) * 2 + (gaugePercentageInt < percentThreshold ? 0 : 1);
+
 	m_canvas->setParamValues({
 		{ U"songTitle", Unicode::FromUTF8(m_chartData.meta.title) },
 		{ U"artistName", Unicode::FromUTF8(m_chartData.meta.artist) },
@@ -279,6 +286,7 @@ void ResultScene::updateCanvasParams()
 		{ U"nearCount", U"{:04d}"_fmt(m_playResult.comboStats.near()) },
 		{ U"errorCount", U"{:04d}"_fmt(m_playResult.comboStats.error) },
 		{ U"gaugePercentageNumber", U"{}"_fmt(static_cast<int32>(m_playResult.gaugePercentage)) },
+		{ U"gaugeTextureIndex", static_cast<double>(gaugeTextureIndex) },
 	});
 
 	// ゲージのバーの高さをパーセンテージに応じて変更
