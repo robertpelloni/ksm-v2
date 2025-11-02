@@ -45,6 +45,9 @@ namespace MusicGame::Judgment
 
 	void JudgmentMain::lockForExit()
 	{
+		// ERROR判定通知時にゲージが変動しないよう先にロック
+		m_judgmentHandler.lockForExit();
+
 		// 残りの未判定ノーツを全てERROR判定にする
 		for (std::size_t i = 0U; i < kson::kNumBTLanesSZ; ++i)
 		{
@@ -58,7 +61,6 @@ namespace MusicGame::Judgment
 		{
 			m_laserLaneJudgments[i].lockForExit(m_judgmentHandler);
 		}
-		m_judgmentHandler.lockForExit();
 	}
 
 	PlayResult JudgmentMain::playResult() const
