@@ -162,7 +162,9 @@ namespace MusicGame
 
 	void GameMain::start()
 	{
-		m_bgm.seekPosSec(-TimeSecBeforeStart(false/* TODO: movie */));
+		const double globalOffsetSec = m_playOption.effectiveGlobalOffsetMs() / 1000.0;
+		m_graphicsMain.prepareMovie(globalOffsetSec);
+		m_bgm.seekPosSec(-TimeSecBeforeStart(m_graphicsMain.hasMovie()));
 		m_bgm.play();
 	}
 

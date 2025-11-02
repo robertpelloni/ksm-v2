@@ -96,6 +96,18 @@ namespace MusicGame::Graphics
 			return filePath;
 		}
 
+		FilePath MovieFilePath(const kson::ChartData& chartData, FilePathView parentPath)
+		{
+			const String filename = Unicode::FromUTF8(chartData.bg.legacy.movie.filename);
+			if (filename.isEmpty())
+			{
+				return U"";
+			}
+
+			// 動画は譜面ファイルと同じディレクトリから読み込む
+			return FileSystem::PathAppend(parentPath, filename);
+		}
+
 		std::array<Array<RenderTexture>, 2> SplitLayerTexture(FilePathView layerFilePath)
 		{
 			const TiledTexture tiledTexture(Texture(layerFilePath),
@@ -197,8 +209,14 @@ namespace MusicGame::Graphics
 		, m_songInfoPanel(chartData, parentPath)
 		, m_gaugePanel(playOption.gaugeType)
 		, m_laserApproachIndicator(chartData)
+		, m_moviePanel(MovieFilePath(chartData, parentPath), chartData.bg.legacy.movie.offset / 1000.0, playOption.movieEnabled)
 		, m_playOption(playOption)
 	{
+	}
+
+	void GraphicsMain::prepareMovie(double globalOffsetSec)
+	{
+		m_moviePanel.prepare(globalOffsetSec);
 	}
 
 	void GraphicsMain::update(const GameStatus& gameStatus, const ViewStatus& viewStatus, const kson::TimingCache& timingCache)
@@ -207,6 +225,7 @@ namespace MusicGame::Graphics
 		m_scorePanel.update(viewStatus.score);
 		m_highway3DGraphics.update(viewStatus);
 		m_laserApproachIndicator.update(gameStatus, timingCache);
+		m_moviePanel.update(gameStatus.currentTimeSec);
 	}
 
 	void GraphicsMain::draw(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const GameStatus& gameStatus, const ViewStatus& viewStatus, const Scroll::HighwayScrollContext& highwayScrollContext, Duration bgmDuration) const
@@ -226,13 +245,14 @@ namespace MusicGame::Graphics
 		m_laserCursor3DGraphics.draw3D(gameStatus, viewStatus, m_camera);
 
 		// 手前に表示する2DのHUDを描画
-		m_songInfoPanel.draw(gameStatus.currentTimeSec, bgmDuration, gameStatus.currentBPM, highwayScrollContext);
+		m_songInfoPanel.draw(gameStatus.currentTimeSec, bgmDuration, gameStatus.currentBPM, highwayScrollContext, m_moviePanel.isEnabled());
 		m_scorePanel.draw();
 		m_gaugePanel.draw(viewStatus.gaugePercentage, gameStatus.currentPulse);
 		m_comboOverlay.draw();
 		m_frameRateMonitor.draw();
 		m_achievementPanel.draw(gameStatus);
 		m_laserApproachIndicator.draw(gameStatus.currentTimeSec);
+		m_moviePanel.draw();
 
 		// HARDゲージ落ち時の赤色オーバーレイ
 		if (gameStatus.playFinishStatus.has_value() && gameStatus.playFinishStatus->isHardGaugeFailed)
@@ -246,5 +266,10 @@ namespace MusicGame::Graphics
 			const ScopedRenderStates2D blend{ BlendState::Additive };
 			Scene::Rect().draw(overlayColor);
 		}
+	}
+
+	bool GraphicsMain::hasMovie() const
+	{
+		return m_moviePanel.isEnabled();
 	}
 }

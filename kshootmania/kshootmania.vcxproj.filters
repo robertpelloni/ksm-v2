@@ -366,6 +366,9 @@
     <ClCompile Include="src\music_game\graphics\hud\gauge_panel.cpp">
       <Filter>Source Files\music_game\graphics\hud</Filter>
     </ClCompile>
+    <ClCompile Include="src\music_game\graphics\hud\movie_panel.cpp">
+      <Filter>Source Files\music_game\graphics\hud</Filter>
+    </ClCompile>
     <ClCompile Include="src\music_game\graphics\hud\song_info_panel.cpp">
       <Filter>Source Files\music_game\graphics\hud</Filter>
     </ClCompile>
@@ -965,6 +968,9 @@
       <Filter>Header Files\music_game\graphics\hud</Filter>
     </ClInclude>
     <ClInclude Include="src\music_game\graphics\hud\gauge_panel.hpp">
+      <Filter>Header Files\music_game\graphics\hud</Filter>
+    </ClInclude>
+    <ClInclude Include="src\music_game\graphics\hud\movie_panel.hpp">
       <Filter>Header Files\music_game\graphics\hud</Filter>
     </ClInclude>
     <ClInclude Include="src\music_game\graphics\hud\song_info_panel.hpp">

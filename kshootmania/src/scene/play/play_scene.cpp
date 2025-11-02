@@ -66,6 +66,7 @@ namespace
 					return noteSkinStr == U"note" ? NoteSkinType::kNote : NoteSkinType::kDefault;
 				}(),
 				.fastSlowMode = static_cast<FastSlowMode>(ConfigIni::GetInt(ConfigIni::Key::kShowFastSlow, static_cast<int32>(FastSlowMode::kHide))),
+				.movieEnabled = ConfigIni::GetInt(ConfigIni::Key::kBGMovie, static_cast<int32>(MovieMode::kOn)) == static_cast<int32>(MovieMode::kOn),
 				.availableHispeedTypes = LoadAvailableHispeedTypesFromConfigIni(),
 				.hispeedSetting = LoadHispeedSettingFromConfigIni(),
 			},

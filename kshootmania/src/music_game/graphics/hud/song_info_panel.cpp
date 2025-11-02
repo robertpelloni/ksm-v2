@@ -24,7 +24,8 @@ namespace MusicGame::Graphics
 		constexpr Point kTitlePanelBasePosition = { -155, 45 };
 		constexpr Point kDetailPanelBasePosition = { -295, 69 };
 
-		constexpr double kPreStartOffsetSec = 3.4; // TODO: movieは+1.0sec
+		constexpr double kPreStartOffsetSec = 3.4;
+		constexpr double kPreStartOffsetWithMovieSec = 4.4;
 		constexpr Vec2 kMarkerStartOffset = { 8.0 - kPositionMarkerSize.x / 2.0, 56.0 - kPositionMarkerSize.y / 2.0 };
 		constexpr Vec2 kMarkerEndOffset = { 8.0 - kPositionMarkerSize.x / 2.0 + 225.0, 56.0 - kPositionMarkerSize.y / 2.0 };
 
@@ -80,7 +81,7 @@ namespace MusicGame::Graphics
 		}
 	}
 
-	void SongInfoPanel::draw(double currentTimeSec, Duration bgmDuration, double currentBPM, const Scroll::HighwayScrollContext& highwayScrollContext) const
+	void SongInfoPanel::draw(double currentTimeSec, Duration bgmDuration, double currentBPM, const Scroll::HighwayScrollContext& highwayScrollContext, bool hasMovie) const
 	{
 		m_jacketTexture.resized(m_scaledJacketSize).drawAt(m_jacketPosition);
 		m_titlePanelBaseTexture.resized(Scaled(kTitlePanelSize)).drawAt(m_titlePanelPosition);
@@ -98,7 +99,8 @@ namespace MusicGame::Graphics
 		m_hispeedSettingPanel.draw(m_detailPanelPosition + Scaled(159, 27), highwayScrollContext);
 
 		// 再生位置マーカー
-		const double totalDurationSec = bgmDuration.count() + kPreStartOffsetSec;
+		const double preStartOffset = hasMovie ? kPreStartOffsetWithMovieSec : kPreStartOffsetSec;
+		const double totalDurationSec = bgmDuration.count() + preStartOffset;
 		const double progress = Clamp(currentTimeSec / totalDurationSec, 0.0, 1.0);
 		const Vec2 markerPos = m_detailPanelPosition + Scaled(kMarkerStartOffset.lerp(kMarkerEndOffset, progress));
 		m_positionMarkerTexture.resized(Scaled(kPositionMarkerSize)).draw(markerPos);

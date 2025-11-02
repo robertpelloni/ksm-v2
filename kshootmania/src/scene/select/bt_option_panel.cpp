@@ -37,7 +37,7 @@ namespace
 		// kAutoSync, // TODO: 未実装
 		kFastSlow,
 		kNoteSkin,
-		// kMovie, // TODO: 未実装
+		kMovie,
 
 		kCount,
 	};
@@ -170,7 +170,7 @@ namespace
 		}
 	}
 
-	/*StringView MovieModeToI18nKey(MovieMode display)
+	StringView MovieModeToI18nKey(MovieMode display)
 	{
 		switch (display)
 		{
@@ -178,7 +178,7 @@ namespace
 		case MovieMode::kOn: return I18n::Get(I18n::Select::kMovieOn);
 		default: return U"";
 		}
-	}*/
+	}
 
 
 	String FormatMenuLine(StringView label, StringView value, bool isSelected, int32 currentCursor, int32 minCursor, int32 maxCursor)
@@ -305,14 +305,14 @@ BTOptionPanel::BTOptionPanel(std::shared_ptr<noco::Canvas> canvas)
 		.enumCount = static_cast<int32>(NoteSkinType::kCount),
 		.cyclic = IsCyclicMenuYN::No,
 	})
-	/*, m_movie(LinearMenu::CreateInfoWithEnumCount{
+	, m_movie(LinearMenu::CreateInfoWithEnumCount{
 		.cursorInputCreateInfo = {
 			.type = CursorInput::Type::Horizontal,
 			.buttonFlags = CursorButtonFlags::kArrow,
 		},
 		.enumCount = static_cast<int32>(MovieMode::kCount),
 		.cyclic = IsCyclicMenuYN::No,
-	})*/
+	})
 
 	// BT-Dメニュー(ハイスピード)用
 	, m_hispeedTypeMenu(
@@ -418,7 +418,7 @@ String BTOptionPanel::generateBTCMenuText() const
 	// const auto autoSync = m_autoSync.cursorAs<AutoSyncMode>();
 	const auto fastSlow = m_fastSlow.cursorAs<FastSlowMode>();
 	const auto noteSkin = m_noteSkin.cursorAs<NoteSkinType>();
-	// const auto movie = m_movie.cursorAs<MovieMode>();
+	const auto movie = m_movie.cursorAs<MovieMode>();
 
 	const auto currentItem = m_btCMenu.cursorAs<BTCMenuItem>();
 
@@ -430,8 +430,8 @@ String BTOptionPanel::generateBTCMenuText() const
 	text += FormatMenuLine(I18n::Get(I18n::Select::kFastSlow), FastSlowModeToI18nKey(fastSlow), currentItem == BTCMenuItem::kFastSlow, m_fastSlow.cursor(), 0, static_cast<int32>(FastSlowMode::kCount) - 1);
 	text += U"\n";
 	text += FormatMenuLine(I18n::Get(I18n::Select::kNoteSkin), NoteSkinTypeToI18nKey(noteSkin), currentItem == BTCMenuItem::kNoteSkin, m_noteSkin.cursor(), 0, static_cast<int32>(NoteSkinType::kCount) - 1);
-	/*text += U"\n";
-	text += FormatMenuLine(I18n::Get(I18n::Select::kMovie), MovieModeToI18nKey(movie), currentItem == BTCMenuItem::kMovie, m_movie.cursor(), 0, static_cast<int32>(MovieMode::kCount) - 1);*/
+	text += U"\n";
+	text += FormatMenuLine(I18n::Get(I18n::Select::kMovie), MovieModeToI18nKey(movie), currentItem == BTCMenuItem::kMovie, m_movie.cursor(), 0, static_cast<int32>(MovieMode::kCount) - 1);
 
 	return text;
 }
@@ -563,11 +563,11 @@ bool BTOptionPanel::update(double currentChartStdBPM)
 				m_noteSkin.update();
 				valueChanged = m_noteSkin.deltaCursor() != 0;
 			}
-			/*else if (currentItem == BTCMenuItem::kMovie)
+			else if (currentItem == BTCMenuItem::kMovie)
 			{
 				m_movie.update();
 				valueChanged = m_movie.deltaCursor() != 0;
-			}*/
+			}
 
 			if (valueChanged)
 			{
@@ -689,7 +689,7 @@ void BTOptionPanel::loadFromConfigIni()
 		m_noteSkin.setCursor(static_cast<int32>(NoteSkinType::kDefault));
 	}
 
-	//m_movie.setCursor(ConfigIni::GetInt(ConfigIni::Key::kBGMovie, static_cast<int32>(MovieMode::kOn)));
+	m_movie.setCursor(ConfigIni::GetInt(ConfigIni::Key::kBGMovie, static_cast<int32>(MovieMode::kOn)));
 
 	// BT-Dメニュー(ハイスピード)の設定
 	const StringView hispeedStr = ConfigIni::GetString(ConfigIni::Key::kHispeed, U"x10");
@@ -742,7 +742,7 @@ void BTOptionPanel::saveToConfigIni()
 		ConfigIni::SetString(ConfigIni::Key::kNoteSkin, U"default");
 	}
 
-	//ConfigIni::SetInt(ConfigIni::Key::kBGMovie, m_movie.cursor());
+	ConfigIni::SetInt(ConfigIni::Key::kBGMovie, m_movie.cursor());
 
 	// BT-Dメニュー(ハイスピード)の設定
 	const HispeedType hispeedType = m_hispeedTypeMenu.cursorValue();

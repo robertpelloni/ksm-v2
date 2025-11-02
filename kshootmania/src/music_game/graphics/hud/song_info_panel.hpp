@@ -35,6 +35,6 @@ namespace MusicGame::Graphics
 	public:
 		explicit SongInfoPanel(const kson::ChartData& chartData, FilePathView parentPath);
 
-		void draw(double currentTimeSec, Duration bgmDuration, double currentBPM, const Scroll::HighwayScrollContext& highwayScrollContext) const;
+		void draw(double currentTimeSec, Duration bgmDuration, double currentBPM, const Scroll::HighwayScrollContext& highwayScrollContext, bool hasMovie) const;
 	};
 }

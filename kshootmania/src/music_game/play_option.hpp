@@ -37,6 +37,8 @@ namespace MusicGame
 
 		HispeedSetting hispeedSetting = HispeedSetting{ .type = HispeedType::OMod, .value = 500 };
 
+		bool movieEnabled = true;
+
 		// オートプレイを考慮したBT判定モードを取得
 		JudgmentPlayMode effectiveBtJudgmentPlayMode() const
 		{

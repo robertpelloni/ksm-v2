@@ -31,7 +31,7 @@ private:
 	// LinearMenu m_autoSync; // TODO: 未実装
 	LinearMenu m_fastSlow;
 	LinearMenu m_noteSkin;
-	// LinearMenu m_movie; // TODO: 未実装
+	LinearMenu m_movie;
 
 	// BT-Dメニュー(ハイスピード)用
 	ArrayWithLinearMenu<MusicGame::HispeedType> m_hispeedTypeMenu;
