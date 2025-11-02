@@ -36,3 +36,9 @@ void SelectMenuSubDirSectionItem::setCanvasParamsTopBottom([[maybe_unused]] cons
 		{ paramNamePrefix + U"title", m_displayName },
 	});
 }
+
+void SelectMenuSubDirSectionItem::showInFileManager([[maybe_unused]] int32 difficultyIdx) const
+{
+	// サブフォルダをエクスプローラで開く
+	System::ShowInFileManager(m_fullPath);
+}

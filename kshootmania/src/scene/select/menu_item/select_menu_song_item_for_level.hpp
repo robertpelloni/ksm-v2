@@ -37,4 +37,8 @@ public:
 	virtual void setCanvasParamsCenter(const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx) const override;
 
 	virtual void setCanvasParamsTopBottom(const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx, StringView paramNamePrefix, StringView nodeName) const override;
+
+	/// @brief この項目をエクスプローラで表示
+	/// @param difficultyIdx 現在選択中の難易度のインデックス(0～3)
+	virtual void showInFileManager(int32 difficultyIdx) const override;
 };

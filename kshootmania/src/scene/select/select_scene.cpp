@@ -4,6 +4,7 @@
 #include "ini/config_ini.hpp"
 #include "common/fs_utils.hpp"
 #include "runtime_config.hpp"
+#include "input/platform_key.hpp"
 
 namespace
 {
@@ -201,6 +202,12 @@ void SelectScene::update()
 		return;
 	}
 
+	// Ctrl+O: 選択中の項目をエクスプローラで表示
+	if (PlatformKey::KeyCommandControl.pressed() && KeyO.down())
+	{
+		m_menu.showCurrentItemInFileManager();
+	}
+
 	if (anyPanelVisible)
 	{
 		// パネル表示中は選曲画面の操作を無効化
@@ -216,8 +223,8 @@ void SelectScene::update()
 
 	updatePlayerSwitching();
 
-	// Shift押下中はメニューを更新しない(アルファベットジャンプを優先)
-	if (!KeyShift.pressed())
+	// 各種操作と干渉しないようCtrl・Shiftキー押下中は無視
+	if (!PlatformKey::KeyCommandControl.pressed() && !KeyShift.pressed())
 	{
 		m_menu.update();
 	}

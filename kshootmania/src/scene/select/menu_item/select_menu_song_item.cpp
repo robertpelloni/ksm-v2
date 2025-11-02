@@ -273,3 +273,16 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 
 	// TODO: title_img, artist_imgの設定
 }
+
+void SelectMenuSongItem::showInFileManager(int32 difficultyIdx) const
+{
+	// 選択中の難易度の譜面ファイルを取得
+	const SelectChartInfo* pChartInfo = chartInfoPtr(difficultyIdx);
+	if (pChartInfo == nullptr)
+	{
+		return;
+	}
+
+	// エクスプローラで譜面ファイルを選択状態で開く
+	System::ShowInFileManager(pChartInfo->chartFilePath());
+}

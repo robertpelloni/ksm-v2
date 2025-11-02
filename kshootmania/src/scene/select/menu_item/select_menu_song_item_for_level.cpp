@@ -201,3 +201,14 @@ void SelectMenuSongItemForLevel::setCanvasParamsTopBottom(const SelectMenuEventC
 		}
 	}
 }
+
+void SelectMenuSongItemForLevel::showInFileManager([[maybe_unused]] int32 difficultyIdx) const
+{
+	if (m_chartInfo == nullptr)
+	{
+		return;
+	}
+
+	// エクスプローラで譜面ファイルを選択状態で開く
+	System::ShowInFileManager(m_fullPath);
+}

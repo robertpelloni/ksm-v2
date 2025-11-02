@@ -9,6 +9,7 @@
 #include "menu_item/select_menu_song_item_for_level.hpp"
 #include "common/fs_utils.hpp"
 #include "common/encoding.hpp"
+#include "input/platform_key.hpp"
 
 namespace
 {
@@ -475,9 +476,9 @@ void SelectMenu::update(SongPreviewOnlyYN songPreviewOnly)
 	}
 	fxLRPressed = fxLRPressedNow;
 
-	// プレイヤー切り替え(BT-B+C)、アルファベットジャンプ(Shift)と干渉しないよう除外
+	// 各種操作と干渉しないようCtrl・Shift・BT-B+C押下時は無視
 	const bool btBCPressed = KeyConfig::Pressed(KeyConfig::kBT_B) && KeyConfig::Pressed(KeyConfig::kBT_C);
-	if (!btBCPressed && !KeyShift.pressed())
+	if (!PlatformKey::KeyCommandControl.pressed() && !KeyShift.pressed() && !btBCPressed)
 	{
 		m_difficultyMenu.update();
 		if (m_difficultyMenu.deltaCursor() != 0)
@@ -1573,4 +1574,15 @@ const HighScoreInfo& SelectMenu::getCurrentHighScoreInfo() const
 	}
 
 	return chartInfo->highScoreInfo();
+}
+
+void SelectMenu::showCurrentItemInFileManager()
+{
+	if (m_menu.empty())
+	{
+		return;
+	}
+
+	// 現在選択中の項目のshowInFileManagerを呼び出す
+	m_menu.cursorValue()->showInFileManager(m_difficultyMenu.cursor());
 }

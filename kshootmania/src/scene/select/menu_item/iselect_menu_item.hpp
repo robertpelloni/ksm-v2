@@ -79,4 +79,10 @@ public:
 	/// @param paramNamePrefix パラメータ名のプレフィックス(例:"top0_")
 	/// @param nodeName ノード名
 	virtual void setCanvasParamsTopBottom(const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx, StringView paramNamePrefix, StringView nodeName) const = 0;
+
+	/// @brief この項目をエクスプローラで表示
+	/// @param difficultyIdx 現在選択中の難易度のインデックス(0～3)
+	virtual void showInFileManager([[maybe_unused]] int32 difficultyIdx) const
+	{
+	}
 };

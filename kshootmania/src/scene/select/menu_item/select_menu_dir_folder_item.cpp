@@ -40,3 +40,9 @@ void SelectMenuDirFolderItem::setCanvasParamsTopBottom([[maybe_unused]] const Se
 		{ paramNamePrefix + U"title", FolderDisplayNameTopBottom(m_displayName, m_isCurrentFolder) },
 	});
 }
+
+void SelectMenuDirFolderItem::showInFileManager([[maybe_unused]] int32 difficultyIdx) const
+{
+	// フォルダをエクスプローラで開く
+	System::ShowInFileManager(m_fullPath);
+}
