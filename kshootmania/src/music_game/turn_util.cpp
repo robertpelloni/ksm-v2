@@ -57,11 +57,14 @@ namespace MusicGame
 			// 手動傾き左右反転
 			for (auto& [pulse, tiltValue] : camera.tilt)
 			{
-				if (std::holds_alternative<kson::GraphPoint>(tiltValue))
+				if (std::holds_alternative<kson::TiltGraphPoint>(tiltValue))
 				{
-					kson::GraphPoint& point = std::get<kson::GraphPoint>(tiltValue);
+					kson::TiltGraphPoint& point = std::get<kson::TiltGraphPoint>(tiltValue);
 					point.v.v = -point.v.v;
-					point.v.vf = -point.v.vf;
+					if (std::holds_alternative<double>(point.v.vf))
+					{
+						point.v.vf = -std::get<double>(point.v.vf);
+					}
 				}
 			}
 
