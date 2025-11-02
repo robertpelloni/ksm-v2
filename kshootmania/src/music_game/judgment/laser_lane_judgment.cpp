@@ -478,7 +478,7 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	void LaserLaneJudgment::processAutoCursorMovementForAutoPlay(double currentTimeSec, LaserLaneStatus& laneStatusRef)
+	void LaserLaneJudgment::processAutoCursorMovementForAutoPlay(LaserLaneStatus& laneStatusRef)
 	{
 		if (!laneStatusRef.cursorX.has_value())
 		{
@@ -600,7 +600,7 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	void LaserLaneJudgment::processLineJudgment(const kson::ByPulse<kson::LaserSection>& lane, kson::Pulse currentPulse, double currentTimeSec, LaserLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
+	void LaserLaneJudgment::processLineJudgment(const kson::ByPulse<kson::LaserSection>& lane, kson::Pulse currentPulse, LaserLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef)
 	{
 		if (!laneStatusRef.cursorX.has_value())
 		{
@@ -648,7 +648,7 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	void LaserLaneJudgment::processPassedLineJudgment(const kson::ByPulse<kson::LaserSection>& lane, kson::Pulse currentPulse, LaserLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef, IsAutoPlayYN isAutoPlay)
+	void LaserLaneJudgment::processPassedLineJudgment(kson::Pulse currentPulse, JudgmentHandler& judgmentHandlerRef, IsAutoPlayYN isAutoPlay)
 	{
 		const JudgmentResult result = isAutoPlay ? JudgmentResult::kCritical : JudgmentResult::kError;
 		for (auto itr = m_passedLineJudgmentCursor; itr != m_lineJudgmentArray.end(); ++itr)
@@ -799,27 +799,27 @@ namespace MusicGame::Judgment
 			processAutoCursorMovementAfterCorrectMovement(currentTimeSec, laneStatusRef);
 
 			// カーソル位置をもとにLASERの判定を決定
-			processLineJudgment(lane, currentPulse, currentTimeSec, laneStatusRef, judgmentHandlerRef);
+			processLineJudgment(lane, currentPulse, laneStatusRef, judgmentHandlerRef);
 
 			// 通過済みのLASER判定をERRORにする
-			processPassedLineJudgment(lane, currentPulse, laneStatusRef, judgmentHandlerRef, IsAutoPlayYN::No);
+			processPassedLineJudgment(currentPulse, judgmentHandlerRef, IsAutoPlayYN::No);
 			// FIXME: 通過済みの直角が明示的にERROR判定されていない？
 		}
 		else if (m_judgmentPlayMode == JudgmentPlayMode::kAuto)
 		{
 			// オートプレイ中のカーソル自動移動
-			processAutoCursorMovementForAutoPlay(currentTimeSec, laneStatusRef);
+			processAutoCursorMovementForAutoPlay(laneStatusRef);
 
 			// 直角判定
 			processSlamJudgment(lane, 0.0, currentTimeSec, laneStatusRef, judgmentHandlerRef, IsAutoPlayYN::Yes);
 
 			// 通過済みのLASER判定をCRITICALにする
-			processPassedLineJudgment(lane, currentPulse, laneStatusRef, judgmentHandlerRef, IsAutoPlayYN::Yes);
+			processPassedLineJudgment(currentPulse, judgmentHandlerRef, IsAutoPlayYN::Yes);
 		}
 		else if (m_judgmentPlayMode == JudgmentPlayMode::kOff)
 		{
 			// Offモード時もカーソルを自動追従させる
-			processAutoCursorMovementForAutoPlay(currentTimeSec, laneStatusRef);
+			processAutoCursorMovementForAutoPlay(laneStatusRef);
 		}
 
 		// LASER折り返し波紋(描画用Critical範囲で判定、かつセクション内にいる場合のみ)

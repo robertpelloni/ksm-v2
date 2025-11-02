@@ -513,9 +513,6 @@
     <ClCompile Include="src\scene\result\result_scene.cpp">
       <Filter>Source Files\scene\result</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\result\result_panel.cpp">
-      <Filter>Source Files\scene\result</Filter>
-    </ClCompile>
     <ClCompile Include="src\music_game\play_mode_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1137,12 +1134,6 @@
     </ClInclude>
     <ClInclude Include="src\music_game\play_result.hpp">
       <Filter>Header Files\music_game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\result\result_assets.hpp">
-      <Filter>Header Files\scene\result</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\result\result_panel.hpp">
-      <Filter>Header Files\scene\result</Filter>
     </ClInclude>
     <ClInclude Include="src\high_score\ksc_value.hpp">
       <Filter>Header Files\high_score</Filter>
