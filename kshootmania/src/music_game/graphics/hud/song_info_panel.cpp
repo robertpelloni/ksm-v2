@@ -12,6 +12,9 @@ namespace MusicGame::Graphics
 		constexpr StringView kDetailPanelBaseTextureFilename = U"minfo_detail.png";
 		constexpr Size kDetailPanelSize = { 240, 66 };
 
+		constexpr StringView kPositionMarkerTextureFilename = U"minfo_cur.png";
+		constexpr Size kPositionMarkerSize = { 10, 10 };
+
 		constexpr StringView kNumberTextureFontFilename = U"num2.png";
 
 		constexpr StringView kDifficultyTextureFilename = U"result_difficulty.png";
@@ -20,6 +23,10 @@ namespace MusicGame::Graphics
 		constexpr Vec2 kJacketPosition = { -286.5, 45.5 };
 		constexpr Point kTitlePanelBasePosition = { -155, 45 };
 		constexpr Point kDetailPanelBasePosition = { -295, 69 };
+
+		constexpr double kPreStartOffsetSec = 3.4; // TODO: movieは+1.0sec
+		constexpr Vec2 kMarkerStartOffset = { 8.0 - kPositionMarkerSize.x / 2.0, 56.0 - kPositionMarkerSize.y / 2.0 };
+		constexpr Vec2 kMarkerEndOffset = { 8.0 - kPositionMarkerSize.x / 2.0 + 225.0, 56.0 - kPositionMarkerSize.y / 2.0 };
 
 		FilePath GetJacketPath(FilePathView parentPath, const String& jacketFilename)
 		{
@@ -43,6 +50,7 @@ namespace MusicGame::Graphics
 		, m_titlePanelPosition(Scene::Width() / 2 + Scaled(kTitlePanelBasePosition.x), Scaled(kTitlePanelBasePosition.y))
 		, m_detailPanelBaseTexture(TextureAsset(kDetailPanelBaseTextureFilename))
 		, m_detailPanelPosition(Scene::Width() / 2 + Scaled(kDetailPanelBasePosition.x), Scaled(kDetailPanelBasePosition.y))
+		, m_positionMarkerTexture(TextureAsset(kPositionMarkerTextureFilename))
 		, m_difficultyTexture(kDifficultyTextureFilename,
 			{
 				.row = kNumDifficulties,
@@ -72,7 +80,7 @@ namespace MusicGame::Graphics
 		}
 	}
 
-	void SongInfoPanel::draw(double currentBPM, const Scroll::HighwayScrollContext& highwayScrollContext) const
+	void SongInfoPanel::draw(double currentTimeSec, Duration bgmDuration, double currentBPM, const Scroll::HighwayScrollContext& highwayScrollContext) const
 	{
 		m_jacketTexture.resized(m_scaledJacketSize).drawAt(m_jacketPosition);
 		m_titlePanelBaseTexture.resized(Scaled(kTitlePanelSize)).drawAt(m_titlePanelPosition);
@@ -88,5 +96,11 @@ namespace MusicGame::Graphics
 
 		// ハイスピード設定
 		m_hispeedSettingPanel.draw(m_detailPanelPosition + Scaled(159, 27), highwayScrollContext);
+
+		// 再生位置マーカー
+		const double totalDurationSec = bgmDuration.count() + kPreStartOffsetSec;
+		const double progress = Clamp(currentTimeSec / totalDurationSec, 0.0, 1.0);
+		const Vec2 markerPos = m_detailPanelPosition + Scaled(kMarkerStartOffset.lerp(kMarkerEndOffset, progress));
+		m_positionMarkerTexture.resized(Scaled(kPositionMarkerSize)).draw(markerPos);
 	}
 }

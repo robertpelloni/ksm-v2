@@ -55,6 +55,6 @@ namespace MusicGame::Graphics
 
 		void update(const GameStatus& gameStatus, const ViewStatus& viewStatus, const kson::TimingCache& timingCache);
 
-		void draw(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const GameStatus& gameStatus, const ViewStatus& viewStatus, const Scroll::HighwayScrollContext& highwayScrollContext) const;
+		void draw(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const GameStatus& gameStatus, const ViewStatus& viewStatus, const Scroll::HighwayScrollContext& highwayScrollContext, Duration bgmDuration) const;
 	};
 }
