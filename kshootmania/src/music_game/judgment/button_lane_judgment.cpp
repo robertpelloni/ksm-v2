@@ -252,9 +252,18 @@ namespace MusicGame::Judgment
 				// ERROR判定
 				m_chipJudgmentArray.at(nearestNotePulse) = JudgmentResult::kError;
 				judgmentHandlerRef.onChipJudged(JudgmentResult::kError);
-				laneStatusRef.keyBeamType = KeyBeamType::kDefault;
+
+				// FAST/SLOW表示設定に応じてキービームの種類を設定
+				if (m_fastSlowMode == FastSlowMode::kShow && isFast)
+				{
+					laneStatusRef.keyBeamType = KeyBeamType::kErrorFast;
+				}
+				else
+				{
+					laneStatusRef.keyBeamType = KeyBeamType::kDefault;
+				}
+
 				chipAnimType = ChipAnimType::kError;
-				// TODO: fast/slow
 			}
 
 			if (chipAnimType.has_value())

@@ -236,7 +236,7 @@ namespace MusicGame::Graphics
 			})
 		, m_chipErrorTexture(kChipErrorAnimTextureFilename,
 			{
-				.row = kChipAnimFrames, // TODO: FAST
+				.row = kChipAnimFrames,
 				.sourceScale = SourceScale::kNoScaling,
 				.sourceSize = kChipAnimSourceSize,
 			})
