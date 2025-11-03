@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <CoTaskLib.hpp>
 #include "result_scene_args.hpp"
+#include "result_new_record_panel.hpp"
 #include "music_game/play_result.hpp"
 #include "ksmaudio/ksmaudio.hpp"
 
@@ -15,9 +16,13 @@ private:
 
 	const MusicGame::PlayResult m_playResult;
 
+	ResultNewRecordPanel m_newRecordPanel;
+
 	void updateCanvasParams();
 
 	void update();
+
+	Co::Task<bool> waitForNewRecordPanelClose();
 
 public:
 	explicit ResultScene(const ResultSceneArgs& args);

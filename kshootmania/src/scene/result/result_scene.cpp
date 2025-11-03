@@ -211,7 +211,10 @@ ResultScene::ResultScene(const ResultSceneArgs& args)
 	: m_canvas(LoadResultSceneCanvas())
 	, m_chartData(args.chartData)
 	, m_playResult(args.playResult)
+	, m_newRecordPanel(m_canvas)
 {
+	// 旧スコアを読み込んでNewRecordパネルを設定
+	int32 oldScore = 0;
 	if (!m_playResult.playOption.isAutoPlay) // オートプレイの場合はスコアを保存しない(オートプレイではリザルト画面を出さないので不要だが一応チェックはする)
 	{
 		const KscKey condition
@@ -223,6 +226,15 @@ ResultScene::ResultScene(const ResultSceneArgs& args)
 			.laserPlayMode = m_playResult.playOption.effectiveLaserJudgmentPlayMode(),
 		};
 		const FilePathView chartFilePath = args.chartFilePath;
+
+		// スコア保存前に旧スコアを取得
+		const HighScoreInfo oldHighScore = KscIo::ReadHighScoreInfo(chartFilePath, condition);
+		oldScore = oldHighScore.score(m_playResult.playOption.gaugeType);
+
+		// NewRecordパネルに値を設定
+		m_newRecordPanel.setValue(oldScore, m_playResult.score);
+
+		// スコアを保存
 		KscIo::WriteHighScoreInfo(chartFilePath, m_playResult, condition);
 	}
 
@@ -305,13 +317,85 @@ Co::Task<void> ResultScene::start()
 {
 	const auto updateRunner = Co::UpdaterTask([this] { update(); }).runScoped();
 
-	// StartボタンまたはBackボタンが押されるまで待機
-	co_await Co::Any(
-		KeyConfig::WaitUntilDown(KeyConfig::kStart),
-		KeyConfig::WaitUntilDown(KeyConfig::kBack));
+	bool userPressedStartOrBack = false;
 
-	// 楽曲選択へ戻る
+	if (m_newRecordPanel.isVisible())
+	{
+		m_newRecordPanel.startDisplay();
+		co_await m_newRecordPanel.waitForFadeIn();
+
+		while (true)
+		{
+			const bool shouldClose = co_await waitForNewRecordPanelClose();
+
+			if (shouldClose)
+			{
+				userPressedStartOrBack = true;
+				break;
+			}
+
+			// FX-L+R同時押しで再表示
+			m_newRecordPanel.startRedisplay();
+			co_await m_newRecordPanel.waitForFadeIn();
+		}
+	}
+
+	if (!userPressedStartOrBack)
+	{
+		co_await Co::Any(
+			KeyConfig::WaitUntilDown(KeyConfig::kStart),
+			KeyConfig::WaitUntilDown(KeyConfig::kBack));
+	}
+
 	requestNextScene<SelectScene>();
+}
+
+Co::Task<bool> ResultScene::waitForNewRecordPanelClose()
+{
+	bool fxLRPressedPrev = false;
+	Stopwatch displayStopwatch{ StartImmediately::Yes };
+
+	while (true)
+	{
+		co_await Co::NextFrame();
+
+		// FX-L+R同時押しで表示時間を3秒延長
+		const bool fxLRPressed = KeyConfig::Pressed(KeyConfig::kFX_L) && KeyConfig::Pressed(KeyConfig::kFX_R);
+		if (fxLRPressed && !fxLRPressedPrev)
+		{
+			displayStopwatch.restart();
+		}
+		fxLRPressedPrev = fxLRPressed;
+
+		// 3秒経過またはSTART/Backで終了
+		if (displayStopwatch.sF() >= 3.0 ||
+			KeyConfig::Down(KeyConfig::kStart) ||
+			KeyConfig::Down(KeyConfig::kBack))
+		{
+			break;
+		}
+	}
+
+	m_newRecordPanel.startFadeOut();
+	co_await m_newRecordPanel.waitForFadeOut();
+
+	// フェードアウト後、FX-L+Rで再表示
+	while (true)
+	{
+		co_await Co::NextFrame();
+
+		const bool fxLRPressed = KeyConfig::Pressed(KeyConfig::kFX_L) && KeyConfig::Pressed(KeyConfig::kFX_R);
+		if (fxLRPressed && !fxLRPressedPrev)
+		{
+			co_return false;
+		}
+		fxLRPressedPrev = fxLRPressed;
+
+		if (KeyConfig::Down(KeyConfig::kStart) || KeyConfig::Down(KeyConfig::kBack))
+		{
+			co_return true;
+		}
+	}
 }
 
 void ResultScene::update()
