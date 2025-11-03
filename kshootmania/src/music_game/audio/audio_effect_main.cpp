@@ -495,6 +495,7 @@ namespace MusicGame::Audio
 		}
 
 		const Optional<AudioEffectInvocation>& activeLaserInvocation = getActiveLaserAudioEffectInvocation(currentPulseForAudio);
+		const Optional<AudioEffectInvocation>& activeLaserInvocationForSwitchAudio = getActiveLaserAudioEffectInvocation(currentPulseForSwitchAudio);
 		bool bypassLaser = true;
 
 		// LASERノーツの音声エフェクト
@@ -518,14 +519,13 @@ namespace MusicGame::Audio
 			float laserValue = 0.0f;
 			for (std::size_t i = 0; i < kson::kNumLaserLanesSZ; ++i)
 			{
-				const auto& laneLaserValue = kson::GraphSectionValueAt(chartData.note.laser[i], currentPulseForLaserAudio);
-
 				if (!inputStatus.laserIsOnOrNone[i])
 				{
 					// LASER判定中でOffの状態の場合(カーソルがノーツから外れている場合)はエフェクトを適用しない
 					continue;
 				}
 
+				const auto& laneLaserValue = kson::GraphSectionValueAt(chartData.note.laser[i], currentPulseForLaserAudio);
 				if (!laneLaserValue.has_value())
 				{
 					// 現在時間(currentPulseForLaserAudio)の時点にLASERノーツがない場合はエフェクトを適用しない
@@ -560,46 +560,63 @@ namespace MusicGame::Audio
 		Optional<std::size_t> activeSwitchAudioIdxLaser;
 	
 		// FXのSwitchAudioチェック
-		if (!bypassFX)
+		for (std::size_t i = 0U; i < kson::kNumFXLanesSZ; ++i)
 		{
-			for (std::size_t i = 0U; i < kson::kNumFXLanesSZ; ++i)
+			// ボタンが実際に押されているかチェック(SwitchAudioは先行発音しないためbypassとは別に調べる)
+			if (!inputStatus.longFXPressed[i].value_or(false))
 			{
-				const std::size_t laneIdx = (i == 0) ? m_lastPressedLongFXNoteLaneIdx : (1U - m_lastPressedLongFXNoteLaneIdx);
-				if (!currentLongNoteOfLanes[laneIdx].has_value())
-				{
-					continue;
-				}
-				const auto& [longNoteY, longNote] = *currentLongNoteOfLanes[laneIdx];
-				const auto itr = kson::ValueItrAt(m_longFXNoteInvocations[laneIdx], currentPulseForAudio);
-				if (itr == m_longFXNoteInvocations[laneIdx].end())
-				{
-					continue;
-				}
-				const auto& [longEventY, audioEffectInvocationOpt] = *itr;
-				if (!audioEffectInvocationOpt.has_value())
-				{
-					continue;
-				}
-				const auto& audioEffectInvocation = *audioEffectInvocationOpt;
-				if (longEventY > currentPulseForAudio || longEventY < longNoteY || longNoteY + longNote.length <= longEventY)
-				{
-					continue;
-				}
-				if (std::holds_alternative<SwitchAudioInvocation>(audioEffectInvocation))
-				{
-					const auto& switchInvocation = std::get<SwitchAudioInvocation>(audioEffectInvocation);
-					activeSwitchAudioIdxFX = switchInvocation.switchAudioIdx;
-					break;
-				}
+				continue;
+			}
+
+			const auto currentLongNoteByTime = CurrentLongNoteByTime(chartData.note.fx[i], currentPulseForSwitchAudio);
+			if (!currentLongNoteByTime.has_value())
+			{
+				continue;
+			}
+			const auto& [longNoteY, longNote] = *currentLongNoteByTime;
+			const auto itr = kson::ValueItrAt(m_longFXNoteInvocations[i], currentPulseForSwitchAudio);
+			if (itr == m_longFXNoteInvocations[i].end())
+			{
+				continue;
+			}
+			const auto& [longEventY, audioEffectInvocationOpt] = *itr;
+			if (!audioEffectInvocationOpt.has_value())
+			{
+				continue;
+			}
+			const auto& audioEffectInvocation = *audioEffectInvocationOpt;
+			if (longEventY > currentPulseForSwitchAudio || longEventY < longNoteY || longNoteY + longNote.length <= longEventY)
+			{
+				continue;
+			}
+			if (std::holds_alternative<SwitchAudioInvocation>(audioEffectInvocation))
+			{
+				const auto& switchInvocation = std::get<SwitchAudioInvocation>(audioEffectInvocation);
+				activeSwitchAudioIdxFX = switchInvocation.switchAudioIdx;
+				break;
 			}
 		}
 	
 		// LASERのSwitchAudioチェック
-		if (!bypassLaser)
 		{
-			if (activeLaserInvocation.has_value() && std::holds_alternative<SwitchAudioInvocation>(*activeLaserInvocation))
+			// いずれかのレーザーがOnかつノーツがある状態か調べる(SwitchAudioは先行発音しないためbypassとは別に調べる)
+			bool isAnyLaserOn = false;
+			for (std::size_t i = 0; i < kson::kNumLaserLanesSZ; ++i)
 			{
-				const auto& switchInvocation = std::get<SwitchAudioInvocation>(*activeLaserInvocation);
+				if (inputStatus.laserIsOnOrNone[i])
+				{
+					const auto& laneLaserValue = kson::GraphSectionValueAt(chartData.note.laser[i], currentPulseForSwitchAudio);
+					if (laneLaserValue.has_value())
+					{
+						isAnyLaserOn = true;
+						break;
+					}
+				}
+			}
+
+			if (isAnyLaserOn && activeLaserInvocationForSwitchAudio.has_value() && std::holds_alternative<SwitchAudioInvocation>(*activeLaserInvocationForSwitchAudio))
+			{
+				const auto& switchInvocation = std::get<SwitchAudioInvocation>(*activeLaserInvocationForSwitchAudio);
 				activeSwitchAudioIdxLaser = switchInvocation.switchAudioIdx;
 			}
 		}
