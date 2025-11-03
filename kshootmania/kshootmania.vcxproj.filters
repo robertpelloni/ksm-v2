@@ -327,6 +327,9 @@
     <ClCompile Include="src\common\math_utils.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
+    <ClCompile Include="src\common\noco_utils.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
     <ClCompile Include="src\music_game\audio\bgm.cpp">
       <Filter>Source Files\music_game\audio</Filter>
     </ClCompile>
@@ -926,6 +929,9 @@
       <Filter>Header Files\music_game\judgment</Filter>
     </ClInclude>
     <ClInclude Include="src\common\math_utils.hpp">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common\noco_utils.hpp">
       <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="src\music_game\game_defines.hpp">

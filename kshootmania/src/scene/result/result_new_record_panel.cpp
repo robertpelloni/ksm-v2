@@ -1,4 +1,5 @@
 ﻿#include "result_new_record_panel.hpp"
+#include "common/noco_utils.hpp"
 
 namespace
 {
@@ -36,7 +37,6 @@ void ResultNewRecordPanel::startDisplay()
 	m_canvas->setParamValue(U"overlay_visible", true);
 	m_canvas->setTweenActiveByTag(U"out_newRecord", false);
 	m_canvas->setTweenActiveByTag(U"in_newRecord", true);
-	m_fadeInStopwatch.restart();
 }
 
 void ResultNewRecordPanel::startRedisplay()
@@ -44,15 +44,12 @@ void ResultNewRecordPanel::startRedisplay()
 	m_canvas->setParamValue(U"overlay_visible", true);
 	m_canvas->setTweenActiveByTag(U"out_newRecord", false);
 	m_canvas->setTweenActiveByTag(U"inAgain_newRecord", true);
-	m_fadeInStopwatch.restart();
 }
 
 Co::Task<void> ResultNewRecordPanel::waitForFadeIn()
 {
-	co_await Co::WaitUntil([this]
-	{
-		return m_fadeInStopwatch.sF() >= kFadeInDelay + kTweenDuration;
-	});
+	co_await NocoUtils::WaitForTweenByTag(m_canvas, U"in_newRecord");
+	co_await NocoUtils::WaitForTweenByTag(m_canvas, U"inAgain_newRecord");
 }
 
 void ResultNewRecordPanel::startFadeOut()
@@ -60,15 +57,11 @@ void ResultNewRecordPanel::startFadeOut()
 	m_canvas->setTweenActiveByTag(U"in_newRecord", false);
 	m_canvas->setTweenActiveByTag(U"inAgain_newRecord", false);
 	m_canvas->setTweenActiveByTag(U"out_newRecord", true);
-	m_fadeOutStopwatch.restart();
 }
 
 Co::Task<void> ResultNewRecordPanel::waitForFadeOut()
 {
-	co_await Co::WaitUntil([this]
-	{
-		return m_fadeOutStopwatch.sF() >= kTweenDuration;
-	});
+	co_await NocoUtils::WaitForTweenByTag(m_canvas, U"out_newRecord");
 
 	m_canvas->setParamValue(U"overlay_visible", false);
 	m_isVisible = false;

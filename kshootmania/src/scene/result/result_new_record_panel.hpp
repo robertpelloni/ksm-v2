@@ -11,13 +11,6 @@ private:
 
 	bool m_isVisible = false;
 
-	Stopwatch m_fadeInStopwatch;
-
-	Stopwatch m_fadeOutStopwatch;
-
-	static constexpr double kFadeInDelay = 0.35;
-	static constexpr double kTweenDuration = 0.15;
-
 public:
 	explicit ResultNewRecordPanel(std::shared_ptr<noco::Canvas> canvas);
 
