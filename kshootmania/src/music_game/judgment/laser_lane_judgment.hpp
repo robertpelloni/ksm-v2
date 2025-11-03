@@ -61,6 +61,7 @@ namespace MusicGame::Judgment
 
 		kson::ByPulse<LaserSlamJudgment> m_slamJudgmentArray;
 		kson::ByPulse<LaserSlamJudgment>::iterator m_slamJudgmentArrayCursor;
+		kson::ByPulse<LaserSlamJudgment>::iterator m_passedSlamJudgmentCursor;
 
 		double m_lastCorrectMovementSec = kPastTimeSec;
 
@@ -89,6 +90,8 @@ namespace MusicGame::Judgment
 		void processLineJudgment(const kson::ByPulse<kson::LaserSection>& lane, kson::Pulse currentPulse, LaserLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef);
 
 		void processPassedLineJudgment(kson::Pulse currentPulse, JudgmentHandler& judgmentHandlerRef, IsAutoPlayYN isAutoPlay);
+
+		void processPassedSlamJudgment(const kson::ByPulse<kson::LaserSection>& lane, double currentTimeSec, LaserLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef, IsAutoPlayYN isAutoPlay);
 
 	public:
 		LaserLaneJudgment(JudgmentPlayMode judgmentPlayMode, KeyConfig::Button keyConfigButtonL, KeyConfig::Button keyConfigButtonR, const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache);
