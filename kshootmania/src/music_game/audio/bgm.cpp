@@ -2,78 +2,306 @@
 
 namespace MusicGame::Audio
 {
+	LegacyAudioFPMode DetermineLegacyAudioFPMode(const kson::ChartData& chartData, const FilePath& parentPath)
+	{
+		const auto& legacy = chartData.audio.bgm.legacy;
+
+		const FilePath pathF = FileSystem::PathAppend(parentPath, Unicode::FromUTF8(legacy.filenameF));
+		const FilePath pathP = FileSystem::PathAppend(parentPath, Unicode::FromUTF8(legacy.filenameP));
+		const FilePath pathFP = FileSystem::PathAppend(parentPath, Unicode::FromUTF8(legacy.filenameFP));
+
+		const bool hasF = !legacy.filenameF.empty() && FileSystem::Exists(pathF);
+		const bool hasP = !legacy.filenameP.empty() && FileSystem::Exists(pathP);
+		const bool hasFP = !legacy.filenameFP.empty() && FileSystem::Exists(pathFP);
+
+		if (hasF && hasP && hasFP)
+		{
+			return LegacyAudioFPMode::kFP;
+		}
+		else if (hasF)
+		{
+			return LegacyAudioFPMode::kF;
+		}
+		else
+		{
+			return LegacyAudioFPMode::kNone;
+		}
+	}
+
 	namespace
 	{
 		constexpr Duration kBlendTime = 5s;
 		constexpr Duration kManualUpdateInterval = 0.005s;
+
+		void EmplaceAudioEffectToBus(
+			ksmaudio::AudioEffect::AudioEffectBus* pAudioEffectBus,
+			const std::string& name,
+			const kson::AudioEffectDef& def,
+			const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
+			const std::set<float>& updateTriggerTiming)
+		{
+			switch (def.type)
+			{
+			case kson::AudioEffectType::Retrigger:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::Retrigger>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::Gate:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::Gate>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::Flanger:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::Flanger>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::Bitcrusher:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::Bitcrusher>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::Phaser:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::Phaser>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::PitchShift:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::PitchShift>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::Wobble:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::Wobble>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::Tapestop:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::Tapestop>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::Echo:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::Echo>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::Sidechain:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::Sidechain>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::PeakingFilter:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::PeakingFilter>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::HighPassFilter:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::HighPassFilter>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			case kson::AudioEffectType::LowPassFilter:
+				pAudioEffectBus->emplaceAudioEffect<ksmaudio::LowPassFilter>(name, def.v, paramChanges, updateTriggerTiming);
+				break;
+
+			default:
+				assert(false && "Unknown audio effect type");
+				break;
+			}
+		}
 	}
 
-	void BGM::emplaceAudioEffectToBus(
-		ksmaudio::AudioEffect::AudioEffectBus* pAudioEffectBus,
+	void LegacyAudioFPStream::load(const kson::ChartData& chartData, const FilePath& parentPath, double volume, [[maybe_unused]] SecondsF offset)
+	{
+		if (mode == LegacyAudioFPMode::kNone)
+		{
+			return;
+		}
+
+		const auto& legacy = chartData.audio.bgm.legacy;
+
+		const FilePath pathF = FileSystem::PathAppend(parentPath, Unicode::FromUTF8(legacy.filenameF));
+		const FilePath pathP = FileSystem::PathAppend(parentPath, Unicode::FromUTF8(legacy.filenameP));
+		const FilePath pathFP = FileSystem::PathAppend(parentPath, Unicode::FromUTF8(legacy.filenameFP));
+
+		if (mode == LegacyAudioFPMode::kFP)
+		{
+			streamF = std::make_unique<ksmaudio::StreamWithEffects>(pathF.narrow(), volume, true, true);
+			streamP = std::make_unique<ksmaudio::StreamWithEffects>(pathP.narrow(), volume, true, true);
+			streamFP = std::make_unique<ksmaudio::StreamWithEffects>(pathFP.narrow(), volume, true, true);
+
+			streamF->setMuted(true);
+			streamP->setMuted(true);
+			streamFP->setMuted(true);
+		}
+		else if (mode == LegacyAudioFPMode::kF)
+		{
+			streamF = std::make_unique<ksmaudio::StreamWithEffects>(pathF.narrow(), volume, true, true);
+			pAudioEffectBusLaserForF = streamF->emplaceAudioEffectBusLaser();
+
+			streamF->setMuted(true);
+		}
+	}
+
+	void LegacyAudioFPStream::update([[maybe_unused]] ksmaudio::StreamWithEffects& mainStream)
+	{
+		if (mode == LegacyAudioFPMode::kNone)
+		{
+			return;
+		}
+
+		if (streamF)
+		{
+			streamF->updateManually();
+		}
+		if (streamP)
+		{
+			streamP->updateManually();
+		}
+		if (streamFP)
+		{
+			streamFP->updateManually();
+		}
+	}
+
+	void LegacyAudioFPStream::updateMute(ksmaudio::StreamWithEffects& mainStream, bool fxActive, bool laserActive)
+	{
+		if (mode == LegacyAudioFPMode::kNone)
+		{
+			return;
+		}
+
+		if (mode == LegacyAudioFPMode::kFP)
+		{
+			const bool useMain = !fxActive && !laserActive;
+			const bool useF = fxActive && !laserActive;
+			const bool useP = !fxActive && laserActive;
+			const bool useFP = fxActive && laserActive;
+
+			mainStream.setMuted(!useMain);
+			streamF->setMuted(!useF);
+			streamP->setMuted(!useP);
+			streamFP->setMuted(!useFP);
+		}
+		else if (mode == LegacyAudioFPMode::kF)
+		{
+			const bool useMain = !fxActive;
+			const bool useF = fxActive;
+
+			mainStream.setMuted(!useMain);
+			streamF->setMuted(!useF);
+		}
+	}
+
+	void LegacyAudioFPStream::play()
+	{
+		if (streamF)
+		{
+			streamF->play();
+		}
+		if (streamP)
+		{
+			streamP->play();
+		}
+		if (streamFP)
+		{
+			streamFP->play();
+		}
+	}
+
+	void LegacyAudioFPStream::pause()
+	{
+		if (streamF)
+		{
+			streamF->pause();
+		}
+		if (streamP)
+		{
+			streamP->pause();
+		}
+		if (streamFP)
+		{
+			streamFP->pause();
+		}
+	}
+
+	void LegacyAudioFPStream::stop()
+	{
+		if (streamF)
+		{
+			streamF->stop();
+		}
+		if (streamP)
+		{
+			streamP->stop();
+		}
+		if (streamFP)
+		{
+			streamFP->stop();
+		}
+	}
+
+	void LegacyAudioFPStream::seekPosSec(SecondsF posSec)
+	{
+		if (streamF)
+		{
+			streamF->seekPosSec(posSec);
+		}
+		if (streamP)
+		{
+			streamP->seekPosSec(posSec);
+		}
+		if (streamFP)
+		{
+			streamFP->seekPosSec(posSec);
+		}
+	}
+
+	void LegacyAudioFPStream::updateManually()
+	{
+		if (streamF)
+		{
+			streamF->updateManually();
+		}
+		if (streamP)
+		{
+			streamP->updateManually();
+		}
+		if (streamFP)
+		{
+			streamFP->updateManually();
+		}
+	}
+
+	void LegacyAudioFPStream::emplaceAudioEffectLaser(
 		const std::string& name,
 		const kson::AudioEffectDef& def,
 		const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
 		const std::set<float>& updateTriggerTiming)
 	{
-		switch (def.type)
+		if (mode != LegacyAudioFPMode::kF || !pAudioEffectBusLaserForF)
 		{
-		case kson::AudioEffectType::Retrigger:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Retrigger>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::Gate:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Gate>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::Flanger:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Flanger>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::Bitcrusher:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Bitcrusher>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::Phaser:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Phaser>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::PitchShift:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::PitchShift>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::Wobble:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Wobble>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::Tapestop:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Tapestop>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::Echo:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Echo>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::Sidechain:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::Sidechain>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::PeakingFilter:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::PeakingFilter>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::HighPassFilter:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::HighPassFilter>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		case kson::AudioEffectType::LowPassFilter:
-			pAudioEffectBus->emplaceAudioEffect<ksmaudio::LowPassFilter>(name, def.v, paramChanges, updateTriggerTiming);
-			break;
-
-		default:
-			assert(false && "Unknown audio effect type");
-			break;
+			return;
 		}
+
+		EmplaceAudioEffectToBus(pAudioEffectBusLaserForF, name, def, paramChanges, updateTriggerTiming);
 	}
+
+	void LegacyAudioFPStream::updateAudioEffectLaser(
+		bool bypass,
+		const ksmaudio::AudioEffect::Status& status,
+		const std::optional<std::size_t>& activeAudioEffectIdx,
+		const ksmaudio::AudioEffect::AudioEffectBus& mainAudioEffectBusLaser)
+	{
+		if (mode != LegacyAudioFPMode::kF || !pAudioEffectBusLaserForF)
+		{
+			return;
+		}
+
+		if (!streamF || streamF->muted())
+		{
+			return;
+		}
+
+		pAudioEffectBusLaserForF->setBypass(bypass);
+
+		const std::optional<std::size_t> convertedIdx = activeAudioEffectIdx.has_value()
+			? mainAudioEffectBusLaser.convertIdxToOtherBus(activeAudioEffectIdx.value(), *pAudioEffectBusLaserForF)
+			: std::nullopt;
+
+		pAudioEffectBusLaserForF->updateByLaser(status, convertedIdx);
+	}
+
 
 	void BGM::emplaceAudioEffectImpl(bool isFX, const std::string& name, const kson::AudioEffectDef& def, const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges, const std::set<float>& updateTriggerTiming)
 	{
@@ -84,10 +312,10 @@ namespace MusicGame::Audio
 		}
 
 		const auto pAudioEffectBus = isFX ? m_pAudioEffectBusFX : m_pAudioEffectBusLaser;
-		emplaceAudioEffectToBus(pAudioEffectBus, name, def, paramChanges, updateTriggerTiming);
+		EmplaceAudioEffectToBus(pAudioEffectBus, name, def, paramChanges, updateTriggerTiming);
 	}
 
-	BGM::BGM(FilePathView filePath, double volume, SecondsF offset)
+	BGM::BGM(FilePathView filePath, double volume, SecondsF offset, LegacyAudioFPMode legacyMode, const kson::ChartData& chartData, const FilePath& parentPath)
 		: m_stream(filePath.narrow(), volume, true, true)
 		, m_duration(m_stream.duration())
 		, m_offset(offset)
@@ -95,7 +323,9 @@ namespace MusicGame::Audio
 		, m_pAudioEffectBusLaser(m_stream.emplaceAudioEffectBusLaser())
 		, m_stopwatch(StartImmediately::No)
 		, m_manualUpdateStopwatch(StartImmediately::Yes)
+		, m_legacyAudioFPStream{ .mode = legacyMode }
 	{
+		m_legacyAudioFPStream.load(chartData, parentPath, volume, offset);
 	}
 
 	void BGM::update()
@@ -118,6 +348,7 @@ namespace MusicGame::Audio
 				{
 					switchAudio->stream.updateManually();
 				}
+				m_legacyAudioFPStream.updateManually();
 				m_manualUpdateStopwatch.restart();
 			}
 			m_timeSec = m_stream.posSec() - m_offset;
@@ -146,6 +377,8 @@ namespace MusicGame::Audio
 					switchAudio->stream.seekPosSec(m_timeSec + m_offset);
 					switchAudio->stream.play();
 				}
+				m_legacyAudioFPStream.seekPosSec(m_timeSec + m_offset);
+				m_legacyAudioFPStream.play();
 				m_isStreamStarted = true;
 			}
 		}
@@ -182,6 +415,9 @@ namespace MusicGame::Audio
 				status,
 				convertedIdx);
 		}
+
+		// f音源にもLASERエフェクトを適用
+		m_legacyAudioFPStream.updateAudioEffectLaser(bypass, status, activeAudioEffectIdx, *m_pAudioEffectBusLaser);
 	}
 
 	void BGM::play()
@@ -204,6 +440,7 @@ namespace MusicGame::Audio
 			{
 				switchAudio->stream.pause();
 			}
+			m_legacyAudioFPStream.pause();
 		}
 		m_stopwatch.pause();
 		m_isPaused = true;
@@ -222,6 +459,7 @@ namespace MusicGame::Audio
 			{
 				switchAudio->stream.stop();
 			}
+			m_legacyAudioFPStream.stop();
 		}
 		else
 		{
@@ -234,6 +472,7 @@ namespace MusicGame::Audio
 			{
 				switchAudio->stream.seekPosSec(posSec);
 			}
+			m_legacyAudioFPStream.seekPosSec(posSec);
 		}
 		m_timeSec = posSec;
 		m_stopwatch.set(posSec);
@@ -392,7 +631,27 @@ namespace MusicGame::Audio
 		// (標準のLASERエフェクトのみが登録される)
 		for (auto& switchAudio : m_switchAudioStreamsFX)
 		{
-			emplaceAudioEffectToBus(switchAudio->pAudioEffectBusLaser, name, def, paramChanges, updateTriggerTiming);
+			EmplaceAudioEffectToBus(switchAudio->pAudioEffectBusLaser, name, def, paramChanges, updateTriggerTiming);
 		}
+	}
+
+	void BGM::updateLegacyAudioMute(bool fxActive, bool laserActive)
+	{
+		m_legacyAudioFPStream.updateMute(m_stream, fxActive, laserActive);
+	}
+
+	LegacyAudioFPStream& BGM::legacyAudioFPStream()
+	{
+		return m_legacyAudioFPStream;
+	}
+
+	const LegacyAudioFPStream& BGM::legacyAudioFPStream() const
+	{
+		return m_legacyAudioFPStream;
+	}
+
+	LegacyAudioFPMode BGM::legacyAudioFPMode() const
+	{
+		return m_legacyAudioFPStream.mode;
 	}
 }

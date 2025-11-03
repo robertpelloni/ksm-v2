@@ -4,6 +4,52 @@
 
 namespace MusicGame::Audio
 {
+	enum class LegacyAudioFPMode
+	{
+		kNone, // リアルタイムエフェクト
+		kF, // 2ファイル指定
+		kFP, // 4ファイル指定
+	};
+
+	LegacyAudioFPMode DetermineLegacyAudioFPMode(const kson::ChartData& chartData, const FilePath& parentPath);
+
+	struct LegacyAudioFPStream
+	{
+		std::unique_ptr<ksmaudio::StreamWithEffects> streamF;
+		std::unique_ptr<ksmaudio::StreamWithEffects> streamP;
+		std::unique_ptr<ksmaudio::StreamWithEffects> streamFP;
+		LegacyAudioFPMode mode = LegacyAudioFPMode::kNone;
+		ksmaudio::AudioEffect::AudioEffectBus* pAudioEffectBusLaserForF = nullptr;
+
+		void load(const kson::ChartData& chartData, const FilePath& parentPath, double volume, SecondsF offset);
+
+		void update(ksmaudio::StreamWithEffects& mainStream);
+
+		void updateMute(ksmaudio::StreamWithEffects& mainStream, bool fxActive, bool laserActive);
+
+		void play();
+
+		void pause();
+
+		void stop();
+
+		void seekPosSec(SecondsF posSec);
+
+		void updateManually();
+
+		void emplaceAudioEffectLaser(
+			const std::string& name,
+			const kson::AudioEffectDef& def,
+			const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
+			const std::set<float>& updateTriggerTiming);
+
+		void updateAudioEffectLaser(
+			bool bypass,
+			const ksmaudio::AudioEffect::Status& status,
+			const std::optional<std::size_t>& activeAudioEffectIdx,
+			const ksmaudio::AudioEffect::AudioEffectBus& mainAudioEffectBusLaser);
+	};
+
 	struct SwitchAudioStream
 	{
 		std::string name;
@@ -43,6 +89,8 @@ namespace MusicGame::Audio
 		Optional<std::size_t> m_activeSwitchAudioIdxFX;
 		Optional<std::size_t> m_activeSwitchAudioIdxLaser;
 
+		LegacyAudioFPStream m_legacyAudioFPStream;
+
 		void emplaceAudioEffectImpl(
 			bool isFX,
 			const std::string& name,
@@ -50,15 +98,8 @@ namespace MusicGame::Audio
 			const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
 			const std::set<float>& updateTriggerTiming);
 
-		static void emplaceAudioEffectToBus(
-			ksmaudio::AudioEffect::AudioEffectBus* pAudioEffectBus,
-			const std::string& name,
-			const kson::AudioEffectDef& def,
-			const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
-			const std::set<float>& updateTriggerTiming);
-
 	public:
-		BGM(FilePathView filePath, double volume, SecondsF offset);
+		BGM(FilePathView filePath, double volume, SecondsF offset, LegacyAudioFPMode legacyMode, const kson::ChartData& chartData, const FilePath& parentPath);
 
 		void update();
 
@@ -105,6 +146,8 @@ namespace MusicGame::Audio
 
 		void updateSwitchAudio(Optional<std::size_t> switchAudioIdxFX, Optional<std::size_t> switchAudioIdxLaser);
 
+		void updateLegacyAudioMute(bool fxActive, bool laserActive);
+
 		Optional<std::size_t> switchAudioIdxByNameFX(const std::string& name) const;
 		Optional<std::size_t> switchAudioIdxByNameLaser(const std::string& name) const;
 
@@ -113,5 +156,14 @@ namespace MusicGame::Audio
 			const kson::AudioEffectDef& def,
 			const std::unordered_map<std::string, std::map<float, std::string>>& paramChanges,
 			const std::set<float>& updateTriggerTiming = {});
+
+		[[nodiscard]]
+		LegacyAudioFPStream& legacyAudioFPStream();
+
+		[[nodiscard]]
+		const LegacyAudioFPStream& legacyAudioFPStream() const;
+
+		[[nodiscard]]
+		LegacyAudioFPMode legacyAudioFPMode() const;
 	};
 }
