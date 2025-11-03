@@ -254,6 +254,16 @@ namespace MusicGame::Judgment
 		return m_direction;
 	}
 
+	JudgmentResult LaserSlamJudgment::result() const
+	{
+		return m_result;
+	}
+
+	void LaserSlamJudgment::setResult(JudgmentResult result)
+	{
+		m_result = result;
+	}
+
 	void LaserSlamJudgment::addDeltaCursorX(double deltaCursorX, double currentTimeSec)
 	{
 		if (Abs(currentTimeSec - m_sec) > TimingWindow::LaserNote::kWindowSecSlam)
@@ -396,6 +406,9 @@ namespace MusicGame::Judgment
 		const JudgmentResult judgmentResult = laserSlamJudgmentRef.judgmentResult(currentTimeSec, isAutoPlay);
 		if (judgmentResult != JudgmentResult::kUnspecified)
 		{
+			// 判定結果を記録
+			laserSlamJudgmentRef.setResult(judgmentResult);
+
 			judgmentHandlerRef.onLaserSlamJudged(judgmentResult, laserSlamPulse, m_prevTimeSecForDraw, m_prevPulse, laserSlamJudgmentRef.direction());
 
 			if (judgmentResult == JudgmentResult::kCritical)
@@ -433,9 +446,9 @@ namespace MusicGame::Judgment
 					break;
 				}
 
-				// 未判定である(まだERROR判定になっていない)直角LASERが見つかったら抜ける
+				// 未判定の直角LASERが見つかったら抜ける
 				const auto& [_, nextLaserSlamJudgmentRef] = *m_slamJudgmentArrayCursor;
-				if (nextLaserSlamJudgmentRef.judgmentResult(currentTimeSec, isAutoPlay) == JudgmentResult::kUnspecified)
+				if (nextLaserSlamJudgmentRef.result() == JudgmentResult::kUnspecified)
 				{
 					break;
 				}
@@ -678,39 +691,51 @@ namespace MusicGame::Judgment
 		for (auto itr = m_passedSlamJudgmentCursor; itr != m_slamJudgmentArray.end(); ++itr)
 		{
 			auto& [laserSlamPulse, laserSlamJudgmentRef] = *itr;
-			const double passSec = laserSlamJudgmentRef.sec() + thresholdSec;
-			if (currentTimeSec >= passSec)
+
+			// 既に判定済みの場合はスキップ
+			if (laserSlamJudgmentRef.result() != JudgmentResult::kUnspecified)
 			{
-				// 通過済みの直角LASER判定
-				judgmentHandlerRef.onLaserSlamJudged(result, laserSlamPulse, m_prevTimeSecForDraw, m_prevPulse, laserSlamJudgmentRef.direction());
-
-				if (result == JudgmentResult::kCritical)
-				{
-					// 判定した時間を記録(補正および効果音再生に使用)
-					laneStatusRef.lastLaserSlamJudgedTimeSec = Max(currentTimeSec, laserSlamJudgmentRef.sec());
-					laneStatusRef.lastJudgedLaserSlamPulse = laserSlamPulse;
-
-					// アニメーション
-					const auto sectionItr = kson::GraphSectionAt(lane, laserSlamPulse);
-					if (sectionItr != lane.end())
-					{
-						const auto& [y, section] = *sectionItr;
-						const auto& point = section.v.at(laserSlamPulse - y);
-						laneStatusRef.rippleAnim.push({
-							.startTimeSec = Max(laserSlamJudgmentRef.sec(), m_prevTimeSecForDraw),
-							.wide = section.wide(),
-							.x = point.v.vf,
-						});
-					}
-				}
-				else
-				{
-					// 直角LASERがERROR判定になった場合は補正を切る
-					m_lastCorrectMovementSec = kPastTimeSec;
-				}
-
 				m_passedSlamJudgmentCursor = std::next(itr);
+				continue;
 			}
+
+			const double passSec = laserSlamJudgmentRef.sec() + thresholdSec;
+			if (currentTimeSec < passSec)
+			{
+				// まだ通過していない判定に到達したのでループを抜ける
+				break;
+			}
+
+			// 通過済みの直角LASER判定
+			laserSlamJudgmentRef.setResult(result);
+			judgmentHandlerRef.onLaserSlamJudged(result, laserSlamPulse, m_prevTimeSecForDraw, m_prevPulse, laserSlamJudgmentRef.direction());
+
+			if (result == JudgmentResult::kCritical)
+			{
+				// 判定した時間を記録(補正および効果音再生に使用)
+				laneStatusRef.lastLaserSlamJudgedTimeSec = Max(currentTimeSec, laserSlamJudgmentRef.sec());
+				laneStatusRef.lastJudgedLaserSlamPulse = laserSlamPulse;
+
+				// アニメーション
+				const auto sectionItr = kson::GraphSectionAt(lane, laserSlamPulse);
+				if (sectionItr != lane.end())
+				{
+					const auto& [y, section] = *sectionItr;
+					const auto& point = section.v.at(laserSlamPulse - y);
+					laneStatusRef.rippleAnim.push({
+						.startTimeSec = Max(laserSlamJudgmentRef.sec(), m_prevTimeSecForDraw),
+						.wide = section.wide(),
+						.x = point.v.vf,
+					});
+				}
+			}
+			else
+			{
+				// 直角LASERがERROR判定になった場合は補正を切る
+				m_lastCorrectMovementSec = kPastTimeSec;
+			}
+
+			m_passedSlamJudgmentCursor = std::next(itr);
 		}
 	}
 

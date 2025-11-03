@@ -20,6 +20,9 @@ namespace MusicGame::Judgment
 		// カーソルの累計移動量
 		double m_totalAbsDeltaCursorX = 0.0;
 
+		// 判定結果
+		JudgmentResult m_result = JudgmentResult::kUnspecified;
+
 	public:
 		LaserSlamJudgment(double sec, int32 direction);
 
@@ -30,6 +33,11 @@ namespace MusicGame::Judgment
 		void addDeltaCursorX(double deltaCursorX, double currentTimeSec);
 
 		bool isCriticalSatisfied() const;
+
+		[[nodiscard]]
+		JudgmentResult result() const;
+
+		void setResult(JudgmentResult result);
 
 		JudgmentResult judgmentResult(double currentTimeSec, IsAutoPlayYN isAutoPlay) const;
 	};
