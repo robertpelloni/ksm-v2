@@ -42,6 +42,7 @@ namespace MusicGame::Audio
 		const kson::ByPulse<Optional<AudioEffectInvocation>> m_laserPulseInvocations;
 
 		const double m_audioProcDelaySec;
+		const double m_peakingFilterDelaySec;
 
 		std::array<bool, kson::kNumFXLanesSZ> m_longFXPressedPrev = { false, false };
 

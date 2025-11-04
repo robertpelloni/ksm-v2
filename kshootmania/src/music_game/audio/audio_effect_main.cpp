@@ -12,6 +12,18 @@ namespace MusicGame::Audio
 		constexpr std::string_view kPeakingFilterAudioEffectName = "peaking_filter";
 		constexpr std::string_view kDefaultLaserAudioEffectName = kPeakingFilterAudioEffectName;
 
+		double GetEffectivePeakingFilterDelaySec(const kson::ChartData& chartData)
+		{
+			if (!chartData.audio.bgm.legacy.filenameP.empty())
+			{
+				// p音源が指定されていてp音源の音声ファイルが存在しない場合、リアルタイムエフェクトのタイミングは
+				// 旧REAPER方式を再現するために遅延ゼロとする
+				return 0.0;
+			}
+
+			return chartData.audio.audioEffect.laser.peakingFilterDelay / 1000.0;
+		}
+
 		struct AudioEffectDefWithBuiltinFlag
 		{
 			std::string name;
@@ -436,6 +448,7 @@ namespace MusicGame::Audio
 		: m_longFXNoteInvocations((RegisterAudioEffects(bgm, chartData, timingCache, parentPath), CreateLongFXNoteAudioEffectInvocations(bgm, chartData))) // 先に登録しておく必要があるので、分かりにくいがカンマ演算子を使用している(TODO: もうちょっとどうにかする)
 		, m_laserPulseInvocations(CreateLaserPulseAudioEffectInvocations(bgm, chartData))
 		, m_audioProcDelaySec(audioProcDelaySec)
+		, m_peakingFilterDelaySec(GetEffectivePeakingFilterDelaySec(chartData))
 	{
 	}
 
@@ -502,10 +515,10 @@ namespace MusicGame::Audio
 				&& std::holds_alternative<DSPAudioEffectInvocation>(*activeLaserInvocation)
 				&& std::get<DSPAudioEffectInvocation>(*activeLaserInvocation).isPeakingFilterLaser;
 			kson::Pulse currentPulseForLaserAudio;
-			if (isPeakingFilter && chartData.audio.audioEffect.laser.peakingFilterDelay != 0)
+			if (isPeakingFilter && m_peakingFilterDelaySec != 0.0)
 			{
 				// peaking_filterの場合は遅延時間を適用
-				const double currentTimeSecForLaserAudio = currentTimeSecForAudio - static_cast<double>(chartData.audio.audioEffect.laser.peakingFilterDelay) / 1000;
+				const double currentTimeSecForLaserAudio = currentTimeSecForAudio - m_peakingFilterDelaySec;
 				currentPulseForLaserAudio = kson::SecToPulse(currentTimeSecForLaserAudio, chartData.beat, timingCache);
 			}
 			else
