@@ -543,7 +543,8 @@ namespace MusicGame::Audio
 		bool isFX,
 		const std::string& effectName,
 		const std::string& filename,
-		const FilePath& parentPath)
+		const FilePath& parentPath,
+		double volume)
 	{
 		const FilePath fullPath = FileSystem::PathAppend(parentPath, Unicode::FromUTF8(filename));
 		if (!FileSystem::Exists(fullPath))
@@ -558,7 +559,7 @@ namespace MusicGame::Audio
 		targetStreams.emplace_back(std::make_unique<SwitchAudioStream>(
 			effectName,
 			fullPath.narrow(),
-			1.0,   // volume (メインBGMと同じ)
+			volume,
 			true,  // コンプレッサー有効
 			true   // プリロード
 		));

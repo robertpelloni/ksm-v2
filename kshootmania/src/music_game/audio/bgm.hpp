@@ -142,7 +142,8 @@ namespace MusicGame::Audio
 			bool isFX,
 			const std::string& effectName,
 			const std::string& filename,
-			const FilePath& parentPath);
+			const FilePath& parentPath,
+			double volume);
 
 		void updateSwitchAudio(Optional<std::size_t> switchAudioIdxFX, Optional<std::size_t> switchAudioIdxLaser);
 

@@ -169,7 +169,7 @@ namespace MusicGame::Audio
 						{
 							// ファイル名をもとに音声を追加ロード
 							const std::string& filename = def.v.at("filename");
-							bgm.emplaceSwitchAudioStream(true, name, filename, parentPath);
+							bgm.emplaceSwitchAudioStream(true, name, filename, parentPath, chartData.audio.bgm.vol);
 						}
 					}
 					else
@@ -219,7 +219,7 @@ namespace MusicGame::Audio
 						{
 							// ファイル名をもとに音声を追加ロード
 							const std::string& filename = def.v.at("filename");
-							bgm.emplaceSwitchAudioStream(false, name, filename, parentPath);
+							bgm.emplaceSwitchAudioStream(false, name, filename, parentPath, chartData.audio.bgm.vol);
 						}
 					}
 					else
