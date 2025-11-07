@@ -10,7 +10,7 @@ namespace MusicGame
 
 	bool PlayResult::isAborted() const
 	{
-		if (comboStats.critical + comboStats.near() + comboStats.error < totalCombo)
+		if (comboStats.critical + comboStats.totalNear() + comboStats.error < totalCombo)
 		{
 			// 途中でプレイをやめた場合
 			return true;
@@ -18,7 +18,7 @@ namespace MusicGame
 		else
 		{
 			// 途中でプレイをやめていなければ判定内訳の合計がtotalComboになるはず
-			assert(comboStats.critical + comboStats.near() + comboStats.error == totalCombo);
+			assert(comboStats.critical + comboStats.totalNear() + comboStats.error == totalCombo);
 			return false;
 		}
 	}
@@ -56,7 +56,7 @@ namespace MusicGame
 		}
 		else if (maxCombo == totalCombo)
 		{
-			assert(comboStats.critical + comboStats.near() == totalCombo);
+			assert(comboStats.critical + comboStats.totalNear() == totalCombo);
 			return Achievement::kFullCombo;
 		}
 		else

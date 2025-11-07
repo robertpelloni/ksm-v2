@@ -295,7 +295,7 @@ void ResultScene::updateCanvasParams()
 		{ U"scoreNumber", U"{:08d}"_fmt(m_playResult.score) },
 		{ U"maxComboNumber", U"{:04d}"_fmt(m_playResult.maxCombo) },
 		{ U"criticalCount", U"{:04d}"_fmt(m_playResult.comboStats.critical) },
-		{ U"nearCount", U"{:04d}"_fmt(m_playResult.comboStats.near()) },
+		{ U"nearCount", U"{:04d}"_fmt(m_playResult.comboStats.totalNear()) },
 		{ U"errorCount", U"{:04d}"_fmt(m_playResult.comboStats.error) },
 		{ U"gaugePercentageNumber", U"{}"_fmt(static_cast<int32>(m_playResult.gaugePercentage)) },
 		{ U"gaugeTextureIndex", static_cast<double>(gaugeTextureIndex) },

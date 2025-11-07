@@ -14,14 +14,14 @@ namespace MusicGame::Judgment
 
 		int32 error = 0;
 
-		int32 near() const
+		int32 totalNear() const
 		{
 			return nearFast + nearSlow;
 		}
 
 		int32 totalJudgedCombo() const
 		{
-			return critical + near() + error;
+			return critical + totalNear() + error;
 		}
 	};
 
