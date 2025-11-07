@@ -42,6 +42,13 @@ public:
 
 	TextureRegion operator()(int32 row = 0, int32 column = 0) const;
 
+	template <typename T, typename U>
+	TextureRegion operator()(T row = 0, U column = 0) const
+		requires std::convertible_to<T, int32>&& std::convertible_to<U, int32>
+	{
+		return operator()(static_cast<int32>(row), static_cast<int32>(column));
+	}
+
 	int32 row() const
 	{
 		return m_sizeInfo.row;

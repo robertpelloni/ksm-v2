@@ -169,7 +169,7 @@ namespace MusicGame::Graphics
 		{
 			// レイヤーアニメーション速度の計算
 			int32 layerFrame = 0;
-			const std::int32_t duration = chartData.bg.legacy.layer.duration;
+			const int32 duration = chartData.bg.legacy.layer.duration;
 			if (duration == 0)
 			{
 				// duration == 0の場合、テンポ同期(1フレーム = 0.035小節)

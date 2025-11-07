@@ -73,35 +73,35 @@ TextureRegion TiledTexture::operator()(int32 row, int32 column) const
 	if (row < 0 || m_sizeInfo.row <= row)
 	{
 #ifdef NDEBUG
-		Print << U"Warning[ TiledTexture::draw() ]: row(={}) is out of range! (min:0, max:{})"_fmt(row, m_sizeInfo.row - 1);
+		Logger << U"[ksm warning] TiledTexture::draw(): row(={}) is out of range! (min:0, max:{})"_fmt(row, m_sizeInfo.row - 1);
 #else
-		Print << U"Warning[ TiledTexture::draw(), \"{}\" ]: row(={}) is out of range! (min:0, max:{})"_fmt(m_textureAssetKey, row, m_sizeInfo.row - 1);
+		Logger << U"[ksm warning] TiledTexture::draw(), \"{}\": row(={}) is out of range! (min:0, max:{})"_fmt(m_textureAssetKey, row, m_sizeInfo.row - 1);
 #endif
 	}
 	if (column < 0 || m_sizeInfo.column <= column)
 	{
 #ifdef NDEBUG
-		Print << U"Warning[ TiledTexture::draw() ]: column(={}) is out of range! (min:0, max:{})"_fmt(column, m_sizeInfo.column - 1);
+		Logger << U"[ksm warning] TiledTexture::draw(): column(={}) is out of range! (min:0, max:{})"_fmt(column, m_sizeInfo.column - 1);
 #else
-		Print << U"Warning[ TiledTexture::draw(), \"{}\" ]: column(={}) is out of range! (min:0, max:{})"_fmt(m_textureAssetKey, column, m_sizeInfo.column - 1);
+		Logger << U"[ksm warning] TiledTexture::draw(), \"{}\": column(={}) is out of range! (min:0, max:{})"_fmt(m_textureAssetKey, column, m_sizeInfo.column - 1);
 #endif
 	}
 
 	if (m_sizeInfo.sourceSize.x <= 0 || m_sizeInfo.sourceSize.y <= 0)
 	{
 #ifdef NDEBUG
-		Print << U"Warning[ TiledTexture::draw() ]: sourceSize is invalid! ({})"_fmt(m_sizeInfo.sourceSize);
+		Logger << U"[ksm warning] TiledTexture::draw(): sourceSize is invalid! ({})"_fmt(m_sizeInfo.sourceSize);
 #else
-		Print << U"Warning[ TiledTexture::draw(), \"{}\" ]: sourceSize is invalid! ({})"_fmt(m_textureAssetKey, m_sizeInfo.sourceSize);
+		Logger << U"[ksm warning] TiledTexture::draw(), \"{}\": sourceSize is invalid! ({})"_fmt(m_textureAssetKey, m_sizeInfo.sourceSize);
 #endif
 		return TextureRegion{};
 	}
 	if (m_scaledSize.x <= 0 || m_scaledSize.y <= 0)
 	{
 #ifdef NDEBUG
-		Print << U"Warning[ TiledTexture::draw() ]: m_scaledSize is invalid! ({})"_fmt(m_scaledSize);
+		Logger << U"[ksm warning] TiledTexture::draw(): m_scaledSize is invalid! ({})"_fmt(m_scaledSize);
 #else
-		Print << U"Warning[ TiledTexture::draw(), \"{}\" ]: m_scaledSize is invalid! ({})"_fmt(m_textureAssetKey, m_scaledSize);
+		Logger << U"[ksm warning] TiledTexture::draw(), \"{}\": m_scaledSize is invalid! ({})"_fmt(m_textureAssetKey, m_scaledSize);
 #endif
 		return TextureRegion{};
 	}

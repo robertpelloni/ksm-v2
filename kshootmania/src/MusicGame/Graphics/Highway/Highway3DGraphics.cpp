@@ -12,13 +12,13 @@ namespace MusicGame::Graphics
 
 		// カメラ座標と判定ラインを線で結んだ場合の垂直からの角度
 		// (値の根拠は不明だが、KSMv1でこの値が使用されていたためそのまま持ってきている)
-		constexpr double kCameraToJdglineRadians = -0.6125;
+		constexpr float kCameraToJdglineRadians = -0.6125f;
 
-		constexpr double kJdglineYFromBottom = 14;
+		constexpr float kJdglineYFromBottom = 14.0f;
 
-		constexpr double kPlaneHeight = kHighwayPlaneSize.y;
-		constexpr double kPlaneHeightBelowJdgline = kPlaneHeight * kJdglineYFromBottom / kHighwayTextureSize.y;
-		constexpr double kPlaneHeightAboveJdgline = kPlaneHeight - kPlaneHeightBelowJdgline;
+		constexpr float kPlaneHeight = kHighwayPlaneSize.y;
+		constexpr float kPlaneHeightBelowJdgline = kPlaneHeight * kJdglineYFromBottom / kHighwayTextureSize.y;
+		constexpr float kPlaneHeightAboveJdgline = kPlaneHeight - kPlaneHeightBelowJdgline;
 
 		// UV座標の縮め幅(端にテクスチャの折り返しピクセルが見える現象の対策)
 		constexpr float kUVShrinkX = 0.0075f;
@@ -52,14 +52,14 @@ namespace MusicGame::Graphics
 		// HSP版の該当箇所: https://github.com/kshootmania/ksm-v1/blob/d2811a09e2d75dad5cc152d7c4073897061addb7/src/scene/play/play_draw_frame.hsp#L779-L821
 
 		const auto& camStatus = viewStatus.camStatus;
-		const double scaledZoomBottom = Camera::ScaledCamZoomBottomValue(camStatus.zoomBottom);
+		const float scaledZoomBottom = static_cast<float>(Camera::ScaledCamZoomBottomValue(camStatus.zoomBottom));
 
 		if (camStatus.useLegacyZoomTop)
 		{
 			// KSHバージョン167未満の場合、zoom_topは移動として扱う
 			// HSP版: https://github.com/kshootmania/ksm-v1/blob/ea05374a3ece796612b29d927cb3c6f5aabb266e/src/scene/play/play_draw_frame.hsp#L828-L841
-			const double legacyZoomTop = camStatus.zoomTop;
-			const double heightRatio = kPlaneHeightBelowJdgline / kPlaneHeightAboveJdgline; // sr/lr
+			const float legacyZoomTop = static_cast<float>(camStatus.zoomTop);
+			const float heightRatio = kPlaneHeightBelowJdgline / kPlaneHeightAboveJdgline; // sr/lr
 
 			m_meshData.vertices[0].pos.y = -legacyZoomTop * 100 * Sin(kCameraToJdglineRadians); // 奥の辺 上方向
 			m_meshData.vertices[1].pos.y = m_meshData.vertices[0].pos.y;
@@ -77,21 +77,21 @@ namespace MusicGame::Graphics
 		else
 		{
 			// KSHバージョン167以降の場合、zoom_topは判定ラインまわりの回転として扱う
-			const double rotationX = ToRadians(camStatus.zoomTop * 360 / 2400);
-			const double sinRotationX = Sin(rotationX);
-			const double cosRotationX = Cos(rotationX);
+			const float rotationX = static_cast<float>(ToRadians(camStatus.zoomTop * 360 / 2400));
+			const float sinRotationX = Sin(rotationX);
+			const float cosRotationX = Cos(rotationX);
 
-			m_meshData.vertices[0].pos.y = kPlaneHeightAboveJdgline * sinRotationX / 2.5; // 奥の辺 上方向
+			m_meshData.vertices[0].pos.y = kPlaneHeightAboveJdgline * sinRotationX / 2.5f; // 奥の辺 上方向
 			m_meshData.vertices[1].pos.y = m_meshData.vertices[0].pos.y;
-			m_meshData.vertices[2].pos.y = -scaledZoomBottom * 100 * Sin(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline - kPlaneHeightBelowJdgline * sinRotationX / 2.5; // 手前の辺 上方向
+			m_meshData.vertices[2].pos.y = -scaledZoomBottom * 100 * Sin(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline - kPlaneHeightBelowJdgline * sinRotationX / 2.5f; // 手前の辺 上方向
 			m_meshData.vertices[3].pos.y = m_meshData.vertices[2].pos.y;
 			m_meshData.vertices[0].pos.z = -kPlaneHeightAboveJdgline / 2 + kPlaneHeightAboveJdgline * cosRotationX; // 奥の辺 手前方向(v1とZ軸の向きが逆なので符号を反転)
 			m_meshData.vertices[1].pos.z = m_meshData.vertices[0].pos.z;
 			m_meshData.vertices[2].pos.z = -kPlaneHeightAboveJdgline / 2 - kPlaneHeightBelowJdgline / 2 * cosRotationX - scaledZoomBottom * 100 * Cos(kCameraToJdglineRadians) * kPlaneHeight / kPlaneHeightAboveJdgline; // 手前の辺 手前方向(v1とZ軸の向きが逆なので符号を反転)
 			m_meshData.vertices[3].pos.z = m_meshData.vertices[2].pos.z;
 
-			const double rotationXMod = MathUtils::WrappedFmod(rotationX, Math::TwoPi);
-			const bool shouldFlipTriangles = Math::Pi - kHighwayRotationXByCamera <= rotationXMod && rotationXMod < Math::TwoPi - kHighwayRotationXByCamera;
+			const float rotationXMod = MathUtils::WrappedFmod(rotationX, Math::TwoPiF);
+			const bool shouldFlipTriangles = Math::Pi - kHighwayRotationXByCamera <= rotationXMod && rotationXMod < Math::TwoPiF - kHighwayRotationXByCamera;
 			if (shouldFlipTriangles != m_trianglesFlipped)
 			{
 				m_meshData.flipTriangles();
@@ -140,9 +140,9 @@ namespace MusicGame::Graphics
 
 			// 小節線を描画
 			{
-				const int32 startMeasureIndex = kson::PulseToMeasureIdx(gameStatus.currentPulse, chartData.beat, timingCache) - 1;
-				const int32 endMeasureIndex = startMeasureIndex + kMaxNumBarLines + 1;
-				for (int32 measureIndex = startMeasureIndex; measureIndex < endMeasureIndex; ++measureIndex)
+				const int64 startMeasureIndex = kson::PulseToMeasureIdx(gameStatus.currentPulse, chartData.beat, timingCache) - 1;
+				const int64 endMeasureIndex = startMeasureIndex + kMaxNumBarLines + 1;
+				for (int64 measureIndex = startMeasureIndex; measureIndex < endMeasureIndex; ++measureIndex)
 				{
 					const kson::Pulse pulse = kson::MeasureIdxToPulse(measureIndex, chartData.beat, timingCache);
 					const int32 pulsePositionY = highwayScrollContext.getPositionY(pulse);
