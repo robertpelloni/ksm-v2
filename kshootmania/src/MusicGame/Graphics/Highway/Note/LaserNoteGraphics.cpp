@@ -139,8 +139,8 @@ namespace MusicGame::Graphics
 
 			// scroll_speedが正の場合は上方向、負の場合は下方向にtailを描画
 			const Quad quad = isScrollSpeedPositive
-				? LaserLineQuad(positionStart + Vec2{ 0.0, -kLaserTextureSize.y }, positionStart + Vec2{ 0.0, -kLaserTextureSize.y - kLaserTailHeight })
-				: LaserLineQuad(positionStart + Vec2{ 0.0, kLaserTextureSize.y }, positionStart + Vec2{ 0.0, kLaserTextureSize.y + kLaserTailHeight });
+				? LaserLineQuad(positionStart + Vec2{ 0.0, -kLaserLineWidth }, positionStart + Vec2{ 0.0, -kLaserLineWidth - kLaserTailHeight })
+				: LaserLineQuad(positionStart + Vec2{ 0.0, kLaserLineWidth }, positionStart + Vec2{ 0.0, kLaserLineWidth + kLaserTailHeight });
 			quad(laserNoteTexture(kLaserTextureSize.x * laneIdx, kLaserTextureSize.y * laserNoteTextureRow + kLaserTextureSize.y - 1 + kOnePixelTextureSourceOffset, kLaserTextureSize.x, kOnePixelTextureSourceSize)).draw();
 		}
 
@@ -181,9 +181,6 @@ namespace MusicGame::Graphics
 
 				const int32 positionY = highwayScrollContext.getPositionY(y + ry) + kLaserShiftY;
 
-				// 現在の点が描画範囲内かチェック
-				const bool isInRange = positionY >= 0 && positionY < kHighwayTextureSize.y;
-
 				// この点のPulse位置でのscroll_speedが正かを取得
 				const bool isScrollSpeedPositive = highwayScrollContext.isScrollSpeedPositiveAt(y + ry);
 
@@ -215,9 +212,17 @@ namespace MusicGame::Graphics
 				}
 
 				// 直角レーザーを描画
-				if (isInRange && point.v.v != point.v.vf)
+				if (point.v.v != point.v.vf)
 				{
-					DrawLaserSlam(laneIdx, positionY, point, laserNoteTexture, laserNoteTextureRow, xScale, isScrollSpeedPositive);
+					// 直角レーザーの横線は厚さ(kLaserLineWidth)を持つため、その範囲をチェック
+					const int32 slamMinY = isScrollSpeedPositive ? positionY - kLaserLineWidth : positionY;
+					const int32 slamMaxY = isScrollSpeedPositive ? positionY : positionY + kLaserLineWidth;
+					const bool isSlamInRange = slamMaxY >= 0 && slamMinY < kHighwayTextureSize.y;
+
+					if (isSlamInRange)
+					{
+						DrawLaserSlam(laneIdx, positionY, point, laserNoteTexture, laserNoteTextureRow, xScale, isScrollSpeedPositive);
+					}
 				}
 
 				// レーザー終端の点の場合は線を描画しない
