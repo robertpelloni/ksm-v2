@@ -1,6 +1,7 @@
 ﻿#include "SelectMenuSongItem.hpp"
 #include "Graphics/FontUtils.hpp"
 #include "Scenes/Select/SelectDifficultyMenu.hpp"
+#include "RuntimeConfig.hpp"
 
 namespace
 {
@@ -134,8 +135,7 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 		const SelectChartInfo* pChartInfo = m_chartInfos[difficultyIdx].get();
 		const HighScoreInfo& highScoreInfo = pChartInfo->highScoreInfo();
 
-		// TODO: 一旦NORMALゲージ固定
-		const GaugeType gaugeType = GaugeType::kNormalGauge;
+		const GaugeType gaugeType = RuntimeConfig::GetGaugeType();
 
 		canvas.setParamValues({
 			{ U"center_title", pChartInfo->title() },
@@ -225,7 +225,7 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 	if (pChartInfo != nullptr)
 	{
 		const HighScoreInfo& highScoreInfo = pChartInfo->highScoreInfo();
-		const GaugeType gaugeType = GaugeType::kNormalGauge; // TODO: ゲージタイプの取得方法を確認
+		const GaugeType gaugeType = RuntimeConfig::GetGaugeType();
 		levelIndex = pChartInfo->level();
 		medalIndex = static_cast<int32>(highScoreInfo.medal());
 		highScoreGradeIndex = static_cast<int32>(highScoreInfo.grade(gaugeType));
