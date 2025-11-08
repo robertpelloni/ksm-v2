@@ -15,9 +15,10 @@ namespace MusicGame::Graphics
 		constexpr int32 kLaserLineWidth = kLaserTextureSize.x;
 		constexpr int32 kLaserSlamHeightMax = kLaserTextureSize.y;
 		constexpr kson::RelPulse kLaserSlamHeightPulse = kson::kResolution4 / 32; // 32分長
+		constexpr int32 kLaserTailHeightMax = 80;
+		constexpr kson::RelPulse kLaserTailHeightPulse = kson::kResolution4 / 16; // 16分長
 		constexpr Size kLaserStartTextureSize = { 44, 200 };
 		constexpr int32 kLaserShiftY = -10;
-		constexpr int32 kLaserTailHeight = 80;
 
 		constexpr double kLaserCriticalBlinkIntervalSec = 0.12;
 
@@ -72,6 +73,14 @@ namespace MusicGame::Graphics
 		{
 			const int32 slamHeightFromPulse = highwayScrollContext.relPulseToPixelHeight(pulse, kLaserSlamHeightPulse);
 			return Min(kLaserSlamHeightMax, Abs(slamHeightFromPulse));
+		}
+
+		/// @brief 直角レーザーのtailの高さを計算(80pxと16分長の高さの小さい方)
+		/// @remark 戻り値は常に正(負のscroll_speedの場合も絶対値を返す)
+		int32 CalcLaserTailHeight(kson::Pulse pulse, const Scroll::HighwayScrollContext& highwayScrollContext)
+		{
+			const int32 tailHeightFromPulse = highwayScrollContext.relPulseToPixelHeight(pulse, kLaserTailHeightPulse);
+			return Min(kLaserTailHeightMax, Abs(tailHeightFromPulse));
 		}
 
 		constexpr Quad LaserSlamLineQuad(const Vec2& positionStart, const Vec2& positionEnd, int32 slamHeight, bool isScrollSpeedPositive)
@@ -141,7 +150,7 @@ namespace MusicGame::Graphics
 			quad(laserNoteTexture(kLaserTextureSize.x * laneIdx + kOnePixelTextureSourceOffset, kLaserTextureSize.y * laserNoteTextureRow, kOnePixelTextureSourceSize, kLaserTextureSize.y)).draw();
 		}
 
-		void DrawLaserSlamTail(int32 laneIdx, int32 positionY, const kson::GraphPoint& point, int32 slamHeight, const Texture& laserNoteTexture, int32 laserNoteTextureRow, int32 xScale, bool isScrollSpeedPositive)
+		void DrawLaserSlamTail(int32 laneIdx, int32 positionY, const kson::GraphPoint& point, int32 slamHeight, int32 tailHeight, const Texture& laserNoteTexture, int32 laserNoteTextureRow, int32 xScale, bool isScrollSpeedPositive)
 		{
 			const Vec2 positionStart = {
 				LaserPointX(point.v.vf, xScale),
@@ -150,8 +159,8 @@ namespace MusicGame::Graphics
 
 			// scroll_speedが正の場合は上方向、負の場合は下方向にtailを描画
 			const Quad quad = isScrollSpeedPositive
-				? LaserLineQuad(positionStart + Vec2{ 0.0, -slamHeight }, positionStart + Vec2{ 0.0, -slamHeight - kLaserTailHeight })
-				: LaserLineQuad(positionStart + Vec2{ 0.0, slamHeight }, positionStart + Vec2{ 0.0, slamHeight + kLaserTailHeight });
+				? LaserLineQuad(positionStart + Vec2{ 0.0, -slamHeight }, positionStart + Vec2{ 0.0, -slamHeight - tailHeight })
+				: LaserLineQuad(positionStart + Vec2{ 0.0, slamHeight }, positionStart + Vec2{ 0.0, slamHeight + tailHeight });
 			quad(laserNoteTexture(kLaserTextureSize.x * laneIdx, kLaserTextureSize.y * laserNoteTextureRow + kLaserTextureSize.y - 1 + kOnePixelTextureSourceOffset, kLaserTextureSize.x, kOnePixelTextureSourceSize)).draw();
 		}
 
@@ -246,15 +255,16 @@ namespace MusicGame::Graphics
 					if (point.v.v != point.v.vf)
 					{
 						const int32 slamHeight = CalcLaserSlamHeight(y + ry, highwayScrollContext);
+						const int32 tailHeight = CalcLaserTailHeight(y + ry, highwayScrollContext);
 
 						// tailの描画範囲を計算
-						const int32 tailMinY = isScrollSpeedPositive ? positionY - slamHeight - kLaserTailHeight : positionY + slamHeight;
-						const int32 tailMaxY = isScrollSpeedPositive ? positionY - slamHeight : positionY + slamHeight + kLaserTailHeight;
+						const int32 tailMinY = isScrollSpeedPositive ? positionY - slamHeight - tailHeight : positionY + slamHeight;
+						const int32 tailMaxY = isScrollSpeedPositive ? positionY - slamHeight : positionY + slamHeight + tailHeight;
 						const bool isTailInRange = tailMaxY >= 0 && tailMinY < kHighwayTextureSize.y;
 
 						if (isTailInRange)
 						{
-							DrawLaserSlamTail(laneIdx, positionY, point, slamHeight, laserNoteTexture, laserNoteTextureRow, xScale, isScrollSpeedPositive);
+							DrawLaserSlamTail(laneIdx, positionY, point, slamHeight, tailHeight, laserNoteTexture, laserNoteTextureRow, xScale, isScrollSpeedPositive);
 						}
 					}
 
@@ -364,9 +374,10 @@ namespace MusicGame::Graphics
 				if (isEndSlam)
 				{
 					const int32 slamHeight = CalcLaserSlamHeight(y + lengthRy, highwayScrollContext);
+					const int32 tailHeight = CalcLaserTailHeight(y + lengthRy, highwayScrollContext);
 
-					tailMinY = isEndScrollSpeedPositive ? sectionEndPositionY - slamHeight - kLaserTailHeight : sectionEndPositionY + slamHeight;
-					tailMaxY = isEndScrollSpeedPositive ? sectionEndPositionY - slamHeight : sectionEndPositionY + slamHeight + kLaserTailHeight;
+					tailMinY = isEndScrollSpeedPositive ? sectionEndPositionY - slamHeight - tailHeight : sectionEndPositionY + slamHeight;
+					tailMaxY = isEndScrollSpeedPositive ? sectionEndPositionY - slamHeight : sectionEndPositionY + slamHeight + tailHeight;
 				}
 
 				// セクション全体の描画範囲を計算
