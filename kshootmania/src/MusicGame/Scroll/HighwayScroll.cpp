@@ -208,6 +208,11 @@ namespace MusicGame::Scroll
 		return m_pHighwayScroll->getPositionY(pulse, *m_pBeatInfo, *m_pTimingCache, *m_pGameStatus);
 	}
 
+	int32 HighwayScrollContext::relPulseToPixelHeight(kson::Pulse basePulse, kson::RelPulse relPulse) const
+	{
+		return m_pHighwayScroll->relPulseToPixelHeight(basePulse, relPulse, *m_pBeatInfo);
+	}
+
 	const HighwayScroll& HighwayScrollContext::highwayScroll() const
 	{
 		return *m_pHighwayScroll;
@@ -287,7 +292,15 @@ namespace MusicGame::Scroll
 		const double relPulseEquivalent = getRelPulseEquvalent(pulse, beatInfo, timingCache, gameStatus);
 		return Graphics::kHighwayTextureSize.y - static_cast<int32>(relPulseEquivalent * kBasePixels * m_hispeedFactor / kson::kResolution4);
 	}
-	
+
+	int32 HighwayScroll::relPulseToPixelHeight(kson::Pulse basePulse, kson::RelPulse relPulse, const kson::BeatInfo& beatInfo) const
+	{
+		assert(m_hispeedFactor != 0.0 && "HighwayScroll::update() must be called at least once before HighwayScroll::relPulseToPixelHeight()");
+
+		const double relPulseEquivalent = CalcScrollSpeedAdjustedRelPulse(basePulse + relPulse, static_cast<double>(basePulse), beatInfo.scrollSpeed);
+		return static_cast<int32>(relPulseEquivalent * kBasePixels * m_hispeedFactor / kson::kResolution4);
+	}
+
 	const HispeedSetting& HighwayScroll::hispeedSetting() const
 	{
 		return m_hispeedSetting;
