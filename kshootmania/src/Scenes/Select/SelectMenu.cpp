@@ -123,7 +123,16 @@ bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe, Refr
 
 	if (saveToConfigIni)
 	{
-		ConfigIni::SetString(ConfigIni::Key::kSelectDirectory, directoryPath);
+		// songsフォルダからの相対パスとして保存
+		const FilePath songsDir = FileSystem::FullPath(U"songs");
+		const FilePath fullDirectoryPath = FileSystem::FullPath(directoryPath);
+		FilePath relativeDirectoryPath = FileSystem::RelativePath(fullDirectoryPath, songsDir);
+		// 末尾の/を除去
+		if (relativeDirectoryPath.ends_with(U'/'))
+		{
+			relativeDirectoryPath.pop_back();
+		}
+		ConfigIni::SetString(ConfigIni::Key::kSelectDirectory, relativeDirectoryPath);
 		ConfigIni::SetInt(ConfigIni::Key::kSelectSongIndex, 0);
 	}
 
@@ -402,8 +411,15 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 	}
 	else if (!savedDirectory.isEmpty())
 	{
-		// 通常のディレクトリの場合
-		openSuccess = openDirectory(savedDirectory, PlaySeYN::No);
+		// 絶対パスや..を含むパスは受け付けない
+		const bool isInvalidPath = savedDirectory.starts_with(U'/') || savedDirectory.starts_with(U'\\') || savedDirectory.includes(U':') || savedDirectory.includes(U"..");
+
+		if (!isInvalidPath)
+		{
+			// songsフォルダからの相対パスなのでsongs/を追加
+			const FilePath fullPath = U"songs/{}"_fmt(savedDirectory);
+			openSuccess = openDirectory(fullPath, PlaySeYN::No);
+		}
 	}
 
 	if (openSuccess)
