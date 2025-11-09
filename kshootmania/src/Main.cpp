@@ -5,6 +5,7 @@
 #include "Common/IMEUtils.hpp"
 #include "Common/AssetManagement.hpp"
 #include "Addon/AutoMuteAddon.hpp"
+#include "Addon/CommonSEAddon.hpp"
 #include "Addon/DisableIMEAddon.hpp"
 #include "ksmaudio/ksmaudio.hpp"
 #include "RuntimeConfig.hpp"
@@ -79,8 +80,10 @@ void KSMMain()
 
 	Addon::Register(AutoMuteAddon::kAddonName, std::make_unique<AutoMuteAddon>(), 1);
 
+	Addon::Register(CommonSEAddon::kAddonName, std::make_unique<CommonSEAddon>(), 2);
+
 #if defined(_WIN32) || defined(__APPLE__)
-	Addon::Register(DisableIMEAddon::kAddonName, std::make_unique<DisableIMEAddon>(), 2);
+	Addon::Register(DisableIMEAddon::kAddonName, std::make_unique<DisableIMEAddon>(), 3);
 #endif
 
 	// 毎フレーム連続してアセット生成した時の警告を無効化

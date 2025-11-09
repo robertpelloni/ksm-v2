@@ -39,7 +39,7 @@ Co::Task<void> TitleScene::start()
 
 	// 効果音を鳴らす
 	m_bgmStream.setVolume(0.0);
-	m_enterSe.play(); // TODO: シーン遷移時に消えるのを修正
+	CommonSEAddon::Play(CommonSEType::kTitleEnter);
 }
 
 void TitleScene::update()

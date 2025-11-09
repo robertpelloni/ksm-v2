@@ -96,7 +96,7 @@ Co::Task<void> PlayPrepareScene::start()
 {
 	const auto updateRunner = Co::UpdaterTask([this] { update(); }).runScoped();
 
-	m_seStream.play();
+	CommonSEAddon::Play(CommonSEType::kSelEnter);
 
 	// ハイスピード変更から一定時間経過、またはBackキーで終了
 	while (true)
