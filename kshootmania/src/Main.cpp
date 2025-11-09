@@ -37,7 +37,7 @@ void KSMMain()
 	LicenseManager::DisableDefaultTrigger();
 
 	// ウィンドウタイトル
-	Window::SetTitle(U"K-Shoot MANIA v2.0.0-alpha2");
+	Window::SetTitle(U"K-Shoot MANIA v2.0.0-alpha3");
 
 	// 実行ファイルのパスをカレントディレクトリに設定
 	// (ChangeCurrentDirectoryはここ以外は基本的に使用禁止。どうしても使う必要がある場合は必ずAppDirectoryPathに戻すこと)
