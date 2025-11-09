@@ -29,7 +29,7 @@ namespace MusicGame::Graphics
 		constexpr Vec2 kShineEffectPositionDiff = { 0.0, 300.0 };
 		constexpr double kShineEffectLoopSec = 0.2;
 
-		constexpr int32 kMaxNumBarLines = 2;
+		constexpr int32 kMaxNumBarLines = 50;
 		constexpr Size kBarLineTextureSize = { 192, 16 };
 		constexpr Size kBarLineTextureHalfSize = { kBarLineTextureSize.x / 2, kBarLineTextureSize.y };
 		constexpr Vec2 kBarLinePositionOffset = { kHighwayTextureWideCenterX - kBarLineTextureHalfSize.x, -14 };
@@ -160,11 +160,12 @@ namespace MusicGame::Graphics
 				{
 					const kson::Pulse pulse = kson::MeasureIdxToPulse(measureIndex, chartData.beat, timingCache);
 					const int32 pulsePositionY = highwayScrollContext.getPositionY(pulse);
-					if (pulsePositionY >= kHighwayTextureSize.y)
+					const int32 actualPositionY = static_cast<int32>(kBarLinePositionOffset.y) + pulsePositionY;
+					if (actualPositionY >= kHighwayTextureSize.y)
 					{
 						continue;
 					}
-					if (pulsePositionY < 0)
+					if (actualPositionY + kBarLineTextureSize.y < 0)
 					{
 						break;
 					}
