@@ -150,10 +150,15 @@ namespace MusicGame::Scroll
 
 					kson::Pulse segmentStartPulse;
 					double startSpeed;
-					if (itr != scrollSpeed.end() && itr->first > notePulse)
+					if (itr == scrollSpeed.begin() && itr->first > notePulse)
+					{
+						// scroll_speedの最初の変更点より前の区間
+						segmentStartPulse = notePulse;
+						startSpeed = itr->second.v.v;
+					}
+					else if (itr != scrollSpeed.end() && itr->first > notePulse)
 					{
 						segmentStartPulse = itr->first;
-						// 区間の開始点での速度はv.vfではなくv.v
 						startSpeed = itr->second.v.v;
 					}
 					else
