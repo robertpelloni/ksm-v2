@@ -32,10 +32,27 @@ if(APPLE)
     set(APP_BUNDLE_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/kshootmania.app)
 
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/App/engine")
+        # engineディレクトリ全体をコピー
         add_custom_command(TARGET kshootmania POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_SOURCE_DIR}/App/engine
             ${APP_BUNDLE_PATH}/Contents/Resources/engine
+        )
+
+        # engine/font/min以外のフォントフォルダを削除
+        add_custom_command(TARGET kshootmania POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E rm -rf
+            ${APP_BUNDLE_PATH}/Contents/Resources/engine/font/fontawesome
+            ${APP_BUNDLE_PATH}/Contents/Resources/engine/font/materialdesignicons
+            ${APP_BUNDLE_PATH}/Contents/Resources/engine/font/mplus
+            ${APP_BUNDLE_PATH}/Contents/Resources/engine/font/noto-cjk
+            ${APP_BUNDLE_PATH}/Contents/Resources/engine/font/noto-emoji
+        )
+
+        # engine/soundfontフォルダを削除
+        add_custom_command(TARGET kshootmania POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E rm -rf
+            ${APP_BUNDLE_PATH}/Contents/Resources/engine/soundfont
         )
     endif()
 
