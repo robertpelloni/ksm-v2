@@ -63,7 +63,18 @@ if(APPLE)
             ${APP_BUNDLE_PATH}/Contents/Resources/assets
         )
     endif()
-    
+
+    # imgs, se, ui, shaders, langフォルダをコピー
+    foreach(RESOURCE_FOLDER imgs se ui shaders lang)
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/App/${RESOURCE_FOLDER}")
+            add_custom_command(TARGET kshootmania POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_CURRENT_SOURCE_DIR}/App/${RESOURCE_FOLDER}
+                ${APP_BUNDLE_PATH}/Contents/Resources/${RESOURCE_FOLDER}
+            )
+        endif()
+    endforeach()
+
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/App/icon.icns)
         set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/App/icon.icns PROPERTIES
             MACOSX_PACKAGE_LOCATION "Resources"

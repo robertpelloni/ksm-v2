@@ -8,16 +8,20 @@ namespace
 {
 	constexpr Duration kFadeDuration = 0.6s;
 
-	constexpr FilePathView kResultSceneUIFilePath = U"ui/scene/result.noco";
-
 	constexpr double kGaugeBarMaxHeight = 434.0;
+
+	FilePath GetResultSceneUIFilePath()
+	{
+		return FsUtils::GetResourcePath(U"ui/scene/result.noco");
+	}
 
 	std::shared_ptr<noco::Canvas> LoadResultSceneCanvas()
 	{
-		const auto canvas = noco::Canvas::LoadFromFile(kResultSceneUIFilePath);
+		const FilePath uiFilePath = GetResultSceneUIFilePath();
+		const auto canvas = noco::Canvas::LoadFromFile(uiFilePath);
 		if (!canvas)
 		{
-			throw Error{ U"Failed to load '{}'"_fmt(kResultSceneUIFilePath) };
+			throw Error{ U"Failed to load '{}'"_fmt(uiFilePath) };
 		}
 		return canvas;
 	}

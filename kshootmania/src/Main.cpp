@@ -18,14 +18,85 @@
 
 void CreateHighScoreBackup()
 {
+#ifndef __APPLE__
+	const FilePath scoreBackupDir = FileSystem::PathAppend(FsUtils::AppDataDirectoryPath(), U"score_backup");
+
 	// 既にバックアップフォルダが存在する場合は何もしない
-	if (FileSystem::Exists(U"score_backup"))
+	if (FileSystem::Exists(scoreBackupDir))
 	{
 		return;
 	}
 
 	// scoreフォルダを再帰的にコピー
-	FileSystem::Copy(U"score", U"score_backup", CopyOption::UpdateExisting);
+	const FilePath scoreDir = FsUtils::ScoreDirectoryPath();
+	FileSystem::Copy(scoreDir, scoreBackupDir, CopyOption::UpdateExisting);
+#endif
+}
+
+void CreateAppDataDirectory()
+{
+#ifdef __APPLE__
+	const FilePath appDataDir = FsUtils::AppDataDirectoryPath();
+	Logger << U"[ksm info] AppDataDirectory path: " << appDataDir;
+
+	// ディレクトリが存在しない場合は作成
+	if (!FileSystem::Exists(appDataDir))
+	{
+		Logger << U"[ksm info] Creating AppDataDirectory...";
+		FileSystem::CreateDirectories(appDataDir);
+		const bool created = FileSystem::Exists(appDataDir);
+		Logger << U"[ksm info] Created: " << created;
+	}
+	else
+	{
+		Logger << U"[ksm info] AppDataDirectory already exists";
+	}
+#endif
+}
+
+void CopyResourcesIfNeeded()
+{
+#ifdef __APPLE__
+	const FilePath songsDestPath = FsUtils::SongsDirectoryPath();
+	const FilePath songsDefaultSrcPath = FsUtils::SongsDefaultDirectoryPath();
+
+	Logger << U"[ksm info] Songs dest path: " << songsDestPath;
+	Logger << U"[ksm info] Songs default src path: " << songsDefaultSrcPath;
+	Logger << U"[ksm info] Songs dest exists: " << FileSystem::Exists(songsDestPath);
+	Logger << U"[ksm info] Songs default src exists: " << FileSystem::Exists(songsDefaultSrcPath);
+
+	// songsフォルダが存在しない場合、songs_defaultからコピー
+	if (!FileSystem::Exists(songsDestPath))
+	{
+		if (FileSystem::Exists(songsDefaultSrcPath))
+		{
+			Logger << U"[ksm info] Copying songs_default to songs...";
+
+			// Siv3DのFileSystem::CopyだとApplication Support内へのファイルコピーに失敗するためネイティブライブラリを使用
+			const std::string srcPathUtf8 = songsDefaultSrcPath.toUTF8();
+			const std::string dstPathUtf8 = songsDestPath.toUTF8();
+
+			const bool copyResult = KSMPlatformMacOS_CopyDirectory(srcPathUtf8.c_str(), dstPathUtf8.c_str());
+			Logger << U"[ksm info] Copy result: " << copyResult;
+			Logger << U"[ksm info] Songs dest exists after copy: " << FileSystem::Exists(songsDestPath);
+
+			// コピー後のディレクトリ内容を確認
+			if (FileSystem::Exists(songsDestPath))
+			{
+				const auto copiedFiles = FileSystem::DirectoryContents(songsDestPath);
+				Logger << U"[ksm info] Files in songs directory: " << copiedFiles.size();
+			}
+		}
+		else
+		{
+			Logger << U"[ksm info] songs_default does not exist, skipping copy";
+		}
+	}
+	else
+	{
+		Logger << U"[ksm info] songs directory already exists, skipping copy";
+	}
+#endif
 }
 
 void OutputLicenseTxt()
@@ -141,9 +212,9 @@ void KSMMain()
 	// ウィンドウタイトル
 	Window::SetTitle(U"K-Shoot MANIA v2.0.0-alpha3");
 
-	// 実行ファイルのパスをカレントディレクトリに設定
-	// (ChangeCurrentDirectoryはここ以外は基本的に使用禁止。どうしても使う必要がある場合は必ずAppDirectoryPathに戻すこと)
-	FileSystem::ChangeCurrentDirectory(FsUtils::AppDirectoryPath());
+	// カレントディレクトリを設定
+	// (ChangeCurrentDirectoryはここ以外は基本的に使用禁止。どうしても使う必要がある場合は必ずResourceDirectoryPathに戻すこと)
+	FileSystem::ChangeCurrentDirectory(FsUtils::ResourceDirectoryPath());
 
 	// デフォルト色を指定
 	Scene::SetBackground(Palette::Black);
@@ -156,6 +227,12 @@ void KSMMain()
 #else
 	ksmaudio::Init(nullptr);
 #endif
+
+	// アプリケーションデータディレクトリを作成(macOSのみ)
+	CreateAppDataDirectory();
+
+	// リソースファイルをコピー(macOSのみ)
+	CopyResourcesIfNeeded();
 
 	// config.iniを読み込み
 	ConfigIni::Load();

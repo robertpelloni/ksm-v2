@@ -124,7 +124,7 @@ bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe, Refr
 	if (saveToConfigIni)
 	{
 		// songsフォルダからの相対パスとして保存
-		const FilePath songsDir = FileSystem::FullPath(U"songs");
+		const FilePath songsDir = FsUtils::SongsDirectoryPath();
 		const FilePath fullDirectoryPath = FileSystem::FullPath(directoryPath);
 		FilePath relativeDirectoryPath = FileSystem::RelativePath(fullDirectoryPath, songsDir);
 		// 末尾の/を除去
@@ -416,8 +416,8 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 
 		if (!isInvalidPath)
 		{
-			// songsフォルダからの相対パスなのでsongs/を追加
-			const FilePath fullPath = U"songs/{}"_fmt(savedDirectory);
+			// songsフォルダからの相対パスなので結合
+			const FilePath fullPath = FileSystem::PathAppend(FsUtils::SongsDirectoryPath(), savedDirectory);
 			openSuccess = openDirectory(fullPath, PlaySeYN::No);
 		}
 	}
@@ -1227,7 +1227,7 @@ bool SelectMenu::openAllFolderWithNameSort()
 
 	// 全フォルダの楽曲を収集
 	const Array<FilePath> searchPaths = {
-		U"songs", // TODO: 設定可能にする
+		FsUtils::SongsDirectoryPath(), // TODO: 設定可能にする
 	};
 
 	// 全フォルダを取得
@@ -1356,7 +1356,7 @@ bool SelectMenu::openAllFolderWithLevelSort()
 
 	// 全フォルダの楽曲を収集
 	const Array<FilePath> searchPaths = {
-		U"songs", // TODO: 設定可能にする
+		FsUtils::SongsDirectoryPath(), // TODO: 設定可能にする
 	};
 
 	// 全フォルダを取得
@@ -1439,7 +1439,7 @@ bool SelectMenu::openAllFolderWithLevelSort()
 Array<FilePath> SelectMenu::getSortedTopLevelFolderDirectories() const
 {
 	const Array<FilePath> searchPaths = {
-		U"songs", // TODO: 設定可能にする
+		FsUtils::SongsDirectoryPath(), // TODO: 設定可能にする
 	};
 
 	Array<FilePath> directories;
