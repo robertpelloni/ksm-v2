@@ -14,8 +14,6 @@ namespace MusicGame::Graphics
 		// (値の根拠は不明だが、KSMv1でこの値が使用されていたためそのまま持ってきている)
 		constexpr float kCameraToJdglineRadians = -0.6125f;
 
-		constexpr float kJdglineYFromBottom = 14.0f;
-
 		constexpr float kPlaneHeight = kHighwayPlaneSize.y;
 		constexpr float kPlaneHeightBelowJdgline = kPlaneHeight * kJdglineYFromBottom / kHighwayTextureSize.y;
 		constexpr float kPlaneHeightAboveJdgline = kPlaneHeight - kPlaneHeightBelowJdgline;

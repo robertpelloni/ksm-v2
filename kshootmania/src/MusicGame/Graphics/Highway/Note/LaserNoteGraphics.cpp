@@ -18,7 +18,7 @@ namespace MusicGame::Graphics
 		constexpr int32 kLaserTailHeightMax = 80;
 		constexpr kson::RelPulse kLaserTailHeightPulse = kson::kResolution4 / 16; // 16分長
 		constexpr Size kLaserStartTextureSize = { 44, 200 };
-		constexpr int32 kLaserShiftY = -10;
+		constexpr int32 kLaserShiftY = -6;
 
 		constexpr double kLaserCriticalBlinkIntervalSec = 0.12;
 

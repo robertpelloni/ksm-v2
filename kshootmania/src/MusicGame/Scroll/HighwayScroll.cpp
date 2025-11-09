@@ -290,7 +290,7 @@ namespace MusicGame::Scroll
 		assert(m_hispeedFactor != 0.0 && "HighwayScroll::update() must be called at least once before HighwayScroll::getPositionY()");
 
 		const double relPulseEquivalent = getRelPulseEquvalent(pulse, beatInfo, timingCache, gameStatus);
-		return Graphics::kHighwayTextureSize.y - static_cast<int32>(relPulseEquivalent * kBasePixels * m_hispeedFactor / kson::kResolution4);
+		return static_cast<int32>(Graphics::kHighwayTextureSize.y - Graphics::kJdglineYFromBottom) - static_cast<int32>(relPulseEquivalent * kBasePixels * m_hispeedFactor / kson::kResolution4);
 	}
 
 	int32 HighwayScroll::relPulseToPixelHeight(kson::Pulse basePulse, kson::RelPulse relPulse, const kson::BeatInfo& beatInfo) const
