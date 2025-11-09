@@ -28,6 +28,108 @@ void CreateHighScoreBackup()
 	FileSystem::Copy(U"score", U"score_backup", CopyOption::UpdateExisting);
 }
 
+void OutputLicenseTxt()
+{
+	// ライセンス情報を取得
+	Array<LicenseInfo> licenses = LicenseManager::EnumLicenses();
+
+	// BASS Audio Libraryのライセンス情報を追加
+	LicenseInfo bassLicense;
+	bassLicense.title = U"BASS Audio Library";
+	bassLicense.copyright = U"Copyright (c) 1999-2024 Un4seen Developments Ltd.\nhttps://www.un4seen.com/";
+	bassLicense.text = U"BASS is free for non-commercial use.\nIf you are using BASS in a commercial product, you must obtain a license.";
+	licenses.push_back(bassLicense);
+
+	// BASS_FXのライセンス情報を追加
+	LicenseInfo bassFxLicense;
+	bassFxLicense.title = U"BASS_FX";
+	bassFxLicense.copyright = U"Copyright (c) 2002-2018 Arthur Aminov (JOBnik!)\nhttp://www.jobnik.org";
+	bassFxLicense.text = U"BASS_FX is fully useable in commercial software, as long as credit is given.\n"
+		U"\n"
+		U"Credits:\n"
+		U"* BiQuad filters - Robert Bristow-Johnson\n"
+		U"* Peaking Equalizer (BiQuad filter) - Manu Webber\n"
+		U"* Tempo/Pitch/Rate/BPM [SoundTouch v2.0.0] - Copyright (c) 2002-2017 Olli Parviainen (LGPL license)\n"
+		U"* Auto Wah, Chorus, Distortion, Echo and Phaser - Copyright (c) 2000 Aleksey Smoli\n"
+		U"* Freeverb - Copyright (c) 2000 Jezar at Dreampoint (Public domain)\n"
+		U"* Pitch shifting using FFT [smbPitchShift v1.2] - Copyright (c) 1999-2009 Stephan M. Bernsee";
+	licenses.push_back(bassFxLicense);
+
+	// libksonのライセンス情報を追加
+	LicenseInfo ksonLicense;
+	ksonLicense.title = U"libkson";
+	ksonLicense.copyright = U"Copyright (c) 2019-2022 masaka";
+	ksonLicense.text = U"Permission is hereby granted, free of charge, to any person obtaining a copy\n"
+		U"of this software and associated documentation files (the \"Software\"), to deal\n"
+		U"in the Software without restriction, including without limitation the rights\n"
+		U"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+		U"copies of the Software, and to permit persons to whom the Software is\n"
+		U"furnished to do so, subject to the following conditions:\n"
+		U"\n"
+		U"The above copyright notice and this permission notice shall be included in all\n"
+		U"copies or substantial portions of the Software.\n"
+		U"\n"
+		U"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n"
+		U"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+		U"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
+		U"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+		U"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
+		U"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n"
+		U"SOFTWARE.";
+	licenses.push_back(ksonLicense);
+
+	// KSMフォントのライセンス情報を追加
+	LicenseInfo ksmFontLicense;
+	ksmFontLicense.title = U"KSM Fonts (KSM-JA/KR/SC/TC-Medium)";
+	ksmFontLicense.copyright = U"Component fonts:\n"
+		U"1. Tektur (Modified as Tektur-KSM) - Copyright 2023 The Tektur Project Authors, Modified by K-Shoot MANIA Project\n"
+		U"2. Corporate Logo ver3 - Copyright LOGOTYPE.JP, Based on Source Han Sans (Copyright 2014-2020 Adobe)\n"
+		U"3. Noto Sans JP/KR/SC/TC - Copyright Google Inc. and Adobe Inc.";
+	ksmFontLicense.text = U"All component fonts are licensed under the SIL Open Font License, Version 1.1.\n"
+		U"\n"
+		U"Permission is hereby granted, free of charge, to any person obtaining a copy of the Font Software,\n"
+		U"to use, study, copy, merge, embed, modify, redistribute, and sell modified and unmodified copies\n"
+		U"of the Font Software, subject to the following conditions:\n"
+		U"\n"
+		U"1) Neither the Font Software nor any of its individual components, in Original or Modified Versions,\n"
+		U"   may be sold by itself.\n"
+		U"2) Original or Modified Versions of the Font Software may be bundled, redistributed and/or sold with\n"
+		U"   any software, provided that each copy contains the above copyright notice and this license.\n"
+		U"3) The Font Software, modified or unmodified, in part or in whole, must be distributed entirely under\n"
+		U"   this license, and must not be distributed under any other license.";
+	licenses.push_back(ksmFontLicense);
+
+	// アルファベット順にソート
+	licenses.sort_by([](const LicenseInfo& a, const LicenseInfo& b)
+	{
+		return a.title < b.title;
+	});
+
+	// ファイルに保存
+	TextWriter writer(U"license.txt");
+	if (!writer)
+	{
+		Logger << U"[ksm error] Failed to output license.txt";
+		return;
+	}
+
+	writer.writeln(U"●使用ライブラリのライセンス表記●");
+
+	for (const auto& license : licenses)
+	{
+		writer.writeln(U"====================");
+		writer.writeln(license.title);
+		writer.writeln(U"====================");
+		if (license.copyright)
+		{
+			writer.writeln(license.copyright);
+			writer.writeln();
+		}
+		writer.writeln(license.text);
+		writer.writeln();
+	}
+}
+
 void KSMMain()
 {
 	// Escキーによるプログラム終了を無効化
@@ -112,6 +214,10 @@ void KSMMain()
 
 	// NocoUIのグローバルデフォルトフォントを設定
 	noco::SetGlobalDefaultFont(AssetManagement::SystemFont());
+
+#ifdef OUTPUT_LICENSE_TXT
+	OutputLicenseTxt();
+#endif
 
 	// メインループ
 	const auto sceneRunner = Co::PlaySceneFrom<TitleScene>(TitleMenuItem::kStart).runScoped();

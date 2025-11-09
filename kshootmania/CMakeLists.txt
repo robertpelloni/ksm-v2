@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
 project(kshootmania CXX)
 
-if (NOT CMAKE_CONFIGURATION_TYPES AND 
+if (NOT CMAKE_CONFIGURATION_TYPES AND
     NOT CMAKE_NO_BUILD_TYPE AND
     NOT CMAKE_BUILD_TYPE AND
     CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     message(STATUS "[!] Setting build type to 'Release' as none was specified.")
     set(CMAKE_BUILD_TYPE Release)
 endif()
+
+option(OUTPUT_LICENSE_TXT "Output license.txt on startup" OFF)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/App)
 
@@ -133,6 +135,10 @@ if(APPLE)
 endif()
 
 target_compile_features(kshootmania PRIVATE cxx_std_20)
+
+if(OUTPUT_LICENSE_TXT)
+	target_compile_definitions(kshootmania PRIVATE OUTPUT_LICENSE_TXT)
+endif()
 
 if(APPLE)
     # Siv3DのmacOS/Linux版はプリコンパイル済みヘッダ非対応のため通常のヘッダとしてインクルード
