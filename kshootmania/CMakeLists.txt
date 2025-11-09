@@ -30,7 +30,7 @@ if(APPLE)
     )
     
     set(APP_BUNDLE_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/kshootmania.app)
-    
+
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/App/engine")
         add_custom_command(TARGET kshootmania POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -38,52 +38,12 @@ if(APPLE)
             ${APP_BUNDLE_PATH}/Contents/Resources/engine
         )
     endif()
-    
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/App/ui")
-        add_custom_command(TARGET kshootmania POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_SOURCE_DIR}/App/ui
-            ${APP_BUNDLE_PATH}/Contents/Resources/ui
-        )
-    endif()
-    
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/App/shaders")
-        add_custom_command(TARGET kshootmania POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_SOURCE_DIR}/App/shaders
-            ${APP_BUNDLE_PATH}/Contents/Resources/shaders
-        )
-    endif()
-    
+
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/App/assets")
         add_custom_command(TARGET kshootmania POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_CURRENT_SOURCE_DIR}/App/assets
             ${APP_BUNDLE_PATH}/Contents/Resources/assets
-        )
-    endif()
-    
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/App/imgs")
-        add_custom_command(TARGET kshootmania POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_SOURCE_DIR}/App/imgs
-            ${APP_BUNDLE_PATH}/Contents/Resources/imgs
-        )
-    endif()
-    
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/App/lang")
-        add_custom_command(TARGET kshootmania POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_SOURCE_DIR}/App/lang
-            ${APP_BUNDLE_PATH}/Contents/Resources/lang
-        )
-    endif()
-    
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/App/se")
-        add_custom_command(TARGET kshootmania POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_CURRENT_SOURCE_DIR}/App/se
-            ${APP_BUNDLE_PATH}/Contents/Resources/se
         )
     endif()
     
