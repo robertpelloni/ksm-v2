@@ -427,3 +427,7 @@ kshootmania/App/kshooteditor
 /*.py
 /*.ksh
 /*.kson
+
+# Distribution files
+dist_scripts/kshootmania_v2/
+dist_scripts/*.zip
