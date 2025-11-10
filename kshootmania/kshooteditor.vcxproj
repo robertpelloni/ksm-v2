@@ -332,6 +332,7 @@
     <ClInclude Include="src\MusicGame\Camera\CamPattern\CamPatternMain.hpp" />
     <ClInclude Include="src\MusicGame\Camera\CamPattern\CamPatternHalfSpin.hpp" />
     <ClInclude Include="src\MusicGame\Camera\CamPattern\CamPatternSpin.hpp" />
+    <ClInclude Include="src\MusicGame\Camera\CamPattern\CamPatternSwing.hpp" />
     <ClInclude Include="src\MusicGame\Camera\CamSystem.hpp" />
     <ClInclude Include="src\MusicGame\Camera\HighwayTilt.hpp" />
     <ClInclude Include="src\MusicGame\Camera\HighwayTiltAuto.hpp" />
