@@ -410,6 +410,7 @@ FodyWeavers.xsd
 
 # Linux
 kshootmania/App/kshootmania
+kshootmania/App/kshooteditor
 
 **/App/songs/*
 !**/App/songs/K-Shoot MANIA/
