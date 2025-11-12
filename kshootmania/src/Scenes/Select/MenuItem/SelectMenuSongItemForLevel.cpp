@@ -163,7 +163,7 @@ void SelectMenuSongItemForLevel::setCanvasParamsTopBottom(const SelectMenuEventC
 		{ paramNamePrefix + U"isSubDirectory", false },
 		{ paramNamePrefix + U"title", m_chartInfo->title() },
 		{ paramNamePrefix + U"artist", m_chartInfo->artist() },
-		{ paramNamePrefix + U"levelIndex", m_chartInfo->level() },
+		{ paramNamePrefix + U"levelIndex", m_chartInfo->level() - 1 },
 		{ paramNamePrefix + U"medalIndex", static_cast<int32>(highScoreInfo.medal()) },
 		{ paramNamePrefix + U"highScoreGradeIndex", static_cast<int32>(highScoreInfo.grade(gaugeType)) },
 	});

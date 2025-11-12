@@ -226,7 +226,7 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 	{
 		const HighScoreInfo& highScoreInfo = pChartInfo->highScoreInfo();
 		const GaugeType gaugeType = RuntimeConfig::GetGaugeType();
-		levelIndex = pChartInfo->level();
+		levelIndex = pChartInfo->level() - 1;
 		medalIndex = static_cast<int32>(highScoreInfo.medal());
 		highScoreGradeIndex = static_cast<int32>(highScoreInfo.grade(gaugeType));
 	}
