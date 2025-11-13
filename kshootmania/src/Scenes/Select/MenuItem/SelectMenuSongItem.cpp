@@ -24,10 +24,30 @@ namespace
 	}
 }
 
-SelectMenuSongItem::SelectMenuSongItem(const FilePath& songDirectoryPath)
-	: m_fullPath(songDirectoryPath)
+SelectMenuSongItem::SelectMenuSongItem(FilePathView fullPath)
+	: m_fullPath(fullPath)
 {
-	const Array<FilePath> chartFilePaths = FileSystem::DirectoryContents(songDirectoryPath, Recursive::No);
+	Array<FilePath> chartFilePaths;
+
+	if (FileSystem::IsFile(fullPath))
+	{
+		// 個別の譜面ファイルの場合
+		if (FileSystem::Extension(fullPath) == kKSHExtension)
+		{
+			chartFilePaths.emplace_back(fullPath);
+			m_isSingleChartItem = true;
+		}
+	}
+	else if (FileSystem::IsDirectory(fullPath))
+	{
+		// ディレクトリの場合
+		chartFilePaths = FileSystem::DirectoryContents(fullPath, Recursive::No);
+	}
+	else
+	{
+		Logger << U"[ksm warning] SelectMenuSongItem::SelectMenuSongItem: Path does not exist (path:'{}')"_fmt(fullPath);
+	}
+
 	for (const auto& chartFilePath : chartFilePaths)
 	{
 		if (FileSystem::Extension(chartFilePath) != kKSHExtension) // Note: FileSystem::Extension()は常に小文字を返すので大文字は考慮不要
@@ -99,8 +119,26 @@ void SelectMenuSongItem::decideAutoPlay(const SelectMenuEventContext& context, i
 	context.fnMoveToPlayScene(chartFilePath, MusicGame::IsAutoPlayYN::Yes);
 }
 
+const SelectChartInfo* SelectMenuSongItem::chartInfoForSingleChartItem() const
+{
+	for (int32 i = 0; i < kNumDifficulties; ++i)
+	{
+		if (m_chartInfos[i] != nullptr)
+		{
+			return m_chartInfos[i].get();
+		}
+	}
+	return nullptr;
+}
+
 const SelectChartInfo* SelectMenuSongItem::chartInfoPtr(int difficultyIdx) const
 {
+	// 単一譜面項目の場合は、difficultyIdxに関係なく保持している譜面情報を返す
+	if (m_isSingleChartItem)
+	{
+		return chartInfoForSingleChartItem();
+	}
+
 	if (difficultyIdx < 0 || kNumDifficulties <= difficultyIdx)
 	{
 		assert(false && "difficultyIdx out of range!");
@@ -130,9 +168,25 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 	}
 
 	// 選択中の難易度の情報を設定
-	if (difficultyIdx >= 0 && difficultyIdx < kNumDifficulties && m_chartInfos[difficultyIdx] != nullptr)
+	const SelectChartInfo* pChartInfo = nullptr;
+	if (m_isSingleChartItem)
 	{
-		const SelectChartInfo* pChartInfo = m_chartInfos[difficultyIdx].get();
+		pChartInfo = chartInfoForSingleChartItem();
+		if (pChartInfo != nullptr)
+		{
+			difficultyIdx = pChartInfo->difficultyIdx();
+		}
+	}
+	else
+	{
+		if (0 <= difficultyIdx && difficultyIdx < kNumDifficulties)
+		{
+			pChartInfo = m_chartInfos[difficultyIdx].get();
+		}
+	}
+
+	if (pChartInfo != nullptr)
+	{
 		const HighScoreInfo& highScoreInfo = pChartInfo->highScoreInfo();
 
 		const GaugeType gaugeType = RuntimeConfig::GetGaugeType();
@@ -219,14 +273,16 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 	}
 
 	// レベルとメダルは、中央で選択中の難易度がこの曲に存在する場合のみ表示
+	// (単一譜面の場合は常に表示)
 	int32 levelIndex = -1; // -1は非表示
 	int32 medalIndex = -1; // -1は非表示
 	int32 highScoreGradeIndex = 0; // グレードは「-」表示にするため0
-	if (pChartInfo != nullptr)
+	const SelectChartInfo* pDisplayChartInfo = m_isSingleChartItem ? pAltChartInfo : pChartInfo;
+	if (pDisplayChartInfo != nullptr)
 	{
-		const HighScoreInfo& highScoreInfo = pChartInfo->highScoreInfo();
+		const HighScoreInfo& highScoreInfo = pDisplayChartInfo->highScoreInfo();
 		const GaugeType gaugeType = RuntimeConfig::GetGaugeType();
-		levelIndex = pChartInfo->level() - 1;
+		levelIndex = pDisplayChartInfo->level() - 1;
 		medalIndex = static_cast<int32>(highScoreInfo.medal());
 		highScoreGradeIndex = static_cast<int32>(highScoreInfo.grade(gaugeType));
 	}

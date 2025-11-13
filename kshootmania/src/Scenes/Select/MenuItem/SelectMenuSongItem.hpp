@@ -8,10 +8,16 @@ private:
 
 	bool m_chartExists = false;
 
+	bool m_isSingleChartItem = false;
+
 	std::array<std::unique_ptr<SelectChartInfo>, kNumDifficulties> m_chartInfos;
 
+	// 単一譜面項目の譜面情報を取得(存在しない場合はnullptrを返す)
+	const SelectChartInfo* chartInfoForSingleChartItem() const;
+
 public:
-	explicit SelectMenuSongItem(const FilePath& songDirectoryPath);
+	// fullPathはディレクトリパスの場合は楽曲フォルダ、ファイルパスの場合は単体難易度の譜面として読み込む
+	explicit SelectMenuSongItem(FilePathView fullPath);
 
 	virtual ~SelectMenuSongItem() = default;
 
@@ -28,7 +34,7 @@ public:
 
 	virtual bool difficultyMenuExists() const override
 	{
-		return true;
+		return !m_isSingleChartItem;
 	}
 
 	bool chartExists() const

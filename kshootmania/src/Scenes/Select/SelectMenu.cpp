@@ -6,7 +6,6 @@
 #include "MenuItem/SelectMenuDirFolderItem.hpp"
 #include "MenuItem/SelectMenuSubDirSectionItem.hpp"
 #include "MenuItem/SelectMenuLevelSectionItem.hpp"
-#include "MenuItem/SelectMenuSongItemForLevel.hpp"
 #include "Common/FsUtils.hpp"
 #include "Common/Encoding.hpp"
 #include "Input/PlatformKey.hpp"
@@ -1121,8 +1120,8 @@ bool SelectMenu::openDirectoryWithLevelSort(FilePathView directoryPath)
 			// 譜面項目を追加
 			for (const auto& chartInfo : charts)
 			{
-				auto item = std::make_unique<SelectMenuSongItemForLevel>(chartInfo.filePath, chartInfo.difficultyIdx);
-				if (item->hasChart())
+				auto item = std::make_unique<SelectMenuSongItem>(chartInfo.filePath);
+				if (item->chartExists())
 				{
 					m_menu.push_back(std::move(item));
 				}
@@ -1415,8 +1414,8 @@ bool SelectMenu::openAllFolderWithLevelSort()
 		// 譜面項目を追加
 		for (const auto& chartInfo : charts)
 		{
-			auto item = std::make_unique<SelectMenuSongItemForLevel>(chartInfo.filePath, chartInfo.difficultyIdx);
-			if (item->hasChart())
+			auto item = std::make_unique<SelectMenuSongItem>(chartInfo.filePath);
+			if (item->chartExists())
 			{
 				m_menu.push_back(std::move(item));
 			}
