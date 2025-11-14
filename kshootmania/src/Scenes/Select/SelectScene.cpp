@@ -243,6 +243,12 @@ SelectScene::SelectScene()
 
 	refreshCanvasPlayerName();
 
+	// 最初からStartボタンが押されている場合は離した時の入力を無視
+	if (KeyConfig::Pressed(KeyConfig::kStart))
+	{
+		m_ignoreNextStartUp = true;
+	}
+
 	if (m_menu.empty())
 	{
 		System::MessageBoxOK(U"譜面データが見つかりませんでした。", MessageBoxStyle::Warning);
