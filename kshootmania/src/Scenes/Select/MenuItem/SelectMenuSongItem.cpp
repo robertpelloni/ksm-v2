@@ -99,6 +99,14 @@ void SelectMenuSongItem::decide(const SelectMenuEventContext& context, int32 dif
 		return;
 	}
 	const FilePath chartFilePath = FilePath{ pChartInfo->chartFilePath() };
+
+	// 譜面ファイルの存在チェック
+	if (!FileSystem::Exists(chartFilePath))
+	{
+		System::MessageBoxOK(I18n::Get(I18n::Play::kErrorChartFileNotFound), MessageBoxStyle::Error);
+		return;
+	}
+
 	context.fnMoveToPlayScene(chartFilePath, MusicGame::IsAutoPlayYN::No);
 }
 
@@ -118,6 +126,14 @@ void SelectMenuSongItem::decideAutoPlay(const SelectMenuEventContext& context, i
 		return;
 	}
 	const FilePath chartFilePath = FilePath{ pChartInfo->chartFilePath() };
+
+	// 譜面ファイルの存在チェック
+	if (!FileSystem::Exists(chartFilePath))
+	{
+		System::MessageBoxOK(I18n::Get(I18n::Play::kErrorChartFileNotFound), MessageBoxStyle::Error);
+		return;
+	}
+
 	context.fnMoveToPlayScene(chartFilePath, MusicGame::IsAutoPlayYN::Yes);
 }
 
