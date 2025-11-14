@@ -1927,7 +1927,7 @@ void SelectMenu::jumpToFirst()
 	}
 
 	setCursorAndSave(0);
-	m_folderSelectSe.play();
+	m_songSelectSe.play();
 	refreshContentCanvasParams();
 	refreshSongPreview();
 }
@@ -1958,7 +1958,7 @@ void SelectMenu::jumpToLast()
 	}
 
 	setCursorAndSave(targetIndex);
-	m_folderSelectSe.play();
+	m_songSelectSe.play();
 	refreshContentCanvasParams();
 	refreshSongPreview();
 }
