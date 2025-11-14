@@ -95,6 +95,20 @@ namespace
 
 		return none;
 	}
+
+	std::unique_ptr<ISelectMenuItem> CreateFolderMenuItem(FilePathView folderPath, IsCurrentFolderYN isCurrentFolder)
+	{
+		// Allフォルダの特殊パスかどうかで項目タイプを判定
+		if (folderPath == SelectMenuAllFolderItem::kAllFolderSpecialPath)
+		{
+			return std::make_unique<SelectMenuAllFolderItem>(isCurrentFolder);
+		}
+		else
+		{
+			// 通常のディレクトリ
+			return std::make_unique<SelectMenuDirFolderItem>(isCurrentFolder, FileSystem::FullPath(folderPath));
+		}
+	}
 }
 
 bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe, RefreshSongPreviewYN refreshSongPreview, SaveToConfigIniYN saveToConfigIni)
@@ -1435,82 +1449,93 @@ bool SelectMenu::openAllFolderWithLevelSort()
 	return true;
 }
 
-Array<FilePath> SelectMenu::getSortedTopLevelFolderDirectories() const
+Array<FilePath> SelectMenu::getSortedFolderPaths() const
 {
 	const Array<FilePath> searchPaths = {
 		FsUtils::SongsDirectoryPath(), // TODO: 設定可能にする
 	};
 
-	Array<FilePath> directories;
+	// "All"フォルダを追加
+	Array<FilePath> folderPaths;
+	folderPaths.emplace_back(SelectMenuAllFolderItem::kAllFolderSpecialPath);
+
+	// TODO: Coursesフォルダを追加
+
+	// 通常ディレクトリを取得してソート
+	Array<FilePath> normalDirectories;
 	for (const auto& path : searchPaths)
 	{
-		directories.append(GetSubDirectories(path).map([](FilePathView p) { return FileSystem::FullPath(p); }));
+		normalDirectories.append(GetSubDirectories(path).map([](FilePathView p) { return FileSystem::FullPath(p); }));
 	}
 
 	// フォルダ名(小文字変換)の昇順でソート
-	directories.sort_by([](const FilePath& a, const FilePath& b)
+	normalDirectories.sort_by([](const FilePath& a, const FilePath& b)
 	{
 		return FsUtils::DirectoryNameByDirectoryPath(a).lowercased() < FsUtils::DirectoryNameByDirectoryPath(b).lowercased();
 	});
 
-	return directories;
+	// ソート済みの通常ディレクトリを追加
+	folderPaths.append(normalDirectories);
+
+	return folderPaths;
+}
+
+Optional<std::size_t> SelectMenu::findFolderIndex(const Array<FilePath>& folderPaths, FilePathView targetFullPath) const
+{
+	if (targetFullPath.empty())
+	{
+		return none;
+	}
+
+	const auto itr = std::find(folderPaths.begin(), folderPaths.end(), targetFullPath);
+	if (itr != folderPaths.end())
+	{
+		return static_cast<std::size_t>(std::distance(folderPaths.begin(), itr));
+	}
+
+	return none;
 }
 
 void SelectMenu::addOtherFolderItemsRotated(FilePathView currentFolderPath)
 {
-	const Array<FilePath> directories = getSortedTopLevelFolderDirectories();
+	const Array<FilePath> folderPaths = getSortedFolderPaths();
 
-	// フォルダを開いている場合は、そのフォルダが先頭になるような順番で項目を追加する必要があるので、現在開いているフォルダのインデックスを調べる
-	std::size_t currentDirectoryIdx = 0;
-	bool found = false;
-	if (!currentFolderPath.empty())
-	{
-		const auto itr = std::find(directories.begin(), directories.end(), m_folderState.fullPath);
-		if (itr != directories.end())
-		{
-			currentDirectoryIdx = static_cast<std::size_t>(std::distance(directories.begin(), itr));
-			found = true;
-		}
-	}
+	// 現在開いているフォルダのインデックスを調べる
+	// (フォルダを開いている場合は、そのフォルダが先頭になるような順番で項目を追加する)
+	const Optional<std::size_t> currentFolderIdxOpt = findFolderIndex(folderPaths, currentFolderPath.empty() ? m_folderState.fullPath : currentFolderPath);
+	const std::size_t currentFolderIdx = currentFolderIdxOpt.value_or(0);
 
 	// 項目を追加
-	for (std::size_t i = 0; i < directories.size(); ++i)
+	for (std::size_t i = 0; i < folderPaths.size(); ++i)
 	{
-		const std::size_t rotatedIdx = (i + currentDirectoryIdx) % directories.size();
+		const std::size_t rotatedIdx = (i + currentFolderIdx) % folderPaths.size();
 
-		if (found && i == 0)
+		if (currentFolderIdxOpt.has_value() && i == 0)
 		{
 			// 現在開いているフォルダは項目タイプkCurrentFolderとして既に追加済みなのでスキップ
 			continue;
 		}
 
-		const auto& directory = directories[rotatedIdx];
-		m_menu.push_back(std::make_unique<SelectMenuDirFolderItem>(IsCurrentFolderYN::No, FileSystem::FullPath(directory)));
-
-		if (rotatedIdx == directories.size() - 1)
-		{
-			// "All"フォルダの項目を追加
-			m_menu.push_back(std::make_unique<SelectMenuAllFolderItem>(IsCurrentFolderYN::No));
-
-			// TODO: "Courses"フォルダの項目を追加
-		}
+		const auto& folderPath = folderPaths[rotatedIdx];
+		m_menu.push_back(CreateFolderMenuItem(folderPath, IsCurrentFolderYN::No));
 	}
 }
 
 void SelectMenu::addOtherFolderItemsSimple()
 {
-	const Array<FilePath> directories = getSortedTopLevelFolderDirectories();
+	const Array<FilePath> folderPaths = getSortedFolderPaths();
 
 	// 項目を追加
-	for (const auto& directory : directories)
+	for (const auto& folderPath : folderPaths)
 	{
-		m_menu.push_back(std::make_unique<SelectMenuDirFolderItem>(IsCurrentFolderYN::No, FileSystem::FullPath(directory)));
+		// 現在開いているフォルダはスキップ
+		if (folderPath == m_folderState.fullPath)
+		{
+			continue;
+		}
+
+		m_menu.push_back(CreateFolderMenuItem(folderPath, IsCurrentFolderYN::No));
 	}
-
-	// "All"フォルダの項目を追加(最後)
-	// (現在開いているのでスキップ)
-
-	// TODO: "Courses"フォルダの項目を追加
 }
 
 void SelectMenu::jumpToFirst()

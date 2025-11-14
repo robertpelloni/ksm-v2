@@ -92,7 +92,9 @@ private:
 
 	void moveToPrevSubDirSection();
 
-	Array<FilePath> getSortedTopLevelFolderDirectories() const;
+	Array<FilePath> getSortedFolderPaths() const;
+
+	Optional<std::size_t> findFolderIndex(const Array<FilePath>& folderPaths, FilePathView targetFullPath) const;
 
 	void addOtherFolderItemsRotated(FilePathView currentFolderPath);
 
