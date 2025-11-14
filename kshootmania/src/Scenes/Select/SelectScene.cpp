@@ -272,9 +272,8 @@ void SelectScene::update()
 	// プレイ統計パネル更新
 	m_playStatsPanel.update(m_menu.getCurrentHighScoreInfo(), RuntimeConfig::GetGaugeType());
 
-	// いずれかのパネルが表示中の場合、オーバーレイを表示
+	// いずれかのパネルが表示中かチェック
 	const bool anyPanelVisible = m_btOptionPanel.isVisible() || m_playStatsPanel.isVisible();
-	m_canvas->setParamValue(U"overlay_visible", anyPanelVisible);
 
 	// Backキー処理(パネル表示中でも有効にする)
 	const bool closeFolder = m_menu.isFolderOpen() && KeyConfig::Down(m_folderCloseButton/* ← kBackspace・kBackのいずれかが入っている */);
