@@ -149,4 +149,7 @@ public:
 	const HighScoreInfo& getCurrentHighScoreInfo() const;
 
 	void showCurrentItemInFileManager();
+
+	[[nodiscard]]
+	const SelectFolderState& folderState() const;
 };

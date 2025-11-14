@@ -211,6 +211,8 @@
     <ClCompile Include="src\Scenes\Select\MenuItem\SelectMenuSongItem.cpp" />
     <ClCompile Include="src\Scenes\Select\MenuItem\SelectMenuSubDirSectionItem.cpp" />
     <ClCompile Include="src\Scenes\Select\BTOptionPanel.cpp" />
+    <ClCompile Include="src\Scenes\Select\FavoriteAddDialog.cpp" />
+    <ClCompile Include="src\Scenes\Select\FavoriteRemoveDialog.cpp" />
     <ClCompile Include="src\Scenes\Select\PlayStatsPanel.cpp" />
     <ClCompile Include="src\Scenes\Select\SelectChartInfo.cpp" />
     <ClCompile Include="src\Scenes\Select\SelectDifficultyMenu.cpp" />
@@ -427,6 +429,8 @@
     <ClInclude Include="src\Scenes\Select\MenuItem\SelectMenuSongItem.hpp" />
     <ClInclude Include="src\Scenes\Select\MenuItem\SelectMenuSubDirSectionItem.hpp" />
     <ClInclude Include="src\Scenes\Select\BTOptionPanel.hpp" />
+    <ClInclude Include="src\Scenes\Select\FavoriteAddDialog.hpp" />
+    <ClInclude Include="src\Scenes\Select\FavoriteRemoveDialog.hpp" />
     <ClInclude Include="src\Scenes\Select\PlayStatsPanel.hpp" />
     <ClInclude Include="src\Scenes\Select\SelectChartInfo.hpp" />
     <ClInclude Include="src\Scenes\Select\SelectDifficultyMenu.hpp" />

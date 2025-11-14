@@ -2007,3 +2007,8 @@ void SelectMenu::showCurrentItemInFileManager()
 	// 現在選択中の項目のshowInFileManagerを呼び出す
 	m_menu.cursorValue()->showInFileManager(m_difficultyMenu.cursor());
 }
+
+const SelectFolderState& SelectMenu::folderState() const
+{
+	return m_folderState;
+}
