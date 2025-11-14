@@ -704,10 +704,45 @@ void SelectMenu::reloadCurrentDirectory()
 	int32 currentCursorIndex = m_menu.cursor();
 	if (!m_menu.empty() && m_menu.cursorValue() != nullptr)
 	{
-		const auto pChartInfo = m_menu.cursorValue()->chartInfoPtr(currentDifficulty);
+		const auto* pItem = m_menu.cursorValue().get();
+		const auto pChartInfo = pItem->chartInfoPtr(currentDifficulty);
 		if (pChartInfo != nullptr)
 		{
 			currentChartFilePath = pChartInfo->chartFilePath();
+		}
+		else if (pItem->isSubFolderHeading())
+		{
+			// 見出し項目の場合、次の曲項目を探してその譜面ファイルパスを使用
+			for (std::size_t i = static_cast<std::size_t>(currentCursorIndex) + 1; i < m_menu.size(); ++i)
+			{
+				const auto& nextItem = m_menu[i];
+				if (nextItem == nullptr)
+				{
+					continue;
+				}
+
+				// フォルダ項目や見出し項目はスキップ
+				if (nextItem->isFolder() || nextItem->isSubFolderHeading())
+				{
+					continue;
+				}
+
+				// 存在する難易度を探す
+				for (int32 difficultyIdx = 0; difficultyIdx < kNumDifficulties; ++difficultyIdx)
+				{
+					const auto pNextChartInfo = nextItem->chartInfoPtr(difficultyIdx);
+					if (pNextChartInfo != nullptr)
+					{
+						currentChartFilePath = pNextChartInfo->chartFilePath();
+						break;
+					}
+				}
+
+				if (!currentChartFilePath.isEmpty())
+				{
+					break;
+				}
+			}
 		}
 	}
 
@@ -739,14 +774,14 @@ void SelectMenu::reloadCurrentDirectory()
 				continue;
 			}
 
-			// chartInfoPtr()で全難易度をチェック
-			for (int32 diffIdx = 0; diffIdx < kNumDifficulties; ++diffIdx)
+			// 全難易度から一致する譜面を探す
+			for (int32 difficultyIdx = 0; difficultyIdx < kNumDifficulties; ++difficultyIdx)
 			{
-				const auto pChartInfo = pItem->chartInfoPtr(diffIdx);
+				const auto pChartInfo = pItem->chartInfoPtr(difficultyIdx);
 				if (pChartInfo != nullptr && pChartInfo->chartFilePath() == currentChartFilePath)
 				{
 					m_menu.setCursor(static_cast<int32>(i));
-					m_difficultyMenu.setCursor(diffIdx);
+					m_difficultyMenu.setCursor(difficultyIdx);
 					found = true;
 					break;
 				}
