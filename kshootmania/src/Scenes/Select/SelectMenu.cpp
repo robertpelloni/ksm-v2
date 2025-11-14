@@ -599,8 +599,7 @@ void SelectMenu::update(SongPreviewOnlyYN songPreviewOnly)
 		}
 
 		// 現在のディレクトリを再読み込み
-		reloadCurrentDirectory();
-		refreshSongPreview();
+		reloadCurrentDirectory(RefreshSongPreviewYN::Yes);
 	}
 	fxLRPressed = fxLRPressedNow;
 
@@ -696,7 +695,7 @@ void SelectMenu::fadeOutSongPreviewForExit(Duration duration)
 	m_songPreview.fadeOutForExit(duration);
 }
 
-void SelectMenu::reloadCurrentDirectory()
+void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview)
 {
 	// 現在選択中の譜面ファイルパスと難易度を保持
 	FilePath currentChartFilePath;
@@ -806,6 +805,10 @@ void SelectMenu::reloadCurrentDirectory()
 	}
 
 	refreshContentCanvasParams();
+	if (refreshSongPreview)
+	{
+		this->refreshSongPreview();
+	}
 }
 
 const Texture& SelectMenu::getJacketTexture(FilePathView filePath)

@@ -515,7 +515,7 @@ void SelectScene::updateDialogs()
 					else
 					{
 						// リロード
-						m_menu.reloadCurrentDirectory();
+						m_menu.reloadCurrentDirectory(RefreshSongPreviewYN::Yes);
 					}
 				}
 			}

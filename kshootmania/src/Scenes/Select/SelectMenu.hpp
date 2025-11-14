@@ -132,7 +132,7 @@ public:
 
 	const Texture& getIconTexture(FilePathView filePath);
 
-	void reloadCurrentDirectory();
+	void reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::No);
 
 	void jumpToAlphabetItem(char32 letter);
 
