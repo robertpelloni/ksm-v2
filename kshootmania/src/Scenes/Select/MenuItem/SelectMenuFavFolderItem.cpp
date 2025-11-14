@@ -39,3 +39,13 @@ void SelectMenuFavFolderItem::setCanvasParamsTopBottom([[maybe_unused]] const Se
 		{ paramNamePrefix + U"title", FolderDisplayNameTopBottom(m_displayName, m_isCurrentFolder) },
 	});
 }
+
+void SelectMenuFavFolderItem::showInFileManager([[maybe_unused]] int32 difficultyIdx) const
+{
+	// .favファイルがあるディレクトリをエクスプローラで開く
+	const FilePath favFilePath = FileSystem::PathAppend(FsUtils::SongsDirectoryPath(), m_displayName + U".fav");
+	if (FileSystem::IsFile(favFilePath))
+	{
+		System::ShowInFileManager(favFilePath);
+	}
+}
