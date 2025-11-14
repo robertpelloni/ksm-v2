@@ -28,6 +28,7 @@ struct SelectMenuEventContext
 	std::function<void(FilePath, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene;
 	std::function<void(FilePath)> fnOpenDirectory;
 	std::function<void()> fnOpenAllFolder;
+	std::function<void(FilePath)> fnOpenFavoriteFolder;
 	std::function<void()> fnCloseFolder;
 	std::function<const Texture&(FilePathView)> fnGetJacketTexture;
 	std::function<const Texture&(FilePathView)> fnGetIconTexture;
@@ -75,6 +76,12 @@ private:
 	bool openAllFolderWithNameSort();
 
 	bool openAllFolderWithLevelSort();
+
+	bool openFavoriteFolder(FilePathView specialPath, PlaySeYN playSe, RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::Yes, SaveToConfigIniYN saveToConfigIni = SaveToConfigIniYN::Yes);
+
+	bool openFavoriteFolderWithNameSort(FilePathView specialPath);
+
+	bool openFavoriteFolderWithLevelSort(FilePathView specialPath);
 
 	void setCursorAndSave(int32 cursor);
 

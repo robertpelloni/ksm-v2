@@ -4,6 +4,7 @@
 #include "MenuItem/SelectMenuSongItem.hpp"
 #include "MenuItem/SelectMenuAllFolderItem.hpp"
 #include "MenuItem/SelectMenuDirFolderItem.hpp"
+#include "MenuItem/SelectMenuFavFolderItem.hpp"
 #include "MenuItem/SelectMenuSubDirSectionItem.hpp"
 #include "MenuItem/SelectMenuLevelSectionItem.hpp"
 #include "Common/FsUtils.hpp"
@@ -96,12 +97,96 @@ namespace
 		return none;
 	}
 
+	// お気に入りフォルダの特殊パスのプレフィックス
+	constexpr char32 kFavFolderSpecialPathPrefix = U'?';
+
+	// .favファイルのフルパスから特殊パスを生成
+	String ToSpecialPath(FilePathView favFilePath)
+	{
+		const String filename = FileSystem::FileName(favFilePath);
+		return kFavFolderSpecialPathPrefix + FsUtils::EliminateExtension(filename);
+	}
+
+	// 特殊パスから.favファイルのフルパスを取得
+	FilePath FromSpecialPath(StringView specialPath)
+	{
+		if (specialPath.isEmpty() || specialPath[0] != kFavFolderSpecialPathPrefix)
+		{
+			return U"";
+		}
+
+		const String displayName = String(specialPath.substr(1));
+		const FilePath songsDir = FsUtils::SongsDirectoryPath();
+		const FilePath favFilePath = FileSystem::PathAppend(songsDir, displayName + U".fav");
+
+		if (FileSystem::IsFile(favFilePath))
+		{
+			return favFilePath;
+		}
+
+		return U"";
+	}
+
+	// 特殊パスがお気に入りフォルダを示すかどうか
+	bool IsSpecialPathFavorite(StringView specialPath)
+	{
+		return !specialPath.isEmpty() && specialPath[0] == kFavFolderSpecialPathPrefix;
+	}
+
+	// songsディレクトリ配下の.favファイルを列挙
+	Array<FilePath> GetSortedFavFiles()
+	{
+		const FilePath songsDir = FsUtils::SongsDirectoryPath();
+		Array<FilePath> favFiles = FileSystem::DirectoryContents(songsDir, Recursive::No)
+			.filter([](FilePathView p)
+			{
+				return FileSystem::IsFile(p) && FileSystem::Extension(p) == U"fav";
+			});
+
+		// ファイル名(小文字)でソート
+		favFiles.sort_by([](const FilePath& a, const FilePath& b)
+		{
+			return FileSystem::FileName(a).lowercased() < FileSystem::FileName(b).lowercased();
+		});
+
+		return favFiles;
+	}
+
+	// .favファイルから楽曲パスの一覧を読み込む
+	Array<String> LoadFavFile(FilePathView favFilePath)
+	{
+		if (!FileSystem::IsFile(favFilePath))
+		{
+			return {};
+		}
+
+		const Array<String> lines = Encoding::ReadTextFileLinesShiftJISOrUTF8BasedOnBOM(favFilePath);
+		Array<String> result;
+
+		for (const String& line : lines)
+		{
+			const String trimmed = line.trimmed();
+			if (trimmed.isEmpty())
+			{
+				continue;
+			}
+			result.push_back(trimmed);
+		}
+
+		return result;
+	}
+
 	std::unique_ptr<ISelectMenuItem> CreateFolderMenuItem(FilePathView folderPath, IsCurrentFolderYN isCurrentFolder)
 	{
 		// Allフォルダの特殊パスかどうかで項目タイプを判定
 		if (folderPath == SelectMenuAllFolderItem::kAllFolderSpecialPath)
 		{
 			return std::make_unique<SelectMenuAllFolderItem>(isCurrentFolder);
+		}
+		else if (IsSpecialPathFavorite(folderPath))
+		{
+			// お気に入りフォルダの特殊パス
+			return std::make_unique<SelectMenuFavFolderItem>(isCurrentFolder, folderPath);
 		}
 		else
 		{
@@ -379,6 +464,7 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 			.fnMoveToPlayScene = [fnMoveToPlayScene](FilePath path, MusicGame::IsAutoPlayYN isAutoPlay) { fnMoveToPlayScene(path, isAutoPlay); },
 			.fnOpenDirectory = [this](FilePath path) { openDirectory(path, PlaySeYN::Yes); },
 			.fnOpenAllFolder = [this]() { openAllFolder(PlaySeYN::Yes); },
+			.fnOpenFavoriteFolder = [this](FilePath specialPath) { openFavoriteFolder(specialPath, PlaySeYN::Yes); },
 			.fnCloseFolder = [this]() { closeFolder(PlaySeYN::Yes); },
 			.fnGetJacketTexture = [this](FilePathView path) -> const Texture& { return getJacketTexture(path); },
 			.fnGetIconTexture = [this](FilePathView path) -> const Texture& { return getIconTexture(path); },
@@ -421,6 +507,19 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 	{
 		// Allフォルダの場合
 		openSuccess = openAllFolder(PlaySeYN::No);
+	}
+	else if (IsSpecialPathFavorite(savedDirectory))
+	{
+		// お気に入りフォルダの場合
+		const FilePath favFile = FromSpecialPath(savedDirectory);
+		if (!favFile.isEmpty() && FileSystem::IsFile(favFile))
+		{
+			openSuccess = openFavoriteFolder(
+				savedDirectory,
+				PlaySeYN::No,
+				RefreshSongPreviewYN::No,
+				SaveToConfigIniYN::No);
+		}
 	}
 	else if (!savedDirectory.isEmpty())
 	{
@@ -618,6 +717,10 @@ void SelectMenu::reloadCurrentDirectory()
 	if (currentFolderType == SelectFolderState::kAll)
 	{
 		openAllFolder(PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
+	}
+	else if (currentFolderType == SelectFolderState::kFavorite)
+	{
+		openFavoriteFolder(currentDirectory, PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
 	}
 	else
 	{
@@ -1449,6 +1552,228 @@ bool SelectMenu::openAllFolderWithLevelSort()
 	return true;
 }
 
+bool SelectMenu::openFavoriteFolder(FilePathView specialPath, PlaySeYN playSe, RefreshSongPreviewYN refreshSongPreview, SaveToConfigIniYN saveToConfigIni)
+{
+	if (playSe)
+	{
+		m_folderSelectSe.play();
+	}
+
+	// ソートモードに応じて処理を分岐
+	bool result = false;
+	if (m_folderState.sortMode == SelectFolderState::SortMode::kLevel)
+	{
+		result = openFavoriteFolderWithLevelSort(specialPath);
+	}
+	else
+	{
+		result = openFavoriteFolderWithNameSort(specialPath);
+	}
+
+	if (!result)
+	{
+		return false;
+	}
+
+	if (saveToConfigIni)
+	{
+		ConfigIni::SetString(ConfigIni::Key::kSelectDirectory, specialPath);
+		ConfigIni::SetInt(ConfigIni::Key::kSelectSongIndex, 0);
+	}
+
+	refreshContentCanvasParams();
+
+	if (refreshSongPreview)
+	{
+		this->refreshSongPreview();
+	}
+
+	return true;
+}
+
+bool SelectMenu::openFavoriteFolderWithNameSort(FilePathView specialPath)
+{
+	const FilePath favFilePath = FromSpecialPath(specialPath);
+	if (favFilePath.isEmpty())
+	{
+		return false;
+	}
+
+	m_menu.clear();
+	m_jacketTextureCache.clear();
+	m_iconTextureCache.clear();
+
+	// お気に入りフォルダの見出し項目を追加
+	m_menu.push_back(std::make_unique<SelectMenuFavFolderItem>(IsCurrentFolderYN::Yes, specialPath));
+
+	// .favファイルから楽曲パスを読み込み
+	const Array<String> songPaths = LoadFavFile(favFilePath);
+	const FilePath songsDir = FsUtils::SongsDirectoryPath();
+
+	// 楽曲ディレクトリ情報を収集
+	struct SongDirectoryInfo
+	{
+		FilePath path;
+		String lowercasedDirectoryName;
+	};
+	Array<SongDirectoryInfo> songDirectories;
+
+	for (const String& relativePath : songPaths)
+	{
+		const FilePath fullPath = FileSystem::PathAppend(songsDir, relativePath);
+
+		if (!FileSystem::IsDirectory(fullPath))
+		{
+			Logger << U"[ksm warning] SelectMenu::openFavoriteFolderWithNameSort: Favorite folder entry does not exist (path:'{}')"_fmt(fullPath);
+			continue;
+		}
+
+		songDirectories.push_back(SongDirectoryInfo{
+			.path = fullPath,
+			.lowercasedDirectoryName = FsUtils::DirectoryNameByDirectoryPath(fullPath).lowercased(),
+		});
+	}
+
+	// フォルダ名(小文字変換)の昇順でソート
+	songDirectories.sort_by([](const SongDirectoryInfo& a, const SongDirectoryInfo& b)
+	{
+		return a.lowercasedDirectoryName < b.lowercasedDirectoryName;
+	});
+
+	// 曲の項目を追加
+	for (const auto& songDirInfo : songDirectories)
+	{
+		std::unique_ptr<SelectMenuSongItem> item = std::make_unique<SelectMenuSongItem>(songDirInfo.path);
+		if (item->chartExists())
+		{
+			m_menu.push_back(std::move(item));
+		}
+	}
+
+	m_folderState.folderType = SelectFolderState::kFavorite;
+	m_folderState.fullPath = specialPath;
+
+	// フォルダ項目を追加
+	if (ConfigIni::GetBool(ConfigIni::Key::kAlwaysShowOtherFolders))
+	{
+		addOtherFolderItemsRotated(specialPath);
+	}
+
+	return true;
+}
+
+bool SelectMenu::openFavoriteFolderWithLevelSort(FilePathView specialPath)
+{
+	const FilePath favFilePath = FromSpecialPath(specialPath);
+	if (favFilePath.isEmpty())
+	{
+		return false;
+	}
+
+	m_menu.clear();
+	m_jacketTextureCache.clear();
+	m_iconTextureCache.clear();
+
+	// お気に入りフォルダの見出し項目を追加
+	m_menu.push_back(std::make_unique<SelectMenuFavFolderItem>(IsCurrentFolderYN::Yes, specialPath));
+
+	// レベルごとに譜面を分類
+	constexpr int32 kNumLevels = 20;
+	struct ChartFileInfo
+	{
+		FilePath filePath;
+		String songDirectoryName;
+	};
+	std::array<Array<ChartFileInfo>, kNumLevels> chartsByLevel;
+
+	// .favファイルから楽曲パスを読み込み
+	const Array<String> songPaths = LoadFavFile(favFilePath);
+	const FilePath songsDir = FsUtils::SongsDirectoryPath();
+
+	// 各楽曲フォルダの譜面を処理
+	for (const String& relativePath : songPaths)
+	{
+		const FilePath fullPath = FileSystem::PathAppend(songsDir, relativePath);
+
+		if (!FileSystem::IsDirectory(fullPath))
+		{
+			Logger << U"[ksm warning] SelectMenu::openFavoriteFolderWithLevelSort: Favorite folder entry does not exist (path:'{}')"_fmt(fullPath);
+			continue;
+		}
+
+		const Array<FilePath> chartFiles = FileSystem::DirectoryContents(fullPath, Recursive::No)
+			.filter([](FilePathView p)
+			{
+				return FileSystem::IsFile(p) && FileSystem::Extension(p) == U"ksh";
+			});
+
+		const String songDirectoryName = FsUtils::DirectoryNameByDirectoryPath(fullPath);
+
+		for (const auto& chartFile : chartFiles)
+		{
+			auto chartInfo = std::make_unique<SelectChartInfo>(chartFile);
+			if (chartInfo->hasError())
+			{
+				Logger << U"[ksm warning] SelectMenu::openFavoriteFolderWithLevelSort: KSH Loading Error (error:'{}', chartFilePath:'{}')"_fmt(chartInfo->errorString(), chartFile);
+				continue;
+			}
+
+			const int32 level = chartInfo->level();
+			if (level < 1 || level > 20)
+			{
+				Logger << U"[ksm warning] SelectMenu::openFavoriteFolderWithLevelSort: Level out of range (level:{}, chartFilePath:'{}')"_fmt(level, chartFile);
+				continue;
+			}
+
+			chartsByLevel[level - 1].push_back(ChartFileInfo{
+				.filePath = chartFile,
+				.songDirectoryName = songDirectoryName,
+			});
+		}
+	}
+
+	// レベルごとに見出しと譜面項目を追加
+	for (int32 level = 1; level <= kNumLevels; ++level)
+	{
+		const auto& charts = chartsByLevel[level - 1];
+		if (charts.isEmpty())
+		{
+			continue;
+		}
+
+		// レベル見出し項目を追加
+		m_menu.push_back(std::make_unique<SelectMenuLevelSectionItem>(level));
+
+		// 曲名(小文字)でソート
+		Array<ChartFileInfo> sortedCharts = charts;
+		sortedCharts.sort_by([](const ChartFileInfo& a, const ChartFileInfo& b)
+		{
+			return a.songDirectoryName.lowercased() < b.songDirectoryName.lowercased();
+		});
+
+		// 譜面項目を追加
+		for (const auto& chartInfo : sortedCharts)
+		{
+			auto item = std::make_unique<SelectMenuSongItem>(chartInfo.filePath);
+			if (item->chartExists())
+			{
+				m_menu.push_back(std::move(item));
+			}
+		}
+	}
+
+	m_folderState.folderType = SelectFolderState::kFavorite;
+	m_folderState.fullPath = specialPath;
+
+	// フォルダ項目を追加
+	if (ConfigIni::GetBool(ConfigIni::Key::kAlwaysShowOtherFolders))
+	{
+		addOtherFolderItemsRotated(specialPath);
+	}
+
+	return true;
+}
+
 Array<FilePath> SelectMenu::getSortedFolderPaths() const
 {
 	const Array<FilePath> searchPaths = {
@@ -1458,6 +1783,13 @@ Array<FilePath> SelectMenu::getSortedFolderPaths() const
 	// "All"フォルダを追加
 	Array<FilePath> folderPaths;
 	folderPaths.emplace_back(SelectMenuAllFolderItem::kAllFolderSpecialPath);
+
+	// お気に入りフォルダを追加
+	const Array<FilePath> favFiles = GetSortedFavFiles();
+	for (const auto& favFile : favFiles)
+	{
+		folderPaths.emplace_back(ToSpecialPath(favFile));
+	}
 
 	// TODO: Coursesフォルダを追加
 
