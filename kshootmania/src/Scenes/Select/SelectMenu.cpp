@@ -1610,40 +1610,48 @@ bool SelectMenu::openFavoriteFolderWithNameSort(FilePathView specialPath)
 	const Array<String> songPaths = LoadFavFile(favFilePath);
 	const FilePath songsDir = FsUtils::SongsDirectoryPath();
 
-	// 楽曲ディレクトリ情報を収集
-	struct SongDirectoryInfo
+	// パス情報を収集
+	struct PathInfo
 	{
 		FilePath path;
-		String lowercasedDirectoryName;
+		String lowercasedName;
 	};
-	Array<SongDirectoryInfo> songDirectories;
+	Array<PathInfo> pathInfos;
 
 	for (const String& relativePath : songPaths)
 	{
 		const FilePath fullPath = FileSystem::PathAppend(songsDir, relativePath);
 
-		if (!FileSystem::IsDirectory(fullPath))
+		if (FileSystem::IsDirectory(fullPath))
+		{
+			pathInfos.push_back(PathInfo{
+				.path = fullPath,
+				.lowercasedName = FsUtils::DirectoryNameByDirectoryPath(fullPath).lowercased(),
+			});
+		}
+		else if (FileSystem::IsFile(fullPath) && FileSystem::Extension(fullPath) == U"ksh")
+		{
+			pathInfos.push_back(PathInfo{
+				.path = fullPath,
+				.lowercasedName = FileSystem::FileName(fullPath).lowercased(),
+			});
+		}
+		else
 		{
 			Logger << U"[ksm warning] SelectMenu::openFavoriteFolderWithNameSort: Favorite folder entry does not exist (path:'{}')"_fmt(fullPath);
-			continue;
 		}
-
-		songDirectories.push_back(SongDirectoryInfo{
-			.path = fullPath,
-			.lowercasedDirectoryName = FsUtils::DirectoryNameByDirectoryPath(fullPath).lowercased(),
-		});
 	}
 
-	// フォルダ名(小文字変換)の昇順でソート
-	songDirectories.sort_by([](const SongDirectoryInfo& a, const SongDirectoryInfo& b)
+	// 名前(小文字変換)の昇順でソート
+	pathInfos.sort_by([](const PathInfo& a, const PathInfo& b)
 	{
-		return a.lowercasedDirectoryName < b.lowercasedDirectoryName;
+		return a.lowercasedName < b.lowercasedName;
 	});
 
-	// 曲の項目を追加
-	for (const auto& songDirInfo : songDirectories)
+	// 項目を追加
+	for (const auto& pathInfo : pathInfos)
 	{
-		std::unique_ptr<SelectMenuSongItem> item = std::make_unique<SelectMenuSongItem>(songDirInfo.path);
+		std::unique_ptr<SelectMenuSongItem> item = std::make_unique<SelectMenuSongItem>(pathInfo.path);
 		if (item->chartExists())
 		{
 			m_menu.push_back(std::move(item));
@@ -1690,44 +1698,50 @@ bool SelectMenu::openFavoriteFolderWithLevelSort(FilePathView specialPath)
 	const Array<String> songPaths = LoadFavFile(favFilePath);
 	const FilePath songsDir = FsUtils::SongsDirectoryPath();
 
-	// 各楽曲フォルダの譜面を処理
+	// 各楽曲フォルダまたはKSHファイルから項目を生成
+	Array<std::unique_ptr<SelectMenuSongItem>> songItems;
 	for (const String& relativePath : songPaths)
 	{
 		const FilePath fullPath = FileSystem::PathAppend(songsDir, relativePath);
 
-		if (!FileSystem::IsDirectory(fullPath))
+		if (FileSystem::IsDirectory(fullPath) || (FileSystem::IsFile(fullPath) && FileSystem::Extension(fullPath) == U"ksh"))
+		{
+			auto item = std::make_unique<SelectMenuSongItem>(fullPath);
+			if (item->chartExists())
+			{
+				songItems.push_back(std::move(item));
+			}
+		}
+		else
 		{
 			Logger << U"[ksm warning] SelectMenu::openFavoriteFolderWithLevelSort: Favorite folder entry does not exist (path:'{}')"_fmt(fullPath);
-			continue;
 		}
+	}
 
-		const Array<FilePath> chartFiles = FileSystem::DirectoryContents(fullPath, Recursive::No)
-			.filter([](FilePathView p)
-			{
-				return FileSystem::IsFile(p) && FileSystem::Extension(p) == U"ksh";
-			});
+	// 各項目から譜面情報を取得してレベル別に分類
+	for (const auto& item : songItems)
+	{
+		const FilePath itemPath{ item->fullPath() };
+		const String songName = item->isSingleChartItem() ? FileSystem::FileName(itemPath) : FsUtils::DirectoryNameByDirectoryPath(itemPath);
 
-		const String songDirectoryName = FsUtils::DirectoryNameByDirectoryPath(fullPath);
-
-		for (const auto& chartFile : chartFiles)
+		for (int32 diffIdx = 0; diffIdx < kNumDifficulties; ++diffIdx)
 		{
-			auto chartInfo = std::make_unique<SelectChartInfo>(chartFile);
-			if (chartInfo->hasError())
+			const auto pChartInfo = item->chartInfoPtr(diffIdx, FallbackForSingleChartYN::No);
+			if (pChartInfo == nullptr)
 			{
-				Logger << U"[ksm warning] SelectMenu::openFavoriteFolderWithLevelSort: KSH Loading Error (error:'{}', chartFilePath:'{}')"_fmt(chartInfo->errorString(), chartFile);
 				continue;
 			}
 
-			const int32 level = chartInfo->level();
+			const int32 level = pChartInfo->level();
 			if (level < 1 || level > 20)
 			{
-				Logger << U"[ksm warning] SelectMenu::openFavoriteFolderWithLevelSort: Level out of range (level:{}, chartFilePath:'{}')"_fmt(level, chartFile);
+				Logger << U"[ksm warning] SelectMenu::openFavoriteFolderWithLevelSort: Level out of range (level:{}, chartFilePath:'{}')"_fmt(level, pChartInfo->chartFilePath());
 				continue;
 			}
 
 			chartsByLevel[level - 1].push_back(ChartFileInfo{
-				.filePath = chartFile,
-				.songDirectoryName = songDirectoryName,
+				.filePath = FilePath{ pChartInfo->chartFilePath() },
+				.songDirectoryName = songName,
 			});
 		}
 	}

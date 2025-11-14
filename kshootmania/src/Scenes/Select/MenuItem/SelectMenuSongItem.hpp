@@ -30,11 +30,16 @@ public:
 		return m_fullPath;
 	}
 
-	virtual const SelectChartInfo* chartInfoPtr(int difficultyIdx) const override;
+	virtual const SelectChartInfo* chartInfoPtr(int difficultyIdx, FallbackForSingleChartYN fallbackForSingleChart = FallbackForSingleChartYN::Yes) const override;
 
 	virtual bool difficultyMenuExists() const override
 	{
 		return !m_isSingleChartItem;
+	}
+
+	bool isSingleChartItem() const
+	{
+		return m_isSingleChartItem;
 	}
 
 	bool chartExists() const

@@ -85,7 +85,8 @@ SelectMenuSongItem::SelectMenuSongItem(FilePathView fullPath)
 
 void SelectMenuSongItem::decide(const SelectMenuEventContext& context, int32 difficultyIdx)
 {
-	if (difficultyIdx < 0 || kNumDifficulties <= difficultyIdx)
+	// 単一譜面項目の場合はdifficultyIdxに関係なくchartInfoPtr()がフォールバックするので範囲チェックは行わない
+	if (!m_isSingleChartItem && (difficultyIdx < 0 || kNumDifficulties <= difficultyIdx))
 	{
 		Logger << U"[ksm warning] SelectMenuSongItem::decide: Difficulty index out of range (difficultyIdx:{}, fullPath:'{}')"_fmt(difficultyIdx, m_fullPath);
 		return;
@@ -103,7 +104,8 @@ void SelectMenuSongItem::decide(const SelectMenuEventContext& context, int32 dif
 
 void SelectMenuSongItem::decideAutoPlay(const SelectMenuEventContext& context, int32 difficultyIdx)
 {
-	if (difficultyIdx < 0 || kNumDifficulties <= difficultyIdx)
+	// 単一譜面項目の場合はdifficultyIdxに関係なくchartInfoPtr()がフォールバックするので範囲チェックは行わない
+	if (!m_isSingleChartItem && (difficultyIdx < 0 || kNumDifficulties <= difficultyIdx))
 	{
 		Logger << U"[ksm warning] SelectMenuSongItem::decideAutoPlay: Difficulty index out of range (difficultyIdx:{}, fullPath:'{}')"_fmt(difficultyIdx, m_fullPath);
 		return;
@@ -131,10 +133,10 @@ const SelectChartInfo* SelectMenuSongItem::chartInfoForSingleChartItem() const
 	return nullptr;
 }
 
-const SelectChartInfo* SelectMenuSongItem::chartInfoPtr(int difficultyIdx) const
+const SelectChartInfo* SelectMenuSongItem::chartInfoPtr(int difficultyIdx, FallbackForSingleChartYN fallbackForSingleChart) const
 {
-	// 単一譜面項目の場合は、difficultyIdxに関係なく保持している譜面情報を返す
-	if (m_isSingleChartItem)
+	// 単一譜面項目の場合は、fallbackForSingleChartがYesならdifficultyIdxに関係なく保持している譜面情報を返す
+	if (m_isSingleChartItem && fallbackForSingleChart)
 	{
 		return chartInfoForSingleChartItem();
 	}
