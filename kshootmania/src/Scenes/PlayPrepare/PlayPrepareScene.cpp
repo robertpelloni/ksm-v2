@@ -48,10 +48,11 @@ namespace
 	}
 }
 
-PlayPrepareScene::PlayPrepareScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)
+PlayPrepareScene::PlayPrepareScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay, Optional<CoursePlayState> courseState)
 	: m_chartFilePath(chartFilePath)
 	, m_isAutoPlay(isAutoPlay)
 	, m_chartData(kson::LoadKSHChartData(chartFilePath.narrow()))
+	, m_courseState(courseState)
 	, m_canvas(LoadPlayPrepareSceneCanvas())
 	, m_hispeedMenu(ConfigIni::LoadAvailableHispeedTypes(), LoadHispeedSettingFromConfigIni(), kson::GetEffectiveStdBPM(m_chartData), GetInitialBPM(m_chartData))
 	, m_highwayScroll(m_chartData)
@@ -110,7 +111,7 @@ Co::Task<void> PlayPrepareScene::start()
 		{
 			// 自動終了
 			SaveHispeedSettingToConfigIni(m_hispeedMenu.hispeedSetting());
-			requestNextScene<PlayScene>(m_chartFilePath, m_isAutoPlay);
+			requestNextScene<PlayScene>(m_chartFilePath, m_isAutoPlay, m_courseState);
 			break;
 		}
 
@@ -126,7 +127,7 @@ Co::Task<void> PlayPrepareScene::start()
 		{
 			// 一定時間経過後はStartボタンでスキップ可能
 			SaveHispeedSettingToConfigIni(m_hispeedMenu.hispeedSetting());
-			requestNextScene<PlayScene>(m_chartFilePath, m_isAutoPlay);
+			requestNextScene<PlayScene>(m_chartFilePath, m_isAutoPlay, m_courseState);
 			break;
 		}
 

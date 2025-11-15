@@ -138,7 +138,7 @@ namespace MusicGame
 	{
 		double finishTimeSec = kPastTimeSec;
 		Achievement achievement = Achievement::kNone;
-		bool isHardGaugeFailed = false;
+		IsHardFailedYN isHardFailed = IsHardFailedYN::No;
 	};
 
 	/// @brief ゲームステータス

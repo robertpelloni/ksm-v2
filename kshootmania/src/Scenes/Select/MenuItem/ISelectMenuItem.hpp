@@ -71,6 +71,13 @@ public:
 		return false;
 	}
 
+	/// @brief お気に入り登録可能な項目かどうか
+	/// @return お気に入り登録可能な場合はtrue
+	virtual bool isFavoriteRegisterableItemType() const
+	{
+		return false;
+	}
+
 	/// @brief Canvasのパラメータを設定(中央の項目)
 	/// @param context イベントコンテキスト
 	/// @param canvas 設定対象のCanvas

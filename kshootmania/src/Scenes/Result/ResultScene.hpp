@@ -18,6 +18,8 @@ private:
 
 	ResultNewRecordPanel m_newRecordPanel;
 
+	Optional<CoursePlayState> m_courseState;
+
 	void updateCanvasParams();
 
 	void update();

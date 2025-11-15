@@ -11,6 +11,8 @@ namespace MusicGame::Judgment
 		const int32 m_scoreValueMax = 0;
 		const int32 m_gaugeValueMax = 0;
 		const GaugeType m_gaugeType = GaugeType::kNormalGauge;
+		const GameMode m_gameMode = GameMode::kNormal;
+		const GaugeCalcType m_gaugeCalcType;
 
 		int32 m_scoreValue = 0;
 		int32 m_gaugeValue;
@@ -25,7 +27,7 @@ namespace MusicGame::Judgment
 		double calcGaugePercentageFromValue(int32 gaugeValue, GaugeType gaugeType) const;
 
 	public:
-		ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType);
+		ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType, Optional<int32> initialGaugeValue, GameMode gameMode);
 
 		void onChipOrLaserSlamJudgment(Judgment::JudgmentResult result);
 
@@ -44,6 +46,10 @@ namespace MusicGame::Judgment
 		/// @brief Grade計算用のゲージパーセンテージを返す
 		/// @return パーセンテージ(0.0～100.0)
 		double gaugePercentageForGrade() const;
+
+		/// @brief 内部ゲージ値を返す(コースモード時の引き継ぎ用)
+		/// @return 内部ゲージ値
+		int32 gaugeValue() const;
 
 		int32 combo() const;
 

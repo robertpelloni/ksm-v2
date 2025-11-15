@@ -95,13 +95,15 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	JudgmentHandler::JudgmentHandler(const kson::ChartData& chartData, const BTLaneJudgments& btLaneJudgments, const FXLaneJudgments& fxLaneJudgments, const LaserLaneJudgments& laserLaneJudgments, const PlayOption& playOption)
+	JudgmentHandler::JudgmentHandler(const kson::ChartData& chartData, const BTLaneJudgments& btLaneJudgments, const FXLaneJudgments& fxLaneJudgments, const LaserLaneJudgments& laserLaneJudgments, const PlayOption& playOption, Optional<int32> initialGaugeValue, GameMode gameMode)
 		: m_playOption(playOption)
 		, m_totalCombo(TotalCombo(btLaneJudgments, fxLaneJudgments, laserLaneJudgments))
 		, m_scoringStatus(
 			TotalGaugeValue(btLaneJudgments, fxLaneJudgments, laserLaneJudgments, kScoreValueCritical, kScoreValueCritical),
 			GaugeValueMax(chartData.gauge.total, btLaneJudgments, fxLaneJudgments, laserLaneJudgments),
-			playOption.gaugeType)
+			playOption.gaugeType,
+			initialGaugeValue,
+			gameMode)
 		, m_camPatternMain(chartData)
 	{
 	}
@@ -189,8 +191,10 @@ namespace MusicGame::Judgment
 		return m_totalCombo <= m_scoringStatus.totalJudgedCombo();
 	}
 
-	PlayResult JudgmentHandler::playResult() const
+	PlayResult JudgmentHandler::playResult(double currentTimeSec, double chartEndTimeSec, IsHardFailedYN isHardFailed) const
 	{
+		const double chartTimeProgress = chartEndTimeSec > 0.0 ? Clamp(currentTimeSec / chartEndTimeSec, 0.0, 1.0) : 1.0;
+
 		return PlayResult
 		{
 			.score = m_scoringStatus.score(),
@@ -200,6 +204,9 @@ namespace MusicGame::Judgment
 			.playOption = m_playOption,
 			.gaugePercentage = m_scoringStatus.gaugePercentage(m_playOption.gaugeType),
 			.gaugePercentageForGrade = m_scoringStatus.gaugePercentageForGrade(),
+			.gaugeValue = m_scoringStatus.gaugeValue(),
+			.chartTimeProgress = chartTimeProgress,
+			.isHardFailed = isHardFailed,
 		};
 	}
 }

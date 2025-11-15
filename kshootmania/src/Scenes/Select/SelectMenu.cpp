@@ -5,11 +5,14 @@
 #include "MenuItem/SelectMenuAllFolderItem.hpp"
 #include "MenuItem/SelectMenuDirFolderItem.hpp"
 #include "MenuItem/SelectMenuFavFolderItem.hpp"
+#include "MenuItem/SelectMenuCourseItem.hpp"
+#include "MenuItem/SelectMenuCoursesFolderItem.hpp"
 #include "MenuItem/SelectMenuSubDirSectionItem.hpp"
 #include "MenuItem/SelectMenuLevelSectionItem.hpp"
 #include "Common/FsUtils.hpp"
 #include "Common/Encoding.hpp"
 #include "Input/PlatformKey.hpp"
+#include "Course/CourseInfo.hpp"
 
 namespace
 {
@@ -183,6 +186,11 @@ namespace
 		{
 			return std::make_unique<SelectMenuAllFolderItem>(isCurrentFolder);
 		}
+		else if (folderPath == SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath)
+		{
+			// Coursesフォルダの特殊パス
+			return std::make_unique<SelectMenuCoursesFolderItem>(isCurrentFolder);
+		}
 		else if (IsSpecialPathFavorite(folderPath))
 		{
 			// お気に入りフォルダの特殊パス
@@ -193,6 +201,57 @@ namespace
 			// 通常のディレクトリ
 			return std::make_unique<SelectMenuDirFolderItem>(isCurrentFolder, FileSystem::FullPath(folderPath));
 		}
+	}
+
+	// ディレクトリ内の.kcoファイルを読み込み、タイトルでソートされたコース項目リストを返す
+	Array<std::unique_ptr<SelectMenuCourseItem>> LoadCourseItemsSorted(FilePathView directoryPath)
+	{
+		Array<std::unique_ptr<SelectMenuCourseItem>> courseItems;
+
+		const Array<FilePath> kcoFiles = FileSystem::DirectoryContents(directoryPath, Recursive::No)
+			.filter([](FilePathView p)
+			{
+				return FileSystem::IsFile(p) && FileSystem::Extension(p) == U"kco";
+			});
+
+		if (kcoFiles.isEmpty())
+		{
+			return courseItems;
+		}
+
+		struct CourseItemInfo
+		{
+			CourseInfo courseInfo;
+			String lowercasedTitle;
+		};
+		Array<CourseItemInfo> tempCourseItems;
+
+		for (const auto& kcoFile : kcoFiles)
+		{
+			const auto courseInfoOpt = CourseInfo::Load(kcoFile);
+			if (!courseInfoOpt)
+			{
+				Logger << U"[ksm warning] LoadCourseItemsSorted: Failed to load course file (path:'{}')"_fmt(kcoFile);
+				continue;
+			}
+
+			tempCourseItems.push_back(CourseItemInfo{
+				.courseInfo = *courseInfoOpt,
+				.lowercasedTitle = courseInfoOpt->title.lowercased(),
+			});
+		}
+
+		tempCourseItems.sort_by([](const CourseItemInfo& a, const CourseItemInfo& b)
+		{
+			return a.lowercasedTitle < b.lowercasedTitle;
+		});
+
+		for (const auto& item : tempCourseItems)
+		{
+			courseItems.push_back(std::make_unique<SelectMenuCourseItem>(item.courseInfo));
+		}
+
+		return courseItems;
 	}
 }
 
@@ -284,7 +343,14 @@ bool SelectMenu::openDirectoryWithNameSort(FilePathView directoryPath)
 		// ディレクトリの見出し項目を追加
 		m_menu.push_back(std::make_unique<SelectMenuDirFolderItem>(IsCurrentFolderYN::Yes, FileSystem::FullPath(directoryPath)));
 
-		// TODO: Insert course items
+		// コース項目を追加
+		{
+			auto courseItems = LoadCourseItemsSorted(directoryPath);
+			for (auto& courseItem : courseItems)
+			{
+				m_menu.push_back(std::move(courseItem));
+			}
+		}
 
 		// 曲の項目を追加
 		Array<FilePath> subDirCandidates;
@@ -458,13 +524,14 @@ void SelectMenu::playShakeDownTween()
 	m_selectSceneCanvas->setTweenActiveByTag(U"shakeDown", true);
 }
 
-SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, std::function<void(FilePathView, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene)
+SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, std::function<void(FilePathView, MusicGame::IsAutoPlayYN, Optional<CoursePlayState>)> fnMoveToPlayScene)
 	: m_eventContext
 		{
-			.fnMoveToPlayScene = [fnMoveToPlayScene](FilePath path, MusicGame::IsAutoPlayYN isAutoPlay) { fnMoveToPlayScene(path, isAutoPlay); },
+			.fnMoveToPlayScene = [fnMoveToPlayScene](FilePath path, MusicGame::IsAutoPlayYN isAutoPlay, Optional<CoursePlayState> courseState) { fnMoveToPlayScene(path, isAutoPlay, courseState); },
 			.fnOpenDirectory = [this](FilePath path) { openDirectory(path, PlaySeYN::Yes); },
 			.fnOpenAllFolder = [this]() { openAllFolder(PlaySeYN::Yes); },
 			.fnOpenFavoriteFolder = [this](FilePath specialPath) { openFavoriteFolder(specialPath, PlaySeYN::Yes); },
+			.fnOpenCoursesFolder = [this]() { openCoursesFolder(PlaySeYN::Yes); },
 			.fnCloseFolder = [this]() { closeFolder(PlaySeYN::Yes); },
 			.fnGetJacketTexture = [this](FilePathView path) -> const Texture& { return getJacketTexture(path); },
 			.fnGetIconTexture = [this](FilePathView path) -> const Texture& { return getIconTexture(path); },
@@ -507,6 +574,11 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 	{
 		// Allフォルダの場合
 		openSuccess = openAllFolder(PlaySeYN::No);
+	}
+	else if (savedDirectory == SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath)
+	{
+		// Coursesフォルダの場合
+		openSuccess = openCoursesFolder(PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
 	}
 	else if (IsSpecialPathFavorite(savedDirectory))
 	{
@@ -755,6 +827,10 @@ void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview)
 	else if (currentFolderType == SelectFolderState::kFavorite)
 	{
 		openFavoriteFolder(currentDirectory, PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
+	}
+	else if (currentFolderType == SelectFolderState::kCourses)
+	{
+		openCoursesFolder(PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
 	}
 	else
 	{
@@ -1183,7 +1259,14 @@ bool SelectMenu::openDirectoryWithLevelSort(FilePathView directoryPath)
 		// ディレクトリの見出し項目を追加
 		m_menu.push_back(std::make_unique<SelectMenuDirFolderItem>(IsCurrentFolderYN::Yes, FileSystem::FullPath(directoryPath)));
 
-		// TODO: Insert course items
+		// コース項目を追加
+		{
+			auto courseItems = LoadCourseItemsSorted(directoryPath);
+			for (auto& courseItem : courseItems)
+			{
+				m_menu.push_back(std::move(courseItem));
+			}
+		}
 
 		// レベルごとに譜面を分類
 		struct ChartFileInfo
@@ -1826,6 +1909,123 @@ bool SelectMenu::openFavoriteFolderWithLevelSort(FilePathView specialPath)
 	return true;
 }
 
+bool SelectMenu::openCoursesFolder(PlaySeYN playSe, RefreshSongPreviewYN refreshSongPreview, SaveToConfigIniYN saveToConfigIni)
+{
+	if (playSe)
+	{
+		m_folderSelectSe.play();
+	}
+
+	// ソートモードに応じて処理を分岐
+	bool result = false;
+	if (m_folderState.sortMode == SelectFolderState::SortMode::kLevel)
+	{
+		result = openCoursesFolderWithLevelSort();
+	}
+	else
+	{
+		result = openCoursesFolderWithNameSort();
+	}
+
+	if (!result)
+	{
+		return false;
+	}
+
+	if (saveToConfigIni)
+	{
+		ConfigIni::SetString(ConfigIni::Key::kSelectDirectory, SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath);
+		ConfigIni::SetInt(ConfigIni::Key::kSelectSongIndex, 0);
+	}
+
+	refreshContentCanvasParams();
+
+	if (refreshSongPreview)
+	{
+		this->refreshSongPreview();
+	}
+
+	return true;
+}
+
+bool SelectMenu::openCoursesFolderWithNameSort()
+{
+	m_menu.clear();
+	m_jacketTextureCache.clear();
+	m_iconTextureCache.clear();
+
+	// コースフォルダの見出し項目を追加
+	m_menu.push_back(std::make_unique<SelectMenuCoursesFolderItem>(IsCurrentFolderYN::Yes));
+
+	const FilePath coursesDir = FsUtils::CoursesDirectoryPath();
+	if (!FileSystem::IsDirectory(coursesDir))
+	{
+		Logger << U"[ksm warning] SelectMenu::openCoursesFolderWithNameSort: courses directory does not exist";
+		m_folderState.folderType = SelectFolderState::kCourses;
+		m_folderState.fullPath = SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath;
+		return true;
+	}
+
+	// コース項目を追加
+	{
+		auto courseItems = LoadCourseItemsSorted(coursesDir);
+		for (auto& courseItem : courseItems)
+		{
+			m_menu.push_back(std::move(courseItem));
+		}
+	}
+
+	m_folderState.folderType = SelectFolderState::kCourses;
+	m_folderState.fullPath = SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath;
+
+	// フォルダ項目を追加
+	if (ConfigIni::GetBool(ConfigIni::Key::kAlwaysShowOtherFolders))
+	{
+		addOtherFolderItemsRotated(SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath);
+	}
+
+	return true;
+}
+
+bool SelectMenu::openCoursesFolderWithLevelSort()
+{
+	m_menu.clear();
+	m_jacketTextureCache.clear();
+	m_iconTextureCache.clear();
+
+	// コースフォルダの見出し項目を追加
+	m_menu.push_back(std::make_unique<SelectMenuCoursesFolderItem>(IsCurrentFolderYN::Yes));
+
+	const FilePath coursesDir = FsUtils::CoursesDirectoryPath();
+	if (!FileSystem::IsDirectory(coursesDir))
+	{
+		Logger << U"[ksm warning] SelectMenu::openCoursesFolderWithLevelSort: courses directory does not exist";
+		m_folderState.folderType = SelectFolderState::kCourses;
+		m_folderState.fullPath = SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath;
+		return true;
+	}
+
+	// コース項目を追加
+	{
+		auto courseItems = LoadCourseItemsSorted(coursesDir);
+		for (auto& courseItem : courseItems)
+		{
+			m_menu.push_back(std::move(courseItem));
+		}
+	}
+
+	m_folderState.folderType = SelectFolderState::kCourses;
+	m_folderState.fullPath = SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath;
+
+	// フォルダ項目を追加
+	if (ConfigIni::GetBool(ConfigIni::Key::kAlwaysShowOtherFolders))
+	{
+		addOtherFolderItemsRotated(SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath);
+	}
+
+	return true;
+}
+
 Array<FilePath> SelectMenu::getSortedFolderPaths() const
 {
 	const Array<FilePath> searchPaths = {
@@ -1843,7 +2043,12 @@ Array<FilePath> SelectMenu::getSortedFolderPaths() const
 		folderPaths.emplace_back(ToSpecialPath(favFile));
 	}
 
-	// TODO: Coursesフォルダを追加
+	// Coursesフォルダを追加
+	const FilePath coursesDir = FsUtils::CoursesDirectoryPath();
+	if (FileSystem::IsDirectory(coursesDir))
+	{
+		folderPaths.emplace_back(SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath);
+	}
 
 	// 通常ディレクトリを取得してソート
 	Array<FilePath> normalDirectories;

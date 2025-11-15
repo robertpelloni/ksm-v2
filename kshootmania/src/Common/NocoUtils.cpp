@@ -9,4 +9,37 @@ namespace NocoUtils
 			return !canvas->isTweenPlayingByTag(tag);
 		});
 	}
+
+	std::shared_ptr<noco::Node> GetNodeByPath(noco::Canvas* pCanvas, std::initializer_list<const char32_t*> path)
+	{
+		if (pCanvas == nullptr)
+		{
+			assert(false && "canvas must not be nullptr");
+			return nullptr;
+		}
+
+		std::shared_ptr<noco::Node> currentNode = nullptr;
+		for (const auto& nodeName : path)
+		{
+			if (currentNode == nullptr)
+			{
+				currentNode = pCanvas->findByName(nodeName);
+			}
+			else
+			{
+				currentNode = currentNode->findByName(nodeName);
+			}
+
+			if (currentNode == nullptr)
+			{
+				return nullptr;
+			}
+		}
+		return currentNode;
+	}
+
+	std::shared_ptr<noco::Node> GetNodeByPath(const std::shared_ptr<noco::Canvas>& pCanvas, std::initializer_list<const char32_t*> path)
+	{
+		return GetNodeByPath(pCanvas.get(), path);
+	}
 }

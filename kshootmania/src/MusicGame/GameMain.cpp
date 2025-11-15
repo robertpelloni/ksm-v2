@@ -99,16 +99,16 @@ namespace MusicGame
 		// 判定の更新
 		m_judgmentMain.update(m_chartData, m_gameStatus, m_viewStatus);
 
-		// HARDゲージ落ち判定
+		// HARDゲージ/コースモード落ち判定
 		if (!m_gameStatus.playFinishStatus.has_value() &&
-			m_playOption.gaugeType == GaugeType::kHardGauge &&
+			(m_playOption.gaugeType == GaugeType::kHardGauge || m_playOption.gameMode == GameMode::kCourseMode) &&
 			m_viewStatus.gaugePercentageInt <= kGaugePercentageThresholdHard)
 		{
 			m_gameStatus.playFinishStatus = PlayFinishStatus
 			{
 				.finishTimeSec = currentTimeSec,
 				.achievement = Achievement::kNone,
-				.isHardGaugeFailed = true,
+				.isHardFailed = IsHardFailedYN::Yes,
 			};
 
 			// HARD落ち効果音を再生
@@ -123,7 +123,7 @@ namespace MusicGame
 			m_gameStatus.playFinishStatus = PlayFinishStatus
 			{
 				.finishTimeSec = currentTimeSec,
-				.achievement = m_judgmentMain.playResult().achievement(),
+				.achievement = m_judgmentMain.playResult(m_chartData, m_timingCache, currentTimeSec, IsHardFailedYN::No).achievement(),
 			};
 		}
 	}
@@ -146,7 +146,7 @@ namespace MusicGame
 		, m_chartData(LoadChartDataWithTurn(createInfo))
 		, m_timingCache(kson::CreateTimingCache(m_chartData.beat))
 		, m_playOption(createInfo.playOption)
-		, m_judgmentMain(m_chartData, m_timingCache, createInfo.playOption)
+		, m_judgmentMain(m_chartData, m_timingCache, createInfo.playOption, createInfo.initialGaugeValue, createInfo.playOption.gameMode)
 		, m_camSystem(m_chartData)
 		, m_highwayScroll(m_chartData)
 		, m_bgm(FileSystem::PathAppend(m_parentPath, Unicode::FromUTF8(m_chartData.audio.bgm.filename)), m_chartData.audio.bgm.vol, SecondsF{ static_cast<double>(m_chartData.audio.bgm.offset + createInfo.playOption.effectiveGlobalOffsetMs()) / 1000 }, Audio::DetermineLegacyAudioFPMode(m_chartData, m_parentPath), m_chartData, m_parentPath)
@@ -243,7 +243,8 @@ namespace MusicGame
 
 	PlayResult GameMain::playResult() const
 	{
-		return m_judgmentMain.playResult();
+		const IsHardFailedYN isHardFailed{ m_gameStatus.playFinishStatus.has_value() && m_gameStatus.playFinishStatus->isHardFailed };
+		return m_judgmentMain.playResult(m_chartData, m_timingCache, m_gameStatus.currentTimeSec, isHardFailed);
 	}
 
 	void GameMain::startBGMFadeOut(Duration duration)

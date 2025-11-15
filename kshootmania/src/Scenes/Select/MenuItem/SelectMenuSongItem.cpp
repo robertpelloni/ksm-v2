@@ -2,27 +2,7 @@
 #include "Graphics/FontUtils.hpp"
 #include "Scenes/Select/SelectDifficultyMenu.hpp"
 #include "RuntimeConfig.hpp"
-
-namespace
-{
-	std::shared_ptr<noco::Node> GetJacketNode(noco::Canvas& canvas, StringView itemNodeName)
-	{
-		if (const auto itemNode = canvas.findByName(itemNodeName))
-		{
-			return itemNode->findByName(U"JacketImage");
-		}
-		return nullptr;
-	}
-
-	std::shared_ptr<noco::Node> GetIconNode(noco::Canvas& canvas, StringView itemNodeName)
-	{
-		if (const auto itemNode = canvas.findByName(itemNodeName))
-		{
-			return itemNode->findByName(U"Icon");
-		}
-		return nullptr;
-	}
-}
+#include "Common/NocoUtils.hpp"
 
 SelectMenuSongItem::SelectMenuSongItem(FilePathView fullPath)
 	: m_fullPath(fullPath)
@@ -107,7 +87,7 @@ void SelectMenuSongItem::decide(const SelectMenuEventContext& context, int32 dif
 		return;
 	}
 
-	context.fnMoveToPlayScene(chartFilePath, MusicGame::IsAutoPlayYN::No);
+	context.fnMoveToPlayScene(chartFilePath, MusicGame::IsAutoPlayYN::No, none);
 }
 
 void SelectMenuSongItem::decideAutoPlay(const SelectMenuEventContext& context, int32 difficultyIdx)
@@ -134,7 +114,7 @@ void SelectMenuSongItem::decideAutoPlay(const SelectMenuEventContext& context, i
 		return;
 	}
 
-	context.fnMoveToPlayScene(chartFilePath, MusicGame::IsAutoPlayYN::Yes);
+	context.fnMoveToPlayScene(chartFilePath, MusicGame::IsAutoPlayYN::Yes, none);
 }
 
 const SelectChartInfo* SelectMenuSongItem::chartInfoForSingleChartItem() const
@@ -172,6 +152,7 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 		{ U"center_isSong", true },
 		{ U"center_isDirectory", false },
 		{ U"center_isSubDirectory", false },
+		{ U"center_isCourse", false },
 	});
 
 	// 各難易度の存在有無とレベルを設定
@@ -225,26 +206,23 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 
 		// ジャケット画像を設定
 		// TODO: タグ等で取得可能にする
-		const Texture& jacketTexture = context.fnGetJacketTexture(pChartInfo->jacketFilePath());
-		if (const auto jacketNode = GetJacketNode(canvas, U"CenterItem"))
+		const Texture jacketTexture = context.fnGetJacketTexture(pChartInfo->jacketFilePath());
+		if (const auto sprite = NocoUtils::GetComponentByPath<noco::Sprite>(&canvas, { U"CenterItem", U"Song", U"JacketImage" }))
 		{
-			if (const auto sprite = jacketNode->getComponent<noco::Sprite>())
+			sprite->setTexture(jacketTexture);
+			if (jacketTexture.isEmpty())
 			{
-				sprite->setTexture(jacketTexture);
-				if (jacketTexture.isEmpty())
-				{
-					sprite->setColor(ColorF{ 0.0, 0.0 });
-				}
-				else
-				{
-					sprite->setColor(Palette::White);
-				}
+				sprite->setColor(ColorF{ 0.0, 0.0 });
+			}
+			else
+			{
+				sprite->setColor(Palette::White);
 			}
 		}
 
 		// アイコン画像を設定
 		// TODO: タグ等で取得可能にする
-		if (const auto iconNode = GetIconNode(canvas, U"CenterItem"))
+		if (const auto iconNode = NocoUtils::GetNodeByPath(&canvas, { U"CenterItem", U"Song", U"Icon" }))
 		{
 			if (pChartInfo->iconFilePath().isEmpty())
 			{
@@ -254,9 +232,9 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 			else
 			{
 				// アイコンが指定されている場合はテクスチャロードして表示
-				const Texture& iconTexture = context.fnGetIconTexture(pChartInfo->iconFilePath());
+				const Texture iconTexture = context.fnGetIconTexture(pChartInfo->iconFilePath());
 				iconNode->setActive(!iconTexture.isEmpty());
-				if (const auto sprite = iconNode->getComponent<noco::Sprite>())
+				if (const auto sprite = NocoUtils::GetComponentByPath<noco::Sprite>(&canvas, { U"CenterItem", U"Song", U"Icon" }))
 				{
 					sprite->setTexture(iconTexture);
 				}
@@ -295,6 +273,7 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 	int32 levelIndex = -1; // -1は非表示
 	int32 medalIndex = -1; // -1は非表示
 	int32 highScoreGradeIndex = 0; // グレードは「-」表示にするため0
+	int32 gaugePercentage = 0;
 	const SelectChartInfo* pDisplayChartInfo = m_isSingleChartItem ? pAltChartInfo : pChartInfo;
 	if (pDisplayChartInfo != nullptr)
 	{
@@ -303,41 +282,41 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 		levelIndex = pDisplayChartInfo->level() - 1;
 		medalIndex = static_cast<int32>(highScoreInfo.medal());
 		highScoreGradeIndex = static_cast<int32>(highScoreInfo.grade(gaugeType));
+		gaugePercentage = highScoreInfo.percent(gaugeType);
 	}
 
 	canvas.setParamValues({
 		{ paramNamePrefix + U"isSong", true },
 		{ paramNamePrefix + U"isDirectory", false },
 		{ paramNamePrefix + U"isSubDirectory", false },
+		{ paramNamePrefix + U"isCourse", false },
 		{ paramNamePrefix + U"title", pAltChartInfo->title() },
 		{ paramNamePrefix + U"artist", pAltChartInfo->artist() },
 		{ paramNamePrefix + U"levelIndex", levelIndex },
 		{ paramNamePrefix + U"medalIndex", medalIndex },
 		{ paramNamePrefix + U"highScoreGradeIndex", highScoreGradeIndex },
+		{ paramNamePrefix + U"gaugePercentage", ToString(gaugePercentage) },
 	});
 
 	// ジャケット画像を設定
 	// TODO: タグ等で取得可能にする
 	const Texture jacketTexture = context.fnGetJacketTexture(pAltChartInfo->jacketFilePath());
-	if (const auto jacketNode = GetJacketNode(canvas, nodeName))
+	if (const auto sprite = NocoUtils::GetComponentByPath<noco::Sprite>(&canvas, { nodeName.data(), U"Song", U"JacketImage" }))
 	{
-		if (const auto sprite = jacketNode->getComponent<noco::Sprite>())
+		sprite->setTexture(jacketTexture);
+		if (jacketTexture.isEmpty())
 		{
-			sprite->setTexture(jacketTexture);
-			if (jacketTexture.isEmpty())
-			{
-				sprite->setColor(ColorF{ 0.0, 0.0 });
-			}
-			else
-			{
-				sprite->setColor(Palette::White);
-			}
+			sprite->setColor(ColorF{ 0.0, 0.0 });
+		}
+		else
+		{
+			sprite->setColor(Palette::White);
 		}
 	}
 
 	// アイコン画像を設定
 	// TODO: タグ等で取得可能にする
-	if (const auto iconNode = GetIconNode(canvas, nodeName))
+	if (const auto iconNode = NocoUtils::GetNodeByPath(&canvas, { nodeName.data(), U"Song", U"Icon" }))
 	{
 		if (pAltChartInfo->iconFilePath().isEmpty())
 		{
@@ -349,7 +328,7 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 			// アイコンが指定されている場合はテクスチャロードして表示
 			const Texture iconTexture = context.fnGetIconTexture(pAltChartInfo->iconFilePath());
 			iconNode->setActive(!iconTexture.isEmpty());
-			if (const auto sprite = iconNode->getComponent<noco::Sprite>())
+			if (const auto sprite = NocoUtils::GetComponentByPath<noco::Sprite>(&canvas, { nodeName.data(), U"Song", U"Icon" }))
 			{
 				sprite->setTexture(iconTexture);
 			}

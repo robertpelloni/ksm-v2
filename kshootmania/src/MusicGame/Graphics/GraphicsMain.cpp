@@ -139,7 +139,7 @@ namespace MusicGame::Graphics
 		const ScopedRenderStates3D samplerState(SamplerState::ClampNearest);
 
 		// ゲージパーセンテージに応じてBGテクスチャのインデックスを決定
-		const int32 percentThreshold = (m_playOption.gaugeType == GaugeType::kHardGauge) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
+		const int32 percentThreshold = (m_playOption.gaugeType == GaugeType::kHardGauge || m_playOption.gameMode == GameMode::kCourseMode) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
 		const int32 bgTextureIndex = viewStatus.gaugePercentageInt >= percentThreshold ? 1 : 0;
 
 		double bgTiltRadians = viewStatus.tiltRadians / 3;
@@ -162,7 +162,7 @@ namespace MusicGame::Graphics
 		}
 
 		// ゲージパーセンテージに応じてレイヤーテクスチャのインデックスを決定
-		const int32 percentThreshold = (m_playOption.gaugeType == GaugeType::kHardGauge) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
+		const int32 percentThreshold = (m_playOption.gaugeType == GaugeType::kHardGauge || m_playOption.gameMode == GameMode::kCourseMode) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
 		const int32 layerTextureIndex = viewStatus.gaugePercentageInt >= percentThreshold ? 1 : 0;
 
 		if (!m_layerFrameTextures[layerTextureIndex].empty())
@@ -207,7 +207,7 @@ namespace MusicGame::Graphics
 		, m_layerTransform(m_camera.billboard(kLayerBillboardPosition, kLayerBillboardSize))
 		, m_jdgoverlay3DGraphics(m_camera)
 		, m_songInfoPanel(chartData, parentPath)
-		, m_gaugePanel(playOption.gaugeType)
+		, m_gaugePanel(ToGaugeCalcType(playOption.gaugeType, playOption.gameMode))
 		, m_laserApproachIndicator(chartData)
 		, m_moviePanel(MovieFilePath(chartData, parentPath), chartData.bg.legacy.movie.offset / 1000.0, playOption.movieEnabled)
 		, m_playOption(playOption)
@@ -255,7 +255,7 @@ namespace MusicGame::Graphics
 		m_moviePanel.draw();
 
 		// HARDゲージ落ち時の赤色オーバーレイ
-		if (gameStatus.playFinishStatus.has_value() && gameStatus.playFinishStatus->isHardGaugeFailed)
+		if (gameStatus.playFinishStatus.has_value() && gameStatus.playFinishStatus->isHardFailed)
 		{
 			constexpr double kFadeTimeSec = 0.75;
 			const double elapsedSec = gameStatus.currentTimeSec - gameStatus.playFinishStatus->finishTimeSec;

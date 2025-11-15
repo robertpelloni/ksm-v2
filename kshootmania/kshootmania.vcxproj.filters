@@ -507,6 +507,12 @@
     <ClCompile Include="src\Scenes\Select\MenuItem\SelectMenuAllFolderItem.cpp">
       <Filter>Source Files\Scenes\Select\MenuItem</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scenes\Select\MenuItem\SelectMenuCourseItem.cpp">
+      <Filter>Source Files\Scenes\Select\MenuItem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scenes\Select\MenuItem\SelectMenuCoursesFolderItem.cpp">
+      <Filter>Source Files\Scenes\Select\MenuItem</Filter>
+    </ClCompile>
     <ClCompile Include="src\Scenes\Select\MenuItem\SelectMenuDirFolderItem.cpp">
       <Filter>Source Files\Scenes\Select\MenuItem</Filter>
     </ClCompile>
@@ -518,6 +524,21 @@
     </ClCompile>
     <ClCompile Include="src\Scenes\Select\MenuItem\SelectMenuLevelSectionItem.cpp">
       <Filter>Source Files\Scenes\Select\MenuItem</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Course\CourseInfo.cpp">
+      <Filter>Source Files\Course</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Course\CoursePlayResult.cpp">
+      <Filter>Source Files\Course</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Course\CoursePlayState.cpp">
+      <Filter>Source Files\Course</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scenes\CourseResult\CourseResultNewRecordPanel.cpp">
+      <Filter>Source Files\Scenes\CourseResult</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scenes\CourseResult\CourseResultScene.cpp">
+      <Filter>Source Files\Scenes\CourseResult</Filter>
     </ClCompile>
     <ClCompile Include="src\Scenes\Result\ResultNewRecordPanel.cpp">
       <Filter>Source Files\Scenes\Result</Filter>
@@ -1135,6 +1156,12 @@
     <ClInclude Include="src\Scenes\Select\MenuItem\SelectMenuAllFolderItem.hpp">
       <Filter>Header Files\Scenes\Select\MenuItem</Filter>
     </ClInclude>
+    <ClInclude Include="src\Scenes\Select\MenuItem\SelectMenuCourseItem.hpp">
+      <Filter>Header Files\Scenes\Select\MenuItem</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scenes\Select\MenuItem\SelectMenuCoursesFolderItem.hpp">
+      <Filter>Header Files\Scenes\Select\MenuItem</Filter>
+    </ClInclude>
     <ClInclude Include="src\Scenes\Select\MenuItem\SelectMenuDirFolderItem.hpp">
       <Filter>Header Files\Scenes\Select\MenuItem</Filter>
     </ClInclude>
@@ -1146,6 +1173,21 @@
     </ClInclude>
     <ClInclude Include="src\Scenes\Select\MenuItem\SelectMenuFavFolderItem.hpp">
       <Filter>Header Files\Scenes\Select\MenuItem</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Course\CourseInfo.hpp">
+      <Filter>Header Files\Course</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Course\CoursePlayResult.hpp">
+      <Filter>Header Files\Course</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Course\CoursePlayState.hpp">
+      <Filter>Header Files\Course</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scenes\CourseResult\CourseResultNewRecordPanel.hpp">
+      <Filter>Header Files\Scenes\CourseResult</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scenes\CourseResult\CourseResultScene.hpp">
+      <Filter>Header Files\Scenes\CourseResult</Filter>
     </ClInclude>
     <ClInclude Include="src\Scenes\Result\ResultNewRecordPanel.hpp">
       <Filter>Header Files\Scenes\Result</Filter>

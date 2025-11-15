@@ -1,5 +1,7 @@
 ﻿#include "ResultScene.hpp"
 #include "Scenes/Select/SelectScene.hpp"
+#include "Scenes/PlayPrepare/PlayPrepareScene.hpp"
+#include "Scenes/CourseResult/CourseResultScene.hpp"
 #include "Scenes/Common/ShowLoadingOneFrame.hpp"
 #include "HighScore/KscIO.hpp"
 #include "Common/CommonDefines.hpp"
@@ -216,10 +218,18 @@ ResultScene::ResultScene(const ResultSceneArgs& args)
 	, m_chartData(args.chartData)
 	, m_playResult(args.playResult)
 	, m_newRecordPanel(m_canvas)
+	, m_courseState(args.courseState)
 {
-	// 旧スコアを読み込んでNewRecordパネルを設定
+	// コースモードの場合は結果を記録
+	if (m_courseState)
+	{
+		m_courseState->recordResult(m_playResult);
+		m_courseState->setGaugeValue(m_playResult.gaugeValue);
+	}
+
+	// 前回までのハイスコアを読み込んでNewRecordパネルを設定
 	int32 oldScore = 0;
-	if (!m_playResult.playOption.isAutoPlay) // オートプレイの場合はスコアを保存しない(オートプレイではリザルト画面を出さないので不要だが一応チェックはする)
+	if (!m_playResult.playOption.isAutoPlay && !m_courseState) // オートプレイまたはコースモードの場合はスコアを保存しない
 	{
 		const KscKey condition
 		{
@@ -231,7 +241,7 @@ ResultScene::ResultScene(const ResultSceneArgs& args)
 		};
 		const FilePathView chartFilePath = args.chartFilePath;
 
-		// スコア保存前に旧スコアを取得
+		// スコア保存前に前回までのハイスコアを取得
 		const HighScoreInfo oldHighScore = KscIO::ReadHighScoreInfo(chartFilePath, condition);
 		oldScore = oldHighScore.score(m_playResult.playOption.gaugeType);
 
@@ -356,7 +366,36 @@ Co::Task<void> ResultScene::start()
 			KeyConfig::WaitUntilDown(KeyConfig::kBack));
 	}
 
-	requestNextScene<SelectScene>();
+	// コースモードの場合は次の曲またはコースリザルトへ
+	if (m_courseState)
+	{
+		const bool isFailed = m_playResult.achievement() == Achievement::kNone;
+
+		// FAILED時またはコース完了時はコースリザルトへ
+		if (isFailed || !m_courseState->hasNextChart())
+		{
+			if (!isFailed)
+			{
+				m_courseState->setCleared(true);
+			}
+			requestNextScene<CourseResultScene>(*m_courseState);
+		}
+		else
+		{
+			// 次の曲へ
+			m_courseState->advanceToNextChart();
+
+			const FilePath nextChartPath = m_courseState->currentChartPath();
+
+			// 次の曲へ
+			co_await ShowLoadingOneFrame::Play(HasBgYN::Yes);
+			requestNextScene<PlayPrepareScene>(nextChartPath, m_playResult.playOption.isAutoPlay, m_courseState);
+		}
+	}
+	else
+	{
+		requestNextScene<SelectScene>();
+	}
 }
 
 Co::Task<bool> ResultScene::waitForNewRecordPanelClose()

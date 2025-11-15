@@ -1,5 +1,6 @@
 ﻿#include "PlayScene.hpp"
 #include "Scenes/Select/SelectScene.hpp"
+#include "Scenes/PlayPrepare/PlayPrepareScene.hpp"
 #include "Scenes/Result/ResultScene.hpp"
 #include "RuntimeConfig.hpp"
 #include "MusicGame/HispeedUtils.hpp"
@@ -41,13 +42,14 @@ namespace
 		return MusicGame::HispeedUtils::FromConfigStringValue(ConfigIni::GetString(ConfigIni::Key::kHispeed));
 	}
 
-	MusicGame::GameCreateInfo MakeGameCreateInfo(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)
+	MusicGame::GameCreateInfo MakeGameCreateInfo(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay, const Optional<CoursePlayState>& courseState)
 	{
 		return
 		{
 			.chartFilePath = FilePath{ chartFilePath },
 			.playOption = MusicGame::PlayOption
 			{
+				.gameMode = courseState.has_value() ? MusicGame::GameMode::kCourseMode : MusicGame::GameMode::kNormal,
 				.isAutoPlay = isAutoPlay,
 				.gaugeType = RuntimeConfig::GetGaugeType(),
 				.turnMode = RuntimeConfig::GetTurnMode(),
@@ -71,13 +73,15 @@ namespace
 				.movieEnabled = ConfigIni::GetInt(ConfigIni::Key::kBGMovie, static_cast<int32>(MovieMode::kOn)) == static_cast<int32>(MovieMode::kOn),
 			},
 			.assistTickMode = static_cast<AssistTickMode>(ConfigIni::GetInt(ConfigIni::Key::kAssistTick, static_cast<int32>(AssistTickMode::kOff))),
+			.initialGaugeValue = courseState.has_value() && courseState->currentChartIdx() > 0 ? MakeOptional(courseState->gaugeValue()) : none,
 		};
 	}
 }
 
-PlayScene::PlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)
-	: m_gameMain(MakeGameCreateInfo(chartFilePath, isAutoPlay))
+PlayScene::PlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay, Optional<CoursePlayState> courseState)
+	: m_gameMain(MakeGameCreateInfo(chartFilePath, isAutoPlay, courseState))
 	, m_isAutoPlay(isAutoPlay)
+	, m_courseState(courseState)
 	, m_fadeOutDuration(kFadeDuration)
 {
 	m_gameMain.start();
@@ -105,7 +109,25 @@ void PlayScene::update()
 
 		if (m_isAutoPlay)
 		{
-			requestNextScene<SelectScene>();
+			// オートプレイの場合
+			if (m_courseState && m_courseState->hasNextChart())
+			{
+				// コースモードで次の曲がある場合
+				// リザルト画面をスキップするため、ここでゲージ値を記録
+				const MusicGame::PlayResult playResult = m_gameMain.playResult();
+				m_courseState->recordResult(playResult);
+				m_courseState->setGaugeValue(playResult.gaugeValue);
+
+				// 次の曲へ
+				m_courseState->advanceToNextChart();
+				const FilePath nextChartPath = m_courseState->currentChartPath();
+				requestNextScene<PlayPrepareScene>(nextChartPath, MusicGame::IsAutoPlayYN::Yes, m_courseState);
+			}
+			else
+			{
+				// 次の曲がない場合は選曲画面へ
+				requestNextScene<SelectScene>();
+			}
 		}
 		else
 		{
@@ -114,6 +136,7 @@ void PlayScene::update()
 				.chartFilePath = FilePath(m_gameMain.chartFilePath()),
 				.chartData = m_gameMain.chartData(), // TODO: shared_ptrでコピーを避ける?
 				.playResult = m_gameMain.playResult(),
+				.courseState = m_courseState,
 			};
 			requestNextScene<ResultScene>(args);
 		}
@@ -147,6 +170,7 @@ void PlayScene::processBackButtonInput()
 			.chartFilePath = FilePath(m_gameMain.chartFilePath()),
 			.chartData = m_gameMain.chartData(), // TODO: shared_ptrでコピーを避ける?
 			.playResult = m_gameMain.playResult(),
+			.courseState = m_courseState,
 		};
 		requestNextScene<ResultScene>(args);
 	}

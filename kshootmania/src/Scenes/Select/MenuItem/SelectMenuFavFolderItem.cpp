@@ -23,9 +23,10 @@ void SelectMenuFavFolderItem::decide(const SelectMenuEventContext& context, [[ma
 void SelectMenuFavFolderItem::setCanvasParamsCenter([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
 {
 	canvas.setParamValues({
+		{ U"center_isSong", false },
 		{ U"center_isDirectory", true },
 		{ U"center_isSubDirectory", false },
-		{ U"center_isSong", false },
+		{ U"center_isCourse", false },
 		{ U"center_title", FolderDisplayNameCenter(m_displayName, m_isCurrentFolder) },
 	});
 }
@@ -33,9 +34,10 @@ void SelectMenuFavFolderItem::setCanvasParamsCenter([[maybe_unused]] const Selec
 void SelectMenuFavFolderItem::setCanvasParamsTopBottom([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
 {
 	canvas.setParamValues({
+		{ paramNamePrefix + U"isSong", false },
 		{ paramNamePrefix + U"isDirectory", true },
 		{ paramNamePrefix + U"isSubDirectory", false },
-		{ paramNamePrefix + U"isSong", false },
+		{ paramNamePrefix + U"isCourse", false },
 		{ paramNamePrefix + U"title", FolderDisplayNameTopBottom(m_displayName, m_isCurrentFolder) },
 	});
 }

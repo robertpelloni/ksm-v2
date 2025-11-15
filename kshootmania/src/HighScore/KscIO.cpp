@@ -1,6 +1,8 @@
 ﻿#include "KscIO.hpp"
 #include "Common/FsUtils.hpp"
 #include "Ini/ConfigIni.hpp"
+#include "Course/CoursePlayState.hpp"
+#include "Course/CoursePlayResult.hpp"
 
 namespace KscIO
 {
@@ -24,6 +26,42 @@ namespace KscIO
 			const auto relativeChartFilePath = FileSystem::RelativePath(chartFilePath, FsUtils::SongsDirectoryPath()); // TODO: songsフォルダ以外が指定可能になったら要修正
 			const String currentPlayer{ ConfigIni::GetString(ConfigIni::Key::kCurrentPlayer) };
 			*pFilePath = FileSystem::PathAppend(FsUtils::ScoreDirectoryPath(), U"{}/{}.ksc"_fmt(currentPlayer, FsUtils::EliminateExtension(relativeChartFilePath)));
+			return true;
+		}
+
+		bool TryConvertCourseFilePathToKscPath(FilePathView courseFilePath, FilePath* pFilePath)
+		{
+			if (pFilePath == nullptr)
+			{
+				assert(false && "pFilePath must not be NULL");
+				return false;
+			}
+
+			const auto extension = FileSystem::Extension(courseFilePath);
+			if (extension != U"kco")
+			{
+				return false;
+			}
+
+			const String currentPlayer{ ConfigIni::GetString(ConfigIni::Key::kCurrentPlayer) };
+			const FilePath coursesDir = FsUtils::CoursesDirectoryPath();
+			const FilePath songsDir = FsUtils::SongsDirectoryPath();
+			const FilePath courseScoreDir = FsUtils::CourseScoreDirectoryPath();
+
+			// coursesフォルダからの相対パスを試す
+			auto relativePath = FileSystem::RelativePath(courseFilePath, coursesDir);
+			if (relativePath.isEmpty() || relativePath.starts_with(U".."))
+			{
+				// coursesフォルダ内にない場合はsongsフォルダからの相対パスを試す
+				relativePath = FileSystem::RelativePath(courseFilePath, songsDir);
+				if (relativePath.isEmpty() || relativePath.starts_with(U".."))
+				{
+					// どちらのフォルダにも属していない
+					return false;
+				}
+			}
+
+			*pFilePath = FileSystem::PathAppend(courseScoreDir, U"{}/{}.ksc"_fmt(currentPlayer, FsUtils::EliminateExtension(relativePath)));
 			return true;
 		}
 
@@ -195,5 +233,132 @@ namespace KscIO
 			// ファイルが存在しない場合は今回のプレイ結果を新しいファイルとして書き込む
 			return CreateNewKscFile(kscFilePath, playResult, condition);
 		}
+	}
+
+	HighScoreInfo ReadCourseHighScoreInfo(FilePathView courseFilePath, const KscKey& condition)
+	{
+		FilePath kscFilePath;
+		if (!TryConvertCourseFilePathToKscPath(courseFilePath, &kscFilePath))
+		{
+			return HighScoreInfo{};
+		}
+
+		HighScoreInfo highScoreInfo;
+		if (!TryReadHighScoreInfo(kscFilePath, condition, &highScoreInfo))
+		{
+			return HighScoreInfo{};
+		}
+
+		return highScoreInfo;
+	}
+
+	bool WriteCourseHighScoreInfo(FilePathView courseFilePath, const CoursePlayState& courseState)
+	{
+		FilePath kscFilePath;
+		if (!TryConvertCourseFilePathToKscPath(courseFilePath, &kscFilePath))
+		{
+			return false;
+		}
+
+		const CoursePlayResult playResult = courseState.coursePlayResult();
+		const KscKey& condition = courseState.kscKey();
+
+		// 既存のkscファイルを読み込んで、今回のプレイ結果を反映したkscファイルの文字列を生成
+		String newKscFileContent;
+		{
+			const String search = condition.toString() + U"=";
+
+			// 既存のハイスコア情報を読み込み
+			KscValue origKscValue;
+			if (FileSystem::Exists(kscFilePath))
+			{
+				TextReader reader(kscFilePath);
+				if (reader)
+				{
+					String line;
+					while (reader.readLine(line))
+					{
+						if (line.starts_with(search))
+						{
+							const String valueStr = line.substr(search.length());
+							origKscValue = KscValue::FromString(valueStr);
+							break;
+						}
+					}
+				}
+			}
+
+			// 新しいハイスコア情報を生成
+			const KscValue newKscValue
+			{
+				.score = Max(origKscValue.score, playResult.avgScore),
+				.achievement = Max(origKscValue.achievement, playResult.achievement()),
+				.grade = Max(origKscValue.grade, Grade::kNoGrade),
+				.percent = Max(origKscValue.percent, playResult.gaugePercentForHighScore()),
+				.maxCombo = Max(origKscValue.maxCombo, playResult.maxCombo),
+				.playCount = origKscValue.playCount + 1,
+				.clearCount = origKscValue.clearCount + (playResult.achievement() >= Achievement::kCleared ? 1 : 0),
+				.fullComboCount = origKscValue.fullComboCount + (playResult.achievement() >= Achievement::kFullCombo ? 1 : 0),
+				.perfectCount = origKscValue.perfectCount + (playResult.achievement() >= Achievement::kPerfect ? 1 : 0),
+			};
+			const String replace = search + newKscValue.toString();
+
+			// ファイルが存在する場合は既存の内容を更新
+			bool found = false;
+			if (FileSystem::Exists(kscFilePath))
+			{
+				TextReader reader(kscFilePath);
+				if (!reader)
+				{
+					return false;
+				}
+
+				String line;
+				while (reader.readLine(line))
+				{
+					if (line.empty())
+					{
+						// 空行は除去
+						continue;
+					}
+
+					// 対象の行を新しいハイスコア情報で置換
+					if (line.starts_with(search))
+					{
+						newKscFileContent += replace + U"\n";
+						found = true;
+					}
+					else
+					{
+						newKscFileContent += line + U"\n";
+					}
+				}
+			}
+
+			if (!found)
+			{
+				// 対象の行が見つからなかった場合は新しい行にハイスコア情報を追記
+				newKscFileContent += replace + U"\n";
+			}
+		}
+
+		// ディレクトリが存在しない場合は作成
+		const FilePath kscDir = FileSystem::ParentPath(kscFilePath);
+		if (!FileSystem::Exists(kscDir))
+		{
+			FileSystem::CreateDirectories(kscDir);
+		}
+
+		// ファイルを書き込み
+		{
+			TextWriter writer(kscFilePath, TextEncoding::UTF8_NO_BOM);
+			if (!writer)
+			{
+				return false;
+			}
+			writer.write(newKscFileContent);
+		}
+
+		return true;
 	}
 }

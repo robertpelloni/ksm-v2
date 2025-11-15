@@ -100,6 +100,9 @@
     <Filter Include="Header Files\Common">
       <UniqueIdentifier>{0297cf3a-d302-46cd-9caa-159ab033c77c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Course">
+      <UniqueIdentifier>{ebb83c19-7483-4080-a78c-d40b176ef324}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\MusicGame">
       <UniqueIdentifier>{dbb4f7bb-8d47-488a-ba11-63b055dd32cf}</UniqueIdentifier>
     </Filter>
@@ -117,6 +120,9 @@
     </Filter>
     <Filter Include="Source Files\Common">
       <UniqueIdentifier>{1bea3048-5f5a-470c-a58f-1ff1d613f3cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Course">
+      <UniqueIdentifier>{d6a43ee6-324d-4fb8-a94c-c0c6a941b030}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\MusicGame\Audio">
       <UniqueIdentifier>{4f9aa030-4ab6-4edc-9be8-dbc69be815bc}</UniqueIdentifier>
@@ -434,6 +440,15 @@
     </ClCompile>
     <ClCompile Include="src\Common\FsUtils.cpp">
       <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Course\CourseInfo.cpp">
+      <Filter>Source Files\Course</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Course\CoursePlayResult.cpp">
+      <Filter>Source Files\Course</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Course\CoursePlayState.cpp">
+      <Filter>Source Files\Course</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\FontUtils.cpp">
       <Filter>Source Files\Graphics</Filter>
@@ -972,6 +987,15 @@
     </ClInclude>
     <ClInclude Include="src\Common\FsUtils.hpp">
       <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Course\CourseInfo.hpp">
+      <Filter>Header Files\Course</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Course\CoursePlayResult.hpp">
+      <Filter>Header Files\Course</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Course\CoursePlayState.hpp">
+      <Filter>Header Files\Course</Filter>
     </ClInclude>
     <ClInclude Include="src\MusicGame\PlayOption.hpp">
       <Filter>Header Files\MusicGame</Filter>

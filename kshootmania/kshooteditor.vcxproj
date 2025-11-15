@@ -129,6 +129,9 @@
     <ClCompile Include="src\Common\IMEUtils.cpp" />
     <ClCompile Include="src\Common\MathUtils.cpp" />
     <ClCompile Include="src\Common\NocoUtils.cpp" />
+    <ClCompile Include="src\Course\CourseInfo.cpp" />
+    <ClCompile Include="src\Course\CoursePlayResult.cpp" />
+    <ClCompile Include="src\Course\CoursePlayState.cpp" />
     <ClCompile Include="src\Graphics\FontUtils.cpp" />
     <ClCompile Include="src\Graphics\TextureFontTextLayout.cpp" />
     <ClCompile Include="src\Graphics\NumberTextureFont.cpp" />
@@ -303,6 +306,9 @@
     <ClInclude Include="src\Common\IMEUtils.hpp" />
     <ClInclude Include="src\Common\MathUtils.hpp" />
     <ClInclude Include="src\Common\NocoUtils.hpp" />
+    <ClInclude Include="src\Course\CourseInfo.hpp" />
+    <ClInclude Include="src\Course\CoursePlayResult.hpp" />
+    <ClInclude Include="src\Course\CoursePlayState.hpp" />
     <ClInclude Include="src\Graphics\FontUtils.hpp" />
     <ClInclude Include="src\Graphics\TextureFontTextLayout.hpp" />
     <ClInclude Include="src\Graphics\NumberTextureFont.hpp" />

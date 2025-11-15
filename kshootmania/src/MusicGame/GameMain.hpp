@@ -24,6 +24,8 @@ namespace MusicGame
 		PlayOption playOption;
 
 		AssistTickMode assistTickMode = AssistTickMode::kOff;
+
+		Optional<int32> initialGaugeValue = none;
 	};
 
 	class GameMain

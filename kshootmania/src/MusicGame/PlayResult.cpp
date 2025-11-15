@@ -10,6 +10,12 @@ namespace MusicGame
 
 	bool PlayResult::isAborted() const
 	{
+		// HARDゲージ/コースモードで途中落ちした場合はabortedではない
+		if (isHardFailed)
+		{
+			return false;
+		}
+
 		const int32 judgedCombo = comboStats.critical + comboStats.totalNear() + comboStats.error;
 		if (judgedCombo < totalCombo)
 		{

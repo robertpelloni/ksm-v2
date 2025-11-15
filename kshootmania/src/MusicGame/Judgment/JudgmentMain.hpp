@@ -19,7 +19,7 @@ namespace MusicGame::Judgment
 		JudgmentHandler m_judgmentHandler;
 
 	public:
-		explicit JudgmentMain(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const PlayOption& playOption);
+		explicit JudgmentMain(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const PlayOption& playOption, Optional<int32> initialGaugeValue, GameMode gameMode);
 
 		void update(const kson::ChartData& chartData, GameStatus& gameStatusRef, ViewStatus& viewStatusRef);
 
@@ -27,8 +27,12 @@ namespace MusicGame::Judgment
 		void lockForExit();
 
 		/// @brief PlayResultを取得
+		/// @param chartData 譜面データ
+		/// @param timingCache タイミングキャッシュ
+		/// @param currentTimeSec 現在時刻(秒)
+		/// @param isHardFailed HARDゲージ/コースモードで途中落ちしたかどうか
 		/// @return PlayResult
-		PlayResult playResult() const;
+		PlayResult playResult(const kson::ChartData& chartData, const kson::TimingCache& timingCache, double currentTimeSec, IsHardFailedYN isHardFailed) const;
 
 		/// @brief 全てのノーツが判定済みかどうか
 		/// @return 全てのノーツが判定済みならtrue

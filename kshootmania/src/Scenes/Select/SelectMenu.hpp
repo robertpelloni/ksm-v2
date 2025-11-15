@@ -4,6 +4,7 @@
 #include "SelectDifficultyMenu.hpp"
 #include "SelectSongPreview.hpp"
 #include "ksmaudio/ksmaudio.hpp"
+#include "Course/CoursePlayState.hpp"
 
 struct HighScoreInfo;
 
@@ -25,10 +26,11 @@ struct SelectMenuEventContext
 {
 	// Note: FilePathViewやconst FilePath&ではなくFilePathにしているのは意図的
 	//       (メニュー項目の再構築が発生すると呼び出し元のFilePathが無効になるので、事前にコピーしておく必要がある)
-	std::function<void(FilePath, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene;
+	std::function<void(FilePath, MusicGame::IsAutoPlayYN, Optional<CoursePlayState>)> fnMoveToPlayScene;
 	std::function<void(FilePath)> fnOpenDirectory;
 	std::function<void()> fnOpenAllFolder;
 	std::function<void(FilePath)> fnOpenFavoriteFolder;
+	std::function<void()> fnOpenCoursesFolder;
 	std::function<void()> fnCloseFolder;
 	std::function<const Texture&(FilePathView)> fnGetJacketTexture;
 	std::function<const Texture&(FilePathView)> fnGetIconTexture;
@@ -83,6 +85,12 @@ private:
 
 	bool openFavoriteFolderWithLevelSort(FilePathView specialPath);
 
+	bool openCoursesFolder(PlaySeYN playSe, RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::Yes, SaveToConfigIniYN saveToConfigIni = SaveToConfigIniYN::Yes);
+
+	bool openCoursesFolderWithNameSort();
+
+	bool openCoursesFolderWithLevelSort();
+
 	void setCursorAndSave(int32 cursor);
 
 	void setCursorToItemByFullPath(FilePathView fullPath);
@@ -108,7 +116,7 @@ private:
 	void addOtherFolderItemsSimple();
 
 public:
-	explicit SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, std::function<void(FilePathView, MusicGame::IsAutoPlayYN)> fnMoveToPlayScene);
+	explicit SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, std::function<void(FilePathView, MusicGame::IsAutoPlayYN, Optional<CoursePlayState>)> fnMoveToPlayScene);
 
 	~SelectMenu(); // ヘッダではISelectMenuItemが不完全型なのでソースファイル側で定義
 

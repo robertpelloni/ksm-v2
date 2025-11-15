@@ -5,6 +5,8 @@ namespace MusicGame
 {
 	struct PlayOption
 	{
+		GameMode gameMode = GameMode::kNormal;
+
 		IsAutoPlayYN isAutoPlay = IsAutoPlayYN::No;
 
 		GaugeType gaugeType = GaugeType::kNormalGauge;

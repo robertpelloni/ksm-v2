@@ -32,6 +32,14 @@ namespace FsUtils
 	/// @return フルパス
 	FilePath SongsDefaultDirectoryPath();
 
+	/// @brief coursesフォルダのフルパスを取得
+	/// @return フルパス
+	FilePath CoursesDirectoryPath();
+
+	/// @brief courses/scoreフォルダのフルパスを取得
+	/// @return フルパス
+	FilePath CourseScoreDirectoryPath();
+
 	/// @brief 指定されたリソースフォルダのフルパスを取得
 	/// @param folderName リソースフォルダ名 (例: U"imgs", U"lang", U"se", U"shaders", U"ui")
 	/// @return フルパス

@@ -18,9 +18,10 @@ void SelectMenuLevelSectionItem::decideAutoPlay(const SelectMenuEventContext& co
 void SelectMenuLevelSectionItem::setCanvasParamsCenter([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
 {
 	canvas.setParamValues({
+		{ U"center_isSong", false },
 		{ U"center_isDirectory", false },
 		{ U"center_isSubDirectory", true },
-		{ U"center_isSong", false },
+		{ U"center_isCourse", false },
 		{ U"center_title", m_displayName },
 	});
 }
@@ -28,9 +29,10 @@ void SelectMenuLevelSectionItem::setCanvasParamsCenter([[maybe_unused]] const Se
 void SelectMenuLevelSectionItem::setCanvasParamsTopBottom([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView paramNamePrefix, [[maybe_unused]] StringView nodeName) const
 {
 	canvas.setParamValues({
+		{ paramNamePrefix + U"isSong", false },
 		{ paramNamePrefix + U"isDirectory", false },
 		{ paramNamePrefix + U"isSubDirectory", true },
-		{ paramNamePrefix + U"isSong", false },
+		{ paramNamePrefix + U"isCourse", false },
 		{ paramNamePrefix + U"title", m_displayName },
 	});
 }

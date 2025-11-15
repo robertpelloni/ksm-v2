@@ -1,8 +1,10 @@
 ﻿#include "JudgmentMain.hpp"
+#include "kson/Util/TimingUtils.hpp"
 
 namespace MusicGame::Judgment
 {
-	JudgmentMain::JudgmentMain(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const PlayOption& playOption)
+
+	JudgmentMain::JudgmentMain(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const PlayOption& playOption, Optional<int32> initialGaugeValue, GameMode gameMode)
 		: m_playOption(playOption)
 		, m_btLaneJudgments{
 			ButtonLaneJudgment(playOption.effectiveBtJudgmentPlayMode(), playOption.gaugeType, playOption.fastSlowMode, kBTButtons[0], chartData.note.bt[0], chartData.beat, timingCache),
@@ -15,7 +17,7 @@ namespace MusicGame::Judgment
 		, m_laserLaneJudgments{
 			LaserLaneJudgment(playOption.effectiveLaserJudgmentPlayMode(), kLaserButtons[0][0], kLaserButtons[0][1], chartData.note.laser[0], chartData.beat, timingCache),
 			LaserLaneJudgment(playOption.effectiveLaserJudgmentPlayMode(), kLaserButtons[1][0], kLaserButtons[1][1], chartData.note.laser[1], chartData.beat, timingCache) }
-		, m_judgmentHandler(chartData, m_btLaneJudgments, m_fxLaneJudgments, m_laserLaneJudgments, playOption)
+		, m_judgmentHandler(chartData, m_btLaneJudgments, m_fxLaneJudgments, m_laserLaneJudgments, playOption, initialGaugeValue, gameMode)
 	{
 	}
 
@@ -63,9 +65,11 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	PlayResult JudgmentMain::playResult() const
+	PlayResult JudgmentMain::playResult(const kson::ChartData& chartData, const kson::TimingCache& timingCache, double currentTimeSec, IsHardFailedYN isHardFailed) const
 	{
-		return m_judgmentHandler.playResult();
+		const kson::Pulse lastNoteEndY = kson::LastNoteEndY(chartData.note);
+		const double chartEndTimeSec = kson::PulseToSec(lastNoteEndY, chartData.beat, timingCache);
+		return m_judgmentHandler.playResult(currentTimeSec, chartEndTimeSec, isHardFailed);
 	}
 
 	bool JudgmentMain::isFinished() const

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <CoTaskLib.hpp>
 #include "MusicGame/GameMain.hpp"
+#include "Course/CoursePlayState.hpp"
 
 class PlayScene : public Co::UpdaterSceneBase
 {
@@ -11,6 +12,9 @@ private:
 	/// @brief オートプレイかどうか
 	MusicGame::IsAutoPlayYN m_isAutoPlay;
 
+	/// @brief コース状態(コースモード時のみ有効)
+	Optional<CoursePlayState> m_courseState;
+
 	Duration m_fadeOutDuration;
 
 	bool m_backButtonPressedDuringFadeOut = false;
@@ -20,7 +24,7 @@ private:
 	void processBackButtonInput();
 
 public:
-	explicit PlayScene(FilePathView filePath, MusicGame::IsAutoPlayYN isAutoPlay);
+	explicit PlayScene(FilePathView filePath, MusicGame::IsAutoPlayYN isAutoPlay, Optional<CoursePlayState> courseState = none);
 
 	virtual ~PlayScene();
 

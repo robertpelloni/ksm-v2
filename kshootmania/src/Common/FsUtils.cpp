@@ -59,6 +59,16 @@ namespace FsUtils
 		return FileSystem::PathAppend(ResourceDirectoryPath(), U"songs_default");
 	}
 
+	FilePath CoursesDirectoryPath()
+	{
+		return FileSystem::PathAppend(AppDataDirectoryPath(), U"courses");
+	}
+
+	FilePath CourseScoreDirectoryPath()
+	{
+		return FileSystem::PathAppend(CoursesDirectoryPath(), U"score");
+	}
+
 	FilePath GetResourcePath(FilePathView folderName)
 	{
 		return FileSystem::PathAppend(ResourceDirectoryPath(), folderName);

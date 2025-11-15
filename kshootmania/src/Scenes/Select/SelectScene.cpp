@@ -131,10 +131,10 @@ namespace
 	}
 }
 
-void SelectScene::moveToPlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay)
+void SelectScene::moveToPlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay, Optional<CoursePlayState> courseState)
 {
 	m_fadeOutColor = Palette::White;
-	requestNextScene<PlayPrepareScene>(FilePath{ chartFilePath }, isAutoPlay);
+	requestNextScene<PlayPrepareScene>(FilePath{ chartFilePath }, isAutoPlay, courseState);
 }
 
 void SelectScene::refreshCanvasPlayerName()
@@ -224,7 +224,7 @@ SelectScene::SelectScene()
 			? static_cast<KeyConfig::Button>(KeyConfig::kBack)
 			: static_cast<KeyConfig::Button>(KeyConfig::kBackspace))
 	, m_canvas(LoadSelectSceneCanvas())
-	, m_menu(m_canvas, [this](FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlayYN) { moveToPlayScene(chartFilePath, isAutoPlayYN); })
+	, m_menu(m_canvas, [this](FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlayYN, Optional<CoursePlayState> courseState) { moveToPlayScene(chartFilePath, isAutoPlayYN, courseState); })
 	, m_playerNames(GetPlayerNames())
 	, m_fxButtonUpDetection({ KeyShift })
 	, m_btOptionPanel(m_canvas)
@@ -398,7 +398,7 @@ void SelectScene::updateStartKeyLongPress()
 	const bool startKeyPressed = KeyConfig::Pressed(KeyConfig::kStart);
 	const bool startKeyDown = KeyConfig::Down(KeyConfig::kStart);
 
-	if (startKeyDown)
+	if (startKeyDown && !m_ignoreNextStartUp)
 	{
 		m_startKeyPressStopwatch.restart();
 	}
@@ -408,7 +408,7 @@ void SelectScene::updateStartKeyLongPress()
 		if (m_startKeyPressStopwatch.elapsed() >= kStartKeyLongPressDuration)
 		{
 			// お気に入り登録可能な項目が選択されているかチェック
-			if (m_menu.empty() || m_menu.cursorMenuItem().isFolder())
+			if (m_menu.empty() || !m_menu.cursorMenuItem().isFavoriteRegisterableItemType())
 			{
 				m_startKeyPressStopwatch.reset();
 				return;
