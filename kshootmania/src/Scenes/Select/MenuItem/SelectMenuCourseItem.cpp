@@ -4,7 +4,7 @@
 #include "RuntimeConfig.hpp"
 #include "HighScore/KscKey.hpp"
 #include "HighScore/KscIO.hpp"
-#include "Common/NocoUtils.hpp"
+#include "NocoExtensions/NocoUtils.hpp"
 
 namespace
 {

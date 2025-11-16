@@ -128,7 +128,6 @@
     <ClCompile Include="src\Common\FsUtils.cpp" />
     <ClCompile Include="src\Common\IMEUtils.cpp" />
     <ClCompile Include="src\Common\MathUtils.cpp" />
-    <ClCompile Include="src\Common\NocoUtils.cpp" />
     <ClCompile Include="src\Graphics\FontUtils.cpp" />
     <ClCompile Include="src\Graphics\TextureFontTextLayout.cpp" />
     <ClCompile Include="src\Graphics\NumberTextureFont.cpp" />
@@ -194,6 +193,7 @@
     <ClCompile Include="src\MusicGame\PlayResult.cpp" />
     <ClCompile Include="src\MusicGame\Scroll\HighwayScroll.cpp" />
     <ClCompile Include="src\MusicGame\UI\HispeedSettingMenu.cpp" />
+    <ClCompile Include="src\NocoExtensions\NocoUtils.cpp" />
     <ClCompile Include="src\Scenes\Common\ShowLoadingOneFrame.cpp" />
     <ClCompile Include="src\Scenes\Option\OptionKeyConfigMenu.cpp" />
     <ClCompile Include="src\Scenes\Option\OptionMenu.cpp" />
@@ -336,7 +336,6 @@
     <ClInclude Include="src\Common\FsUtils.hpp" />
     <ClInclude Include="src\Common\IMEUtils.hpp" />
     <ClInclude Include="src\Common\MathUtils.hpp" />
-    <ClInclude Include="src\Common\NocoUtils.hpp" />
     <ClInclude Include="src\Graphics\FontUtils.hpp" />
     <ClInclude Include="src\Graphics\TextureFontTextLayout.hpp" />
     <ClInclude Include="src\Graphics\NumberTextureFont.hpp" />
@@ -412,6 +411,7 @@
     <ClInclude Include="src\MusicGame\Timeline.hpp" />
     <ClInclude Include="src\MusicGame\UI\HispeedSettingMenu.hpp" />
     <ClInclude Include="src\MusicGame\ViewStatus.hpp" />
+    <ClInclude Include="src\NocoExtensions\NocoUtils.hpp" />
     <ClInclude Include="src\RuntimeConfig.hpp" />
     <ClInclude Include="src\Scenes\Common\CommonAssets.hpp" />
     <ClInclude Include="src\Scenes\Common\ShowLoadingOneFrame.hpp" />

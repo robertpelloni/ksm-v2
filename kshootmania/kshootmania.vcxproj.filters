@@ -205,6 +205,12 @@
     <Filter Include="Source Files\MusicGame\Camera\CamPattern">
       <UniqueIdentifier>{78bee3cc-8012-48a3-abf8-9508a3cec840}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\NocoExtensions">
+      <UniqueIdentifier>{f101edb1-0a07-4093-8914-0c4e3cc820b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\NocoExtensions">
+      <UniqueIdentifier>{f1fb8e9a-9ebd-4385-ad44-b062308bdea4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\Scenes\Select\MenuItem">
       <UniqueIdentifier>{6812799a-0c5d-4132-9f54-6ed625c88584}</UniqueIdentifier>
     </Filter>
@@ -331,9 +337,6 @@
       <Filter>Source Files\MusicGame\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Common\MathUtils.cpp">
-      <Filter>Source Files\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Common\NocoUtils.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
     <ClCompile Include="src\MusicGame\Audio\BGM.cpp">
@@ -593,6 +596,9 @@
     </ClCompile>
     <ClCompile Include="src\MusicGame\PlayModeUtil.cpp">
       <Filter>Source Files\MusicGame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NocoExtensions\NocoUtils.cpp">
+      <Filter>Source Files\NocoExtensions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -964,9 +970,6 @@
     <ClInclude Include="src\Common\MathUtils.hpp">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\NocoUtils.hpp">
-      <Filter>Header Files\Common</Filter>
-    </ClInclude>
     <ClInclude Include="src\MusicGame\GameDefines.hpp">
       <Filter>Header Files\MusicGame</Filter>
     </ClInclude>
@@ -1242,6 +1245,9 @@
     </ClInclude>
     <ClInclude Include="src\MusicGame\TurnUtil.hpp">
       <Filter>Header Files\MusicGame</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NocoExtensions\NocoUtils.hpp">
+      <Filter>Header Files\NocoExtensions</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\FontUtils.hpp">
       <Filter>Header Files\Graphics</Filter>
