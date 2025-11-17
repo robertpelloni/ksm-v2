@@ -2,6 +2,7 @@
 #include <CoTaskLib.hpp>
 #include "Course/CoursePlayState.hpp"
 #include "Scenes/CourseResult/CourseResultNewRecordPanel.hpp"
+#include "Scenes/CourseResult/CourseResultChartList.hpp"
 #include "ksmaudio/ksmaudio.hpp"
 
 class CourseResultScene : public Co::SceneBase
@@ -14,6 +15,8 @@ private:
 	const CoursePlayState m_courseState;
 
 	CourseResultNewRecordPanel m_newRecordPanel;
+
+	CourseResultChartList m_chartList;
 
 	void updateCanvasParams();
 

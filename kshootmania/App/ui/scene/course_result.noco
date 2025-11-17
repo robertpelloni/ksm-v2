@@ -753,7 +753,8 @@
           "zOrderInSiblings": 0
         },
         {
-          "activeSelf": true,
+          "activeSelf": false,
+          "activeSelf_paramRef": "arrowUpVisible",
           "children": [],
           "childrenLayout": {
             "horizontalAlign": "Left",
@@ -902,7 +903,8 @@
           "zOrderInSiblings": 0
         },
         {
-          "activeSelf": true,
+          "activeSelf": false,
+          "activeSelf_paramRef": "arrowDownVisible",
           "children": [],
           "childrenLayout": {
             "horizontalAlign": "Left",
@@ -1055,6 +1057,7 @@
           "children": [
             {
               "activeSelf": true,
+              "activeSelf_paramRef": "chartItem1Visible",
               "children": [],
               "childrenLayout": {
                 "horizontalAlign": "Left",
@@ -1143,6 +1146,7 @@
             },
             {
               "activeSelf": true,
+              "activeSelf_paramRef": "chartItem2Visible",
               "children": [],
               "childrenLayout": {
                 "horizontalAlign": "Left",
@@ -1231,6 +1235,7 @@
             },
             {
               "activeSelf": true,
+              "activeSelf_paramRef": "chartItem3Visible",
               "children": [],
               "childrenLayout": {
                 "horizontalAlign": "Left",
@@ -1319,6 +1324,7 @@
             },
             {
               "activeSelf": true,
+              "activeSelf_paramRef": "chartItem4Visible",
               "children": [],
               "childrenLayout": {
                 "horizontalAlign": "Left",
@@ -2597,6 +2603,30 @@
   },
   "defaultFontAssetName": "System",
   "params": {
+    "arrowDownVisible": {
+      "type": "Bool",
+      "value": false
+    },
+    "arrowUpVisible": {
+      "type": "Bool",
+      "value": false
+    },
+    "chartItem1Visible": {
+      "type": "Bool",
+      "value": true
+    },
+    "chartItem2Visible": {
+      "type": "Bool",
+      "value": true
+    },
+    "chartItem3Visible": {
+      "type": "Bool",
+      "value": true
+    },
+    "chartItem4Visible": {
+      "type": "Bool",
+      "value": true
+    },
     "courseTitle": {
       "type": "String",
       "value": "courseTitle"

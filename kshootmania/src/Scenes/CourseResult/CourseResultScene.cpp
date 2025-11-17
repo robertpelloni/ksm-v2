@@ -32,6 +32,7 @@ CourseResultScene::CourseResultScene(const CoursePlayState& courseState)
 	: m_canvas(LoadCourseResultSceneCanvas())
 	, m_courseState(courseState)
 	, m_newRecordPanel(m_canvas)
+	, m_chartList(m_canvas, m_courseState)
 {
 	// 前回までのAchievementRateを読み込んでNewRecordパネルを設定
 	const FilePath courseFilePath = m_courseState.courseInfo().filePath;
@@ -167,6 +168,7 @@ Co::Task<bool> CourseResultScene::waitForNewRecordPanelClose()
 void CourseResultScene::update()
 {
 	m_canvas->update();
+	m_chartList.update(m_courseState);
 }
 
 void CourseResultScene::draw() const
