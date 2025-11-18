@@ -70,6 +70,12 @@
             32.0,
             32.0
           ],
+          "textureGridCellTrim": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
           "textureGridColumns": 1,
           "textureGridIndex": 0,
           "textureGridRows": 1,
@@ -382,6 +388,12 @@
                         540.0,
                         36.0
                       ],
+                      "textureGridCellTrim": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
                       "textureGridColumns": 1,
                       "textureGridIndex": 3,
                       "textureGridIndex_paramRef": "gaugeTextureIndex",
@@ -674,6 +686,13 @@
                 136.0,
                 120.0
               ],
+              "textureCellTrim": [
+                0.0,
+                0.0,
+                1.5,
+                1.5
+              ],
+              "textureCellTrimByCharacterJSON": "{}",
               "textureFilePath": "imgs/num0.png",
               "textureFilter": "Nearest",
               "textureGridColumns": 1,
@@ -821,6 +840,12 @@
               "textureGridCellSize": [
                 720.0,
                 24.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -972,6 +997,12 @@
                 720.0,
                 24.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 1,
               "textureGridRows": 2,
@@ -1078,8 +1109,8 @@
               "components": [
                 {
                   "canvasPath": "ui/parts/course_result_chart_item.noco",
-                  "paramsJSON": "{}",
                   "propagateEvents": true,
+                  "serializedParamsJSON": "{}",
                   "tag": "chartItem1",
                   "type": "SubCanvas"
                 }
@@ -1167,8 +1198,8 @@
               "components": [
                 {
                   "canvasPath": "ui/parts/course_result_chart_item.noco",
-                  "paramsJSON": "{}",
                   "propagateEvents": true,
+                  "serializedParamsJSON": "{}",
                   "tag": "chartItem2",
                   "type": "SubCanvas"
                 }
@@ -1256,8 +1287,8 @@
               "components": [
                 {
                   "canvasPath": "ui/parts/course_result_chart_item.noco",
-                  "paramsJSON": "{}",
                   "propagateEvents": true,
+                  "serializedParamsJSON": "{}",
                   "tag": "chartItem3",
                   "type": "SubCanvas"
                 }
@@ -1345,8 +1376,8 @@
               "components": [
                 {
                   "canvasPath": "ui/parts/course_result_chart_item.noco",
-                  "paramsJSON": "{}",
                   "propagateEvents": true,
+                  "serializedParamsJSON": "{}",
                   "tag": "chartItem4",
                   "type": "SubCanvas"
                 }
@@ -1610,6 +1641,12 @@
             32.0,
             32.0
           ],
+          "textureGridCellTrim": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
           "textureGridColumns": 1,
           "textureGridIndex": 0,
           "textureGridRows": 1,
@@ -1758,6 +1795,12 @@
           "textureGridCellSize": [
             600.0,
             50.0
+          ],
+          "textureGridCellTrim": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
           ],
           "textureGridColumns": 1,
           "textureGridIndex": 1,
@@ -1911,6 +1954,13 @@
                         136.0,
                         120.0
                       ],
+                      "textureCellTrim": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "textureCellTrimByCharacterJSON": "{}",
                       "textureFilePath": "imgs/num0.png",
                       "textureFilter": "Nearest",
                       "textureGridColumns": 1,
@@ -2050,6 +2100,13 @@
                         136.0,
                         120.0
                       ],
+                      "textureCellTrim": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "textureCellTrimByCharacterJSON": "{}",
                       "textureFilePath": "imgs/num0.png",
                       "textureFilter": "Nearest",
                       "textureGridColumns": 1,
@@ -2194,6 +2251,12 @@
                   "textureGridCellSize": [
                     32.0,
                     32.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,

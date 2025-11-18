@@ -70,6 +70,12 @@
             32.0,
             32.0
           ],
+          "textureGridCellTrim": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
           "textureGridColumns": 1,
           "textureGridIndex": 0,
           "textureGridRows": 1,
@@ -530,6 +536,12 @@
                 32.0,
                 32.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
               "textureGridRows": 1,
@@ -678,6 +690,12 @@
               "textureGridCellSize": [
                 84.0,
                 24.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.5,
+                0.5
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 2,
@@ -829,6 +847,12 @@
                 150.0,
                 120.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 14,
               "textureGridIndex_paramRef": "levelIndex",
@@ -979,6 +1003,12 @@
                 100.0,
                 100.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 5,
               "textureGridIndex_paramRef": "gradeIndex",
@@ -1121,6 +1151,13 @@
                 64.0,
                 64.0
               ],
+              "textureCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "textureCellTrimByCharacterJSON": "{}",
               "textureFilePath": "imgs/result_scorenum.png",
               "textureFilter": "Default",
               "textureGridColumns": 1,
@@ -1260,6 +1297,13 @@
                 136.0,
                 120.0
               ],
+              "textureCellTrim": [
+                0.0,
+                0.0,
+                1.5,
+                1.5
+              ],
+              "textureCellTrimByCharacterJSON": "{}",
               "textureFilePath": "imgs/num1.png",
               "textureFilter": "Nearest",
               "textureGridColumns": 1,
@@ -1399,6 +1443,13 @@
                 136.0,
                 120.0
               ],
+              "textureCellTrim": [
+                0.0,
+                0.0,
+                1.5,
+                1.5
+              ],
+              "textureCellTrimByCharacterJSON": "{}",
               "textureFilePath": "imgs/num0.png",
               "textureFilter": "Nearest",
               "textureGridColumns": 1,
@@ -1538,6 +1589,13 @@
                 136.0,
                 120.0
               ],
+              "textureCellTrim": [
+                0.0,
+                0.0,
+                1.5,
+                1.5
+              ],
+              "textureCellTrimByCharacterJSON": "{}",
               "textureFilePath": "imgs/num0.png",
               "textureFilter": "Nearest",
               "textureGridColumns": 1,
@@ -1677,6 +1735,13 @@
                 136.0,
                 120.0
               ],
+              "textureCellTrim": [
+                0.0,
+                0.0,
+                1.5,
+                1.5
+              ],
+              "textureCellTrimByCharacterJSON": "{}",
               "textureFilePath": "imgs/num0.png",
               "textureFilter": "Nearest",
               "textureGridColumns": 1,
@@ -1829,6 +1894,12 @@
                       "textureGridCellSize": [
                         48.0,
                         434.0
+                      ],
+                      "textureGridCellTrim": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
                       ],
                       "textureGridColumns": 6,
                       "textureGridIndex": 3,
@@ -2122,6 +2193,13 @@
                 136.0,
                 120.0
               ],
+              "textureCellTrim": [
+                0.0,
+                0.0,
+                3.0,
+                3.0
+              ],
+              "textureCellTrimByCharacterJSON": "{}",
               "textureFilePath": "imgs/num0.png",
               "textureFilter": "Nearest",
               "textureGridColumns": 1,
@@ -2266,6 +2344,12 @@
           "textureGridCellSize": [
             32.0,
             32.0
+          ],
+          "textureGridCellTrim": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
           ],
           "textureGridColumns": 1,
           "textureGridIndex": 0,
@@ -2415,6 +2499,12 @@
           "textureGridCellSize": [
             600.0,
             50.0
+          ],
+          "textureGridCellTrim": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
           ],
           "textureGridColumns": 1,
           "textureGridIndex": 1,
@@ -2568,6 +2658,13 @@
                         136.0,
                         120.0
                       ],
+                      "textureCellTrim": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                      ],
+                      "textureCellTrimByCharacterJSON": "{}",
                       "textureFilePath": "imgs/num0.png",
                       "textureFilter": "Nearest",
                       "textureGridColumns": 1,
@@ -2712,6 +2809,12 @@
                   "textureGridCellSize": [
                     32.0,
                     32.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -3186,6 +3289,6 @@
     640.0,
     480.0
   ],
-  "serializedVersion": 4,
-  "version": "0.2.2"
+  "serializedVersion": 5,
+  "version": "0.3.0-beta1"
 }

@@ -70,6 +70,12 @@
             32.0,
             32.0
           ],
+          "textureGridCellTrim": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
           "textureGridColumns": 1,
           "textureGridIndex": 0,
           "textureGridRows": 1,
@@ -218,6 +224,12 @@
           "textureGridCellSize": [
             32.0,
             32.0
+          ],
+          "textureGridCellTrim": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
           ],
           "textureGridColumns": 1,
           "textureGridIndex": 0,
@@ -559,6 +571,12 @@
           "textureGridCellSize": [
             32.0,
             32.0
+          ],
+          "textureGridCellTrim": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
           ],
           "textureGridColumns": 1,
           "textureGridIndex": 0,
@@ -1216,6 +1234,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -1364,6 +1388,12 @@
                   "textureGridCellSize": [
                     150.0,
                     120.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -1515,6 +1545,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "top4_medalIndex",
@@ -1664,6 +1700,12 @@
                   "textureGridCellSize": [
                     64.0,
                     64.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -1815,6 +1857,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -1961,6 +2009,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -2267,6 +2321,12 @@
                 32.0,
                 32.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
               "textureGridRows": 1,
@@ -2571,6 +2631,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -2879,6 +2945,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "top4_medalIndex",
@@ -3021,6 +3093,13 @@
                     136.0,
                     120.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "textureCellTrimByCharacterJSON": "{}",
                   "textureFilePath": "imgs/num0.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -3168,6 +3247,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -3314,6 +3399,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -3862,6 +3953,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -4010,6 +4107,12 @@
                   "textureGridCellSize": [
                     150.0,
                     120.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -4161,6 +4264,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "top3_medalIndex",
@@ -4310,6 +4419,12 @@
                   "textureGridCellSize": [
                     64.0,
                     64.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -4461,6 +4576,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -4607,6 +4728,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -4913,6 +5040,12 @@
                 32.0,
                 32.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
               "textureGridRows": 1,
@@ -5217,6 +5350,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -5525,6 +5664,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "top3_medalIndex",
@@ -5667,6 +5812,13 @@
                     136.0,
                     120.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "textureCellTrimByCharacterJSON": "{}",
                   "textureFilePath": "imgs/num0.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -5814,6 +5966,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -5960,6 +6118,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -6508,6 +6672,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -6656,6 +6826,12 @@
                   "textureGridCellSize": [
                     150.0,
                     120.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -6807,6 +6983,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "top2_medalIndex",
@@ -6956,6 +7138,12 @@
                   "textureGridCellSize": [
                     64.0,
                     64.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -7107,6 +7295,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -7253,6 +7447,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -7559,6 +7759,12 @@
                 32.0,
                 32.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
               "textureGridRows": 1,
@@ -7863,6 +8069,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -8171,6 +8383,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "top2_medalIndex",
@@ -8313,6 +8531,13 @@
                     136.0,
                     120.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "textureCellTrimByCharacterJSON": "{}",
                   "textureFilePath": "imgs/num0.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -8460,6 +8685,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -8606,6 +8837,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -9154,6 +9391,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -9302,6 +9545,12 @@
                   "textureGridCellSize": [
                     150.0,
                     120.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -9453,6 +9702,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "top1_medalIndex",
@@ -9602,6 +9857,12 @@
                   "textureGridCellSize": [
                     64.0,
                     64.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -9753,6 +10014,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -9899,6 +10166,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -10205,6 +10478,12 @@
                 32.0,
                 32.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
               "textureGridRows": 1,
@@ -10509,6 +10788,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -10817,6 +11102,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "top1_medalIndex",
@@ -10959,6 +11250,13 @@
                     136.0,
                     120.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "textureCellTrimByCharacterJSON": "{}",
                   "textureFilePath": "imgs/num0.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -11106,6 +11404,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -11252,6 +11556,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -11800,6 +12110,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -11948,6 +12264,12 @@
                   "textureGridCellSize": [
                     150.0,
                     120.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -12099,6 +12421,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "bottom3_medalIndex",
@@ -12248,6 +12576,12 @@
                   "textureGridCellSize": [
                     64.0,
                     64.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -12399,6 +12733,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -12545,6 +12885,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -12851,6 +13197,12 @@
                 32.0,
                 32.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
               "textureGridRows": 1,
@@ -13155,6 +13507,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -13463,6 +13821,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "bottom3_medalIndex",
@@ -13605,6 +13969,13 @@
                     136.0,
                     120.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "textureCellTrimByCharacterJSON": "{}",
                   "textureFilePath": "imgs/num0.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -13752,6 +14123,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -13898,6 +14275,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -14446,6 +14829,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -14594,6 +14983,12 @@
                   "textureGridCellSize": [
                     150.0,
                     120.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -14745,6 +15140,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "bottom2_medalIndex",
@@ -14894,6 +15295,12 @@
                   "textureGridCellSize": [
                     64.0,
                     64.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -15045,6 +15452,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -15191,6 +15604,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -15497,6 +15916,12 @@
                 32.0,
                 32.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
               "textureGridRows": 1,
@@ -15801,6 +16226,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -16109,6 +16540,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "bottom2_medalIndex",
@@ -16251,6 +16688,13 @@
                     136.0,
                     120.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "textureCellTrimByCharacterJSON": "{}",
                   "textureFilePath": "imgs/num0.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -16398,6 +16842,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -16544,6 +16994,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -17092,6 +17548,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -17240,6 +17702,12 @@
                   "textureGridCellSize": [
                     150.0,
                     120.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -17391,6 +17859,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "bottom1_medalIndex",
@@ -17540,6 +18014,12 @@
                   "textureGridCellSize": [
                     64.0,
                     64.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -17691,6 +18171,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -17837,6 +18323,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -18143,6 +18635,12 @@
                 32.0,
                 32.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
               "textureGridRows": 1,
@@ -18447,6 +18945,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -18755,6 +19259,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridIndex_paramRef": "bottom1_medalIndex",
@@ -18897,6 +19407,13 @@
                     136.0,
                     120.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "textureCellTrimByCharacterJSON": "{}",
                   "textureFilePath": "imgs/num0.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -19044,6 +19561,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -19190,6 +19713,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -19703,7 +20232,7 @@
                     24.0
                   ],
                   "characterSpacing": [
-                    0.0,
+                    1.0,
                     0.0
                   ],
                   "color": [
@@ -19730,6 +20259,13 @@
                     45.0,
                     41.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    0.5,
+                    0.5
+                  ],
+                  "textureCellTrimByCharacterJSON": "{\".\":[27.0,0.0,0.5,0.5]}",
                   "textureFilePath": "imgs/msel_0_bpmnum.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -19876,6 +20412,12 @@
                   "textureGridCellSize": [
                     32.0,
                     32.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -20187,6 +20729,12 @@
                             150.0,
                             120.0
                           ],
+                          "textureGridCellTrim": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
                           "textureGridColumns": 1,
                           "textureGridIndex": 0,
                           "textureGridIndex_paramRef": "center_difficulty0LevelIndex",
@@ -20334,6 +20882,12 @@
                       "textureGridCellSize": [
                         115.0,
                         110.0
+                      ],
+                      "textureGridCellTrim": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
                       ],
                       "textureGridColumns": 4,
                       "textureGridIndex": {
@@ -20487,6 +21041,12 @@
                             150.0,
                             120.0
                           ],
+                          "textureGridCellTrim": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
                           "textureGridColumns": 1,
                           "textureGridIndex": 0,
                           "textureGridIndex_paramRef": "center_difficulty1LevelIndex",
@@ -20634,6 +21194,12 @@
                       "textureGridCellSize": [
                         115.0,
                         110.0
+                      ],
+                      "textureGridCellTrim": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
                       ],
                       "textureGridColumns": 4,
                       "textureGridIndex": {
@@ -20787,6 +21353,12 @@
                             150.0,
                             120.0
                           ],
+                          "textureGridCellTrim": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
                           "textureGridColumns": 1,
                           "textureGridIndex": 0,
                           "textureGridIndex_paramRef": "center_difficulty2LevelIndex",
@@ -20934,6 +21506,12 @@
                       "textureGridCellSize": [
                         115.0,
                         110.0
+                      ],
+                      "textureGridCellTrim": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
                       ],
                       "textureGridColumns": 4,
                       "textureGridIndex": {
@@ -21087,6 +21665,12 @@
                             150.0,
                             120.0
                           ],
+                          "textureGridCellTrim": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            0.0
+                          ],
                           "textureGridColumns": 1,
                           "textureGridIndex": 0,
                           "textureGridIndex_paramRef": "center_difficulty3LevelIndex",
@@ -21234,6 +21818,12 @@
                       "textureGridCellSize": [
                         115.0,
                         110.0
+                      ],
+                      "textureGridCellTrim": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
                       ],
                       "textureGridColumns": 4,
                       "textureGridIndex": {
@@ -21465,6 +22055,12 @@
                   "textureGridCellSize": [
                     200.0,
                     200.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -21790,6 +22386,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 4,
                   "textureGridIndex_paramRef": "center_medalIndex",
@@ -21940,6 +22542,12 @@
                     64.0,
                     64.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 6,
                   "textureGridIndex_paramRef": "center_highScoreGradeIndex",
@@ -22082,6 +22690,13 @@
                     136.0,
                     120.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    1.5,
+                    1.5
+                  ],
+                  "textureCellTrimByCharacterJSON": "{}",
                   "textureFilePath": "imgs/num0.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -22221,6 +22836,13 @@
                     136.0,
                     120.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    1.5,
+                    1.5
+                  ],
+                  "textureCellTrimByCharacterJSON": "{}",
                   "textureFilePath": "imgs/num0.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -22522,6 +23144,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -22668,6 +23296,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -22974,6 +23608,12 @@
                 32.0,
                 32.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
               "textureGridRows": 1,
@@ -23278,6 +23918,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -23586,6 +24232,12 @@
                     188.0,
                     78.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 4,
                   "textureGridIndex_paramRef": "center_medalIndex",
@@ -23728,6 +24380,13 @@
                     136.0,
                     120.0
                   ],
+                  "textureCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
+                  "textureCellTrimByCharacterJSON": "{}",
                   "textureFilePath": "imgs/num0.png",
                   "textureFilter": "Default",
                   "textureGridColumns": 1,
@@ -24029,6 +24688,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -24175,6 +24840,12 @@
               "textureGridCellSize": [
                 32.0,
                 32.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
@@ -24604,6 +25275,12 @@
                 32.0,
                 32.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 1,
               "textureGridIndex": 0,
               "textureGridRows": 1,
@@ -24750,6 +25427,12 @@
           "textureGridCellSize": [
             32.0,
             32.0
+          ],
+          "textureGridCellTrim": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
           ],
           "textureGridColumns": 1,
           "textureGridIndex": 0,
@@ -24903,6 +25586,12 @@
                 810.0,
                 48.0
               ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
               "textureGridColumns": 2,
               "textureGridIndex": 1,
               "textureGridRows": 1,
@@ -25051,6 +25740,12 @@
               "textureGridCellSize": [
                 810.0,
                 48.0
+              ],
+              "textureGridCellTrim": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
               ],
               "textureGridColumns": 2,
               "textureGridIndex": 0,
@@ -25600,6 +26295,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -25990,6 +26691,12 @@
                   "textureGridCellSize": [
                     32.0,
                     32.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -26382,6 +27089,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -26772,6 +27485,12 @@
                   "textureGridCellSize": [
                     32.0,
                     32.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -27164,6 +27883,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -27486,6 +28211,12 @@
                     32.0,
                     32.0
                   ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+                  ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
                   "textureGridRows": 1,
@@ -27634,6 +28365,12 @@
                   "textureGridCellSize": [
                     66.0,
                     66.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -27916,6 +28653,12 @@
                   "textureGridCellSize": [
                     576.0,
                     192.0
+                  ],
+                  "textureGridCellTrim": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
                   ],
                   "textureGridColumns": 1,
                   "textureGridIndex": 0,
@@ -28353,7 +29096,7 @@
     },
     "center_bpm": {
       "type": "String",
-      "value": "123-456"
+      "value": "123.4-567.89"
     },
     "center_chartAuthor": {
       "type": "String",
@@ -28664,6 +29407,6 @@
     640.0,
     480.0
   ],
-  "serializedVersion": 4,
-  "version": "0.2.2"
+  "serializedVersion": 5,
+  "version": "0.3.0-beta1"
 }
