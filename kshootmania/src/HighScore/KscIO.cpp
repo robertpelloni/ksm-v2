@@ -139,7 +139,10 @@ namespace KscIO
 					return false;
 				}
 				const KscValue& origKscValue = origHighScoreInfo.kscValueOf(gaugeType);
-				const String replace = search + origKscValue.applyPlayResult(playResult).toString();
+				const KscValue newKscValue = playResult.playOption.gameMode == MusicGame::GameMode::kCourseMode
+					? origKscValue.applyPlayResultForCourse(playResult)
+					: origKscValue.applyPlayResult(playResult);
+				const String replace = search + newKscValue.toString();
 
 				TextReader reader(kscFilePath);
 				if (!reader)

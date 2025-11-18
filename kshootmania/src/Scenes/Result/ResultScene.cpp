@@ -229,7 +229,7 @@ ResultScene::ResultScene(const ResultSceneArgs& args)
 
 	// 前回までのハイスコアを読み込んでNewRecordパネルを設定
 	int32 oldScore = 0;
-	if (!m_playResult.playOption.isAutoPlay && !m_courseState) // オートプレイまたはコースモードの場合はスコアを保存しない
+	if (!m_playResult.playOption.isAutoPlay) // オートプレイの場合はスコアを保存しない
 	{
 		const KscKey condition
 		{

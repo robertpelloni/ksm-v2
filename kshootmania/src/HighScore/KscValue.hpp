@@ -26,6 +26,12 @@ struct KscValue
 	/// @return KscValue
 	KscValue applyPlayResult(const MusicGame::PlayResult& playResult) const;
 
+	/// @brief プレイ結果を反映後のKscValueを返す(コースモード用)
+	/// @param playResult プレイ結果
+	/// @return KscValue
+	/// @note コースモードではフルコンボ未満の場合はachievementを更新しない
+	KscValue applyPlayResultForCourse(const MusicGame::PlayResult& playResult) const;
+
 	/// @brief 文字列に変換
 	/// @return 変換後の文字列
 	String toString() const;
