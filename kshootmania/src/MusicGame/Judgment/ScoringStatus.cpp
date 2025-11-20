@@ -235,8 +235,8 @@ namespace MusicGame::Judgment
 
 	double ScoringStatus::gaugePercentageForGrade() const
 	{
-		// HARDゲージの場合はNORMAL基準のゲージ値を使用
-		if (m_gaugeType == GaugeType::kHardGauge)
+		// HARDゲージまたはコースモードの場合はNORMAL基準のゲージ値を使用
+		if (m_gaugeType == GaugeType::kHardGauge || m_gameMode == GameMode::kCourseMode)
 		{
 			return calcGaugePercentageFromValue(m_gaugeValueNormal, GaugeType::kNormalGauge);
 		}
