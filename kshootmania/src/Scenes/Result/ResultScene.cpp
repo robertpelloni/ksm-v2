@@ -224,7 +224,6 @@ ResultScene::ResultScene(const ResultSceneArgs& args)
 	if (m_courseState)
 	{
 		m_courseState->recordResult(m_playResult);
-		m_courseState->setGaugeValue(m_playResult.gaugeValue);
 	}
 
 	// 前回までのハイスコアを読み込んでNewRecordパネルを設定

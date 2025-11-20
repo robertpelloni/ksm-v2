@@ -1177,6 +1177,9 @@
     <ClInclude Include="src\Scenes\Select\MenuItem\SelectMenuFavFolderItem.hpp">
       <Filter>Header Files\Scenes\Select\MenuItem</Filter>
     </ClInclude>
+    <ClInclude Include="src\Course\CourseContinuation.hpp">
+      <Filter>Header Files\Course</Filter>
+    </ClInclude>
     <ClInclude Include="src\Course\CourseInfo.hpp">
       <Filter>Header Files\Course</Filter>
     </ClInclude>

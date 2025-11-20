@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Course/CoursePlayState.hpp"
 #include "GameStatus.hpp"
 #include "PlayOption.hpp"
 #include "PlayResult.hpp"
@@ -25,7 +26,7 @@ namespace MusicGame
 
 		AssistTickMode assistTickMode = AssistTickMode::kOff;
 
-		Optional<int32> initialGaugeValue = none;
+		Optional<CourseContinuation> courseContinuation = none;
 	};
 
 	class GameMain

@@ -425,6 +425,7 @@
     <ClInclude Include="src\Scenes\Play\PlaySceneArgs.hpp" />
     <ClInclude Include="src\Scenes\PlayPrepare\PlayPrepareAssets.hpp" />
     <ClInclude Include="src\Scenes\PlayPrepare\PlayPrepareScene.hpp" />
+    <ClInclude Include="src\Course\CourseContinuation.hpp" />
     <ClInclude Include="src\Course\CourseInfo.hpp" />
     <ClInclude Include="src\Course\CoursePlayResult.hpp" />
     <ClInclude Include="src\Course\CoursePlayState.hpp" />

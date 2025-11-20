@@ -73,7 +73,7 @@ namespace
 				.movieEnabled = ConfigIni::GetInt(ConfigIni::Key::kBGMovie, static_cast<int32>(MovieMode::kOn)) == static_cast<int32>(MovieMode::kOn),
 			},
 			.assistTickMode = static_cast<AssistTickMode>(ConfigIni::GetInt(ConfigIni::Key::kAssistTick, static_cast<int32>(AssistTickMode::kOff))),
-			.initialGaugeValue = courseState.has_value() && courseState->currentChartIdx() > 0 ? MakeOptional(courseState->gaugeValue()) : none,
+			.courseContinuation = courseState.has_value() && courseState->currentChartIdx() > 0 ? MakeOptional(courseState->continuation()) : none,
 		};
 	}
 }
@@ -113,10 +113,9 @@ void PlayScene::update()
 			if (m_courseState && m_courseState->hasNextChart())
 			{
 				// コースモードで次の曲がある場合
-				// リザルト画面をスキップするため、ここでゲージ値を記録
+				// リザルト画面をスキップするため、プレイリザルト(次曲へのコンボ引き継ぎに必要)はここで記録
 				const MusicGame::PlayResult playResult = m_gameMain.playResult();
 				m_courseState->recordResult(playResult);
-				m_courseState->setGaugeValue(playResult.gaugeValue);
 
 				// 次の曲へ
 				m_courseState->advanceToNextChart();

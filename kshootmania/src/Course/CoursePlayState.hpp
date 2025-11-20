@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Course/CourseInfo.hpp"
 #include "Course/CoursePlayResult.hpp"
+#include "Course/CourseContinuation.hpp"
 #include "MusicGame/PlayResult.hpp"
 #include "HighScore/KscKey.hpp"
 
@@ -16,7 +17,7 @@ private:
 	int32 m_totalNear = 0;
 	int32 m_totalError = 0;
 
-	int32 m_gaugeValue = 0; // 前の曲から引き継ぐゲージ値
+	CourseContinuation m_continuation; // 次の曲に引き継ぐ情報
 
 	bool m_cleared = false; // コースクリア判定
 
@@ -49,6 +50,11 @@ public:
 		m_totalError += playResult.comboStats.error;
 
 		m_failedChartTimeProgress = playResult.chartTimeProgress;
+
+		// 次の曲に引き継ぐ情報を更新
+		m_continuation.gaugeValue = playResult.gaugeValue;
+		m_continuation.combo = playResult.finalCourseCombo;
+		m_continuation.isNoError = m_continuation.isNoError && playResult.comboStats.error == 0;
 	}
 
 	[[nodiscard]]
@@ -178,15 +184,10 @@ public:
 		return m_cleared;
 	}
 
-	void setGaugeValue(int32 gaugeValue)
-	{
-		m_gaugeValue = gaugeValue;
-	}
-
 	[[nodiscard]]
-	int32 gaugeValue() const
+	const CourseContinuation& continuation() const
 	{
-		return m_gaugeValue;
+		return m_continuation;
 	}
 
 	[[nodiscard]]

@@ -146,7 +146,12 @@ namespace MusicGame
 		, m_chartData(LoadChartDataWithTurn(createInfo))
 		, m_timingCache(kson::CreateTimingCache(m_chartData.beat))
 		, m_playOption(createInfo.playOption)
-		, m_judgmentMain(m_chartData, m_timingCache, createInfo.playOption, createInfo.initialGaugeValue, createInfo.playOption.gameMode)
+		, m_judgmentMain(
+			m_chartData,
+			m_timingCache,
+			createInfo.playOption,
+			createInfo.courseContinuation,
+			createInfo.playOption.gameMode)
 		, m_camSystem(m_chartData)
 		, m_highwayScroll(m_chartData)
 		, m_bgm(FileSystem::PathAppend(m_parentPath, Unicode::FromUTF8(m_chartData.audio.bgm.filename)), m_chartData.audio.bgm.vol, SecondsF{ static_cast<double>(m_chartData.audio.bgm.offset + createInfo.playOption.effectiveGlobalOffsetMs()) / 1000 }, Audio::DetermineLegacyAudioFPMode(m_chartData, m_parentPath), m_chartData, m_parentPath)

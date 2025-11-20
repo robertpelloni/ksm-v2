@@ -96,13 +96,14 @@ namespace MusicGame::Judgment
 		m_gaugeValueNormal = Max(m_gaugeValueNormal - normalSub, 0);
 	}
 
-	ScoringStatus::ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType, Optional<int32> initialGaugeValue, GameMode gameMode)
+	ScoringStatus::ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType, const Optional<CourseContinuation>& courseContinuation, GameMode gameMode)
 		: m_scoreValueMax(scoreValueMax)
 		, m_gaugeValueMax(gaugeValueMax)
 		, m_gaugeType(gaugeType)
 		, m_gameMode(gameMode)
 		, m_gaugeCalcType(ToGaugeCalcType(gaugeType, gameMode))
-		, m_gaugeValue(initialGaugeValue.value_or((gaugeType == GaugeType::kHardGauge || gameMode == GameMode::kCourseMode) ? kGaugeValueMaxHard : 0))
+		, m_gaugeValue(courseContinuation.has_value() ? courseContinuation->gaugeValue : ((gaugeType == GaugeType::kHardGauge || gameMode == GameMode::kCourseMode) ? kGaugeValueMaxHard : 0))
+		, m_comboStatus(courseContinuation)
 	{
 	}
 
@@ -273,5 +274,25 @@ namespace MusicGame::Judgment
 	int32 ScoringStatus::totalJudgedCombo() const
 	{
 		return m_comboStatus.totalJudgedCombo();
+	}
+
+	int32 ScoringStatus::courseCombo() const
+	{
+		return m_comboStatus.courseCombo();
+	}
+
+	bool ScoringStatus::courseIsNoError() const
+	{
+		return m_comboStatus.courseIsNoError();
+	}
+
+	int32 ScoringStatus::displayCombo() const
+	{
+		return m_gameMode == GameMode::kCourseMode ? m_comboStatus.courseCombo() : m_comboStatus.combo();
+	}
+
+	bool ScoringStatus::displayIsNoError() const
+	{
+		return m_gameMode == GameMode::kCourseMode ? m_comboStatus.courseIsNoError() : m_comboStatus.isNoError();
 	}
 }

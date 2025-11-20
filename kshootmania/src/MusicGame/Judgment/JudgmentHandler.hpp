@@ -32,9 +32,9 @@ namespace MusicGame::Judgment
 		/// @param fxLaneJudgments FXレーン判定の配列
 		/// @param laserLaneJudgments LASERレーン判定の配列
 		/// @param playOption プレイオプション
-		/// @param initialGaugeValue 初期ゲージ値(コースモード時に使用)
+		/// @param courseContinuation コース継続情報(コースモード時に使用)
 		/// @param gameMode ゲームモード
-		JudgmentHandler(const kson::ChartData& chartData, const BTLaneJudgments& btLaneJudgments, const FXLaneJudgments& fxLaneJudgments, const LaserLaneJudgments& laserLaneJudgments, const PlayOption& playOption, Optional<int32> initialGaugeValue, GameMode gameMode);
+		JudgmentHandler(const kson::ChartData& chartData, const BTLaneJudgments& btLaneJudgments, const FXLaneJudgments& fxLaneJudgments, const LaserLaneJudgments& laserLaneJudgments, const PlayOption& playOption, const Optional<CourseContinuation>& courseContinuation, GameMode gameMode);
 
 		/// @brief チップノーツ判定時に呼び出される
 		/// @param result 判定結果

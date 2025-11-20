@@ -306,6 +306,7 @@
     <ClInclude Include="src\Common\IMEUtils.hpp" />
     <ClInclude Include="src\Common\MathUtils.hpp" />
     <ClInclude Include="src\Common\NocoUtils.hpp" />
+    <ClInclude Include="src\Course\CourseContinuation.hpp" />
     <ClInclude Include="src\Course\CourseInfo.hpp" />
     <ClInclude Include="src\Course\CoursePlayResult.hpp" />
     <ClInclude Include="src\Course\CoursePlayState.hpp" />
