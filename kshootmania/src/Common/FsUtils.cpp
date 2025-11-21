@@ -93,4 +93,9 @@ namespace FsUtils
 		}
 		return String{ path.substr(0, path.size() - extension.size() - 1) }; // ドット除去のため-1
 	}
+
+	String RelativePathFromSongsDir(FilePathView fullPath)
+	{
+		return FileSystem::RelativePath(fullPath, SongsDirectoryPath());
+	}
 }

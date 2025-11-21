@@ -23,7 +23,7 @@ namespace KscIO
 			}
 
 			// サブフォルダの存在を考慮する必要があるため、songsフォルダからの相対パスを使用してkscファイルのパスを生成
-			const auto relativeChartFilePath = FileSystem::RelativePath(chartFilePath, FsUtils::SongsDirectoryPath()); // TODO: songsフォルダ以外が指定可能になったら要修正
+			const auto relativeChartFilePath = FsUtils::RelativePathFromSongsDir(chartFilePath); // TODO: songsフォルダ以外が指定可能になったら要修正
 			const String currentPlayer{ ConfigIni::GetString(ConfigIni::Key::kCurrentPlayer) };
 			*pFilePath = FileSystem::PathAppend(FsUtils::ScoreDirectoryPath(), U"{}/{}.ksc"_fmt(currentPlayer, FsUtils::EliminateExtension(relativeChartFilePath)));
 			return true;
@@ -53,7 +53,7 @@ namespace KscIO
 			if (relativePath.isEmpty() || relativePath.starts_with(U".."))
 			{
 				// coursesフォルダ内にない場合はsongsフォルダからの相対パスを試す
-				relativePath = FileSystem::RelativePath(courseFilePath, songsDir);
+				relativePath = FsUtils::RelativePathFromSongsDir(courseFilePath);
 				if (relativePath.isEmpty() || relativePath.starts_with(U".."))
 				{
 					// どちらのフォルダにも属していない

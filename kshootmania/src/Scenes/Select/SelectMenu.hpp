@@ -159,5 +159,8 @@ public:
 	void showCurrentItemInFileManager();
 
 	[[nodiscard]]
+	Optional<String> currentItemRelativePathToCopy() const;
+
+	[[nodiscard]]
 	const SelectFolderState& folderState() const;
 };

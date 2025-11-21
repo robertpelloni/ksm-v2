@@ -360,3 +360,15 @@ Optional<HighScoreInfo> SelectMenuSongItem::highScoreInfo(int32 difficultyIdx) c
 	}
 	return chartInfo->highScoreInfo();
 }
+
+Optional<String> SelectMenuSongItem::relativePathToCopy(int32 difficultyIdx) const
+{
+	const SelectChartInfo* chartInfo = chartInfoPtr(difficultyIdx);
+	if (chartInfo == nullptr)
+	{
+		return none;
+	}
+	String relativePath = FsUtils::RelativePathFromSongsDir(chartInfo->chartFilePath());
+	relativePath.replace(U'\\', U'/');
+	return relativePath;
+}

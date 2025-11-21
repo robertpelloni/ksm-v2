@@ -54,4 +54,9 @@ namespace FsUtils
 	/// @param path ファイルパス
 	/// @return 拡張子を除去したファイルパス
 	String EliminateExtension(FilePathView path);
+
+	/// @brief songsフォルダからの相対パスを取得
+	/// @param fullPath フルパス
+	/// @return songsフォルダからの相対パス
+	String RelativePathFromSongsDir(FilePathView fullPath);
 }

@@ -299,6 +299,16 @@ void SelectScene::update()
 		return;
 	}
 
+	// Ctrl+C: 選択中の譜面のパスをクリップボードにコピー
+	if (PlatformKey::KeyCommandControl.pressed() && KeyC.down())
+	{
+		const Optional<String> relativePath = m_menu.currentItemRelativePathToCopy();
+		if (relativePath.has_value())
+		{
+			Clipboard::SetText(*relativePath);
+		}
+	}
+
 	// Ctrl+O: 選択中の項目をエクスプローラで表示
 	if (PlatformKey::KeyCommandControl.pressed() && KeyO.down())
 	{
@@ -445,7 +455,6 @@ void SelectScene::updateDialogs()
 		{
 			// 楽曲の相対パス
 			const FilePath songFullPath{ m_menu.cursorMenuItem().fullPath() };
-			const FilePath songsDir = FsUtils::SongsDirectoryPath();
 
 			// ゲーム上では楽曲単位での登録のみ対応するため、単一譜面の場合は親フォルダを取得
 			FilePath songFolderFullPath = songFullPath;
@@ -454,7 +463,7 @@ void SelectScene::updateDialogs()
 				songFolderFullPath = FileSystem::ParentPath(songFullPath);
 			}
 
-			const String songRelativePath = FileSystem::RelativePath(songFolderFullPath, songsDir);
+			const String songRelativePath = FsUtils::RelativePathFromSongsDir(songFolderFullPath);
 
 			// .favファイルが新規作成される場合、他フォルダ表示の更新が必要
 			// (ファイル存在判定するため、お気に入り追加実行より前で判定する必要があるので注意)
@@ -498,8 +507,7 @@ void SelectScene::updateDialogs()
 
 				// 楽曲の相対パスを取得
 				const FilePath songFullPath{ m_menu.cursorMenuItem().fullPath() };
-				const FilePath songsDir = FsUtils::SongsDirectoryPath();
-				const String songRelativePath = FileSystem::RelativePath(songFullPath, songsDir);
+				const String songRelativePath = FsUtils::RelativePathFromSongsDir(songFullPath);
 
 				// お気に入り削除実行
 				const bool fileRemoved = RemoveFromFavorite(favoriteName, songRelativePath);
@@ -507,6 +515,7 @@ void SelectScene::updateDialogs()
 				if (fileRemoved)
 				{
 					// .favファイルが削除された場合はフォルダを閉じる
+					const FilePath songsDir = FsUtils::SongsDirectoryPath();
 					const FilePath favPath = FileSystem::PathAppend(songsDir, favoriteName + U".fav");
 					if (!FileSystem::Exists(favPath))
 					{

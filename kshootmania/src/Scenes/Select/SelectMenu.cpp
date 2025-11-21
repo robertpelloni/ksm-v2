@@ -281,9 +281,8 @@ bool SelectMenu::openDirectory(FilePathView directoryPath, PlaySeYN playSe, Refr
 	if (saveToConfigIni)
 	{
 		// songsフォルダからの相対パスとして保存
-		const FilePath songsDir = FsUtils::SongsDirectoryPath();
 		const FilePath fullDirectoryPath = FileSystem::FullPath(directoryPath);
-		FilePath relativeDirectoryPath = FileSystem::RelativePath(fullDirectoryPath, songsDir);
+		FilePath relativeDirectoryPath = FsUtils::RelativePathFromSongsDir(fullDirectoryPath);
 		// 末尾の/を除去
 		if (relativeDirectoryPath.ends_with(U'/'))
 		{
@@ -2206,6 +2205,16 @@ void SelectMenu::showCurrentItemInFileManager()
 
 	// 現在選択中の項目のshowInFileManagerを呼び出す
 	m_menu.cursorValue()->showInFileManager(m_difficultyMenu.cursor());
+}
+
+Optional<String> SelectMenu::currentItemRelativePathToCopy() const
+{
+	if (m_menu.empty())
+	{
+		return none;
+	}
+
+	return m_menu.cursorValue()->relativePathToCopy(m_difficultyMenu.cursor());
 }
 
 const SelectFolderState& SelectMenu::folderState() const

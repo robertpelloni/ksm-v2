@@ -106,4 +106,12 @@ public:
 	virtual void showInFileManager([[maybe_unused]] int32 difficultyIdx) const
 	{
 	}
+
+	/// @brief クリップボードにコピーする相対パスを取得
+	/// @param difficultyIdx 現在選択中の難易度のインデックス(0～3)
+	/// @return コピー対象の場合はsongsフォルダからの相対パス、コピー対象でない場合はnone
+	virtual Optional<String> relativePathToCopy([[maybe_unused]] int32 difficultyIdx) const
+	{
+		return none;
+	}
 };
