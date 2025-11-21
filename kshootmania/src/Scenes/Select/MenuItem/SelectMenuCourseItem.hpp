@@ -6,6 +6,7 @@ class SelectMenuCourseItem : public ISelectMenuItem
 {
 private:
 	CourseInfo m_courseInfo;
+	HighScoreInfo m_highScoreInfo;
 
 public:
 	explicit SelectMenuCourseItem(const CourseInfo& courseInfo);
@@ -31,4 +32,9 @@ public:
 	virtual void setCanvasParamsTopBottom(const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx, StringView paramNamePrefix, StringView nodeName) const override;
 
 	virtual void showInFileManager(int32 difficultyIdx) const override;
+
+	/// @brief ハイスコア情報を取得
+	/// @param difficultyIdx 難易度のインデックス(0～3、コースでは不使用)
+	/// @return ハイスコア情報(存在しない場合はnone)
+	virtual Optional<HighScoreInfo> highScoreInfo(int32 difficultyIdx) const override;
 };

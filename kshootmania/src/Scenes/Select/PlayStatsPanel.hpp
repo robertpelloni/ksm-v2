@@ -23,7 +23,7 @@ public:
 	explicit PlayStatsPanel(std::shared_ptr<noco::Canvas> canvas);
 
 	// 更新
-	void update(const HighScoreInfo& highScore, GaugeType gaugeType);
+	void update(const Optional<HighScoreInfo>& highScore, GaugeType gaugeType);
 
 	// パネルが表示されているかどうか
 	bool isVisible() const;

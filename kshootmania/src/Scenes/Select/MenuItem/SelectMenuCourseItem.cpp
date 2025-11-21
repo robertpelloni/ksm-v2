@@ -24,6 +24,7 @@ namespace
 
 SelectMenuCourseItem::SelectMenuCourseItem(const CourseInfo& courseInfo)
 	: m_courseInfo(courseInfo)
+	, m_highScoreInfo(KscIO::ReadCourseHighScoreInfo(courseInfo.filePath, CreateKscKeyFromConfig()))
 {
 }
 
@@ -93,9 +94,8 @@ void SelectMenuCourseItem::setCanvasParamsCenter(const SelectMenuEventContext& c
 
 	// コースのハイスコア情報を取得
 	const KscKey kscKey = CreateKscKeyFromConfig();
-	const HighScoreInfo highScoreInfo = KscIO::ReadCourseHighScoreInfo(m_courseInfo.filePath, kscKey);
-	const int32 medalIndex = static_cast<int32>(highScoreInfo.medal());
-	const int32 achievementRate = highScoreInfo.percent(kscKey.gaugeType);
+	const int32 medalIndex = static_cast<int32>(m_highScoreInfo.medal());
+	const int32 achievementRate = m_highScoreInfo.percent(kscKey.gaugeType);
 
 	// コース情報を設定
 	canvas.setParamValues({
@@ -138,9 +138,8 @@ void SelectMenuCourseItem::setCanvasParamsTopBottom([[maybe_unused]] const Selec
 {
 	// コースのハイスコア情報を取得
 	const KscKey kscKey = CreateKscKeyFromConfig();
-	const HighScoreInfo highScoreInfo = KscIO::ReadCourseHighScoreInfo(m_courseInfo.filePath, kscKey);
-	const int32 medalIndex = static_cast<int32>(highScoreInfo.medal());
-	const int32 achievementRate = highScoreInfo.percent(kscKey.gaugeType);
+	const int32 medalIndex = static_cast<int32>(m_highScoreInfo.medal());
+	const int32 achievementRate = m_highScoreInfo.percent(kscKey.gaugeType);
 
 	canvas.setParamValues({
 		{ paramNamePrefix + U"isSong", false },
@@ -181,4 +180,9 @@ void SelectMenuCourseItem::showInFileManager([[maybe_unused]] int32 difficultyId
 {
 	// コースファイルをエクスプローラで開く
 	System::ShowInFileManager(m_courseInfo.filePath);
+}
+
+Optional<HighScoreInfo> SelectMenuCourseItem::highScoreInfo([[maybe_unused]] int32 difficultyIdx) const
+{
+	return m_highScoreInfo;
 }

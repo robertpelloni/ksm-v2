@@ -350,3 +350,13 @@ void SelectMenuSongItem::showInFileManager(int32 difficultyIdx) const
 	// エクスプローラで譜面ファイルを選択状態で開く
 	System::ShowInFileManager(pChartInfo->chartFilePath());
 }
+
+Optional<HighScoreInfo> SelectMenuSongItem::highScoreInfo(int32 difficultyIdx) const
+{
+	const SelectChartInfo* chartInfo = chartInfoPtr(difficultyIdx);
+	if (chartInfo == nullptr)
+	{
+		return none;
+	}
+	return chartInfo->highScoreInfo();
+}

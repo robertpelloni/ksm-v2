@@ -38,14 +38,14 @@ String PlayStatsPanel::generateStatsText(const HighScoreInfo& highScore, GaugeTy
 	);
 }
 
-void PlayStatsPanel::update(const HighScoreInfo& highScore, GaugeType gaugeType)
+void PlayStatsPanel::update(const Optional<HighScoreInfo>& highScore, GaugeType gaugeType)
 {
-	const bool shouldBeVisible = isThreeBTButtonsPressed();
+	const bool shouldBeVisible = isThreeBTButtonsPressed() && highScore.has_value();
 
 	if (shouldBeVisible)
 	{
 		// 統計情報テキストを生成してCanvasに設定
-		const String statsText = generateStatsText(highScore, gaugeType);
+		const String statsText = generateStatsText(*highScore, gaugeType);
 		m_canvas->setParamValue(U"overlay_playStatsPanelText", statsText);
 	}
 

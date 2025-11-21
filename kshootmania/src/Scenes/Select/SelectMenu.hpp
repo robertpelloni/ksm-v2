@@ -154,7 +154,7 @@ public:
 
 	double getCurrentChartStdBPM() const;
 
-	const HighScoreInfo& getCurrentHighScoreInfo() const;
+	Optional<HighScoreInfo> getCurrentHighScoreInfo() const;
 
 	void showCurrentItemInFileManager();
 

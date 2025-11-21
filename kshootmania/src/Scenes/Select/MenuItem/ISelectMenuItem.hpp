@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Scenes/Select/SelectMenu.hpp"
 #include "Scenes/Select/SelectChartInfo.hpp"
+#include "HighScore/HighScoreInfo.hpp"
 
 struct SelectMenuItemGraphicAssets;
 
@@ -54,6 +55,14 @@ public:
 	virtual const SelectChartInfo* chartInfoPtr([[maybe_unused]] int difficultyIdx, [[maybe_unused]] FallbackForSingleChartYN fallbackForSingleChart = FallbackForSingleChartYN::Yes) const
 	{
 		return nullptr;
+	}
+
+	/// @brief ハイスコア情報を取得
+	/// @param difficultyIdx 難易度のインデックス(0～3)
+	/// @return ハイスコア情報(存在しない場合はnone)
+	virtual Optional<HighScoreInfo> highScoreInfo([[maybe_unused]] int32 difficultyIdx) const
+	{
+		return none;
 	}
 
 	virtual bool difficultyMenuExists() const

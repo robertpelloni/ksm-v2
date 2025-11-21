@@ -2187,22 +2187,14 @@ double SelectMenu::getCurrentChartStdBPM() const
 	return chartInfo->stdBPMForHispeedTypeChange();
 }
 
-const HighScoreInfo& SelectMenu::getCurrentHighScoreInfo() const
+Optional<HighScoreInfo> SelectMenu::getCurrentHighScoreInfo() const
 {
-	static const HighScoreInfo kEmptyHighScoreInfo{};
-
 	if (m_menu.empty())
 	{
-		return kEmptyHighScoreInfo;
+		return none;
 	}
 
-	const SelectChartInfo* chartInfo = m_menu.cursorValue()->chartInfoPtr(m_difficultyMenu.cursor());
-	if (chartInfo == nullptr)
-	{
-		return kEmptyHighScoreInfo;
-	}
-
-	return chartInfo->highScoreInfo();
+	return m_menu.cursorValue()->highScoreInfo(m_difficultyMenu.cursor());
 }
 
 void SelectMenu::showCurrentItemInFileManager()

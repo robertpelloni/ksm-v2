@@ -71,4 +71,9 @@ public:
 	/// @brief この項目をエクスプローラで表示
 	/// @param difficultyIdx 現在選択中の難易度のインデックス(0～3)
 	virtual void showInFileManager(int32 difficultyIdx) const override;
+
+	/// @brief ハイスコア情報を取得
+	/// @param difficultyIdx 難易度のインデックス(0～3)
+	/// @return ハイスコア情報(存在しない場合はnone)
+	virtual Optional<HighScoreInfo> highScoreInfo(int32 difficultyIdx) const override;
 };
