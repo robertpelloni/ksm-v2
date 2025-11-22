@@ -1,6 +1,7 @@
 ﻿#include "CourseResultScene.hpp"
 #include "Scenes/Select/SelectScene.hpp"
 #include "Scenes/Select/SelectChartInfo.hpp"
+#include "Scenes/Common/ShowLoadingOneFrame.hpp"
 #include "Addon/AutoMuteAddon.hpp"
 #include "Common/FsUtils.hpp"
 #include "Input/KeyConfig.hpp"
@@ -181,4 +182,10 @@ Co::Task<void> CourseResultScene::fadeIn()
 	const auto canvasUpdateRunner = Co::UpdaterTask([this] { m_canvas->update(); }).runScoped();
 
 	co_await Co::ScreenFadeIn(kFadeDuration, Palette::White);
+}
+
+Co::Task<void> CourseResultScene::postFadeOut()
+{
+	// SelectSceneはコンストラクタの処理に時間がかかるので、ローディングはここで出しておく
+	return ShowLoadingOneFrame::Play(HasBgYN::Yes);
 }

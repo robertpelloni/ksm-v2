@@ -34,4 +34,6 @@ public:
 	virtual void draw() const override;
 
 	virtual Co::Task<void> fadeIn() override;
+
+	virtual Co::Task<void> postFadeOut() override;
 };
