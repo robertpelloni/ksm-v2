@@ -1,6 +1,7 @@
 ﻿#include "PlayPrepareScene.hpp"
 #include "Scenes/Select/SelectScene.hpp"
 #include "Scenes/Play/PlayScene.hpp"
+#include "Scenes/CourseResult/CourseResultScene.hpp"
 #include "Scenes/Common/ShowLoadingOneFrame.hpp"
 #include "MusicGame/HispeedUtils.hpp"
 
@@ -117,9 +118,18 @@ Co::Task<void> PlayPrepareScene::start()
 
 		if (KeyConfig::Down(KeyConfig::kBack))
 		{
-			// Backボタンで選曲画面へ戻る
 			SaveHispeedSettingToConfigIni(m_hispeedMenu.hispeedSetting());
-			requestNextScene<SelectScene>();
+
+			if (m_courseState.has_value() && m_courseState->currentChartIdx() > 0)
+			{
+				// コースモードの2曲目以降の場合はコースリザルトへ
+				requestNextScene<CourseResultScene>(*m_courseState);
+			}
+			else
+			{
+				// 通常モードまたはコースの1曲目の場合は選曲画面へ
+				requestNextScene<SelectScene>();
+			}
 			break;
 		}
 
