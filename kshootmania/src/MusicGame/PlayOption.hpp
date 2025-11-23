@@ -41,6 +41,10 @@ namespace MusicGame
 
 		bool movieEnabled = true;
 
+		bool showBG = true;
+
+		bool showLayer = true;
+
 		// オートプレイを考慮したBT判定モードを取得
 		JudgmentPlayMode effectiveBtJudgmentPlayMode() const
 		{

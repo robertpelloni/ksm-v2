@@ -105,8 +105,8 @@ namespace ConfigIni
 			enum BGDisplayMode : int32
 			{
 				kHide = 0,
-				kShowNoAnim,
-				kShowAnim,
+				kShowNoLayer,
+				kShowLayer,
 			};
 		}
 

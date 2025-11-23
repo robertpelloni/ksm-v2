@@ -237,8 +237,14 @@ namespace MusicGame::Graphics
 
 		// 3D空間を描画
 		Graphics3D::SetCameraTransform(m_camera);
-		drawBG(viewStatus);
-		drawLayer(chartData, gameStatus, viewStatus);
+		if (m_playOption.showBG)
+		{
+			drawBG(viewStatus);
+		}
+		if (m_playOption.showLayer)
+		{
+			drawLayer(chartData, gameStatus, viewStatus);
+		}
 		m_highway3DGraphics.draw3D(viewStatus);
 		m_jdgline3DGraphics.draw3D(viewStatus);
 		m_jdgoverlay3DGraphics.draw3D(viewStatus);

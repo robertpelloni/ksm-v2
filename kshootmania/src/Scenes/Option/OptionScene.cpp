@@ -84,13 +84,12 @@ namespace
 					IntStrPair{ ConfigIni::Value::TextureSize::kSmall, I18n::Get(I18n::Option::kTextureSizeSmall) },
 					IntStrPair{ ConfigIni::Value::TextureSize::kMedium, I18n::Get(I18n::Option::kTextureSizeMedium) },
 					IntStrPair{ ConfigIni::Value::TextureSize::kLarge, I18n::Get(I18n::Option::kTextureSizeLarge) },
-				}),
+				}),*/
 				CreateInfo::Enum(ConfigIni::Key::kBGDisplayMode, Array<IntStrPair>{
 					IntStrPair{ ConfigIni::Value::BGDisplayMode::kHide, I18n::Get(I18n::Option::kBGDisplayModeHide) },
-					IntStrPair{ ConfigIni::Value::BGDisplayMode::kShowNoAnim, I18n::Get(I18n::Option::kBGDisplayModeShowNoAnim) },
-					IntStrPair{ ConfigIni::Value::BGDisplayMode::kShowAnim, I18n::Get(I18n::Option::kBGDisplayModeShowAnim) },
-				}),
-				*/
+					IntStrPair{ ConfigIni::Value::BGDisplayMode::kShowNoLayer, I18n::Get(I18n::Option::kBGDisplayModeShowNoLayer) },
+					IntStrPair{ ConfigIni::Value::BGDisplayMode::kShowLayer, I18n::Get(I18n::Option::kBGDisplayModeShowLayer) },
+				}).setKeyTextureIdx(5),
 				CreateInfo::Enum(ConfigIni::Key::kAlwaysShowOtherFolders, Array<StringView>{
 					I18n::Get(I18n::Option::kAlwaysShowOtherFoldersOff),
 					I18n::Get(I18n::Option::kAlwaysShowOtherFoldersOn),
