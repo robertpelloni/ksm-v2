@@ -54,6 +54,7 @@ namespace MusicGame::Judgment
 
 	private:
 		const JudgmentPlayMode m_judgmentPlayMode;
+		const int32 m_laneIdx;
 		const KeyConfig::Button m_keyConfigButtonL;
 		const KeyConfig::Button m_keyConfigButtonR;
 		const kson::ByPulse<int32> m_laserLineDirectionMap;
@@ -102,7 +103,7 @@ namespace MusicGame::Judgment
 		void processPassedSlamJudgment(const kson::ByPulse<kson::LaserSection>& lane, double currentTimeSec, LaserLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef, IsAutoPlayYN isAutoPlay);
 
 	public:
-		LaserLaneJudgment(JudgmentPlayMode judgmentPlayMode, KeyConfig::Button keyConfigButtonL, KeyConfig::Button keyConfigButtonR, const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache);
+		LaserLaneJudgment(JudgmentPlayMode judgmentPlayMode, int32 laneIdx, KeyConfig::Button keyConfigButtonL, KeyConfig::Button keyConfigButtonR, const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache);
 
 		void update(const kson::ByPulse<kson::LaserSection>& lane, kson::Pulse currentPulse, kson::Pulse currentPulseForDraw, double currentSec, double currentTimeSecForDraw, LaserLaneStatus& laneStatusRef, JudgmentHandler& judgmentHandlerRef);
 

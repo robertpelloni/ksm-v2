@@ -1,4 +1,6 @@
 ﻿#include "KeyConfig.hpp"
+#include "LaserInput/KeyboardLaserInput.hpp"
+#include "LaserInput/AnalogStickXYLaserInput.hpp"
 #include "Ini/ConfigIni.hpp"
 
 namespace
@@ -6,6 +8,9 @@ namespace
 	// キーコンフィグの設定画面や保存時などに配列サイズが固定のほうが都合が良いのでs3d::InputGroupは不使用
 	using ConfigSetArray = std::array<Input, KeyConfig::kButtonEnumCount>;
 	std::array<ConfigSetArray, KeyConfig::kConfigSetEnumCount> s_configSetArray;
+
+	// レーザー入力方式のインスタンス
+	std::array<std::unique_ptr<ILaserInputMethod>, 2> s_laserInputMethods;
 
 #ifdef __APPLE__
 	struct PlatformKeyState
@@ -680,4 +685,23 @@ bool KeyConfig::Up(Button button)
 	}
 
 	return false;
+}
+
+double KeyConfig::LaserDeltaCursorX(int32 laneIdx, Button buttonL, Button buttonR, double deltaTimeSec)
+{
+	// 入力方式が初期化されていない、または設定が変更された場合は再初期化
+	if (!s_laserInputMethods[laneIdx] || s_laserInputMethods[laneIdx]->reconstructionNeeded())
+	{
+		const int32 laserInputType = ConfigIni::GetInt(ConfigIni::Key::kLaserInputType, ConfigIni::Value::LaserInputType::kKeyboard);
+		if (laserInputType == ConfigIni::Value::LaserInputType::kAnalogStickXY)
+		{
+			s_laserInputMethods[laneIdx] = std::make_unique<AnalogStickXYLaserInput>(laneIdx);
+		}
+		else
+		{
+			s_laserInputMethods[laneIdx] = std::make_unique<KeyboardLaserInput>(buttonL, buttonR);
+		}
+	}
+
+	return s_laserInputMethods[laneIdx]->getDeltaCursorX(deltaTimeSec);
 }

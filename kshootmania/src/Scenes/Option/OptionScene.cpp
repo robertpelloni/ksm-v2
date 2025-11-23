@@ -136,12 +136,12 @@ namespace
 				}).setOnChangeCallback([]() {
 					RuntimeConfig::SetJudgmentPlayModeLaser(static_cast<JudgmentPlayMode>(ConfigIni::GetInt(ConfigIni::Key::kJudgmentModeLaser)));
 				}),
-				/*CreateInfo::Enum(ConfigIni::Key::kLaserInputType, Array<IntStrPair>{
+				CreateInfo::Enum(ConfigIni::Key::kLaserInputType, Array<IntStrPair>{
 					IntStrPair{ ConfigIni::Value::LaserInputType::kKeyboard, I18n::Get(I18n::Option::kLaserInputTypeKeyboard) },
-					IntStrPair{ ConfigIni::Value::LaserInputType::kSlider, I18n::Get(I18n::Option::kLaserInputTypeSlider) },
-					IntStrPair{ ConfigIni::Value::LaserInputType::kMouseXY, I18n::Get(I18n::Option::kLaserInputTypeMouseXY) },
+					//IntStrPair{ ConfigIni::Value::LaserInputType::kSlider, I18n::Get(I18n::Option::kLaserInputTypeSlider) },
+					//IntStrPair{ ConfigIni::Value::LaserInputType::kMouseXY, I18n::Get(I18n::Option::kLaserInputTypeMouseXY) },
 					IntStrPair{ ConfigIni::Value::LaserInputType::kAnalogStickXY, I18n::Get(I18n::Option::kLaserInputTypeAnalogStickXY) },
-				}),*/
+				}),
 				CreateInfo::Enum(ConfigIni::Key::kAssistTick, Array<StringView>{
 					I18n::Get(I18n::Option::kAssistTickOff),
 					I18n::Get(I18n::Option::kAssistTickOn),

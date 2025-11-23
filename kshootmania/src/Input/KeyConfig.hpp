@@ -102,6 +102,14 @@ namespace KeyConfig
 
 	Optional<KeyConfig::Button> LastPressedLaserButton(Button button1, Button button2);
 
+	/// @brief レーザー入力からカーソルの移動量を取得
+	/// @param laneIdx レーンのインデックス(0=左LASER, 1=右LASER)
+	/// @param buttonL 左ボタン
+	/// @param buttonR 右ボタン
+	/// @param deltaTimeSec 前フレームからの経過時間(秒)
+	/// @return カーソルのX方向移動量
+	double LaserDeltaCursorX(int32 laneIdx, Button buttonL, Button buttonR, double deltaTimeSec);
+
 	bool Down(Button button);
 
 	void ClearInput(Button button);

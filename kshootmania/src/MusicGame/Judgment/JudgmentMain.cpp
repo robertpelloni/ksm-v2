@@ -15,8 +15,8 @@ namespace MusicGame::Judgment
 			ButtonLaneJudgment(playOption.effectiveFxJudgmentPlayMode(), playOption.gaugeType, playOption.fastSlowMode, kFXButtons[0], chartData.note.fx[0], chartData.beat, timingCache),
 			ButtonLaneJudgment(playOption.effectiveFxJudgmentPlayMode(), playOption.gaugeType, playOption.fastSlowMode, kFXButtons[1], chartData.note.fx[1], chartData.beat, timingCache) }
 		, m_laserLaneJudgments{
-			LaserLaneJudgment(playOption.effectiveLaserJudgmentPlayMode(), kLaserButtons[0][0], kLaserButtons[0][1], chartData.note.laser[0], chartData.beat, timingCache),
-			LaserLaneJudgment(playOption.effectiveLaserJudgmentPlayMode(), kLaserButtons[1][0], kLaserButtons[1][1], chartData.note.laser[1], chartData.beat, timingCache) }
+			LaserLaneJudgment(playOption.effectiveLaserJudgmentPlayMode(), 0, kLaserButtons[0][0], kLaserButtons[0][1], chartData.note.laser[0], chartData.beat, timingCache),
+			LaserLaneJudgment(playOption.effectiveLaserJudgmentPlayMode(), 1, kLaserButtons[1][0], kLaserButtons[1][1], chartData.note.laser[1], chartData.beat, timingCache) }
 		, m_judgmentHandler(chartData, m_btLaneJudgments, m_fxLaneJudgments, m_laserLaneJudgments, playOption, courseContinuation, gameMode)
 	{
 	}

@@ -746,8 +746,9 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	LaserLaneJudgment::LaserLaneJudgment(JudgmentPlayMode judgmentPlayMode, KeyConfig::Button keyConfigButtonL, KeyConfig::Button keyConfigButtonR, const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache)
+	LaserLaneJudgment::LaserLaneJudgment(JudgmentPlayMode judgmentPlayMode, int32 laneIdx, KeyConfig::Button keyConfigButtonL, KeyConfig::Button keyConfigButtonR, const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache)
 		: m_judgmentPlayMode(judgmentPlayMode)
+		, m_laneIdx(laneIdx)
 		, m_keyConfigButtonL(keyConfigButtonL)
 		, m_keyConfigButtonR(keyConfigButtonR)
 		, m_laserLineDirectionMap(CreateLaserLineDirectionMap(lane))
@@ -852,19 +853,8 @@ namespace MusicGame::Judgment
 
 		if (m_judgmentPlayMode == JudgmentPlayMode::kOn)
 		{
-			// キー押下中の判定処理
-			// (左向きキーと右向きキーを同時に押している場合、最後に押した方を優先する)
-			const Optional<KeyConfig::Button> lastPressedButton = KeyConfig::LastPressedLaserButton(m_keyConfigButtonL, m_keyConfigButtonR);
-			double deltaCursorX;
-			if (lastPressedButton.has_value())
-			{
-				const int32 direction = lastPressedButton == m_keyConfigButtonL ? -1 : 1;
-				deltaCursorX = kLaserKeyboardCursorXPerSec * Scene::DeltaTime() * direction; // TODO: Scene::DeltaTime()を使わずcurrentTimeSecの差分を使う
-			}
-			else
-			{
-				deltaCursorX = 0.0;
-			}
+			// 入力からカーソルの移動量を取得
+			const double deltaCursorX = KeyConfig::LaserDeltaCursorX(m_laneIdx, m_keyConfigButtonL, m_keyConfigButtonR, Scene::DeltaTime());
 			processCursorMovement(deltaCursorX, currentPulse, currentTimeSec, laneStatusRef);
 			processSlamJudgment(lane, deltaCursorX, currentTimeSec, laneStatusRef, judgmentHandlerRef, IsAutoPlayYN::No);
 
