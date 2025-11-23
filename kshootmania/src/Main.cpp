@@ -240,6 +240,13 @@ void KSMMain()
 	// ランタイム設定を初期化
 	RuntimeConfig::RestoreJudgmentModesFromConfigIni();
 
+	// マスターボリュームを適用
+	{
+		constexpr int32 kMasterVolumeDefault = 100;
+		const int32 masterVolume = ConfigIni::GetInt(ConfigIni::Key::kMasterVolume, kMasterVolumeDefault);
+		ksmaudio::SetMasterVolume(masterVolume / 100.0);
+	}
+
 	// 言語ファイルを読み込み
 	I18n::LoadLanguage(ConfigIni::GetString(ConfigIni::Key::kLanguage));
 

@@ -98,11 +98,18 @@ namespace
 					I18n::Get(I18n::Option::kHideAllFolderOff),
 					I18n::Get(I18n::Option::kHideAllFolderOn),
 				}),
-				CreateInfo::Int(ConfigIni::Key::kMasterVolume, kMasterVolumeMin, kMasterVolumeMax, kMasterVolumeDefault, I18n::Get(I18n::Option::kMasterVolumePercent), 5),
 				CreateInfo::Enum(ConfigIni::Key::kVsync, Array<StringView>{
 					I18n::Get(I18n::Option::kVsyncOff),
 					I18n::Get(I18n::Option::kVsyncOn),
 				}),*/
+				CreateInfo::Int(ConfigIni::Key::kMasterVolume, kMasterVolumeMin, kMasterVolumeMax, kMasterVolumeDefault, I18n::Get(I18n::Option::kMasterVolumePercent), 5)
+				.setKeyTextureIdx(8)
+				.setOnChangeCallback(
+					[]
+					{
+						const int32 volume = ConfigIni::GetInt(ConfigIni::Key::kMasterVolume, kMasterVolumeDefault);
+						ksmaudio::SetMasterVolume(volume / 100.0);
+					}),
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueInputJudgment, {
 				CreateInfo::Enum(ConfigIni::Key::kJudgmentModeBT, Array<StringView>{
