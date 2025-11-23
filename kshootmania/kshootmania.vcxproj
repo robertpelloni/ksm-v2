@@ -206,6 +206,7 @@
     <ClCompile Include="src\Course\CourseInfo.cpp" />
     <ClCompile Include="src\Course\CoursePlayResult.cpp" />
     <ClCompile Include="src\Course\CoursePlayState.cpp" />
+    <ClCompile Include="src\Scenes\CourseResult\CourseResultChartList.cpp" />
     <ClCompile Include="src\Scenes\CourseResult\CourseResultNewRecordPanel.cpp" />
     <ClCompile Include="src\Scenes\CourseResult\CourseResultScene.cpp" />
     <ClCompile Include="src\Scenes\Result\ResultNewRecordPanel.cpp" />
@@ -431,6 +432,7 @@
     <ClInclude Include="src\Course\CourseInfo.hpp" />
     <ClInclude Include="src\Course\CoursePlayResult.hpp" />
     <ClInclude Include="src\Course\CoursePlayState.hpp" />
+    <ClInclude Include="src\Scenes\CourseResult\CourseResultChartList.hpp" />
     <ClInclude Include="src\Scenes\CourseResult\CourseResultNewRecordPanel.hpp" />
     <ClInclude Include="src\Scenes\CourseResult\CourseResultScene.hpp" />
     <ClInclude Include="src\Scenes\Result\ResultNewRecordPanel.hpp" />

@@ -147,7 +147,7 @@ void SelectMenuCourseItem::setCanvasParamsCenter(const SelectMenuEventContext& c
 
 			String songTitle = U"---";
 			String artistName = U"---";
-			int32 difficultyIdx = 0;
+			int32 chartDifficultyIdx = 0;
 			int32 levelIdx = 0;
 
 			if (FileSystem::Exists(chart.absolutePath))
@@ -157,7 +157,7 @@ void SelectMenuCourseItem::setCanvasParamsCenter(const SelectMenuEventContext& c
 				{
 					songTitle = Unicode::FromUTF8(chartData.meta.title);
 					artistName = Unicode::FromUTF8(chartData.meta.artist);
-					difficultyIdx = chartData.meta.difficulty.idx;
+					chartDifficultyIdx = chartData.meta.difficulty.idx;
 					levelIdx = chartData.meta.level - 1;
 				}
 			}
@@ -167,7 +167,7 @@ void SelectMenuCourseItem::setCanvasParamsCenter(const SelectMenuEventContext& c
 				{
 					{ U"songTitle", songTitle },
 					{ U"artistName", artistName },
-					{ U"difficultyIndex", difficultyIdx },
+					{ U"difficultyIndex", chartDifficultyIdx },
 					{ U"levelIndex", levelIdx },
 				});
 

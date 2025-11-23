@@ -1,4 +1,4 @@
-#include "VerticalMarquee.hpp"
+﻿#include "VerticalMarquee.hpp"
 
 namespace noco
 {

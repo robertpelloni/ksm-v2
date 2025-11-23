@@ -537,6 +537,9 @@
     <ClCompile Include="src\Course\CoursePlayState.cpp">
       <Filter>Source Files\Course</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scenes\CourseResult\CourseResultChartList.cpp">
+      <Filter>Source Files\Scenes\CourseResult</Filter>
+    </ClCompile>
     <ClCompile Include="src\Scenes\CourseResult\CourseResultNewRecordPanel.cpp">
       <Filter>Source Files\Scenes\CourseResult</Filter>
     </ClCompile>
@@ -1191,6 +1194,9 @@
     </ClInclude>
     <ClInclude Include="src\Course\CoursePlayState.hpp">
       <Filter>Header Files\Course</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scenes\CourseResult\CourseResultChartList.hpp">
+      <Filter>Header Files\Scenes\CourseResult</Filter>
     </ClInclude>
     <ClInclude Include="src\Scenes\CourseResult\CourseResultNewRecordPanel.hpp">
       <Filter>Header Files\Scenes\CourseResult</Filter>

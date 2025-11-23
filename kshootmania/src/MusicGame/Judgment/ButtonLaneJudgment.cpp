@@ -155,7 +155,7 @@ namespace MusicGame::Judgment
 		bool found = false;
 		double minDistance = 0.0;
 		bool isFast = false;
-		kson::Pulse nearestNotePulse;
+		kson::Pulse nearestNotePulse = 0;
 		for (auto itr = m_passedNoteCursor; itr != lane.end(); ++itr)
 		{
 			const auto& [y, note] = *itr;

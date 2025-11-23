@@ -59,9 +59,9 @@ public:
 
 		static CreateInfo Int(StringView configIniKey, int32 valueMin = std::numeric_limits<int32>::min(), int32 valueMax = std::numeric_limits<int32>::max(), int32 valueDefault = 0, StringView suffixStr = U"", int32 valueStep = 1);
 
-		CreateInfo& setAdditionalSuffixes(StringView suffixStrZero, StringView suffixStrPositive, StringView suffixStrNegative)&;
+		CreateInfo& setAdditionalSuffixes(StringView zero, StringView positive, StringView negative)&;
 
-		CreateInfo&& setAdditionalSuffixes(StringView suffixStrZero, StringView suffixStrPositive, StringView suffixStrNegative)&&;
+		CreateInfo&& setAdditionalSuffixes(StringView zero, StringView positive, StringView negative)&&;
 
 		CreateInfo& setKeyTextureIdx(int32 idx)&;
 

@@ -156,19 +156,19 @@ OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Int(StringView configIn
 	};
 }
 
-OptionMenuField::CreateInfo& OptionMenuField::CreateInfo::setAdditionalSuffixes(StringView suffixStrZero, StringView suffixStrPositive, StringView suffixStrNegative)&
+OptionMenuField::CreateInfo& OptionMenuField::CreateInfo::setAdditionalSuffixes(StringView zero, StringView positive, StringView negative)&
 {
-	this->suffixStrZero = String(suffixStrZero);
-	this->suffixStrPositive = String(suffixStrPositive);
-	this->suffixStrNegative = String(suffixStrNegative);
+	this->suffixStrZero = String{ zero };
+	this->suffixStrPositive = String{ positive };
+	this->suffixStrNegative = String{ negative };
 	return *this;
 }
 
-OptionMenuField::CreateInfo&& OptionMenuField::CreateInfo::setAdditionalSuffixes(StringView suffixStrZero, StringView suffixStrPositive, StringView suffixStrNegative)&&
+OptionMenuField::CreateInfo&& OptionMenuField::CreateInfo::setAdditionalSuffixes(StringView zero, StringView positive, StringView negative)&&
 {
-	this->suffixStrZero = String(suffixStrZero);
-	this->suffixStrPositive = String(suffixStrPositive);
-	this->suffixStrNegative = String(suffixStrNegative);
+	this->suffixStrZero = String{ zero };
+	this->suffixStrPositive = String{ positive };
+	this->suffixStrNegative = String{ negative };
 	return std::move(*this);
 }
 
