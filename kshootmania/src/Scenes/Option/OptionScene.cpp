@@ -244,7 +244,15 @@ void OptionScene::update()
 
 		if (KeyConfig::Down(KeyConfig::kBack))
 		{
-			m_currentOptionMenuIdx = none;
+			// ボタン編集中の場合は戻らない
+			if (m_currentOptionMenuIdx == OptionMenuType::kKeyConfig && m_keyConfigMenu.isButtonEditingState())
+			{
+				// 何もしない
+			}
+			else
+			{
+				m_currentOptionMenuIdx = none;
+			}
 		}
 	}
 	else

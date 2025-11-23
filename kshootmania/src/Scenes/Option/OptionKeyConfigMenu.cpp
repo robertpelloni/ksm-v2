@@ -260,7 +260,7 @@ namespace
 	{
 		if (keyCode == 0x00)
 		{
-			return String(I18n::Get(I18n::Option::kKeyConfigKeyboardNoAssign));
+			return String{ I18n::Get(I18n::Option::kKeyConfigKeyboardNoAssign) };
 		}
 #ifdef __APPLE__
 		// macOSプラットフォームキーのチェック
@@ -930,6 +930,33 @@ namespace
 		}
 	}
 
+	String GamepadButtonToString(const Input& input)
+	{
+		// デバイス番号(1始まり)-ボタン番号
+		// TODO: 一旦v1と類似仕様にしているが、playerIndexが不定の可能性があるためvendorId,productID等を使うよう要改善
+		return U"{}-{}"_fmt(input.playerIndex() + 1, input.code());
+	}
+
+	String InputToString(const Input& input)
+	{
+		if (input.deviceType() == InputDeviceType::Undefined)
+		{
+			return String{ I18n::Get(I18n::Option::kKeyConfigKeyboardNoAssign) };
+		}
+		else if (input.deviceType() == InputDeviceType::Gamepad)
+		{
+			return GamepadButtonToString(input);
+		}
+		else if (input.deviceType() == InputDeviceType::Keyboard)
+		{
+			return KeyCodeToString(input.code());
+		}
+		else
+		{
+			return U"?";
+		}
+	}
+
 	Texture CreateFXLRTexture()
 	{
 		Image image{ U"imgs/config_fx.gif" };
@@ -1035,14 +1062,17 @@ void OptionKeyConfigMenu::updateNoneState()
 	// ConfigSet切り替え
 	if (m_cursor == OptionKeyConfigCursor::ConfigSet)
 	{
-		// TODO: ゲームパッドにも切り替え可能にする
 		if (direction == Direction::Left)
 		{
-			m_targetConfigSet = KeyConfig::ConfigSet::kKeyboard1;
+			const int32 currentIdx = static_cast<int32>(m_targetConfigSet);
+			const int32 nextIdx = (currentIdx - 1 + KeyConfig::kConfigSetEnumCount) % KeyConfig::kConfigSetEnumCount;
+			m_targetConfigSet = static_cast<KeyConfig::ConfigSet>(nextIdx);
 		}
 		else if (direction == Direction::Right)
 		{
-			m_targetConfigSet = KeyConfig::ConfigSet::kKeyboard2;
+			const int32 currentIdx = static_cast<int32>(m_targetConfigSet);
+			const int32 nextIdx = (currentIdx + 1) % KeyConfig::kConfigSetEnumCount;
+			m_targetConfigSet = static_cast<KeyConfig::ConfigSet>(nextIdx);
 		}
 	}
 }
@@ -1129,6 +1159,13 @@ void OptionKeyConfigMenu::updateSettingButtonState()
 	}
 	else
 	{
+		// スペースキーで設定解除
+		if (KeySpace.down())
+		{
+			setInput(Input{});
+			return;
+		}
+
 		for (int32 playerIdx = 0; playerIdx < static_cast<int32>(Gamepad.MaxPlayerCount); ++playerIdx)
 		{
 			if (const auto& gamepad = Gamepad(playerIdx)) // 接続されている場合のみ
@@ -1207,7 +1244,7 @@ void OptionKeyConfigMenu::draw() const
 		const auto button = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kBT_A + i);
 		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, button);
 		const Color textColor = HasDuplicateKey(m_targetConfigSet, button) ? Palette::Red : Palette::Black;
-		m_font(KeyCodeToString(input.code())).drawAt(Scaled(16), rect.center(), textColor);
+		m_font(InputToString(input)).drawAt(Scaled(16), rect.center(), textColor);
 	}
 
 	// FX
@@ -1225,7 +1262,7 @@ void OptionKeyConfigMenu::draw() const
 		const auto button = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kFX_L + i);
 		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, button);
 		const Color textColor = HasDuplicateKey(m_targetConfigSet, button) ? Palette::Red : Palette::White;
-		m_font(KeyCodeToString(input.code())).drawAt(Scaled(16), rect.center(), textColor);
+		m_font(InputToString(input)).drawAt(Scaled(16), rect.center(), textColor);
 	}
 
 	// FX-L+R
@@ -1246,7 +1283,7 @@ void OptionKeyConfigMenu::draw() const
 
 		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, KeyConfig::ConfigurableButton::kFX_LR);
 		const Color textColor = HasDuplicateKey(m_targetConfigSet, KeyConfig::ConfigurableButton::kFX_LR) ? Palette::Red : Palette::White;
-		m_font(KeyCodeToString(input.code())).drawAt(Scaled(16), position + Scaled(0, 58), textColor);
+		m_font(InputToString(input)).drawAt(Scaled(16), position + Scaled(0, 58), textColor);
 	}
 
 	// Laser
@@ -1271,7 +1308,7 @@ void OptionKeyConfigMenu::draw() const
 
 		// どちらかのキーが重複していたら赤色で表示
 		const Color textColor = (HasDuplicateKey(m_targetConfigSet, buttonL) || HasDuplicateKey(m_targetConfigSet, buttonR)) ? Palette::Red : Palette::White;
-		m_font(U"{} {} {}"_fmt(KeyCodeToString(inputL.code()), I18n::Get(I18n::Option::kKeyConfigLaserKeySeparator), KeyCodeToString(inputR.code()))).drawAt(Scaled(16), circle.center + Scaled(0, -50), textColor);
+		m_font(U"{} {} {}"_fmt(InputToString(inputL), I18n::Get(I18n::Option::kKeyConfigLaserKeySeparator), InputToString(inputR))).drawAt(Scaled(16), circle.center + Scaled(0, -50), textColor);
 	}
 
 	// Start/Back
@@ -1291,7 +1328,7 @@ void OptionKeyConfigMenu::draw() const
 		const StringView prefix1Sv = m_targetConfigSet == KeyConfig::ConfigSet::kKeyboard1 ? U"*" : U"";
 		const StringView prefix2Sv = i == 0 ? I18n::Get(I18n::Option::kKeyConfigStart) : I18n::Get(I18n::Option::kKeyConfigBack);
 		const Color textColor = HasDuplicateKey(m_targetConfigSet, button) ? Palette::Red : Palette::White;
-		m_font(prefix1Sv + prefix2Sv + KeyCodeToString(input.code())).drawAt(Scaled(16), rect.center(), textColor);
+		m_font(prefix1Sv + prefix2Sv + InputToString(input)).drawAt(Scaled(16), rect.center(), textColor);
 	}
 
 	// ConfigSet

@@ -53,4 +53,10 @@ public:
 	void update();
 
 	void draw() const;
+
+	[[nodiscard]]
+	bool isButtonEditingState() const
+	{
+		return m_state != OptionKeyConfigMenuState::None;
+	}
 };
