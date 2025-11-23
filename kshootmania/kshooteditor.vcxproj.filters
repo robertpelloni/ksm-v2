@@ -351,6 +351,9 @@
     <ClCompile Include="src\Input\Cursor\CursorInput.cpp">
       <Filter>Source Files\Input\Cursor</Filter>
     </ClCompile>
+    <ClCompile Include="src\Input\Cursor\LaserCursorInputDevice.cpp">
+      <Filter>Source Files\Input\Cursor</Filter>
+    </ClCompile>
     <ClCompile Include="src\MusicGame\Graphics\HUD\HispeedSettingPanel.cpp">
       <Filter>Source Files\MusicGame\Graphics\HUD</Filter>
     </ClCompile>
@@ -893,6 +896,9 @@
       <Filter>Header Files\Input\Cursor</Filter>
     </ClInclude>
     <ClInclude Include="src\Input\Cursor\CursorInput.hpp">
+      <Filter>Header Files\Input\Cursor</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Input\Cursor\LaserCursorInputDevice.hpp">
       <Filter>Header Files\Input\Cursor</Filter>
     </ClInclude>
     <ClInclude Include="src\MusicGame\Graphics\HUD\HispeedSettingPanel.hpp">

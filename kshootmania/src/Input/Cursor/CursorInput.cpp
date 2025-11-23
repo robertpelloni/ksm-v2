@@ -1,5 +1,6 @@
 ﻿#include "CursorInput.hpp"
 #include "ButtonCursorInputDevice.hpp"
+#include "Ini/ConfigIni.hpp"
 
 namespace
 {
@@ -8,6 +9,12 @@ namespace
 	bool HasFlag(int32 buttonFlags, CursorButtonFlags::CursorButtonFlags flag)
 	{
 		return (buttonFlags & static_cast<int32>(flag)) != 0;
+	}
+
+	bool IsLaserInputDigital()
+	{
+		const int32 laserInputType = ConfigIni::GetInt(ConfigIni::Key::kLaserInputType, ConfigIni::Value::LaserInputType::kKeyboard);
+		return laserInputType == ConfigIni::Value::LaserInputType::kKeyboard;
 	}
 
 	Array<KeyConfig::Button> IncrementButtonsForHorizontalMenu(int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
@@ -34,12 +41,12 @@ namespace
 			incrementButtons.push_back(KeyConfig::kFX_R);
 		}
 
-		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser))
+		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser) && IsLaserInputDigital())
 		{
 			incrementButtons.push_back(KeyConfig::kLeftLaserR);
 		}
 
-		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite))
+		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite) && IsLaserInputDigital())
 		{
 			incrementButtons.push_back(KeyConfig::kRightLaserR);
 		}
@@ -71,12 +78,12 @@ namespace
 			decrementButtons.push_back(KeyConfig::kFX_L);
 		}
 
-		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser))
+		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser) && IsLaserInputDigital())
 		{
 			decrementButtons.push_back(KeyConfig::kLeftLaserL);
 		}
 
-		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite))
+		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite) && IsLaserInputDigital())
 		{
 			decrementButtons.push_back(KeyConfig::kRightLaserL);
 		}
@@ -108,12 +115,12 @@ namespace
 			incrementButtons.push_back(KeyConfig::kFX_R);
 		}
 
-		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser))
+		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser) && IsLaserInputDigital())
 		{
 			incrementButtons.push_back(KeyConfig::kRightLaserR);
 		}
 
-		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite))
+		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite) && IsLaserInputDigital())
 		{
 			incrementButtons.push_back(KeyConfig::kLeftLaserR);
 		}
@@ -145,12 +152,12 @@ namespace
 			decrementButtons.push_back(KeyConfig::kFX_L);
 		}
 
-		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser))
+		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser) && IsLaserInputDigital())
 		{
 			decrementButtons.push_back(KeyConfig::kRightLaserL);
 		}
 
-		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite))
+		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite) && IsLaserInputDigital())
 		{
 			decrementButtons.push_back(KeyConfig::kLeftLaserL);
 		}

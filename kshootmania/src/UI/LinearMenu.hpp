@@ -2,6 +2,7 @@
 #include <cassert>
 #include "Input/KeyConfig.hpp"
 #include "Input/Cursor/CursorInput.hpp"
+#include "Input/Cursor/LaserCursorInputDevice.hpp"
 
 using IsCyclicMenuYN = YesNo<struct IsCyclicMenuYN_tag>;
 
@@ -10,6 +11,7 @@ class LinearMenu
 {
 private:
 	CursorInput m_cursorInput;
+	Optional<LaserCursorInputDevice> m_laserDevice;
 	int32 m_cursorMin;
 	int32 m_cursorMax;
 	int32 m_cursor;

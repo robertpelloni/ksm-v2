@@ -6,6 +6,8 @@
 #include <ksmplatform_macos/input_method.h>
 #endif
 
+class ILaserInputMethod;
+
 using StartRequiredForBTFXLaserYN = YesNo<struct StartRequiredForBTFXLaserYN_tag>;
 
 namespace KeyConfig
@@ -109,6 +111,11 @@ namespace KeyConfig
 	/// @param deltaTimeSec 前フレームからの経過時間(秒)
 	/// @return カーソルのX方向移動量
 	double LaserDeltaCursorX(int32 laneIdx, Button buttonL, Button buttonR, double deltaTimeSec);
+
+	/// @brief レーザー入力がデジタル(キーボード)かどうかを判定
+	/// @return デジタル入力の場合true、アナログ入力の場合false
+	[[nodiscard]]
+	bool IsLaserInputDigital();
 
 	bool Down(Button button);
 

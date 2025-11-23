@@ -687,6 +687,12 @@ bool KeyConfig::Up(Button button)
 	return false;
 }
 
+bool KeyConfig::IsLaserInputDigital()
+{
+	const int32 laserInputType = ConfigIni::GetInt(ConfigIni::Key::kLaserInputType, ConfigIni::Value::LaserInputType::kKeyboard);
+	return laserInputType == ConfigIni::Value::LaserInputType::kKeyboard;
+}
+
 double KeyConfig::LaserDeltaCursorX(int32 laneIdx, Button buttonL, Button buttonR, double deltaTimeSec)
 {
 	// 入力方式が初期化されていない、または設定が変更された場合は再初期化

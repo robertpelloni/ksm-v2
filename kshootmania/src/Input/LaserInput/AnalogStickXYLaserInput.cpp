@@ -20,7 +20,7 @@ AnalogStickXYLaserInput::AnalogStickXYLaserInput(int32 laneIdx)
 {
 }
 
-double AnalogStickXYLaserInput::getDeltaCursorX(double deltaTimeSec)
+double AnalogStickXYLaserInput::getDeltaCursorX([[maybe_unused]] double deltaTimeSec)
 {
 	// 左右レーザーのボタン配置を入れ替えるフラグ
 	const bool swapLR = ConfigIni::GetBool(ConfigIni::Key::kSwapLaserLR, false);
