@@ -90,23 +90,23 @@ namespace
 					IntStrPair{ ConfigIni::Value::BGDisplayMode::kShowNoAnim, I18n::Get(I18n::Option::kBGDisplayModeShowNoAnim) },
 					IntStrPair{ ConfigIni::Value::BGDisplayMode::kShowAnim, I18n::Get(I18n::Option::kBGDisplayModeShowAnim) },
 				}),
+				*/
 				CreateInfo::Enum(ConfigIni::Key::kAlwaysShowOtherFolders, Array<StringView>{
 					I18n::Get(I18n::Option::kAlwaysShowOtherFoldersOff),
 					I18n::Get(I18n::Option::kAlwaysShowOtherFoldersOn),
-				}),*/
+				}).setKeyTextureIdx(6),
 				CreateInfo::Enum(ConfigIni::Key::kHideAllFolder, Array<StringView>{
 					I18n::Get(I18n::Option::kHideAllFolderOff),
 					I18n::Get(I18n::Option::kHideAllFolderOn),
-				})
-				.setKeyTextureIdx(7),
+				}).setKeyTextureIdx(7),
 				CreateInfo::Int(ConfigIni::Key::kMasterVolume, kMasterVolumeMin, kMasterVolumeMax, kMasterVolumeDefault, I18n::Get(I18n::Option::kMasterVolumePercent), 5)
-				.setKeyTextureIdx(8)
-				.setOnChangeCallback(
-					[]
-					{
-						const int32 volume = ConfigIni::GetInt(ConfigIni::Key::kMasterVolume, kMasterVolumeDefault);
-						ksmaudio::SetMasterVolume(volume / 100.0);
-					}),
+					.setKeyTextureIdx(8)
+					.setOnChangeCallback(
+						[]
+						{
+							const int32 volume = ConfigIni::GetInt(ConfigIni::Key::kMasterVolume, kMasterVolumeDefault);
+							ksmaudio::SetMasterVolume(volume / 100.0);
+						}),
 				/*CreateInfo::Enum(ConfigIni::Key::kVsync, Array<StringView>{
 					I18n::Get(I18n::Option::kVsyncOff),
 					I18n::Get(I18n::Option::kVsyncOn),
