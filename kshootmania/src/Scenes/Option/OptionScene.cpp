@@ -171,8 +171,8 @@ namespace
 				CreateInfo::Enum(ConfigIni::Key::kLaserMouseDirectionY, Array<StringView>{
 					I18n::Get(I18n::Option::kLaserMouseDirectionUpThenRight),
 					I18n::Get(I18n::Option::kLaserMouseDirectionDownThenRight),
-				}).setKeyTextureIdx(9),
-				CreateInfo::Int(ConfigIni::Key::kLaserSignalSensitivity, kLaserSignalSensitivityMin, kLaserSignalSensitivityMax, kLaserSignalSensitivityDefault).setKeyTextureIdx(10), // TODO: additional suffix for zero value*/
+				}).setKeyTextureIdx(9),*/
+				CreateInfo::Int(ConfigIni::Key::kLaserSignalSensitivity, kLaserSignalSensitivityMin, kLaserSignalSensitivityMax, kLaserSignalSensitivityDefault).setKeyTextureIdx(10), // TODO: additional suffix for zero value
 				CreateInfo::Enum(ConfigIni::Key::kSwapLaserLR, Array<StringView>{
 					I18n::Get(I18n::Option::kDisabled),
 					I18n::Get(I18n::Option::kEnabled),

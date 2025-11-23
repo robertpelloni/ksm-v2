@@ -2,8 +2,11 @@
 
 namespace
 {
-	// 入力感度の係数
-	constexpr double kSensitivityScale = 50.0 / 400.0;
+	// デフォルトの入力感度設定値
+	constexpr int32 kDefaultSensitivity = 50;
+
+	// 入力感度の係数の基準値
+	constexpr double kBaseSensitivityScale = 50.0 / 400.0;
 
 	// 循環検出のしきい値
 	constexpr double kWrapThreshold = 0.5;
@@ -70,7 +73,9 @@ double AnalogStickXYLaserInput::getDeltaCursorX(double deltaTimeSec)
 	m_prevAxisValue = currentAxisValue;
 
 	// 感度調整
-	delta *= kSensitivityScale;
+	const int32 sensitivity = ConfigIni::GetInt(ConfigIni::Key::kLaserSignalSensitivity, kDefaultSensitivity);
+	const double sensitivityScale = kBaseSensitivityScale * (sensitivity / static_cast<double>(kDefaultSensitivity));
+	delta *= sensitivityScale;
 
 	// 微細な動きを無視
 	if (Abs(delta) < kDeadZone)
