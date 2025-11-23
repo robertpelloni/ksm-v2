@@ -144,6 +144,38 @@ namespace
 		}
 	}
 
+	KeyConfig::Button SwapLaserButtonIfNeeded(KeyConfig::Button button)
+	{
+		if (!ConfigIni::GetBool(ConfigIni::Key::kSwapLaserLR, false))
+		{
+			return button;
+		}
+
+		switch (button)
+		{
+		case KeyConfig::kLeftLaserL:
+			return KeyConfig::kRightLaserL;
+		case KeyConfig::kLeftLaserR:
+			return KeyConfig::kRightLaserR;
+		case KeyConfig::kRightLaserL:
+			return KeyConfig::kLeftLaserL;
+		case KeyConfig::kRightLaserR:
+			return KeyConfig::kLeftLaserR;
+		default:
+			return button;
+		}
+	}
+
+	const Input& GetConfigSetInputApplyingSwap(const ConfigSetArray& configSet, KeyConfig::Button button)
+	{
+		return configSet[SwapLaserButtonIfNeeded(button)];
+	}
+
+	Input& GetConfigSetInputApplyingSwap(ConfigSetArray& configSet, KeyConfig::Button button)
+	{
+		return configSet[SwapLaserButtonIfNeeded(button)];
+	}
+
 	void RevertUnconfigurableKeyConfigs()
 	{
 		// Keyboard 1の場合、ユーザーによって変更できない固定のキーコンフィグがあるので上書き
@@ -384,7 +416,7 @@ bool KeyConfig::Pressed(Button button)
 
 	for (const auto& configSet : s_configSetArray)
 	{
-		const auto& input = configSet[button];
+		const auto& input = GetConfigSetInputApplyingSwap(configSet, button);
 		if (input.deviceType() == InputDeviceType::Keyboard)
 		{
 #ifdef __APPLE__
@@ -461,9 +493,9 @@ Optional<KeyConfig::Button> KeyConfig::LastPressedLaserButton(Button button1, Bu
 	{
 		for (Button button : { button1, button2 })
 		{
-			if (configSet[button].pressed())
+			if (GetConfigSetInputApplyingSwap(configSet, button).pressed())
 			{
-				const Duration duration = configSet[button].pressedDuration();
+				const Duration duration = GetConfigSetInputApplyingSwap(configSet, button).pressedDuration();
 				if (!lastButton.has_value() || duration < minDuration)
 				{
 					minDuration = duration;
@@ -485,7 +517,7 @@ bool KeyConfig::Down(Button button)
 
 	for (const auto& configSet : s_configSetArray)
 	{
-		const auto& input = configSet[button];
+		const auto& input = GetConfigSetInputApplyingSwap(configSet, button);
 		if (input.deviceType() == InputDeviceType::Keyboard)
 		{
 #ifdef __APPLE__
@@ -560,7 +592,7 @@ void KeyConfig::ClearInput(Button button)
 
 	for (auto& configSet : s_configSetArray)
 	{
-		configSet[button].clearInput();
+		GetConfigSetInputApplyingSwap(configSet, button).clearInput();
 	}
 
 	// FXの場合はLR両押しキーの状態もクリア
@@ -596,7 +628,7 @@ bool KeyConfig::Up(Button button)
 
 	for (const auto& configSet : s_configSetArray)
 	{
-		const auto& input = configSet[button];
+		const auto& input = GetConfigSetInputApplyingSwap(configSet, button);
 		if (input.deviceType() == InputDeviceType::Keyboard)
 		{
 #ifdef __APPLE__
