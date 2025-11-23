@@ -202,12 +202,12 @@ namespace
 				/*CreateInfo::Enum(ConfigIni::Key::kHideMouseCursor, Array<StringView>{
 					I18n::Get(I18n::Option::kHideMouseCursorOff),
 					I18n::Get(I18n::Option::kHideMouseCursorOn),
-				}).setKeyTextureIdx(5),
+				}).setKeyTextureIdx(5),*/
 				CreateInfo::Enum(ConfigIni::Key::kUseNumpadAsArrowKeys, Array<StringView>{
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOff),
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOnKeyboard),
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOnController),
-				}).setKeyTextureIdx(6),*/
+				}).setKeyTextureIdx(6),
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueOther/*FIXME*/, {
 			}),

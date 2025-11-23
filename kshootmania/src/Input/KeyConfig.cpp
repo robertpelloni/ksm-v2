@@ -58,6 +58,92 @@ namespace
 		}
 	}
 
+	enum UseNumpadAsArrowKeys : int32
+	{
+		kOff = 0,
+		kOnKeyboard,
+		kOnController,
+	};
+
+	UseNumpadAsArrowKeys GetUseNumpadAsArrowKeysMode()
+	{
+		const int32 mode = ConfigIni::GetInt(ConfigIni::Key::kUseNumpadAsArrowKeys, 0);
+		if (mode < 0 || mode > kOnController)
+		{
+			return kOff;
+		}
+		return static_cast<UseNumpadAsArrowKeys>(mode);
+	}
+
+	bool IsNumpadArrowKeyPressed(KeyConfig::Button button)
+	{
+		const UseNumpadAsArrowKeys mode = GetUseNumpadAsArrowKeysMode();
+		if (mode == kOff)
+		{
+			return false;
+		}
+
+		switch (button)
+		{
+		case KeyConfig::kLeft:
+			return KeyNum4.pressed();
+		case KeyConfig::kUp:
+			return mode == kOnKeyboard ? KeyNum8.pressed() : KeyNum2.pressed();
+		case KeyConfig::kRight:
+			return KeyNum6.pressed();
+		case KeyConfig::kDown:
+			return mode == kOnKeyboard ? KeyNum2.pressed() : KeyNum8.pressed();
+		default:
+			return false;
+		}
+	}
+
+	bool IsNumpadArrowKeyDown(KeyConfig::Button button)
+	{
+		const UseNumpadAsArrowKeys mode = GetUseNumpadAsArrowKeysMode();
+		if (mode == kOff)
+		{
+			return false;
+		}
+
+		switch (button)
+		{
+		case KeyConfig::kLeft:
+			return KeyNum4.down();
+		case KeyConfig::kUp:
+			return mode == kOnKeyboard ? KeyNum8.down() : KeyNum2.down();
+		case KeyConfig::kRight:
+			return KeyNum6.down();
+		case KeyConfig::kDown:
+			return mode == kOnKeyboard ? KeyNum2.down() : KeyNum8.down();
+		default:
+			return false;
+		}
+	}
+
+	bool IsNumpadArrowKeyUp(KeyConfig::Button button)
+	{
+		const UseNumpadAsArrowKeys mode = GetUseNumpadAsArrowKeysMode();
+		if (mode == kOff)
+		{
+			return false;
+		}
+
+		switch (button)
+		{
+		case KeyConfig::kLeft:
+			return KeyNum4.up();
+		case KeyConfig::kUp:
+			return mode == kOnKeyboard ? KeyNum8.up() : KeyNum2.up();
+		case KeyConfig::kRight:
+			return KeyNum6.up();
+		case KeyConfig::kDown:
+			return mode == kOnKeyboard ? KeyNum2.up() : KeyNum8.up();
+		default:
+			return false;
+		}
+	}
+
 	void RevertUnconfigurableKeyConfigs()
 	{
 		// Keyboard 1の場合、ユーザーによって変更できない固定のキーコンフィグがあるので上書き
@@ -352,6 +438,15 @@ bool KeyConfig::Pressed(Button button)
 		}
 	}
 
+	// 矢印キーの場合、Numpadキーの状態も確認
+	if (button == kUp || button == kDown || button == kLeft || button == kRight)
+	{
+		if (IsNumpadArrowKeyPressed(button))
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -444,6 +539,15 @@ bool KeyConfig::Down(Button button)
 		}
 	}
 
+	// 矢印キーの場合、Numpadキーの状態も確認
+	if (button == kUp || button == kDown || button == kLeft || button == kRight)
+	{
+		if (IsNumpadArrowKeyDown(button))
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -529,6 +633,15 @@ bool KeyConfig::Up(Button button)
 	if (button == kBack)
 	{
 		if (IsBT3PlusStartUp())
+		{
+			return true;
+		}
+	}
+
+	// 矢印キーの場合、Numpadキーの状態も確認
+	if (button == kUp || button == kDown || button == kLeft || button == kRight)
+	{
+		if (IsNumpadArrowKeyUp(button))
 		{
 			return true;
 		}
