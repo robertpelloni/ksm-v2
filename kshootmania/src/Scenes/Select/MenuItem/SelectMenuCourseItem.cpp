@@ -5,6 +5,7 @@
 #include "HighScore/KscKey.hpp"
 #include "HighScore/KscIO.hpp"
 #include "NocoExtensions/NocoUtils.hpp"
+#include "UI/VerticalMarquee.hpp"
 
 namespace
 {
@@ -131,6 +132,87 @@ void SelectMenuCourseItem::setCanvasParamsCenter(const SelectMenuEventContext& c
 				sprite->setTexture(iconTexture);
 			}
 		}
+	}
+
+	// コースの各曲をSubCanvasノードとして追加
+	if (const auto chartItemRoot = NocoUtils::GetNodeByPath(&canvas, { U"CenterItem", U"Course", U"ChartItemRoot" }))
+	{
+		chartItemRoot->removeChildrenAll();
+		chartItemRoot->removeComponentsAll<noco::VerticalMarquee>(noco::RecursiveYN::No);
+
+		// 各曲のSubCanvasノードを追加
+		for (size_t i = 0; i < m_courseInfo.charts.size(); ++i)
+		{
+			const auto& chart = m_courseInfo.charts[i];
+
+			String songTitle = U"---";
+			String artistName = U"---";
+			int32 difficultyIdx = 0;
+			int32 levelIdx = 0;
+
+			if (FileSystem::Exists(chart.absolutePath))
+			{
+				const kson::MetaChartData chartData = kson::LoadKSHMetaChartData(chart.absolutePath.narrow());
+				if (chartData.error == kson::ErrorType::None)
+				{
+					songTitle = Unicode::FromUTF8(chartData.meta.title);
+					artistName = Unicode::FromUTF8(chartData.meta.artist);
+					difficultyIdx = chartData.meta.difficulty.idx;
+					levelIdx = chartData.meta.level - 1;
+				}
+			}
+
+			const auto& node = chartItemRoot->addSubCanvasNodeAsChild(
+				U"ui/parts/select_course_chart_item.noco",
+				{
+					{ U"songTitle", songTitle },
+					{ U"artistName", artistName },
+					{ U"difficultyIndex", difficultyIdx },
+					{ U"levelIndex", levelIdx },
+				});
+
+			if (const auto subCanvas = node->getComponent<noco::SubCanvas>())
+			{
+				if (auto itemCanvas = subCanvas->canvas())
+				{
+					if (const auto jacketSprite = NocoUtils::GetComponentByPath<noco::Sprite>(itemCanvas.get(), { U"SelectCourseChartItem", U"Jacket" }))
+					{
+						if (FileSystem::Exists(chart.absolutePath))
+						{
+							const kson::MetaChartData chartData = kson::LoadKSHMetaChartData(chart.absolutePath.narrow());
+							if (chartData.error == kson::ErrorType::None && !chartData.meta.jacketFilename.empty())
+							{
+								const FilePath jacketPath = FileSystem::PathAppend(
+									FileSystem::ParentPath(chart.absolutePath),
+									Unicode::FromUTF8(chartData.meta.jacketFilename));
+								const Texture jacketTexture = context.fnGetJacketTexture(jacketPath);
+								jacketSprite->setTexture(jacketTexture);
+								if (jacketTexture.isEmpty())
+								{
+									jacketSprite->setColor(ColorF{ 0.0, 0.0 });
+								}
+								else
+								{
+									jacketSprite->setColor(Palette::White);
+								}
+							}
+							else
+							{
+								jacketSprite->setColor(ColorF{ 0.0, 0.0 });
+							}
+						}
+						else
+						{
+							jacketSprite->setColor(ColorF{ 0.0, 0.0 });
+						}
+					}
+				}
+			}
+		}
+
+		chartItemRoot->setVerticalScrollable(true);
+		chartItemRoot->setScrollBarType(noco::ScrollBarType::Hidden);
+		chartItemRoot->emplaceComponent<noco::VerticalMarquee>(0.75s, 0.75s, 64.0);
 	}
 }
 
