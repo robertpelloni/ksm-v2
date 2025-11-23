@@ -93,15 +93,12 @@ namespace
 				CreateInfo::Enum(ConfigIni::Key::kAlwaysShowOtherFolders, Array<StringView>{
 					I18n::Get(I18n::Option::kAlwaysShowOtherFoldersOff),
 					I18n::Get(I18n::Option::kAlwaysShowOtherFoldersOn),
-				}),
+				}),*/
 				CreateInfo::Enum(ConfigIni::Key::kHideAllFolder, Array<StringView>{
 					I18n::Get(I18n::Option::kHideAllFolderOff),
 					I18n::Get(I18n::Option::kHideAllFolderOn),
-				}),
-				CreateInfo::Enum(ConfigIni::Key::kVsync, Array<StringView>{
-					I18n::Get(I18n::Option::kVsyncOff),
-					I18n::Get(I18n::Option::kVsyncOn),
-				}),*/
+				})
+				.setKeyTextureIdx(7),
 				CreateInfo::Int(ConfigIni::Key::kMasterVolume, kMasterVolumeMin, kMasterVolumeMax, kMasterVolumeDefault, I18n::Get(I18n::Option::kMasterVolumePercent), 5)
 				.setKeyTextureIdx(8)
 				.setOnChangeCallback(
@@ -110,6 +107,10 @@ namespace
 						const int32 volume = ConfigIni::GetInt(ConfigIni::Key::kMasterVolume, kMasterVolumeDefault);
 						ksmaudio::SetMasterVolume(volume / 100.0);
 					}),
+				/*CreateInfo::Enum(ConfigIni::Key::kVsync, Array<StringView>{
+					I18n::Get(I18n::Option::kVsyncOff),
+					I18n::Get(I18n::Option::kVsyncOn),
+				}),*/
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueInputJudgment, {
 				CreateInfo::Enum(ConfigIni::Key::kJudgmentModeBT, Array<StringView>{

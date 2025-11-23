@@ -2033,7 +2033,11 @@ Array<FilePath> SelectMenu::getSortedFolderPaths() const
 
 	// "All"フォルダを追加
 	Array<FilePath> folderPaths;
-	folderPaths.emplace_back(SelectMenuAllFolderItem::kAllFolderSpecialPath);
+	const bool hideAllFolder = ConfigIni::GetBool(ConfigIni::Key::kHideAllFolder, false);
+	if (!hideAllFolder)
+	{
+		folderPaths.emplace_back(SelectMenuAllFolderItem::kAllFolderSpecialPath);
+	}
 
 	// お気に入りフォルダを追加
 	const Array<FilePath> favFiles = GetSortedFavFiles();
