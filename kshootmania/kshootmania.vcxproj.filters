@@ -600,6 +600,9 @@
     <ClCompile Include="src\NocoExtensions\NocoUtils.cpp">
       <Filter>Source Files\NocoExtensions</Filter>
     </ClCompile>
+    <ClCompile Include="src\NocoExtensions\VerticalMarquee.cpp">
+      <Filter>Source Files\NocoExtensions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -1250,6 +1253,9 @@
       <Filter>Header Files\MusicGame</Filter>
     </ClInclude>
     <ClInclude Include="src\NocoExtensions\NocoUtils.hpp">
+      <Filter>Header Files\NocoExtensions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NocoExtensions\VerticalMarquee.hpp">
       <Filter>Header Files\NocoExtensions</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\FontUtils.hpp">

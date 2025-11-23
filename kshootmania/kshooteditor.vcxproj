@@ -128,7 +128,6 @@
     <ClCompile Include="src\Common\FsUtils.cpp" />
     <ClCompile Include="src\Common\IMEUtils.cpp" />
     <ClCompile Include="src\Common\MathUtils.cpp" />
-    <ClCompile Include="src\Common\NocoUtils.cpp" />
     <ClCompile Include="src\Course\CourseInfo.cpp" />
     <ClCompile Include="src\Course\CoursePlayResult.cpp" />
     <ClCompile Include="src\Course\CoursePlayState.cpp" />
@@ -197,6 +196,8 @@
     <ClCompile Include="src\MusicGame\PlayResult.cpp" />
     <ClCompile Include="src\MusicGame\Scroll\HighwayScroll.cpp" />
     <ClCompile Include="src\MusicGame\UI\HispeedSettingMenu.cpp" />
+    <ClCompile Include="src\NocoExtensions\NocoUtils.cpp" />
+    <ClCompile Include="src\NocoExtensions\VerticalMarquee.cpp" />
     <ClCompile Include="src\stdafx.cpp" />
     <ClCompile Include="src\UI\LinearMenu.cpp" />
   </ItemGroup>
@@ -305,7 +306,6 @@
     <ClInclude Include="src\Common\FsUtils.hpp" />
     <ClInclude Include="src\Common\IMEUtils.hpp" />
     <ClInclude Include="src\Common\MathUtils.hpp" />
-    <ClInclude Include="src\Common\NocoUtils.hpp" />
     <ClInclude Include="src\Course\CourseContinuation.hpp" />
     <ClInclude Include="src\Course\CourseInfo.hpp" />
     <ClInclude Include="src\Course\CoursePlayResult.hpp" />
@@ -385,6 +385,8 @@
     <ClInclude Include="src\MusicGame\Timeline.hpp" />
     <ClInclude Include="src\MusicGame\UI\HispeedSettingMenu.hpp" />
     <ClInclude Include="src\MusicGame\ViewStatus.hpp" />
+    <ClInclude Include="src\NocoExtensions\NocoUtils.hpp" />
+    <ClInclude Include="src\NocoExtensions\VerticalMarquee.hpp" />
     <ClInclude Include="src\RuntimeConfig.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\UI\ArrayWithLinearMenu.hpp" />

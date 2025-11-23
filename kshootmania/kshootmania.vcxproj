@@ -194,6 +194,7 @@
     <ClCompile Include="src\MusicGame\Scroll\HighwayScroll.cpp" />
     <ClCompile Include="src\MusicGame\UI\HispeedSettingMenu.cpp" />
     <ClCompile Include="src\NocoExtensions\NocoUtils.cpp" />
+    <ClCompile Include="src\NocoExtensions\VerticalMarquee.cpp" />
     <ClCompile Include="src\Scenes\Common\ShowLoadingOneFrame.cpp" />
     <ClCompile Include="src\Scenes\Option\OptionKeyConfigMenu.cpp" />
     <ClCompile Include="src\Scenes\Option\OptionMenu.cpp" />
@@ -412,6 +413,7 @@
     <ClInclude Include="src\MusicGame\UI\HispeedSettingMenu.hpp" />
     <ClInclude Include="src\MusicGame\ViewStatus.hpp" />
     <ClInclude Include="src\NocoExtensions\NocoUtils.hpp" />
+    <ClInclude Include="src\NocoExtensions\VerticalMarquee.hpp" />
     <ClInclude Include="src\RuntimeConfig.hpp" />
     <ClInclude Include="src\Scenes\Common\CommonAssets.hpp" />
     <ClInclude Include="src\Scenes\Common\ShowLoadingOneFrame.hpp" />

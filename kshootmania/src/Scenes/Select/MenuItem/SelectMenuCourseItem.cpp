@@ -5,7 +5,7 @@
 #include "HighScore/KscKey.hpp"
 #include "HighScore/KscIO.hpp"
 #include "NocoExtensions/NocoUtils.hpp"
-#include "UI/VerticalMarquee.hpp"
+#include "NocoExtensions/VerticalMarquee.hpp"
 
 namespace
 {

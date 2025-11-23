@@ -249,9 +249,6 @@
     <ClCompile Include="src\Common\MathUtils.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
-    <ClCompile Include="src\Common\NocoUtils.cpp">
-      <Filter>Source Files\Common</Filter>
-    </ClCompile>
     <ClCompile Include="src\MusicGame\Audio\BGM.cpp">
       <Filter>Source Files\MusicGame\Audio</Filter>
     </ClCompile>
@@ -458,6 +455,12 @@
     </ClCompile>
     <ClCompile Include="src\MusicGame\PlayModeUtil.cpp">
       <Filter>Source Files\MusicGame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NocoExtensions\NocoUtils.cpp">
+      <Filter>Source Files\NocoExtensions</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NocoExtensions\VerticalMarquee.cpp">
+      <Filter>Source Files\NocoExtensions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -775,9 +778,6 @@
     <ClInclude Include="src\Common\MathUtils.hpp">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
-    <ClInclude Include="src\Common\NocoUtils.hpp">
-      <Filter>Header Files\Common</Filter>
-    </ClInclude>
     <ClInclude Include="src\MusicGame\GameDefines.hpp">
       <Filter>Header Files\MusicGame</Filter>
     </ClInclude>
@@ -1005,6 +1005,12 @@
     </ClInclude>
     <ClInclude Include="src\MusicGame\TurnUtil.hpp">
       <Filter>Header Files\MusicGame</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NocoExtensions\NocoUtils.hpp">
+      <Filter>Header Files\NocoExtensions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NocoExtensions\VerticalMarquee.hpp">
+      <Filter>Header Files\NocoExtensions</Filter>
     </ClInclude>
     <ClInclude Include="src\Graphics\FontUtils.hpp">
       <Filter>Header Files\Graphics</Filter>
