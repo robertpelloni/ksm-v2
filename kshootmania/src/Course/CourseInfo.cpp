@@ -1,5 +1,6 @@
 ﻿#include "CourseInfo.hpp"
 #include "Common/FsUtils.hpp"
+#include "Common/Encoding.hpp"
 
 namespace
 {
@@ -39,8 +40,8 @@ Optional<CourseInfo> CourseInfo::Load(FilePathView kcoFilePath)
 	CourseInfo courseInfo;
 	courseInfo.filePath = FilePath{ kcoFilePath };
 
-	TextReader reader{ kcoFilePath };
-	if (!reader)
+	const Array<String> lines = Encoding::ReadTextFileLinesShiftJISOrUTF8BasedOnBOM(kcoFilePath);
+	if (lines.isEmpty())
 	{
 		return none;
 	}
@@ -48,10 +49,9 @@ Optional<CourseInfo> CourseInfo::Load(FilePathView kcoFilePath)
 	bool inChartList = false;
 	const FilePath songsDir = FsUtils::SongsDirectoryPath();
 
-	String line;
-	while (reader.readLine(line))
+	for (const String& untrimmedLine : lines)
 	{
-		line.trim();
+		const String line = untrimmedLine.trimmed();
 
 		if (line.isEmpty())
 		{
