@@ -4,6 +4,27 @@
 
 namespace MusicGame::Judgment
 {
+	void LaserInputAccumulator::addDeltaCursorX(double deltaCursorX, double currentTimeSec)
+	{
+		m_accumulatedDeltaCursorX += deltaCursorX;
+	}
+
+	bool LaserInputAccumulator::shouldApplyAmplification(double currentTimeSec) const
+	{
+		return currentTimeSec - m_lastCheckTimeSec >= kLaserInputAmplificationCheckIntervalSec;
+	}
+
+	double LaserInputAccumulator::getAccumulatedDeltaCursorX() const
+	{
+		return m_accumulatedDeltaCursorX;
+	}
+
+	void LaserInputAccumulator::resetAccumulation(double currentTimeSec)
+	{
+		m_lastCheckTimeSec = currentTimeSec;
+		m_accumulatedDeltaCursorX = 0.0;
+	}
+
 	namespace
 	{
 		constexpr kson::RelPulse kLaserLineJudgmentEraseAroundSlamDistance = kson::kResolution4 / 16;
@@ -345,42 +366,51 @@ namespace MusicGame::Judgment
 			return;
 		}
 
-		const int32 direction = Sign(deltaCursorX);
-		if (direction == 0)
-		{
-			// 移動方向がない場合は何もしない
-			return;
-		}
+		// 入力を蓄積
+		m_inputAccumulator.addDeltaCursorX(deltaCursorX, currentTimeSec);
+
 		const int32 noteDirection = kson::ValueItrAt(m_laserLineDirectionMap, currentPulse)->second;
 		const double noteCursorX = laneStatusRef.noteCursorX.value();
 		const double cursorX = laneStatusRef.cursorX.value();
-		double nextCursorX;
-		if (direction == noteDirection || noteDirection == 0)
+		double nextCursorX = cursorX;
+
+		// 1/60秒ごとにカーソル移動量を増幅して吸着させる
+		if (m_inputAccumulator.shouldApplyAmplification(currentTimeSec))
 		{
-			// LASERノーツと同方向にカーソル移動している、または、LASERノーツが横移動なしの場合
-			const double overshootCursorX = cursorX + deltaCursorX * kLaserCursorInputOvershootScale; // 増幅移動量で計算したカーソル移動先
-			if (Min(cursorX, overshootCursorX) - kLaserAutoFitMaxDeltaCursorX < noteCursorX && noteCursorX < Max(cursorX, overshootCursorX) + kLaserAutoFitMaxDeltaCursorX)
+			const double accumulatedDeltaCursorX = m_inputAccumulator.getAccumulatedDeltaCursorX();
+			const int32 direction = Sign(accumulatedDeltaCursorX);
+
+			if (direction != 0 && (direction == noteDirection || noteDirection == 0))
 			{
-				// 増幅移動量で計算したカーソル移動の範囲内に理想位置があれば、カーソルを理想位置へ吸い付かせる
-				nextCursorX = noteCursorX;
-				m_lastCorrectMovementSec = currentTimeSec;
+				// LASERノーツと同方向にカーソル移動している、または、LASERノーツが横移動なしの場合
+				const double amplifiedCursorX = cursorX + accumulatedDeltaCursorX * kLaserCursorInputOvershootScale;
+				if (Min(cursorX, amplifiedCursorX) - kLaserAutoFitMaxDeltaCursorX < noteCursorX && noteCursorX < Max(cursorX, amplifiedCursorX) + kLaserAutoFitMaxDeltaCursorX)
+				{
+					// 増幅した移動量での移動範囲内に理想位置があれば、カーソルを理想位置へ吸い付かせる
+					nextCursorX = noteCursorX;
+					m_lastCorrectMovementSec = currentTimeSec;
+				}
+			}
+
+			m_inputAccumulator.resetAccumulation(currentTimeSec);
+		}
+
+		// 通常のカーソル移動(毎フレーム適用)
+		const int32 direction = Sign(deltaCursorX);
+		if (direction != 0)
+		{
+			if (Abs(cursorX - noteCursorX) < kLaserAutoFitMaxDeltaCursorX && direction != noteDirection && noteDirection != 0)
+			{
+				// LASERカーソルが理想位置に近い場合はカーソルを逆方向に動かさない
+				nextCursorX = cursorX;
 			}
 			else
 			{
-				// 増幅移動量で理想位置に届かなければ、カーソルを単純に動かす
+				// カーソルを単純に動かす
 				nextCursorX = cursorX + deltaCursorX;
 			}
 		}
-		else if (Abs(cursorX - noteCursorX) < kLaserAutoFitMaxDeltaCursorX)
-		{
-			// LASERカーソルが理想位置に近い場合はカーソルを逆方向に動かさない
-			nextCursorX = cursorX;
-		}
-		else
-		{
-			// LASERノーツと逆方向にカーソル移動している場合、カーソルを単純に動かす
-			nextCursorX = cursorX + deltaCursorX;
-		}
+
 		laneStatusRef.cursorX = Clamp(nextCursorX, 0.0, 1.0);
 	}
 

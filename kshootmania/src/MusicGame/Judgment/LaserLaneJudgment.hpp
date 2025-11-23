@@ -8,6 +8,24 @@
 
 namespace MusicGame::Judgment
 {
+	class LaserInputAccumulator
+	{
+	private:
+		double m_lastCheckTimeSec = kPastTimeSec;
+		double m_accumulatedDeltaCursorX = 0.0;
+
+	public:
+		void addDeltaCursorX(double deltaCursorX, double currentTimeSec);
+
+		[[nodiscard]]
+		bool shouldApplyAmplification(double currentTimeSec) const;
+
+		[[nodiscard]]
+		double getAccumulatedDeltaCursorX() const;
+
+		void resetAccumulation(double currentTimeSec);
+	};
+
 	class LaserSlamJudgment
 	{
 	private:
@@ -73,6 +91,8 @@ namespace MusicGame::Judgment
 		kson::ByPulse<LaserSlamJudgment>::iterator m_passedSlamJudgmentCursor;
 
 		double m_lastCorrectMovementSec = kPastTimeSec;
+
+		LaserInputAccumulator m_inputAccumulator;
 
 		Optional<kson::Pulse> m_prevCurrentLaserSectionPulse = none;
 		Optional<kson::Pulse> m_prevCurrentLaserSectionPulseForDraw = none;
