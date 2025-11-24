@@ -381,13 +381,14 @@ namespace MusicGame::Judgment
 			const double accumulatedDeltaCursorX = m_inputAccumulator.getAccumulatedDeltaCursorX();
 			const int32 direction = Sign(accumulatedDeltaCursorX);
 
-			if (direction != 0 && (direction == noteDirection || noteDirection == 0))
+			if (direction != 0)
 			{
-				// LASERノーツと同方向にカーソル移動している、または、LASERノーツが横移動なしの場合
+				// 増幅移動量での移動後のカーソル位置(追い越し判定考慮前)
 				const double amplifiedCursorX = cursorX + accumulatedDeltaCursorX * kLaserCursorInputOvershootScale;
+
+				// 理想位置を追い越す場合は理想位置に吸着
 				if (Min(cursorX, amplifiedCursorX) - kLaserAutoFitMaxDeltaCursorX < noteCursorX && noteCursorX < Max(cursorX, amplifiedCursorX) + kLaserAutoFitMaxDeltaCursorX)
 				{
-					// 増幅した移動量での移動範囲内に理想位置があれば、カーソルを理想位置へ吸い付かせる
 					nextCursorX = noteCursorX;
 					m_lastCorrectMovementSec = currentTimeSec;
 				}
@@ -407,8 +408,19 @@ namespace MusicGame::Judgment
 			}
 			else
 			{
-				// カーソルを単純に動かす
-				nextCursorX = cursorX + deltaCursorX;
+				// 移動後のカーソル位置(追い越し判定考慮前)
+				const double movedCursorX = cursorX + deltaCursorX;
+
+				// 理想位置を追い越す場合は理想位置に吸着
+				if (Min(cursorX, movedCursorX) < noteCursorX && noteCursorX < Max(cursorX, movedCursorX))
+				{
+					nextCursorX = noteCursorX;
+					m_lastCorrectMovementSec = currentTimeSec;
+				}
+				else
+				{
+					nextCursorX = movedCursorX;
+				}
 			}
 		}
 
