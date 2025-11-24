@@ -11,7 +11,7 @@
 class SelectScene : public Co::UpdaterSceneBase
 {
 private:
-	const KeyConfig::Button m_folderCloseButton;
+	const Button m_folderCloseButton;
 
 	ColorF m_fadeOutColor = Palette::Black;
 

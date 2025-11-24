@@ -5,11 +5,11 @@
 class KeyboardLaserInput : public ILaserInputMethod
 {
 private:
-	const KeyConfig::Button m_buttonL;
-	const KeyConfig::Button m_buttonR;
+	const Button m_buttonL;
+	const Button m_buttonR;
 
 public:
-	KeyboardLaserInput(KeyConfig::Button buttonL, KeyConfig::Button buttonR);
+	KeyboardLaserInput(Button buttonL, Button buttonR);
 
 	[[nodiscard]]
 	double getDeltaCursorX(double deltaTimeSec) override;

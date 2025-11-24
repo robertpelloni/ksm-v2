@@ -1,6 +1,7 @@
 ﻿#include "LaserLaneJudgment.hpp"
 #include "kson/Util/TimingUtils.hpp"
 #include "kson/Util/GraphUtils.hpp"
+#include "Input/KeyConfig.hpp"
 
 namespace MusicGame::Judgment
 {
@@ -776,7 +777,7 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	LaserLaneJudgment::LaserLaneJudgment(JudgmentPlayMode judgmentPlayMode, int32 laneIdx, KeyConfig::Button keyConfigButtonL, KeyConfig::Button keyConfigButtonR, const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache)
+	LaserLaneJudgment::LaserLaneJudgment(JudgmentPlayMode judgmentPlayMode, int32 laneIdx, Button keyConfigButtonL, Button keyConfigButtonR, const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache)
 		: m_judgmentPlayMode(judgmentPlayMode)
 		, m_laneIdx(laneIdx)
 		, m_keyConfigButtonL(keyConfigButtonL)
@@ -884,7 +885,7 @@ namespace MusicGame::Judgment
 		if (m_judgmentPlayMode == JudgmentPlayMode::kOn)
 		{
 			// 入力からカーソルの移動量を取得
-			const double deltaCursorX = KeyConfig::LaserDeltaCursorX(m_laneIdx, m_keyConfigButtonL, m_keyConfigButtonR, Scene::DeltaTime());
+			const double deltaCursorX = KeyConfig::LaserDeltaCursorX(m_laneIdx, Scene::DeltaTime());
 			processCursorMovement(deltaCursorX, currentPulse, currentTimeSec, laneStatusRef);
 			processSlamJudgment(lane, deltaCursorX, currentTimeSec, laneStatusRef, judgmentHandlerRef, IsAutoPlayYN::No);
 

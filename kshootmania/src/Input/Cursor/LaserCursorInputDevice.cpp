@@ -1,4 +1,5 @@
 ﻿#include "LaserCursorInputDevice.hpp"
+#include "Input/KeyConfig.hpp"
 
 namespace
 {
@@ -13,6 +14,36 @@ namespace
 
 	// 入力の有無を判定する最小しきい値
 	constexpr double kInputDetectionThreshold = 0.001;
+
+	double GetThreshold(int32 count)
+	{
+		// 移動回数に応じてしきい値を変える
+		// (単発でのカーソル移動をしやすくするため)
+		if (count == 0)
+		{
+			return kThresholdFirst;
+		}
+		if (count == 1)
+		{
+			return kThresholdSecond;
+		}
+		if (count > 10)
+		{
+			return kThresholdOver10;
+		}
+		return kThreshold;
+	}
+
+	bool CanMoveMultipleSteps(int32 count)
+	{
+		// 一定以上動くまでは1フレームに複数ステップ移動しない
+		return count >= 2;
+	}
+
+	bool IsDirectionFlipped(double prev, double current)
+	{
+		return Sign(prev) != Sign(current) && prev != 0.0 && current != 0.0;
+	}
 }
 
 LaserCursorInputDevice::LaserCursorInputDevice(int32 laneIdx)
@@ -26,21 +57,16 @@ void LaserCursorInputDevice::update()
 {
 	m_deltaCursor = 0;
 
-	// レーンインデックスからボタンを決定
-	const KeyConfig::Button buttonL = m_laneIdx == 0 ? KeyConfig::kLeftLaserL : KeyConfig::kRightLaserL;
-	const KeyConfig::Button buttonR = m_laneIdx == 0 ? KeyConfig::kLeftLaserR : KeyConfig::kRightLaserR;
-
 	double prevAccumulatedDelta = m_accumulatedDelta;
 
 	// レーザーカーソル移動量を取得して加算
-	const double deltaCursorX = KeyConfig::LaserDeltaCursorX(m_laneIdx, buttonL, buttonR, Scene::DeltaTime());
+	const double deltaCursorX = KeyConfig::LaserDeltaCursorX(m_laneIdx, Scene::DeltaTime());
 	m_accumulatedDelta += deltaCursorX;
 
-	if (Sign(prevAccumulatedDelta) != Sign(m_accumulatedDelta) && prevAccumulatedDelta != 0.0 && m_accumulatedDelta != 0.0)
+	if (IsDirectionFlipped(prevAccumulatedDelta, m_accumulatedDelta))
 	{
 		// 累積移動量の符号が変わったら移動回数をリセット
 		m_movementCount = 0;
-		Print << U"LaserCursorInputDevice: Idle reset (laneIdx=" << m_laneIdx << U")" << Time::GetMillisec();
 	}
 
 	if (Abs(deltaCursorX) > kInputDetectionThreshold)
@@ -55,40 +81,23 @@ void LaserCursorInputDevice::update()
 		m_accumulatedDelta = 0.0;
 	}
 
-	// 移動回数に応じてしきい値を変える
-	// (1回のみのカーソル移動をしやすくするため)
-	double threshold;
-	if (m_movementCount == 0)
-	{
-		threshold = kThresholdFirst;
-	}
-	else if (m_movementCount == 1)
-	{
-		threshold = kThresholdSecond;
-	}
-	else if (m_movementCount > 10)
-	{
-		threshold = kThresholdOver10;
-	}
-	else
-	{
-		threshold = kThreshold;
-	}
-
 	// 累積カーソル移動量がしきい値を超えたらカーソル移動
+	const double threshold = GetThreshold(m_movementCount);
 	if (Abs(m_accumulatedDelta) >= threshold)
 	{
-		if (m_movementCount < 2)
+		if (CanMoveMultipleSteps(m_movementCount))
 		{
-			m_deltaCursor = m_accumulatedDelta < 0.0 ? -1 : 1;
-			m_accumulatedDelta = 0.0;
-			m_movementCount++;
-		}
-		else
-		{
+			// 一定以上動いたら、1フレーム内に複数ステップまとめて移動可能
 			const int32 steps = static_cast<int32>(m_accumulatedDelta / threshold);
 			m_deltaCursor = steps;
 			m_accumulatedDelta -= steps * threshold;
+			m_movementCount += Abs(steps);
+		}
+		else
+		{
+			// 一定以上動くまでは1フレームに1回だけ移動
+			m_deltaCursor = m_accumulatedDelta < 0.0 ? -1 : 1;
+			m_accumulatedDelta = 0.0;
 			m_movementCount++;
 		}
 	}

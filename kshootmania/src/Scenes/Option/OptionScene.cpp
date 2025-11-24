@@ -242,7 +242,7 @@ void OptionScene::update()
 			m_optionMenus[*m_currentOptionMenuIdx].update();
 		}
 
-		if (KeyConfig::Down(KeyConfig::kBack))
+		if (KeyConfig::Down(kButtonBack))
 		{
 			// ボタン編集中の場合は戻らない
 			if (m_currentOptionMenuIdx == OptionMenuType::kKeyConfig && m_keyConfigMenu.isButtonEditingState())
@@ -259,11 +259,11 @@ void OptionScene::update()
 	{
 		m_topMenu.update();
 
-		if (KeyConfig::Down(KeyConfig::kStart))
+		if (KeyConfig::Down(kButtonStart))
 		{
 			m_currentOptionMenuIdx = m_topMenu.cursorAs<OptionMenuType>();
 		}
-		else if (KeyConfig::Down(KeyConfig::kBack))
+		else if (KeyConfig::Down(kButtonBack))
 		{
 			exitScene();
 		}

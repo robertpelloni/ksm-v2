@@ -1,6 +1,6 @@
 ﻿#include "ButtonCursorInputDevice.hpp"
 
-ButtonCursorInputDevice::ButtonCursorInputDevice(const Array<KeyConfig::Button>& incrementButtons, const Array<KeyConfig::Button>& decrementButtons, double intervalSec, double intervalSecFirst, StartRequiredForBTFXLaserYN startRequiredForBTFXLaser)
+ButtonCursorInputDevice::ButtonCursorInputDevice(const Array<Button>& incrementButtons, const Array<Button>& decrementButtons, double intervalSec, double intervalSecFirst, StartRequiredForBTFXLaserYN startRequiredForBTFXLaser)
 	: m_incrementButtons(incrementButtons)
 	, m_decrementButtons(decrementButtons)
 	, m_intervalSec(intervalSec)

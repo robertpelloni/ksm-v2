@@ -212,45 +212,45 @@ namespace
 		return cursor;
 	}
 
-	Optional<KeyConfig::ConfigurableButton> CursorToButton1(OptionKeyConfigCursor cursor)
+	Optional<ConfigurableButton> CursorToButton1(OptionKeyConfigCursor cursor)
 	{
 		switch (cursor)
 		{
 		case OptionKeyConfigCursor::BT_A:
-			return KeyConfig::kBT_A;
+			return kButtonBT_A;
 		case OptionKeyConfigCursor::BT_B:
-			return KeyConfig::kBT_B;
+			return kButtonBT_B;
 		case OptionKeyConfigCursor::BT_C:
-			return KeyConfig::kBT_C;
+			return kButtonBT_C;
 		case OptionKeyConfigCursor::BT_D:
-			return KeyConfig::kBT_D;
+			return kButtonBT_D;
 		case OptionKeyConfigCursor::FX_L:
-			return KeyConfig::kFX_L;
+			return kButtonFX_L;
 		case OptionKeyConfigCursor::FX_R:
-			return KeyConfig::kFX_R;
+			return kButtonFX_R;
 		case OptionKeyConfigCursor::FX_LR:
-			return KeyConfig::kFX_LR;
+			return kButtonFX_LR;
 		case OptionKeyConfigCursor::Laser_L:
-			return KeyConfig::kLeftLaserL;
+			return kButtonLeftLaserL;
 		case OptionKeyConfigCursor::Laser_R:
-			return KeyConfig::kRightLaserL;
+			return kButtonRightLaserL;
 		case OptionKeyConfigCursor::Start:
-			return KeyConfig::kStart;
+			return kButtonStart;
 		case OptionKeyConfigCursor::Back:
-			return KeyConfig::kBack;
+			return kButtonBack;
 		default:
 			return none;
 		}
 	}
 
-	Optional<KeyConfig::ConfigurableButton> CursorToButton2(OptionKeyConfigCursor cursor)
+	Optional<ConfigurableButton> CursorToButton2(OptionKeyConfigCursor cursor)
 	{
 		switch (cursor)
 		{
 		case OptionKeyConfigCursor::Laser_L:
-			return KeyConfig::kLeftLaserR;
+			return kButtonLeftLaserR;
 		case OptionKeyConfigCursor::Laser_R:
-			return KeyConfig::kRightLaserR;
+			return kButtonRightLaserR;
 		default:
 			return none;
 		}
@@ -974,7 +974,7 @@ namespace
 	}
 
 	// 指定したConfigurableButtonのキーが他のボタンと重複しているかチェック
-	bool HasDuplicateKey(KeyConfig::ConfigSet targetConfigSet, KeyConfig::ConfigurableButton targetButton)
+	bool HasDuplicateKey(KeyConfig::ConfigSet targetConfigSet, ConfigurableButton targetButton)
 	{
 		const Input& targetInput = KeyConfig::GetConfigValue(targetConfigSet, targetButton);
 
@@ -989,7 +989,7 @@ namespace
 		{
 			const auto configSet = static_cast<KeyConfig::ConfigSet>(configSetIdx);
 
-			for (int32 i = 0; i < KeyConfig::kConfigurableButtonEnumCount; ++i)
+			for (int32 i = 0; i < kConfigurableButtonEnumCount; ++i)
 			{
 				// 自分自身は除外
 				if (configSet == targetConfigSet && i == targetButton)
@@ -997,7 +997,7 @@ namespace
 					continue;
 				}
 
-				const Input& otherInput = KeyConfig::GetConfigValue(configSet, static_cast<KeyConfig::ConfigurableButton>(i));
+				const Input& otherInput = KeyConfig::GetConfigValue(configSet, static_cast<ConfigurableButton>(i));
 				if (otherInput.deviceType() == targetInput.deviceType() && otherInput.code() == targetInput.code())
 				{
 					return true;
@@ -1038,7 +1038,7 @@ void OptionKeyConfigMenu::updateNoneState()
 	}
 
 	// 設定解除
-	if ((KeyConfig::Pressed(KeyConfig::kFX_L) && KeyConfig::Down(KeyConfig::kFX_R)) || (KeyConfig::Down(KeyConfig::kFX_L) && KeyConfig::Pressed(KeyConfig::kFX_R)) || KeyConfig::Down(KeyConfig::kFX_LR) || KeySpace.down())
+	if ((KeyConfig::Pressed(kButtonFX_L) && KeyConfig::Down(kButtonFX_R)) || (KeyConfig::Down(kButtonFX_L) && KeyConfig::Pressed(kButtonFX_R)) || KeyConfig::Down(kButtonFX_LR) || KeySpace.down())
 	{
 		const auto button1 = CursorToButton1(m_cursor);
 		if (button1.has_value())
@@ -1054,7 +1054,7 @@ void OptionKeyConfigMenu::updateNoneState()
 	}
 
 	// 選択
-	if (KeyConfig::Down(KeyConfig::kStart) && CursorToButton1(m_cursor).has_value())
+	if (KeyConfig::Down(kButtonStart) && CursorToButton1(m_cursor).has_value())
 	{
 		m_state = OptionKeyConfigMenuState::SettingButton1;
 	}
@@ -1241,7 +1241,7 @@ void OptionKeyConfigMenu::draw() const
 		}
 		rect.draw(Palette::White);
 
-		const auto button = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kBT_A + i);
+		const auto button = static_cast<ConfigurableButton>(kButtonBT_A + i);
 		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, button);
 		const Color textColor = HasDuplicateKey(m_targetConfigSet, button) ? Palette::Red : Palette::Black;
 		m_font(InputToString(input)).drawAt(Scaled(16), rect.center(), textColor);
@@ -1259,7 +1259,7 @@ void OptionKeyConfigMenu::draw() const
 		}
 		rect.draw(Color{ 96, 96, 96 });
 
-		const auto button = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kFX_L + i);
+		const auto button = static_cast<ConfigurableButton>(kButtonFX_L + i);
 		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, button);
 		const Color textColor = HasDuplicateKey(m_targetConfigSet, button) ? Palette::Red : Palette::White;
 		m_font(InputToString(input)).drawAt(Scaled(16), rect.center(), textColor);
@@ -1281,8 +1281,8 @@ void OptionKeyConfigMenu::draw() const
 		}
 		m_fxLRTexture(0, column).resized(Scaled(96, 96)).drawAt(position);
 
-		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, KeyConfig::ConfigurableButton::kFX_LR);
-		const Color textColor = HasDuplicateKey(m_targetConfigSet, KeyConfig::ConfigurableButton::kFX_LR) ? Palette::Red : Palette::White;
+		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, kButtonFX_LR);
+		const Color textColor = HasDuplicateKey(m_targetConfigSet, kButtonFX_LR) ? Palette::Red : Palette::White;
 		m_font(InputToString(input)).drawAt(Scaled(16), position + Scaled(0, 58), textColor);
 	}
 
@@ -1301,8 +1301,8 @@ void OptionKeyConfigMenu::draw() const
 		const Color fillColor = i == 0 ? Color{ 64, 96, 255 } : Color{ 255, 64, 96 };
 		circle.draw(fillColor);
 
-		const auto buttonL = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kLeftLaserL + i * 2);
-		const auto buttonR = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kLeftLaserL + i * 2 + 1);
+		const auto buttonL = static_cast<ConfigurableButton>(kButtonLeftLaserL + i * 2);
+		const auto buttonR = static_cast<ConfigurableButton>(kButtonLeftLaserL + i * 2 + 1);
 		const Input& inputL = KeyConfig::GetConfigValue(m_targetConfigSet, buttonL);
 		const Input& inputR = KeyConfig::GetConfigValue(m_targetConfigSet, buttonR);
 
@@ -1323,7 +1323,7 @@ void OptionKeyConfigMenu::draw() const
 		}
 		rect.draw(Color{ 0, 24, 128 });
 
-		const auto button = static_cast<KeyConfig::ConfigurableButton>(KeyConfig::ConfigurableButton::kStart + i);
+		const auto button = static_cast<ConfigurableButton>(kButtonStart + i);
 		const Input& input = KeyConfig::GetConfigValue(m_targetConfigSet, button);
 		const StringView prefix1Sv = m_targetConfigSet == KeyConfig::ConfigSet::kKeyboard1 ? U"*" : U"";
 		const StringView prefix2Sv = i == 0 ? I18n::Get(I18n::Option::kKeyConfigStart) : I18n::Get(I18n::Option::kKeyConfigBack);

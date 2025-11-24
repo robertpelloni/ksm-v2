@@ -1,5 +1,6 @@
 ﻿#include "HispeedSettingMenu.hpp"
 #include "Input/PlatformKey.hpp"
+#include "Input/KeyConfig.hpp"
 
 namespace MusicGame
 {

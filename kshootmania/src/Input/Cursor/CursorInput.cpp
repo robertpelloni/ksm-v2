@@ -17,155 +17,155 @@ namespace
 		return laserInputType == ConfigIni::Value::LaserInputType::kKeyboard;
 	}
 
-	Array<KeyConfig::Button> IncrementButtonsForHorizontalMenu(int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
+	Array<Button> IncrementButtonsForHorizontalMenu(int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
 	{
-		Array<KeyConfig::Button> incrementButtons;
+		Array<Button> incrementButtons;
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kArrow))
 		{
-			incrementButtons.push_back(flipArrowKeyDirection ? KeyConfig::kLeft : KeyConfig::kRight);
+			incrementButtons.push_back(flipArrowKeyDirection ? kButtonLeft : kButtonRight);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kBT))
 		{
-			incrementButtons.push_back(KeyConfig::kBT_D);
+			incrementButtons.push_back(kButtonBT_D);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kBTOpposite))
 		{
-			incrementButtons.push_back(KeyConfig::kBT_B);
+			incrementButtons.push_back(kButtonBT_B);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kFX))
 		{
-			incrementButtons.push_back(KeyConfig::kFX_R);
+			incrementButtons.push_back(kButtonFX_R);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser) && IsLaserInputDigital())
 		{
-			incrementButtons.push_back(KeyConfig::kLeftLaserR);
+			incrementButtons.push_back(kButtonLeftLaserR);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite) && IsLaserInputDigital())
 		{
-			incrementButtons.push_back(KeyConfig::kRightLaserR);
+			incrementButtons.push_back(kButtonRightLaserR);
 		}
 
 		return incrementButtons;
 	}
 
-	Array<KeyConfig::Button> DecrementButtonsForHorizontalMenu(int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
+	Array<Button> DecrementButtonsForHorizontalMenu(int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
 	{
-		Array<KeyConfig::Button> decrementButtons;
+		Array<Button> decrementButtons;
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kArrow))
 		{
-			decrementButtons.push_back(flipArrowKeyDirection ? KeyConfig::kRight : KeyConfig::kLeft);
+			decrementButtons.push_back(flipArrowKeyDirection ? kButtonRight : kButtonLeft);
 		}
 		
 		if (HasFlag(buttonFlags, CursorButtonFlags::kBT))
 		{
-			decrementButtons.push_back(KeyConfig::kBT_A);
+			decrementButtons.push_back(kButtonBT_A);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kBTOpposite))
 		{
-			decrementButtons.push_back(KeyConfig::kBT_C);
+			decrementButtons.push_back(kButtonBT_C);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kFX))
 		{
-			decrementButtons.push_back(KeyConfig::kFX_L);
+			decrementButtons.push_back(kButtonFX_L);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser) && IsLaserInputDigital())
 		{
-			decrementButtons.push_back(KeyConfig::kLeftLaserL);
+			decrementButtons.push_back(kButtonLeftLaserL);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite) && IsLaserInputDigital())
 		{
-			decrementButtons.push_back(KeyConfig::kRightLaserL);
+			decrementButtons.push_back(kButtonRightLaserL);
 		}
 
 		return decrementButtons;
 	}
 
-	Array<KeyConfig::Button> IncrementButtonsForVerticalMenu(int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
+	Array<Button> IncrementButtonsForVerticalMenu(int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
 	{
-		Array<KeyConfig::Button> incrementButtons;
+		Array<Button> incrementButtons;
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kArrow))
 		{
-			incrementButtons.push_back(flipArrowKeyDirection ? KeyConfig::kUp : KeyConfig::kDown);
+			incrementButtons.push_back(flipArrowKeyDirection ? kButtonUp : kButtonDown);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kBT))
 		{
-			incrementButtons.push_back(KeyConfig::kBT_B);
+			incrementButtons.push_back(kButtonBT_B);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kBTOpposite))
 		{
-			incrementButtons.push_back(KeyConfig::kBT_D);
+			incrementButtons.push_back(kButtonBT_D);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kFXOpposite))
 		{
-			incrementButtons.push_back(KeyConfig::kFX_R);
+			incrementButtons.push_back(kButtonFX_R);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser) && IsLaserInputDigital())
 		{
-			incrementButtons.push_back(KeyConfig::kRightLaserR);
+			incrementButtons.push_back(kButtonRightLaserR);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite) && IsLaserInputDigital())
 		{
-			incrementButtons.push_back(KeyConfig::kLeftLaserR);
+			incrementButtons.push_back(kButtonLeftLaserR);
 		}
 
 		return incrementButtons;
 	}
 
-	Array<KeyConfig::Button> DecrementButtonsForVerticalMenu(int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
+	Array<Button> DecrementButtonsForVerticalMenu(int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
 	{
-		Array<KeyConfig::Button> decrementButtons;
+		Array<Button> decrementButtons;
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kArrow))
 		{
-			decrementButtons.push_back(flipArrowKeyDirection ? KeyConfig::kDown : KeyConfig::kUp);
+			decrementButtons.push_back(flipArrowKeyDirection ? kButtonDown : kButtonUp);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kBT))
 		{
-			decrementButtons.push_back(KeyConfig::kBT_C);
+			decrementButtons.push_back(kButtonBT_C);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kBTOpposite))
 		{
-			decrementButtons.push_back(KeyConfig::kBT_A);
+			decrementButtons.push_back(kButtonBT_A);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kFXOpposite))
 		{
-			decrementButtons.push_back(KeyConfig::kFX_L);
+			decrementButtons.push_back(kButtonFX_L);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kLaser) && IsLaserInputDigital())
 		{
-			decrementButtons.push_back(KeyConfig::kRightLaserL);
+			decrementButtons.push_back(kButtonRightLaserL);
 		}
 
 		if (HasFlag(buttonFlags, CursorButtonFlags::kLaserOpposite) && IsLaserInputDigital())
 		{
-			decrementButtons.push_back(KeyConfig::kLeftLaserL);
+			decrementButtons.push_back(kButtonLeftLaserL);
 		}
 
 		return decrementButtons;
 	}
 
-	Array<KeyConfig::Button> IncrementButtons(Type type, int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
+	Array<Button> IncrementButtons(Type type, int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
 	{
 		switch (type)
 		{
@@ -177,11 +177,11 @@ namespace
 
 		default:
 			assert(false && "Unknown cursor input type");
-			return Array<KeyConfig::Button>();
+			return Array<Button>();
 		}
 	}
 
-	Array<KeyConfig::Button> DecrementButtons(Type type, int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
+	Array<Button> DecrementButtons(Type type, int32 buttonFlags, FlipArrowKeyDirectionYN flipArrowKeyDirection)
 	{
 		switch (type)
 		{
@@ -193,7 +193,7 @@ namespace
 
 		default:
 			assert(false && "Unknown cursor input type");
-			return Array<KeyConfig::Button>();
+			return Array<Button>();
 		}
 	}
 }

@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <unordered_map>
+#include "Input/KeyConfig.hpp"
+#include "Input/Cursor/CursorInput.hpp"
 
 enum class OptionKeyConfigCursor
 {

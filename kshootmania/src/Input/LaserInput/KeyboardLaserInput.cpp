@@ -1,11 +1,12 @@
 ﻿#include "KeyboardLaserInput.hpp"
+#include "Input/KeyConfig.hpp"
 
 namespace
 {
 	constexpr double kLaserKeyboardCursorXPerSec = 2.0;
 }
 
-KeyboardLaserInput::KeyboardLaserInput(KeyConfig::Button buttonL, KeyConfig::Button buttonR)
+KeyboardLaserInput::KeyboardLaserInput(Button buttonL, Button buttonR)
 	: m_buttonL(buttonL)
 	, m_buttonR(buttonR)
 {
@@ -14,7 +15,7 @@ KeyboardLaserInput::KeyboardLaserInput(KeyConfig::Button buttonL, KeyConfig::But
 double KeyboardLaserInput::getDeltaCursorX(double deltaTimeSec)
 {
 	// 左向きキーと右向きキーを同時に押している場合、最後に押した方を優先する
-	const Optional<KeyConfig::Button> lastPressedButton = KeyConfig::LastPressedLaserButton(m_buttonL, m_buttonR);
+	const Optional<Button> lastPressedButton = KeyConfig::LastPressedLaserButton(m_buttonL, m_buttonR);
 	if (lastPressedButton.has_value())
 	{
 		const int32 direction = lastPressedButton == m_buttonL ? -1 : 1;

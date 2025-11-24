@@ -654,7 +654,7 @@ void SelectMenu::update(SongPreviewOnlyYN songPreviewOnly)
 
 	// FX-L + FX-R同時押しでソートモード切り替え
 	static bool fxLRPressed = false;
-	const bool fxLRPressedNow = KeyConfig::Pressed(KeyConfig::kFX_L) && KeyConfig::Pressed(KeyConfig::kFX_R);
+	const bool fxLRPressedNow = KeyConfig::Pressed(kButtonFX_L) && KeyConfig::Pressed(kButtonFX_R);
 	if (fxLRPressedNow && !fxLRPressed && isFolderOpen())
 	{
 		// ソートモードを切り替え
@@ -675,7 +675,7 @@ void SelectMenu::update(SongPreviewOnlyYN songPreviewOnly)
 	fxLRPressed = fxLRPressedNow;
 
 	// 各種操作と干渉しないようCtrl・Shift・BT-B+C押下時は無視
-	const bool btBCPressed = KeyConfig::Pressed(KeyConfig::kBT_B) && KeyConfig::Pressed(KeyConfig::kBT_C);
+	const bool btBCPressed = KeyConfig::Pressed(kButtonBT_B) && KeyConfig::Pressed(kButtonBT_C);
 	if (!PlatformKey::KeyCommandControl.pressed() && !KeyShift.pressed() && !btBCPressed)
 	{
 		m_difficultyMenu.update();

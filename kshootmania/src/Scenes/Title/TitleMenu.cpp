@@ -28,12 +28,12 @@ void TitleMenu::update()
 	// (LinearMenu::deltaCursor() != 0 だとsetCursorでの直接指定による変化を検出できないため、cursor値の比較を利用している)
 	const auto beforeCursor = m_menu.cursor();
 
-	const bool backPressed = !m_isAlreadySelected && KeyConfig::Down(KeyConfig::kBack);
+	const bool backPressed = !m_isAlreadySelected && KeyConfig::Down(kButtonBack);
 	if (!m_isAlreadySelected && !backPressed)
 	{
 		m_menu.update();
 
-		if (KeyConfig::Down(KeyConfig::kStart))
+		if (KeyConfig::Down(kButtonStart))
 		{
 			const auto selectedItem = m_menu.cursorAs<TitleMenuItem>();
 			m_selectedMenuItemSource.requestFinish(selectedItem);
