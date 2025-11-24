@@ -6,13 +6,13 @@ namespace
 	constexpr int32 kDefaultSensitivity = 50;
 
 	// 入力感度の係数の基準値
-	constexpr double kBaseSensitivityScale = 50.0 / 400.0;
+	constexpr double kBaseSensitivityScale = 8.0;
 
 	// 循環検出のしきい値
 	constexpr double kWrapThreshold = 0.5;
 
 	// 微弱な動きを無視するしきい値
-	constexpr double kDeadZone = 25.0 / 65536.0;
+	constexpr double kDeadZone = 0.0005;
 }
 
 AnalogStickXYLaserInput::AnalogStickXYLaserInput(int32 laneIdx)

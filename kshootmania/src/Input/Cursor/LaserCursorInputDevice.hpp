@@ -8,9 +8,6 @@ private:
 	double m_accumulatedDelta = 0.0;
 	int32 m_deltaCursor = 0;
 
-	// 1段階のカーソル移動に必要な累積カーソル移動量
-	static constexpr double kThreshold = 0.1;
-
 public:
 	/// @brief コンストラクタ
 	/// @param laneIdx レーンのインデックス(0=左LASER, 1=右LASER)

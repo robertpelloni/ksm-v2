@@ -1,5 +1,11 @@
 ﻿#include "LaserCursorInputDevice.hpp"
 
+namespace
+{
+	// カーソル移動のしきい値
+	constexpr double kThreshold = 0.2;
+}
+
 LaserCursorInputDevice::LaserCursorInputDevice(int32 laneIdx)
 	: m_laneIdx(laneIdx)
 {
