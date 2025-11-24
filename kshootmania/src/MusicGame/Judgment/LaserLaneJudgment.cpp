@@ -5,7 +5,7 @@
 
 namespace MusicGame::Judgment
 {
-	void LaserInputAccumulator::addDeltaCursorX(double deltaCursorX, double currentTimeSec)
+	void LaserInputAccumulator::addDeltaCursorX(double deltaCursorX)
 	{
 		m_accumulatedDeltaCursorX += deltaCursorX;
 	}
@@ -248,10 +248,10 @@ namespace MusicGame::Judgment
 			const auto itr = kson::FirstInRange(lane, currentPulse, currentPulse + kson::kResolution4);
 			if (itr != lane.end())
 			{
-				const auto& [_, section] = *itr;
+				const auto& [sectionPulse, section] = *itr;
 				if (!section.v.empty())
 				{
-					const auto& [_, point] = *section.v.begin();
+					const auto& [relPulse, point] = *section.v.begin();
 					return std::pair<double, bool>{ point.v.v, section.wide() };
 				}
 			}
@@ -368,7 +368,7 @@ namespace MusicGame::Judgment
 		}
 
 		// 入力を蓄積
-		m_inputAccumulator.addDeltaCursorX(deltaCursorX, currentTimeSec);
+		m_inputAccumulator.addDeltaCursorX(deltaCursorX);
 
 		const int32 noteDirection = kson::ValueItrAt(m_laserLineDirectionMap, currentPulse)->second;
 		const double noteCursorX = laneStatusRef.noteCursorX.value();
@@ -407,15 +407,15 @@ namespace MusicGame::Judgment
 		if (m_inputAccumulator.shouldApplyAmplification(currentTimeSec))
 		{
 			const double accumulatedDeltaCursorX = m_inputAccumulator.getAccumulatedDeltaCursorX();
-			const int32 direction = Sign(accumulatedDeltaCursorX);
+			const int32 amplifiedDirection = Sign(accumulatedDeltaCursorX);
 
-			if (direction != 0)
+			if (amplifiedDirection != 0)
 			{
 				// 増幅移動量での移動後のカーソル位置(追い越し判定考慮前)
 				const double amplifiedCursorX = cursorX + accumulatedDeltaCursorX * kLaserCursorInputOvershootScale;
 
 				// 理想位置に近づく方向に移動している場合のみ追い越し判定
-				const bool isMovingTowardIdeal = (noteCursorX - cursorX) * direction > 0;
+				const bool isMovingTowardIdeal = (noteCursorX - cursorX) * amplifiedDirection > 0;
 				if (isMovingTowardIdeal && Min(cursorX, amplifiedCursorX) - kLaserAutoFitMaxDeltaCursorX <= noteCursorX && noteCursorX <= Max(cursorX, amplifiedCursorX) + kLaserAutoFitMaxDeltaCursorX)
 				{
 					nextCursorX = noteCursorX;

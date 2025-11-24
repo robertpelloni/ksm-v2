@@ -15,7 +15,7 @@ namespace MusicGame::Judgment
 		double m_accumulatedDeltaCursorX = 0.0;
 
 	public:
-		void addDeltaCursorX(double deltaCursorX, double currentTimeSec);
+		void addDeltaCursorX(double deltaCursorX);
 
 		[[nodiscard]]
 		bool shouldApplyAmplification(double currentTimeSec) const;
