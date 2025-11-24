@@ -375,6 +375,34 @@ namespace MusicGame::Judgment
 		const double cursorX = laneStatusRef.cursorX.value();
 		double nextCursorX = cursorX;
 
+		// 通常のカーソル移動(毎フレーム適用)
+		const int32 direction = Sign(deltaCursorX);
+		if (direction != 0)
+		{
+			if (Abs(cursorX - noteCursorX) < kLaserAutoFitMaxDeltaCursorX && (noteDirection == 0 || direction != noteDirection))
+			{
+				// LASERカーソルが理想位置に近い場合はカーソルを逆方向に動かさない
+				nextCursorX = cursorX;
+			}
+			else
+			{
+				// 移動後のカーソル位置(追い越し判定考慮前)
+				const double movedCursorX = cursorX + deltaCursorX;
+
+				// 理想位置に近づく方向に移動している場合のみ追い越し判定
+				const bool isMovingTowardIdeal = (noteCursorX - cursorX) * direction > 0;
+				if (isMovingTowardIdeal && Min(cursorX, movedCursorX) <= noteCursorX && noteCursorX <= Max(cursorX, movedCursorX))
+				{
+					nextCursorX = noteCursorX;
+					m_lastCorrectMovementSec = currentTimeSec;
+				}
+				else
+				{
+					nextCursorX = movedCursorX;
+				}
+			}
+		}
+
 		// 1/60秒ごとにカーソル移動量を増幅して吸着させる
 		if (m_inputAccumulator.shouldApplyAmplification(currentTimeSec))
 		{
@@ -388,7 +416,7 @@ namespace MusicGame::Judgment
 
 				// 理想位置に近づく方向に移動している場合のみ追い越し判定
 				const bool isMovingTowardIdeal = (noteCursorX - cursorX) * direction > 0;
-				if (isMovingTowardIdeal && Min(cursorX, amplifiedCursorX) - kLaserAutoFitMaxDeltaCursorX < noteCursorX && noteCursorX < Max(cursorX, amplifiedCursorX) + kLaserAutoFitMaxDeltaCursorX)
+				if (isMovingTowardIdeal && Min(cursorX, amplifiedCursorX) - kLaserAutoFitMaxDeltaCursorX <= noteCursorX && noteCursorX <= Max(cursorX, amplifiedCursorX) + kLaserAutoFitMaxDeltaCursorX)
 				{
 					nextCursorX = noteCursorX;
 					m_lastCorrectMovementSec = currentTimeSec;
@@ -396,34 +424,6 @@ namespace MusicGame::Judgment
 			}
 
 			m_inputAccumulator.resetAccumulation(currentTimeSec);
-		}
-
-		// 通常のカーソル移動(毎フレーム適用)
-		const int32 direction = Sign(deltaCursorX);
-		if (direction != 0)
-		{
-			if (Abs(cursorX - noteCursorX) < kLaserAutoFitMaxDeltaCursorX && direction != noteDirection && noteDirection != 0)
-			{
-				// LASERカーソルが理想位置に近い場合はカーソルを逆方向に動かさない
-				nextCursorX = cursorX;
-			}
-			else
-			{
-				// 移動後のカーソル位置(追い越し判定考慮前)
-				const double movedCursorX = cursorX + deltaCursorX;
-
-				// 理想位置に近づく方向に移動している場合のみ追い越し判定
-				const bool isMovingTowardIdeal = (noteCursorX - cursorX) * direction > 0;
-				if (isMovingTowardIdeal && Min(cursorX, movedCursorX) < noteCursorX && noteCursorX < Max(cursorX, movedCursorX))
-				{
-					nextCursorX = noteCursorX;
-					m_lastCorrectMovementSec = currentTimeSec;
-				}
-				else
-				{
-					nextCursorX = movedCursorX;
-				}
-			}
 		}
 
 		laneStatusRef.cursorX = Clamp(nextCursorX, 0.0, 1.0);
