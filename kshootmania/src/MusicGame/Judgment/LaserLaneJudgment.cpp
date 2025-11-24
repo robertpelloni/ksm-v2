@@ -386,8 +386,9 @@ namespace MusicGame::Judgment
 				// 増幅移動量での移動後のカーソル位置(追い越し判定考慮前)
 				const double amplifiedCursorX = cursorX + accumulatedDeltaCursorX * kLaserCursorInputOvershootScale;
 
-				// 理想位置を追い越す場合は理想位置に吸着
-				if (Min(cursorX, amplifiedCursorX) - kLaserAutoFitMaxDeltaCursorX < noteCursorX && noteCursorX < Max(cursorX, amplifiedCursorX) + kLaserAutoFitMaxDeltaCursorX)
+				// 理想位置に近づく方向に移動している場合のみ追い越し判定
+				const bool isMovingTowardIdeal = (noteCursorX - cursorX) * direction > 0;
+				if (isMovingTowardIdeal && Min(cursorX, amplifiedCursorX) - kLaserAutoFitMaxDeltaCursorX < noteCursorX && noteCursorX < Max(cursorX, amplifiedCursorX) + kLaserAutoFitMaxDeltaCursorX)
 				{
 					nextCursorX = noteCursorX;
 					m_lastCorrectMovementSec = currentTimeSec;
@@ -411,8 +412,9 @@ namespace MusicGame::Judgment
 				// 移動後のカーソル位置(追い越し判定考慮前)
 				const double movedCursorX = cursorX + deltaCursorX;
 
-				// 理想位置を追い越す場合は理想位置に吸着
-				if (Min(cursorX, movedCursorX) < noteCursorX && noteCursorX < Max(cursorX, movedCursorX))
+				// 理想位置に近づく方向に移動している場合のみ追い越し判定
+				const bool isMovingTowardIdeal = (noteCursorX - cursorX) * direction > 0;
+				if (isMovingTowardIdeal && Min(cursorX, movedCursorX) < noteCursorX && noteCursorX < Max(cursorX, movedCursorX))
 				{
 					nextCursorX = noteCursorX;
 					m_lastCorrectMovementSec = currentTimeSec;
