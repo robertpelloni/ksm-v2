@@ -137,6 +137,7 @@ target_link_libraries(kshootmania PRIVATE
     Siv3D::Siv3D
     kson
     ksmaudio
+    ksmaxis
     NocoUI
 )
 
@@ -269,6 +270,7 @@ target_link_libraries(kshooteditor PRIVATE
 	Siv3D::Siv3D
 	kson
 	ksmaudio
+	ksmaxis
 	NocoUI
 )
 

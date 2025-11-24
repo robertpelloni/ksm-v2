@@ -1,4 +1,4 @@
-#include "AnalogStickXYLaserInput.hpp"
+﻿#include "SliderLaserInput.hpp"
 #include <ksmaxis/ksmaxis.hpp>
 
 namespace
@@ -13,12 +13,12 @@ namespace
 	constexpr double kDeadZone = 0.0005;
 }
 
-AnalogStickXYLaserInput::AnalogStickXYLaserInput(int32 laneIdx)
+SliderLaserInput::SliderLaserInput(int32 laneIdx)
 	: m_laneIdx(laneIdx)
 {
 }
 
-double AnalogStickXYLaserInput::getDeltaCursorX([[maybe_unused]] double deltaTimeSec)
+double SliderLaserInput::getDeltaCursorX([[maybe_unused]] double deltaTimeSec)
 {
 	// 左右レーザーを入れ替えるかどうか
 	const bool swapLR = ConfigIni::GetBool(ConfigIni::Key::kSwapLaserLR, false);
@@ -29,7 +29,7 @@ double AnalogStickXYLaserInput::getDeltaCursorX([[maybe_unused]] double deltaTim
 
 	// ksmaxisから移動量取得
 	const int32 axisIdx = m_laneIdx ^ (swapLR ? 1 : 0);
-	const auto deltas = ksmaxis::GetAxisDeltas(ksmaxis::InputMode::kAnalogStick);
+	const auto deltas = ksmaxis::GetAxisDeltas(ksmaxis::InputMode::kSlider);
 	double delta = deltas[axisIdx] * sensitivityScale;
 
 	// 微弱な動きを無視
@@ -41,8 +41,8 @@ double AnalogStickXYLaserInput::getDeltaCursorX([[maybe_unused]] double deltaTim
 	return delta;
 }
 
-bool AnalogStickXYLaserInput::reconstructionNeeded() const
+bool SliderLaserInput::reconstructionNeeded() const
 {
 	const int32 laserInputType = ConfigIni::GetInt(ConfigIni::Key::kLaserInputType, ConfigIni::Value::LaserInputType::kKeyboard);
-	return laserInputType != ConfigIni::Value::LaserInputType::kAnalogStickXY;
+	return laserInputType != ConfigIni::Value::LaserInputType::kSlider;
 }

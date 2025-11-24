@@ -8,6 +8,7 @@
 #include "Addon/CommonSEAddon.hpp"
 #include "Addon/DisableIMEAddon.hpp"
 #include "ksmaudio/ksmaudio.hpp"
+#include <ksmaxis/ksmaxis.hpp>
 #include "RuntimeConfig.hpp"
 #include "Scenes/Title/TitleScene.hpp"
 #include "Input/KeyConfig.hpp"
@@ -295,6 +296,10 @@ void KSMMain()
 	// ライブラリ初期化
 	Co::Init();
 	noco::Init();
+	if (std::string ksmaxisError; !ksmaxis::Init(&ksmaxisError))
+	{
+		Logger << U"[ksm error] ksmaxis::Init() failed: " << Unicode::FromUTF8(ksmaxisError);
+	}
 
 	// NocoUIのグローバルデフォルトフォントを設定
 	noco::SetGlobalDefaultFont(AssetManagement::SystemFont());
@@ -308,6 +313,8 @@ void KSMMain()
 	
 	while (System::Update())
 	{
+		ksmaxis::Update();
+
 #ifdef __APPLE__
 		// macOSプラットフォーム特有のキーボード状態を更新
 		KeyConfig::UpdatePlatformKeyboard();
@@ -330,7 +337,8 @@ void KSMMain()
 	KSMPlatformMacOS_StopBlockingIMEKeys();
 #endif
 
-	// 音声のバックエンドを終了
+	// ライブラリ終了
+	ksmaxis::Terminate();
 	ksmaudio::Terminate();
 }
 

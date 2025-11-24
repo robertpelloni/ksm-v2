@@ -297,6 +297,9 @@
     <ClCompile Include="src\Input\LaserInput\KeyboardLaserInput.cpp">
       <Filter>Source Files\Input\LaserInput</Filter>
     </ClCompile>
+    <ClCompile Include="src\Input\LaserInput\SliderLaserInput.cpp">
+      <Filter>Source Files\Input\LaserInput</Filter>
+    </ClCompile>
     <ClCompile Include="src\I18n\I18n.cpp">
       <Filter>Source Files\I18n</Filter>
     </ClCompile>
@@ -926,6 +929,9 @@
       <Filter>Header Files\Input\LaserInput</Filter>
     </ClInclude>
     <ClInclude Include="src\Input\LaserInput\KeyboardLaserInput.hpp">
+      <Filter>Header Files\Input\LaserInput</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Input\LaserInput\SliderLaserInput.hpp">
       <Filter>Header Files\Input\LaserInput</Filter>
     </ClInclude>
     <ClInclude Include="src\Input\PlatformKey.hpp">

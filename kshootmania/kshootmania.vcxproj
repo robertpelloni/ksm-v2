@@ -147,6 +147,7 @@
     <ClCompile Include="src\Input\KeyConfig.cpp" />
     <ClCompile Include="src\Input\LaserInput\AnalogStickXYLaserInput.cpp" />
     <ClCompile Include="src\Input\LaserInput\KeyboardLaserInput.cpp" />
+    <ClCompile Include="src\Input\LaserInput\SliderLaserInput.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\RuntimeConfig.cpp" />
     <ClCompile Include="src\MusicGame\Audio\AssistTick.cpp" />
@@ -361,6 +362,7 @@
     <ClInclude Include="src\Input\KeyConfig.hpp" />
     <ClInclude Include="src\Input\LaserInput\AnalogStickXYLaserInput.hpp" />
     <ClInclude Include="src\Input\LaserInput\ILaserInputMethod.hpp" />
+    <ClInclude Include="src\Input\LaserInput\SliderLaserInput.hpp" />
     <ClInclude Include="src\Input\LaserInput\KeyboardLaserInput.hpp" />
     <ClInclude Include="src\Input\PlatformKey.hpp" />
     <ClInclude Include="src\MusicGame\Audio\AssistTick.hpp" />
@@ -492,6 +494,9 @@
     </ProjectReference>
     <ProjectReference Include="ThirdParty\NocoUI\NocoUI.vcxproj">
       <Project>{557d3fbd-c267-4eb1-8ad6-2c19af884151}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ksmaxis\ksmaxis.vcxproj">
+      <Project>{e367b8ef-8306-4266-8577-77ae178fe5d0}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
