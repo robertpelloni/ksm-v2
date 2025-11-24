@@ -7,6 +7,8 @@ private:
 	int32 m_laneIdx;
 	double m_accumulatedDelta = 0.0;
 	int32 m_deltaCursor = 0;
+	int32 m_movementCount = 0;
+	Stopwatch m_idleStopwatch{ StartImmediately::Yes };
 
 public:
 	/// @brief コンストラクタ
