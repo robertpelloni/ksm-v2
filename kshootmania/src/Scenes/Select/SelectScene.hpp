@@ -39,7 +39,7 @@ private:
 	// 次回のStartボタンの離した判定を無視するか
 	bool m_ignoreNextStartUp = false;
 
-	void moveToPlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay, Optional<CoursePlayState> courseState = none);
+	void moveToPlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay, const Optional<CoursePlayState>& courseState = none);
 
 	void refreshCanvasPlayerName();
 

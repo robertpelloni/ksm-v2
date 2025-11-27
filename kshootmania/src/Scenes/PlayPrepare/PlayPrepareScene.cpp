@@ -49,7 +49,7 @@ namespace
 	}
 }
 
-PlayPrepareScene::PlayPrepareScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay, Optional<CoursePlayState> courseState)
+PlayPrepareScene::PlayPrepareScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay, const Optional<CoursePlayState>& courseState)
 	: m_chartFilePath(chartFilePath)
 	, m_isAutoPlay(isAutoPlay)
 	, m_chartData(kson::LoadKSHChartData(chartFilePath.narrow()))

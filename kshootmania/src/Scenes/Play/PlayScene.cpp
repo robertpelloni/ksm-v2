@@ -88,7 +88,7 @@ namespace
 	}
 }
 
-PlayScene::PlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay, Optional<CoursePlayState> courseState)
+PlayScene::PlayScene(FilePathView chartFilePath, MusicGame::IsAutoPlayYN isAutoPlay, const Optional<CoursePlayState>& courseState)
 	: m_gameMain(MakeGameCreateInfo(chartFilePath, isAutoPlay, courseState))
 	, m_isAutoPlay(isAutoPlay)
 	, m_courseState(courseState)
