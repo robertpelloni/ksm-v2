@@ -9,7 +9,7 @@ private:
 	const Array<Button> m_decrementButtons;
 	const double m_intervalSec;
 	const double m_intervalSecFirst;
-	const StartRequiredForBTFXLaserYN m_startRequiredForBTFXLaser;
+	const NeedStartButtonHoldForNonArrowKeyYN m_needStartButtonHoldForNonArrowKey;
 	int32 m_deltaCursor = 0;
 	Optional<Stopwatch> m_pressedTimeStopwatch;
 	double m_pressedTimeSecPrev = 0.0;
@@ -25,7 +25,7 @@ public:
 		const Array<Button>& decrementButtons,
 		double intervalSec,
 		double intervalSecFirst,
-		StartRequiredForBTFXLaserYN startRequiredForBTFXLaser);
+		NeedStartButtonHoldForNonArrowKeyYN needStartButtonHoldForNonArrowKey);
 
 	virtual ~ButtonCursorInputDevice();
 

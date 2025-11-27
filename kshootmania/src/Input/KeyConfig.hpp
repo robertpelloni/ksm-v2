@@ -8,7 +8,7 @@
 
 class ILaserInputMethod;
 
-using StartRequiredForBTFXLaserYN = YesNo<struct StartRequiredForBTFXLaserYN_tag>;
+using NeedStartButtonHoldForNonArrowKeyYN = YesNo<struct NeedStartButtonHoldForNonArrowKeyYN_tag>;
 
 namespace KeyConfig
 {
@@ -66,12 +66,12 @@ namespace KeyConfig
 	bool Up(Button button);
 
 	template <class C>
-	bool AnyButtonPressed(const C& buttons, StartRequiredForBTFXLaserYN startRequiredForBTFXLaser = StartRequiredForBTFXLaserYN::No)
+	bool AnyButtonPressed(const C& buttons, NeedStartButtonHoldForNonArrowKeyYN needStartButtonHoldForNonArrowKey = NeedStartButtonHoldForNonArrowKeyYN::No)
 	{
-		const bool btFXLaserAccepted = !startRequiredForBTFXLaser || KeyConfig::Pressed(kButtonStart);
+		const bool nonArrowKeyAccepted = !needStartButtonHoldForNonArrowKey || KeyConfig::Pressed(kButtonStart);
 		for (const auto& button : buttons)
 		{
-			const bool accepted = btFXLaserAccepted || !IsButtonBTFXLaser(button);
+			const bool accepted = nonArrowKeyAccepted || IsButtonArrowKey(button);
 			if (accepted && KeyConfig::Pressed(button))
 			{
 				return true;
@@ -81,12 +81,12 @@ namespace KeyConfig
 	}
 
 	template <class C>
-	bool AnyButtonDown(const C& buttons, StartRequiredForBTFXLaserYN startRequiredForBTFXLaser = StartRequiredForBTFXLaserYN::No)
+	bool AnyButtonDown(const C& buttons, NeedStartButtonHoldForNonArrowKeyYN needStartButtonHoldForNonArrowKey = NeedStartButtonHoldForNonArrowKeyYN::No)
 	{
-		const bool btFXLaserAccepted = !startRequiredForBTFXLaser || KeyConfig::Pressed(kButtonStart); // Startボタン判定側は押しっぱなしかの判定なのでPressedで正しい
+		const bool nonArrowKeyAccepted = !needStartButtonHoldForNonArrowKey || KeyConfig::Pressed(kButtonStart); // Startボタン判定側は押しっぱなしかの判定なのでPressedで正しい
 		for (const auto& button : buttons)
 		{
-			const bool accepted = btFXLaserAccepted || !IsButtonBTFXLaser(button);
+			const bool accepted = nonArrowKeyAccepted || IsButtonArrowKey(button);
 			if (accepted && KeyConfig::Down(button))
 			{
 				return true;

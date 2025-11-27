@@ -17,6 +17,7 @@ private:
 	int32 m_cursor;
 	int32 m_cursorStep;
 	IsCyclicMenuYN m_cyclic;
+	NeedStartButtonHoldForNonArrowKeyYN m_needStartButtonHoldForNonArrowKey;
 	int32 m_deltaCursor = 0;
 
 	void increment(int32 absDeltaCursor);

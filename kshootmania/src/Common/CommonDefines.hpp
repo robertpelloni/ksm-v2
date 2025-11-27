@@ -184,6 +184,21 @@ constexpr bool IsButtonBTFXLaser(Button button)
 	}
 }
 
+constexpr bool IsButtonArrowKey(Button button)
+{
+	switch (button)
+	{
+	case kButtonUp:
+	case kButtonDown:
+	case kButtonLeft:
+	case kButtonRight:
+		return true;
+
+	default:
+		return false;
+	}
+}
+
 #ifdef __APPLE__
 // macOSプラットフォーム特有のキー定義
 constexpr int32 kPlatformKeyCodeOffset = 0x10000;
