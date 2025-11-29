@@ -204,6 +204,10 @@ void OutputLicenseTxt()
 
 void KSMMain()
 {
+#if defined(__linux__)
+	FsUtils::InitModulePathForLinux();
+#endif
+
 	// Escキーによるプログラム終了を無効化
 	System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 
