@@ -139,7 +139,7 @@ namespace
 				CreateInfo::Enum(ConfigIni::Key::kLaserInputType, Array<IntStrPair>{
 					IntStrPair{ ConfigIni::Value::LaserInputType::kKeyboard, I18n::Get(I18n::Option::kLaserInputTypeKeyboard) },
 					IntStrPair{ ConfigIni::Value::LaserInputType::kSlider, I18n::Get(I18n::Option::kLaserInputTypeSlider) },
-					//IntStrPair{ ConfigIni::Value::LaserInputType::kMouseXY, I18n::Get(I18n::Option::kLaserInputTypeMouseXY) },
+					IntStrPair{ ConfigIni::Value::LaserInputType::kMouseXY, I18n::Get(I18n::Option::kLaserInputTypeMouseXY) },
 					IntStrPair{ ConfigIni::Value::LaserInputType::kAnalogStickXY, I18n::Get(I18n::Option::kLaserInputTypeAnalogStickXY) },
 				}),
 				CreateInfo::Enum(ConfigIni::Key::kAssistTick, Array<StringView>{
@@ -164,14 +164,14 @@ namespace
 					I18n::Get(I18n::Option::kLaserTimingAdjustLater),
 					I18n::Get(I18n::Option::kLaserTimingAdjustEarlier))
 				.setKeyTextureIdx(7),
-				/*CreateInfo::Enum(ConfigIni::Key::kLaserMouseDirectionX, Array<StringView>{
+				CreateInfo::Enum(ConfigIni::Key::kLaserMouseDirectionX, Array<StringView>{
 					I18n::Get(I18n::Option::kLaserMouseDirectionLeftThenRight),
 					I18n::Get(I18n::Option::kLaserMouseDirectionRightThenRight),
 				}).setKeyTextureIdx(8),
 				CreateInfo::Enum(ConfigIni::Key::kLaserMouseDirectionY, Array<StringView>{
 					I18n::Get(I18n::Option::kLaserMouseDirectionUpThenRight),
 					I18n::Get(I18n::Option::kLaserMouseDirectionDownThenRight),
-				}).setKeyTextureIdx(9),*/
+				}).setKeyTextureIdx(9),
 				CreateInfo::Int(ConfigIni::Key::kLaserSignalSensitivity, kLaserSignalSensitivityMin, kLaserSignalSensitivityMax, kLaserSignalSensitivityDefault).setKeyTextureIdx(10), // TODO: additional suffix for zero value
 				CreateInfo::Enum(ConfigIni::Key::kSwapLaserLR, Array<StringView>{
 					I18n::Get(I18n::Option::kDisabled),

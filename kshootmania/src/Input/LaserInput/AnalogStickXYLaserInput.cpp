@@ -1,4 +1,4 @@
-#include "AnalogStickXYLaserInput.hpp"
+﻿#include "AnalogStickXYLaserInput.hpp"
 #include <ksmaxis/ksmaxis.hpp>
 
 namespace

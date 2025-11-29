@@ -2,6 +2,7 @@
 #include "LaserInput/KeyboardLaserInput.hpp"
 #include "LaserInput/AnalogStickXYLaserInput.hpp"
 #include "LaserInput/SliderLaserInput.hpp"
+#include "LaserInput/MouseXYLaserInput.hpp"
 #include "Ini/ConfigIni.hpp"
 
 namespace
@@ -721,6 +722,10 @@ double KeyConfig::LaserDeltaCursorX(int32 laneIdx, double deltaTimeSec)
 		else if (laserInputType == ConfigIni::Value::LaserInputType::kAnalogStickXY)
 		{
 			s_laserInputMethods[laneIdx] = std::make_unique<AnalogStickXYLaserInput>(laneIdx);
+		}
+		else if (laserInputType == ConfigIni::Value::LaserInputType::kMouseXY)
+		{
+			s_laserInputMethods[laneIdx] = std::make_unique<MouseXYLaserInput>(laneIdx);
 		}
 		else
 		{

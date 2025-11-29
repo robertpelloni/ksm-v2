@@ -300,9 +300,20 @@ void KSMMain()
 	// ライブラリ初期化
 	Co::Init();
 	noco::Init();
-	if (std::string ksmaxisError; !ksmaxis::Init(&ksmaxisError))
+	std::string ksmaxisError;
+	std::vector<std::string> ksmaxisWarnings;
+#ifdef _WIN32
+	const bool ksmaxisSuccess = ksmaxis::Init(Platform::Windows::Window::GetHWND(), &ksmaxisError, &ksmaxisWarnings);
+#else
+	const bool ksmaxisSuccess = ksmaxis::Init(&ksmaxisError, &ksmaxisWarnings);
+#endif
+	if (!ksmaxisSuccess)
 	{
 		Logger << U"[ksm error] ksmaxis::Init() failed: " << Unicode::FromUTF8(ksmaxisError);
+	}
+	for (const auto& warning : ksmaxisWarnings)
+	{
+		Logger << U"[ksm warning] ksmaxis: " << Unicode::FromUTF8(warning);
 	}
 
 	// NocoUIのグローバルデフォルトフォントを設定

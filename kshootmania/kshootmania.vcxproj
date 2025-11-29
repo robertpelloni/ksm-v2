@@ -147,6 +147,7 @@
     <ClCompile Include="src\Input\KeyConfig.cpp" />
     <ClCompile Include="src\Input\LaserInput\AnalogStickXYLaserInput.cpp" />
     <ClCompile Include="src\Input\LaserInput\KeyboardLaserInput.cpp" />
+    <ClCompile Include="src\Input\LaserInput\MouseXYLaserInput.cpp" />
     <ClCompile Include="src\Input\LaserInput\SliderLaserInput.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\RuntimeConfig.cpp" />
@@ -362,6 +363,7 @@
     <ClInclude Include="src\Input\KeyConfig.hpp" />
     <ClInclude Include="src\Input\LaserInput\AnalogStickXYLaserInput.hpp" />
     <ClInclude Include="src\Input\LaserInput\ILaserInputMethod.hpp" />
+    <ClInclude Include="src\Input\LaserInput\MouseXYLaserInput.hpp" />
     <ClInclude Include="src\Input\LaserInput\SliderLaserInput.hpp" />
     <ClInclude Include="src\Input\LaserInput\KeyboardLaserInput.hpp" />
     <ClInclude Include="src\Input\PlatformKey.hpp" />
