@@ -3,6 +3,7 @@
 #include "Common/IMEUtils.hpp"
 #include "RuntimeConfig.hpp"
 #include "Scenes/Title/TitleScene.hpp"
+#include "Input/InputUtils.hpp"
 
 // TODO: TextureIdxまわりどうにかする
 
@@ -141,6 +142,8 @@ namespace
 					IntStrPair{ ConfigIni::Value::LaserInputType::kSlider, I18n::Get(I18n::Option::kLaserInputTypeSlider) },
 					IntStrPair{ ConfigIni::Value::LaserInputType::kMouseXY, I18n::Get(I18n::Option::kLaserInputTypeMouseXY) },
 					IntStrPair{ ConfigIni::Value::LaserInputType::kAnalogStickXY, I18n::Get(I18n::Option::kLaserInputTypeAnalogStickXY) },
+				}).setOnChangeCallback([]() {
+					InputUtils::InitKsmaxisForCurrentLaserInput();
 				}),
 				CreateInfo::Enum(ConfigIni::Key::kAssistTick, Array<StringView>{
 					I18n::Get(I18n::Option::kAssistTickOff),

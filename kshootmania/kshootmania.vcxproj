@@ -141,6 +141,7 @@
     <ClCompile Include="src\Ini\ConfigIni.cpp" />
     <ClCompile Include="src\Ini\KSMIniData.cpp" />
     <ClCompile Include="src\Input\FXButtonUpDetection.cpp" />
+    <ClCompile Include="src\Input\InputUtils.cpp" />
     <ClCompile Include="src\Input\Cursor\ButtonCursorInputDevice.cpp" />
     <ClCompile Include="src\Input\Cursor\CursorInput.cpp" />
     <ClCompile Include="src\Input\Cursor\LaserCursorInputDevice.cpp" />
@@ -356,6 +357,7 @@
     <ClInclude Include="src\Ini\ConfigIni.hpp" />
     <ClInclude Include="src\Ini\KSMIniData.hpp" />
     <ClInclude Include="src\Input\FXButtonUpDetection.hpp" />
+    <ClInclude Include="src\Input\InputUtils.hpp" />
     <ClInclude Include="src\Input\Cursor\ButtonCursorInputDevice.hpp" />
     <ClInclude Include="src\Input\Cursor\CursorInput.hpp" />
     <ClInclude Include="src\Input\Cursor\ICursorInputDevice.hpp" />

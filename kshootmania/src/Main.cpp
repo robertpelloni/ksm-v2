@@ -12,6 +12,7 @@
 #include "RuntimeConfig.hpp"
 #include "Scenes/Title/TitleScene.hpp"
 #include "Input/KeyConfig.hpp"
+#include "Input/InputUtils.hpp"
 
 #ifdef __APPLE__
 #include <ksmplatform_macos/input_method.h>
@@ -323,21 +324,9 @@ void KSMMain()
 	// ライブラリ初期化
 	Co::Init();
 	noco::Init();
-	std::string ksmaxisError;
-	std::vector<std::string> ksmaxisWarnings;
-#ifdef _WIN32
-	const bool ksmaxisSuccess = ksmaxis::Init(Platform::Windows::Window::GetHWND(), &ksmaxisError, &ksmaxisWarnings);
-#else
-	const bool ksmaxisSuccess = ksmaxis::Init(&ksmaxisError, &ksmaxisWarnings);
-#endif
-	if (!ksmaxisSuccess)
-	{
-		Logger << U"[ksm error] ksmaxis::Init() failed: " << Unicode::FromUTF8(ksmaxisError);
-	}
-	for (const auto& warning : ksmaxisWarnings)
-	{
-		Logger << U"[ksm warning] ksmaxis: " << Unicode::FromUTF8(warning);
-	}
+
+	// レーザー入力方式がキーボード以外なら、ksmaxisを初期化
+	InputUtils::InitKsmaxisForCurrentLaserInput();
 
 	// NocoUIのグローバルデフォルトフォントを設定
 	noco::SetGlobalDefaultFont(AssetManagement::SystemFont());
@@ -351,7 +340,10 @@ void KSMMain()
 	
 	while (System::Update())
 	{
-		ksmaxis::Update();
+		if (ksmaxis::IsInitialized())
+		{
+			ksmaxis::Update();
+		}
 
 #ifdef __APPLE__
 		// macOSプラットフォーム特有のキーボード状態を更新
@@ -376,7 +368,10 @@ void KSMMain()
 #endif
 
 	// ライブラリ終了
-	ksmaxis::Terminate();
+	if (ksmaxis::IsInitialized())
+	{
+		ksmaxis::Terminate();
+	}
 	ksmaudio::Terminate();
 }
 

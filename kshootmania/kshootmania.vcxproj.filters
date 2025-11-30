@@ -288,6 +288,9 @@
     <ClCompile Include="src\Input\FXButtonUpDetection.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
+    <ClCompile Include="src\Input\InputUtils.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
     <ClCompile Include="src\Input\KeyConfig.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
@@ -920,6 +923,9 @@
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="src\Input\FXButtonUpDetection.hpp">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Input\InputUtils.hpp">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
     <ClInclude Include="src\Input\KeyConfig.hpp">
