@@ -1187,19 +1187,19 @@ OptionKeyConfigMenu::OptionKeyConfigMenu()
 	: m_horizontalCursorInput(CursorInput::CreateInfo
 		{
 			.type = CursorInput::Type::Horizontal,
-			.buttonFlags = CursorButtonFlags::kArrowOrBT,
+			.buttonFlags = CursorButtonFlags::kArrowOrLaser,
 		})
 	, m_verticalCursorInput(CursorInput::CreateInfo
 		{
 			.type = CursorInput::Type::Vertical,
-			.buttonFlags = CursorButtonFlags::kArrowOrBT,
+			.buttonFlags = CursorButtonFlags::kArrowOrLaser,
 		})
 	, m_configSetMenu(LinearMenu::CreateInfoWithEnumCount
 		{
 			.cursorInputCreateInfo = CursorInput::CreateInfo
 			{
 				.type = CursorInput::Type::Horizontal,
-				.buttonFlags = CursorButtonFlags::kArrowOrBT,
+				.buttonFlags = CursorButtonFlags::kArrowOrLaser,
 			},
 			.enumCount = KeyConfig::kConfigSetEnumCount,
 			.cyclic = IsCyclicMenuYN::No,
