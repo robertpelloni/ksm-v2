@@ -111,7 +111,7 @@ private:
 
 	Optional<std::size_t> findFolderIndex(const Array<FilePath>& folderPaths, FilePathView targetFullPath) const;
 
-	void addOtherFolderItemsRotated(FilePathView currentFolderPath);
+	void addOtherFolderItemsRotated();
 
 	void addOtherFolderItemsSimple();
 

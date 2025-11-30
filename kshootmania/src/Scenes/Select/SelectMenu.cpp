@@ -421,7 +421,7 @@ bool SelectMenu::openDirectoryWithNameSort(FilePathView directoryPath)
 	// (フォルダを開いていない場合、または現在開いていないフォルダを表示する設定の場合のみ)
 	if (directoryPath.empty() || ConfigIni::GetBool(ConfigIni::Key::kAlwaysShowOtherFolders))
 	{
-		addOtherFolderItemsRotated(directoryPath);
+		addOtherFolderItemsRotated();
 	}
 
 	return true;
@@ -1383,7 +1383,7 @@ bool SelectMenu::openDirectoryWithLevelSort(FilePathView directoryPath)
 	// (フォルダを開いていない場合、または現在開いていないフォルダを表示する設定の場合のみ)
 	if (directoryPath.empty() || ConfigIni::GetBool(ConfigIni::Key::kAlwaysShowOtherFolders))
 	{
-		addOtherFolderItemsRotated(directoryPath);
+		addOtherFolderItemsRotated();
 	}
 
 	return true;
@@ -1785,7 +1785,7 @@ bool SelectMenu::openFavoriteFolderWithNameSort(FilePathView specialPath)
 	// フォルダ項目を追加
 	if (ConfigIni::GetBool(ConfigIni::Key::kAlwaysShowOtherFolders))
 	{
-		addOtherFolderItemsRotated(specialPath);
+		addOtherFolderItemsRotated();
 	}
 
 	return true;
@@ -1903,7 +1903,7 @@ bool SelectMenu::openFavoriteFolderWithLevelSort(FilePathView specialPath)
 	// フォルダ項目を追加
 	if (ConfigIni::GetBool(ConfigIni::Key::kAlwaysShowOtherFolders))
 	{
-		addOtherFolderItemsRotated(specialPath);
+		addOtherFolderItemsRotated();
 	}
 
 	return true;
@@ -1981,7 +1981,7 @@ bool SelectMenu::openCoursesFolderWithNameSort()
 	// フォルダ項目を追加
 	if (ConfigIni::GetBool(ConfigIni::Key::kAlwaysShowOtherFolders))
 	{
-		addOtherFolderItemsRotated(SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath);
+		addOtherFolderItemsRotated();
 	}
 
 	return true;
@@ -2020,7 +2020,7 @@ bool SelectMenu::openCoursesFolderWithLevelSort()
 	// フォルダ項目を追加
 	if (ConfigIni::GetBool(ConfigIni::Key::kAlwaysShowOtherFolders))
 	{
-		addOtherFolderItemsRotated(SelectMenuCoursesFolderItem::kCoursesFolderSpecialPath);
+		addOtherFolderItemsRotated();
 	}
 
 	return true;
@@ -2089,13 +2089,13 @@ Optional<std::size_t> SelectMenu::findFolderIndex(const Array<FilePath>& folderP
 	return none;
 }
 
-void SelectMenu::addOtherFolderItemsRotated(FilePathView currentFolderPath)
+void SelectMenu::addOtherFolderItemsRotated()
 {
 	const Array<FilePath> folderPaths = getSortedFolderPaths();
 
 	// 現在開いているフォルダのインデックスを調べる
 	// (フォルダを開いている場合は、そのフォルダが先頭になるような順番で項目を追加する)
-	const Optional<std::size_t> currentFolderIdxOpt = findFolderIndex(folderPaths, currentFolderPath.empty() ? m_folderState.fullPath : currentFolderPath);
+	const Optional<std::size_t> currentFolderIdxOpt = findFolderIndex(folderPaths, m_folderState.fullPath);
 	const std::size_t currentFolderIdx = currentFolderIdxOpt.value_or(0);
 
 	// 項目を追加
