@@ -700,15 +700,7 @@ void BTOptionPanel::loadFromConfigIni()
 	loadedType = hispeedSetting.type;
 	loadedValue = hispeedSetting.value;
 
-	// ハイスピード種類の配列から該当するインデックスを探して設定
-	for (int32 i = 0; i < static_cast<int32>(m_hispeedTypeMenu.size()); ++i)
-	{
-		if (m_hispeedTypeMenu[i] == loadedType)
-		{
-			m_hispeedTypeMenu.setCursor(i);
-			break;
-		}
-	}
+	m_hispeedTypeMenu.setCursorToValue(loadedType);
 
 	refreshHispeedValueMenuConstraints();
 	m_hispeedValueMenu.setCursor(loadedValue);

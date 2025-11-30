@@ -202,7 +202,7 @@ namespace MusicGame
 
 	void HispeedSettingMenu::setHispeedSetting(const HispeedSetting& hispeedSetting)
 	{
-		m_typeMenu.setCursor(hispeedSetting.type);
+		m_typeMenu.setCursorToValue(hispeedSetting.type);
 		refreshValueMenuConstraints();
 		m_valueMenu.setCursor(hispeedSetting.value);
 	}

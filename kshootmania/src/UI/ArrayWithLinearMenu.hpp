@@ -27,6 +27,11 @@ public:
 	template <typename U>
 	void setCursor(U value);
 
+	/// @brief 配列内で指定した値に一致する要素のインデックスにカーソルを設定
+	/// @param value 検索する値
+	/// @return 値が見つかった場合はtrue、見つからなかった場合はfalse(カーソルは変更されない)
+	bool setCursorToValue(const T& value);
+
 	void update();
 
 	bool isCursorMin() const;
@@ -124,6 +129,20 @@ template <typename U>
 void ArrayWithLinearMenu<T>::setCursor(U value)
 {
 	m_linearMenu.setCursor(value);
+}
+
+template <typename T>
+bool ArrayWithLinearMenu<T>::setCursorToValue(const T& value)
+{
+	for (int32 i = 0; i < static_cast<int32>(m_array.size()); ++i)
+	{
+		if (m_array[i] == value)
+		{
+			m_linearMenu.setCursor(i);
+			return true;
+		}
+	}
+	return false;
 }
 
 template <typename T>
