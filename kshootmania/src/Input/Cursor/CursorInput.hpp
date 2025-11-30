@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <memory>
 #include "ButtonCursorInputDevice.hpp"
+#include "LaserCursorInputDevice.hpp"
 
 using FlipArrowKeyDirectionYN = YesNo<struct FlipArrowKeyDirectionYN_tag>;
 
@@ -32,6 +33,9 @@ class CursorInput
 {
 private:
 	ButtonCursorInputDevice m_buttonDevice;
+	Optional<LaserCursorInputDevice> m_laserDevice;
+	Optional<LaserCursorInputDevice> m_laserDeviceOpposite;
+	NeedStartButtonHoldForNonArrowKeyYN m_needStartButtonHoldForNonArrowKey;
 
 public:
 	enum class Type

@@ -58,15 +58,7 @@ LinearMenu::LinearMenu(const CreateInfoWithEnumCount& createInfo)
 	, m_cursor(Clamp(createInfo.defaultCursor, 0, createInfo.enumCount - 1))
 	, m_cursorStep(1)
 	, m_cyclic(createInfo.cyclic)
-	, m_needStartButtonHoldForNonArrowKey(createInfo.cursorInputCreateInfo.needStartButtonHoldForNonArrowKey)
 {
-	// レーザー入力有効の場合、LaserCursorInputDeviceを生成
-	if (createInfo.cursorInputCreateInfo.buttonFlags & CursorButtonFlags::kLaser)
-	{
-		// 横向きメニューはレーン0(左レーザー)、縦向きメニューはレーン1(右レーザー)を使用
-		const int32 laneIdx = createInfo.cursorInputCreateInfo.type == CursorInput::Type::Horizontal ? 0 : 1;
-		m_laserDevice = MakeOptional<LaserCursorInputDevice>(laneIdx);
-	}
 }
 
 LinearMenu::LinearMenu(const CreateInfoWithCursorMinMax& createInfo)
@@ -76,15 +68,7 @@ LinearMenu::LinearMenu(const CreateInfoWithCursorMinMax& createInfo)
 	, m_cursor(Clamp(createInfo.defaultCursor, createInfo.cursorMin, createInfo.cursorMax))
 	, m_cursorStep(createInfo.cursorStep)
 	, m_cyclic(createInfo.cyclic)
-	, m_needStartButtonHoldForNonArrowKey(createInfo.cursorInputCreateInfo.needStartButtonHoldForNonArrowKey)
 {
-	// レーザー入力有効の場合、LaserCursorInputDeviceを生成
-	if (createInfo.cursorInputCreateInfo.buttonFlags & CursorButtonFlags::kLaser)
-	{
-		// 横向きメニューはレーン0(左レーザー)、縦向きメニューはレーン1(右レーザー)を使用
-		const int32 laneIdx = createInfo.cursorInputCreateInfo.type == CursorInput::Type::Horizontal ? 0 : 1;
-		m_laserDevice = MakeOptional<LaserCursorInputDevice>(laneIdx);
-	}
 }
 
 int32 LinearMenu::cursor() const
@@ -96,16 +80,6 @@ void LinearMenu::update()
 {
 	m_cursorInput.update();
 	m_deltaCursor = m_cursorInput.deltaCursor();
-
-	// アナログ入力時のみLaserCursorInputDeviceを使用(デジタル入力時はCursorInputで処理済み)
-	if (m_laserDevice.has_value() && !KeyConfig::IsLaserInputDigital())
-	{
-		m_laserDevice->update();
-		if (!m_needStartButtonHoldForNonArrowKey || KeyConfig::Pressed(kButtonStart))
-		{
-			m_deltaCursor += m_laserDevice->deltaCursor();
-		}
-	}
 
 	const int32 absDeltaCursor = Abs(m_deltaCursor) * m_cursorStep;
 	if (m_deltaCursor > 0)

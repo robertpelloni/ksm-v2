@@ -1,5 +1,6 @@
 ﻿#include "CursorInput.hpp"
 #include "ButtonCursorInputDevice.hpp"
+#include "Input/KeyConfig.hpp"
 #include "Ini/ConfigIni.hpp"
 
 namespace
@@ -205,17 +206,58 @@ CursorInput::CursorInput(const CreateInfo& createInfo)
 		createInfo.buttonIntervalSec,
 		createInfo.buttonIntervalSecFirst,
 		createInfo.needStartButtonHoldForNonArrowKey)
+	, m_needStartButtonHoldForNonArrowKey(createInfo.needStartButtonHoldForNonArrowKey)
 {
+	if (HasFlag(createInfo.buttonFlags, CursorButtonFlags::kLaser))
+	{
+		const int32 laneIdx = createInfo.type == Type::Horizontal ? 0 : 1;
+		m_laserDevice = MakeOptional<LaserCursorInputDevice>(laneIdx);
+	}
+
+	if (HasFlag(createInfo.buttonFlags, CursorButtonFlags::kLaserOpposite))
+	{
+		const int32 laneIdx = createInfo.type == Type::Horizontal ? 1 : 0;
+		m_laserDeviceOpposite = MakeOptional<LaserCursorInputDevice>(laneIdx);
+	}
 }
 
 void CursorInput::update()
 {
 	m_buttonDevice.update();
+
+	// アナログ入力時のみLaserCursorInputDeviceを使用(デジタル入力時はButtonCursorInputDeviceで処理済み)
+	if (!KeyConfig::IsLaserInputDigital())
+	{
+		if (m_laserDevice.has_value())
+		{
+			m_laserDevice->update();
+		}
+		if (m_laserDeviceOpposite.has_value())
+		{
+			m_laserDeviceOpposite->update();
+		}
+	}
 }
 
 int32 CursorInput::deltaCursor() const
 {
-	int32 deltaCursorSum = 0;
-	deltaCursorSum += m_buttonDevice.deltaCursor();
+	int32 deltaCursorSum = m_buttonDevice.deltaCursor();
+
+	// アナログ入力時のみLaserCursorInputDeviceを使用
+	if (!KeyConfig::IsLaserInputDigital())
+	{
+		if (!m_needStartButtonHoldForNonArrowKey || KeyConfig::Pressed(kButtonStart))
+		{
+			if (m_laserDevice.has_value())
+			{
+				deltaCursorSum += m_laserDevice->deltaCursor();
+			}
+			if (m_laserDeviceOpposite.has_value())
+			{
+				deltaCursorSum += m_laserDeviceOpposite->deltaCursor();
+			}
+		}
+	}
+
 	return deltaCursorSum;
 }
