@@ -457,6 +457,7 @@ void SelectMenu::refreshContentCanvasParams()
 	const int32 difficultyIdx = difficultyCursor >= 0 ? difficultyCursor : m_difficultyMenu.rawCursor();
 	m_selectSceneCanvas->setParamValues({
 		{ U"difficultyCursorState", U"difficulty{}"_fmt(difficultyIdx) },
+		{ U"scrollBarCursorRate", m_menu.cursorRate() },
 	});
 
 	// 中央の項目のパラメータを反映

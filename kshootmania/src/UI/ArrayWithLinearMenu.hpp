@@ -40,6 +40,8 @@ public:
 
 	int32 deltaCursor() const;
 
+	double cursorRate() const;
+
 	T& cursorValue();
 
 	const T& cursorValue() const;
@@ -193,6 +195,12 @@ template<typename T>
 int32 ArrayWithLinearMenu<T>::deltaCursor() const
 {
 	return m_linearMenu.deltaCursor();
+}
+
+template<typename T>
+double ArrayWithLinearMenu<T>::cursorRate() const
+{
+	return m_linearMenu.cursorRate();
 }
 
 template <typename T>
