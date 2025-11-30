@@ -150,6 +150,29 @@ void OutputLicenseTxt()
 		U"SOFTWARE.";
 	licenses.push_back(ksonLicense);
 
+	// ksmaxisのライセンス情報を追加
+	LicenseInfo ksmaxisLicense;
+	ksmaxisLicense.title = U"ksmaxis";
+	ksmaxisLicense.copyright = U"Copyright (c) 2025 masaka";
+	ksmaxisLicense.text = U"Permission is hereby granted, free of charge, to any person obtaining a copy\n"
+		U"of this software and associated documentation files (the \"Software\"), to deal\n"
+		U"in the Software without restriction, including without limitation the rights\n"
+		U"to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+		U"copies of the Software, and to permit persons to whom the Software is\n"
+		U"furnished to do so, subject to the following conditions:\n"
+		U"\n"
+		U"The above copyright notice and this permission notice shall be included in all\n"
+		U"copies or substantial portions of the Software.\n"
+		U"\n"
+		U"THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n"
+		U"IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+		U"FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
+		U"AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+		U"LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
+		U"OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n"
+		U"SOFTWARE.";
+	licenses.push_back(ksmaxisLicense);
+
 	// KSMフォントのライセンス情報を追加
 	LicenseInfo ksmFontLicense;
 	ksmFontLicense.title = U"KSM Fonts (KSM-JA/KR/SC/TC-Medium)";
