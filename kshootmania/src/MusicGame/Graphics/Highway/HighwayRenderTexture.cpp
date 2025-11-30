@@ -68,7 +68,8 @@ namespace MusicGame::Graphics
 		}
 
 		const double centerSplitShiftX = Camera::CenterSplitShiftX(centerSplit);
-		constexpr Size halfHighwayTextureSize = { kHighwayTextureSizeWide.x / 2, kHighwayTextureSizeWide.y };
+		constexpr double xOffset = (kHighwayTextureSizeWide.x - kHighwayTextureSize.x) / 2;
+		constexpr SizeF halfHighwayTextureSize{ kHighwayTextureSize.x / 2, kHighwayTextureSize.y };
 
 		const ScopedRenderStates2D samplerState{ SamplerState::ClampNearest };
 
@@ -77,15 +78,15 @@ namespace MusicGame::Graphics
 		m_additiveTexture.clear(Palette::Black);
 		{
 			const ScopedRenderTarget2D renderTarget(m_additiveTexture);
-			m_additiveBaseTexture(0, 0, halfHighwayTextureSize).draw(-centerSplitShiftX, 0); // 左側
-			m_additiveBaseTexture(halfHighwayTextureSize.x, 0, halfHighwayTextureSize).draw(halfHighwayTextureSize.x + centerSplitShiftX, 0); // 右側
+			m_additiveBaseTexture(xOffset, 0, halfHighwayTextureSize).draw(xOffset - centerSplitShiftX, 0); // 左側
+			m_additiveBaseTexture(xOffset + halfHighwayTextureSize.x, 0, halfHighwayTextureSize).draw(xOffset + halfHighwayTextureSize.x + centerSplitShiftX, 0); // 右側
 		}
 
 		m_invMultiplyTexture.clear(Palette::Black);
 		{
 			const ScopedRenderTarget2D renderTarget(m_invMultiplyTexture);
-			m_invMultiplyBaseTexture(0, 0, halfHighwayTextureSize).draw(-centerSplitShiftX, 0); // 左側
-			m_invMultiplyBaseTexture(halfHighwayTextureSize.x, 0, halfHighwayTextureSize).draw(halfHighwayTextureSize.x + centerSplitShiftX, 0); // 右側
+			m_invMultiplyBaseTexture(xOffset, 0, halfHighwayTextureSize).draw(xOffset - centerSplitShiftX, 0); // 左側
+			m_invMultiplyBaseTexture(xOffset + halfHighwayTextureSize.x, 0, halfHighwayTextureSize).draw(xOffset + halfHighwayTextureSize.x + centerSplitShiftX, 0); // 右側
 		}
 	}
 }
