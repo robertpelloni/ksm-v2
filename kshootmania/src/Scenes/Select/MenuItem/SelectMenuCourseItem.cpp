@@ -140,7 +140,7 @@ void SelectMenuCourseItem::setCanvasParamsCenter(const SelectMenuEventContext& c
 		if (const auto chartItemRoot = courseNode->findByName(U"ChartItemRoot"))
 		{
 			chartItemRoot->removeChildrenAll();
-			chartItemRoot->removeComponentsAll<noco::VerticalMarquee>(noco::RecursiveYN::No);
+			chartItemRoot->removeComponents<VerticalMarquee>(noco::RecursiveYN::No);
 
 			// 各曲のSubCanvasノードを追加
 			for (size_t i = 0; i < m_courseInfo.charts.size(); ++i)
@@ -214,7 +214,7 @@ void SelectMenuCourseItem::setCanvasParamsCenter(const SelectMenuEventContext& c
 
 			chartItemRoot->setVerticalScrollable(true);
 			chartItemRoot->setScrollBarType(noco::ScrollBarType::Hidden);
-			chartItemRoot->emplaceComponent<noco::VerticalMarquee>(0.75s, 0.75s, 64.0);
+			chartItemRoot->emplaceComponent<VerticalMarquee>(0.75s, 0.75s, 64.0);
 		}
 	}
 }
