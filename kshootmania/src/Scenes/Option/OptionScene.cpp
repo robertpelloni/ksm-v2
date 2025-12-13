@@ -107,10 +107,10 @@ namespace
 							const int32 volume = ConfigIni::GetInt(ConfigIni::Key::kMasterVolume, kMasterVolumeDefault);
 							ksmaudio::SetMasterVolume(volume / 100.0);
 						}),
-				/*CreateInfo::Enum(ConfigIni::Key::kVsync, Array<StringView>{
+				CreateInfo::Enum(ConfigIni::Key::kVsync, Array<StringView>{
 					I18n::Get(I18n::Option::kVsyncOff),
 					I18n::Get(I18n::Option::kVsyncOn),
-				}),*/
+				}),
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueInputJudgment, {
 				CreateInfo::Enum(ConfigIni::Key::kJudgmentModeBT, Array<StringView>{
@@ -325,6 +325,10 @@ Co::Task<void> OptionScene::fadeOut()
 void OptionScene::exitScene()
 {
 	ConfigIni::Save();
+
+	// Vsync設定を反映
+	const bool vsyncEnabled = ConfigIni::GetInt(ConfigIni::Key::kVsync, 0) != 0;
+	Graphics::SetVSyncEnabled(vsyncEnabled);
 
 	// 画面サイズ反映
 	ApplyScreenSizeConfig();

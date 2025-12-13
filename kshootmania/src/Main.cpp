@@ -289,8 +289,11 @@ void KSMMain()
 	// アセット一覧を登録
 	AssetManagement::RegisterAssets();
 
+	// Vsync設定を反映
+	const bool vsyncEnabled = ConfigIni::GetInt(ConfigIni::Key::kVsync, 0) != 0;
+	Graphics::SetVSyncEnabled(vsyncEnabled);
+
 	// フレームレート制限
-	Graphics::SetVSyncEnabled(false);
 	Addon::Register(U"FrameRateLimit", std::make_unique<FrameRateLimit>(300), -100);
 
 	Addon::Register(AutoMuteAddon::kAddonName, std::make_unique<AutoMuteAddon>(), 1);
