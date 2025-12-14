@@ -239,7 +239,7 @@ void KSMMain()
 	LicenseManager::DisableDefaultTrigger();
 
 	// ウィンドウタイトル
-	Window::SetTitle(U"K-Shoot MANIA v2.0.0-alpha4");
+	Window::SetTitle(U"K-Shoot MANIA v2.0.0-alpha5");
 
 	// カレントディレクトリを設定
 	// (ChangeCurrentDirectoryはここ以外は基本的に使用禁止。どうしても使う必要がある場合は必ずResourceDirectoryPathに戻すこと)
