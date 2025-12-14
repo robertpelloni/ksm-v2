@@ -16,6 +16,7 @@ namespace
 		{
 			.gaugeType = RuntimeConfig::GetGaugeType(),
 			.turnMode = RuntimeConfig::GetTurnMode(),
+			.playbackSpeed = RuntimeConfig::GetPlaybackSpeed(),
 			.btPlayMode = RuntimeConfig::GetJudgmentPlayModeBT(),
 			.fxPlayMode = RuntimeConfig::GetJudgmentPlayModeFX(),
 			.laserPlayMode = RuntimeConfig::GetJudgmentPlayModeLaser(),
