@@ -274,3 +274,8 @@ Optional<HighScoreInfo> SelectMenuCourseItem::highScoreInfo([[maybe_unused]] int
 {
 	return m_highScoreInfo;
 }
+
+void SelectMenuCourseItem::reloadHighScoreInfo()
+{
+	m_highScoreInfo = KscIO::ReadCourseHighScoreInfo(m_courseInfo.filePath, CreateKscKeyFromConfig());
+}

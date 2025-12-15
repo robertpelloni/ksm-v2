@@ -887,6 +887,18 @@ void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview)
 	}
 }
 
+void SelectMenu::reloadHighScoreInfoAll()
+{
+	for (auto& item : m_menu)
+	{
+		if (item != nullptr)
+		{
+			item->reloadHighScoreInfo();
+		}
+	}
+	refreshContentCanvasParams();
+}
+
 const Texture& SelectMenu::getJacketTexture(FilePathView filePath)
 {
 	if (auto it = m_jacketTextureCache.find(filePath); it != m_jacketTextureCache.end())

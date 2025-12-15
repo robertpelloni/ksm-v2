@@ -142,6 +142,8 @@ public:
 
 	void reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::No);
 
+	void reloadHighScoreInfoAll();
+
 	void jumpToAlphabetItem(char32 letter);
 
 	void jumpToNextAlphabet();

@@ -272,7 +272,7 @@ void SelectScene::update()
 	if (needsHighScoreReload)
 	{
 		// ハイスコア情報再読み込み
-		m_menu.reloadCurrentDirectory();
+		m_menu.reloadHighScoreInfoAll();
 	}
 
 	// プレイ統計パネル更新
