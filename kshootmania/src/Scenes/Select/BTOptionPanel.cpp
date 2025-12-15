@@ -283,8 +283,8 @@ BTOptionPanel::BTOptionPanel(std::shared_ptr<noco::Canvas> canvas)
 		.cursorInputCreateInfo = {
 			.type = CursorInput::Type::Horizontal,
 			.buttonFlags = CursorButtonFlags::kArrow,
-			.buttonIntervalSec = 0.06,
-			.buttonIntervalSecFirst = 0.12,
+			.buttonIntervalSec = 0.1,
+			.buttonIntervalSecFirst = 0.4,
 		},
 		.cursorMin = kPlaybackSpeedMin,
 		.cursorMax = kPlaybackSpeedMax,
