@@ -29,11 +29,13 @@ namespace MusicGame::Graphics
 
 		void prepare(double globalOffsetSec);
 
-		void update(double currentTimeSec);
+		void update(double currentTimeSec, bool isPaused);
 
 		void draw() const;
 
 		[[nodiscard]]
 		bool isEnabled() const;
+
+		void seekPosSec(SecondsF posSec);
 	};
 }

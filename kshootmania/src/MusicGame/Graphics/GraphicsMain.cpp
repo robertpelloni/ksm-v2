@@ -225,7 +225,7 @@ namespace MusicGame::Graphics
 		m_scorePanel.update(viewStatus.score);
 		m_highway3DGraphics.update(viewStatus);
 		m_laserApproachIndicator.update(gameStatus, timingCache);
-		m_moviePanel.update(gameStatus.currentTimeSec);
+		m_moviePanel.update(gameStatus.currentTimeSec, gameStatus.isPaused);
 	}
 
 	void GraphicsMain::draw(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const GameStatus& gameStatus, const ViewStatus& viewStatus, const Scroll::HighwayScrollContext& highwayScrollContext, Duration bgmDuration) const
@@ -277,5 +277,10 @@ namespace MusicGame::Graphics
 	bool GraphicsMain::hasMovie() const
 	{
 		return m_moviePanel.isEnabled();
+	}
+
+	void GraphicsMain::seekMoviePosSec(SecondsF posSec)
+	{
+		m_moviePanel.seekPosSec(posSec);
 	}
 }

@@ -284,6 +284,7 @@ namespace MusicGame
 				m_bgm.pause();
 				m_isPaused = true;
 			}
+			m_gameStatus.isPaused = m_isPaused;
 		}
 
 		// 早送り(Ctrl+Right)
@@ -292,7 +293,9 @@ namespace MusicGame
 			if (m_fastForwardStopwatch.ms() >= 60)
 			{
 				const auto currentPos = m_bgm.posSec();
-				m_bgm.seekPosSec(currentPos + SecondsF(1.0));
+				const auto newPos = currentPos + SecondsF{ 1.0 };
+				m_bgm.seekPosSec(newPos);
+				m_graphicsMain.seekMoviePosSec(newPos);
 				m_fastForwardStopwatch.restart();
 			}
 		}
