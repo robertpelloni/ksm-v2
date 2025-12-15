@@ -164,7 +164,7 @@ namespace MusicGame
 			createInfo.playOption.gameMode)
 		, m_camSystem(m_chartData)
 		, m_highwayScroll(m_chartData)
-		, m_bgm(FileSystem::PathAppend(m_parentPath, Unicode::FromUTF8(m_chartData.audio.bgm.filename)), m_chartData.audio.bgm.vol, SecondsF{ static_cast<double>(m_chartData.audio.bgm.offset + createInfo.playOption.effectiveGlobalOffsetMs()) / 1000 }, Audio::DetermineLegacyAudioFPMode(m_chartData, m_parentPath), m_chartData, m_parentPath, createInfo.playOption.playbackSpeed)
+		, m_bgm(FileSystem::PathAppend(m_parentPath, Unicode::FromUTF8(m_chartData.audio.bgm.filename)), m_chartData.audio.bgm.vol, SecondsF{ (m_chartData.audio.bgm.offset + createInfo.playOption.effectiveGlobalOffsetMs()) / 1000.0 / createInfo.playOption.nonZeroPlaybackSpeed() }, Audio::DetermineLegacyAudioFPMode(m_chartData, m_parentPath), m_chartData, m_parentPath, createInfo.playOption.playbackSpeed)
 		, m_assistTick(createInfo.assistTickMode)
 		, m_laserSlamSE(m_chartData, m_timingCache, m_parentPath, createInfo.playOption.isAutoPlaySE)
 		, m_fxChipSE(m_chartData, m_timingCache, m_parentPath, createInfo.playOption.isAutoPlaySE)
@@ -177,7 +177,7 @@ namespace MusicGame
 
 	void GameMain::start()
 	{
-		const double globalOffsetSec = m_playOption.effectiveGlobalOffsetMs() / 1000.0;
+		const double globalOffsetSec = m_playOption.effectiveGlobalOffsetMs() / 1000.0 / m_playOption.nonZeroPlaybackSpeed();
 		m_graphicsMain.prepareMovie(globalOffsetSec);
 		m_bgm.seekPosSec(-TimeSecBeforeStart(m_graphicsMain.hasMovie()));
 		m_bgm.play();
