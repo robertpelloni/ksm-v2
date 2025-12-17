@@ -2,6 +2,7 @@
 
 namespace
 {
+	[[nodiscard]]
 	StringView GaugeTypeStr(GaugeType gaugeType)
 	{
 		switch (gaugeType)
@@ -18,6 +19,7 @@ namespace
 		}
 	}
 
+	[[nodiscard]]
 	StringView TurnModeStr(TurnMode turnMode)
 	{
 		switch (turnMode)
@@ -34,6 +36,7 @@ namespace
 		}
 	}
 
+	[[nodiscard]]
 	StringView JudgmentPlayModeStr(JudgmentPlayMode judgmentPlayMode)
 	{
 		switch (judgmentPlayMode)
@@ -52,6 +55,7 @@ namespace
 		}
 	}
 
+	[[nodiscard]]
 	String PlaybackSpeedStr(double playbackSpeed)
 	{
 		if (playbackSpeed == 1.0)
