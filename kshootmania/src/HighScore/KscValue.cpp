@@ -3,6 +3,7 @@
 namespace
 {
 	template <typename T>
+	[[nodiscard]]
 	T GetFieldValue(const Array<String>& values, std::size_t index, T defaultValue)
 	{
 		if (values.size() <= index)
