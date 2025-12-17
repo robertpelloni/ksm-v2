@@ -65,12 +65,6 @@ public:
 		return none;
 	}
 
-	/// @brief ハイスコア情報を再読み込み
-	virtual void reloadHighScoreInfo()
-	{
-		// デフォルトは何もしない(曲・コースの項目で再読み込み実装)
-	}
-
 	virtual bool difficultyMenuExists() const
 	{
 		return false;

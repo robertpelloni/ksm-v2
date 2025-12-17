@@ -69,8 +69,12 @@ namespace
 
 String KscKey::toString() const
 {
-	return U"{},{},{},{},{},{}"_fmt(
-		GaugeTypeStr(gaugeType),
+	return U"{},{}"_fmt(GaugeTypeStr(gaugeType), toStringWithoutGaugeType());
+}
+
+String KscKey::toStringWithoutGaugeType() const
+{
+	return U"{},{},{},{},{}"_fmt(
 		TurnModeStr(turnMode),
 		PlaybackSpeedStr(playbackSpeed),
 		JudgmentPlayModeStr(btPlayMode),

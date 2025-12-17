@@ -80,7 +80,4 @@ public:
 	/// @param difficultyIdx 難易度のインデックス(0～3)
 	/// @return ハイスコア情報(存在しない場合はnone)
 	virtual Optional<HighScoreInfo> highScoreInfo(int32 difficultyIdx) const override;
-
-	/// @brief ハイスコア情報を再読み込み
-	virtual void reloadHighScoreInfo() override;
 };

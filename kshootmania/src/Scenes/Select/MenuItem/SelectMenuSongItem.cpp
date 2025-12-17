@@ -374,14 +374,3 @@ Optional<String> SelectMenuSongItem::relativePathToCopy(int32 difficultyIdx) con
 	relativePath.replace(U'\\', U'/');
 	return relativePath;
 }
-
-void SelectMenuSongItem::reloadHighScoreInfo()
-{
-	for (auto& chartInfo : m_chartInfos)
-	{
-		if (chartInfo != nullptr)
-		{
-			chartInfo->reloadHighScoreInfo();
-		}
-	}
-}

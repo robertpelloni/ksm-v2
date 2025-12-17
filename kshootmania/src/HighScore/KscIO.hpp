@@ -13,6 +13,11 @@ namespace KscIO
 	[[nodiscard]]
 	HighScoreInfo ReadHighScoreInfo(FilePathView chartFilePath, const KscKey& condition);
 
+	/// @brief ハイスコア情報を全て読み込む
+	/// @param chartFilePath 譜面ファイルのパス(kscファイルのパスではないので注意)
+	/// @param pHighScoreInfoMap 読み込んだ全エントリのハイスコア情報(キー:gaugeType部分を除いたKscKey文字列)
+	void ReadAllHighScoreInfo(FilePathView chartFilePath, HashTable<String, HighScoreInfo>* pHighScoreInfoMap);
+
 	/// @brief ハイスコア情報を書き込む
 	/// @param chartFilePath 譜面ファイルのパス(kscファイルのパスではないので注意)
 	/// @param playResult プレイ結果
@@ -26,6 +31,11 @@ namespace KscIO
 	/// @return 読み込んだハイスコア情報
 	[[nodiscard]]
 	HighScoreInfo ReadCourseHighScoreInfo(FilePathView courseFilePath, const KscKey& condition);
+
+	/// @brief コースのハイスコア情報を全て読み込む
+	/// @param courseFilePath コースファイル(.kco)のパス(kscファイルのパスではないので注意)
+	/// @param pHighScoreInfoMap 読み込んだ全エントリのハイスコア情報(キー:gaugeType部分を除いたKscKey文字列)
+	void ReadAllCourseHighScoreInfo(FilePathView courseFilePath, HashTable<String, HighScoreInfo>* pHighScoreInfoMap);
 
 	/// @brief コースのハイスコア情報を書き込む
 	/// @param courseFilePath コースファイル(.kco)のパス(kscファイルのパスではないので注意)

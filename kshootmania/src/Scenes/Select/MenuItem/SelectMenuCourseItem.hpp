@@ -6,7 +6,9 @@ class SelectMenuCourseItem : public ISelectMenuItem
 {
 private:
 	CourseInfo m_courseInfo;
-	HighScoreInfo m_highScoreInfo;
+
+	// 全条件のハイスコア情報(キー:gaugeType部分を除いたKscKey文字列)
+	HashTable<String, HighScoreInfo> m_highScoreInfoMap;
 
 public:
 	explicit SelectMenuCourseItem(const CourseInfo& courseInfo);
@@ -37,7 +39,4 @@ public:
 	/// @param difficultyIdx 難易度のインデックス(0～3、コースでは不使用)
 	/// @return ハイスコア情報(存在しない場合はnone)
 	virtual Optional<HighScoreInfo> highScoreInfo(int32 difficultyIdx) const override;
-
-	/// @brief ハイスコア情報を再読み込み
-	virtual void reloadHighScoreInfo() override;
 };

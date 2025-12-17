@@ -887,15 +887,8 @@ void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview)
 	}
 }
 
-void SelectMenu::reloadHighScoreInfoAll()
+void SelectMenu::refreshHighScoreDisplay()
 {
-	for (auto& item : m_menu)
-	{
-		if (item != nullptr)
-		{
-			item->reloadHighScoreInfo();
-		}
-	}
 	refreshContentCanvasParams();
 }
 
