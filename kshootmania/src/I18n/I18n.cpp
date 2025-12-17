@@ -7,7 +7,6 @@ namespace
 
 	std::array<std::array<String, I18n::kKeyIdxMax>, I18n::kCategoryMax> s_i18nDictionary;
 
-	[[nodiscard]]
 	StringView TrimZeroPadding(StringView str)
 	{
 		const std::size_t length = str.size();
@@ -21,7 +20,6 @@ namespace
 		return str.substr(cursor);
 	}
 
-	[[nodiscard]]
 	I18n::StandardLanguage ConvertLanguageNameToStandardLanguage(StringView name)
 	{
 		if (name == U"English")
