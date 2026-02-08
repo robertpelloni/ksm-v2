@@ -2,6 +2,7 @@
 #include "OptionAssets.hpp"
 #include "Common/FrameRateLimit.hpp"
 #include "Common/IMEUtils.hpp"
+#include "Common/FsUtils.hpp"
 #include "RuntimeConfig.hpp"
 #include "Scenes/Title/TitleScene.hpp"
 #include "Input/InputUtils.hpp"
@@ -114,6 +115,16 @@ namespace
 					StrPair{ U"0;300", U"{}(300fps)"_fmt(I18n::Get(I18n::Option::kVsyncOff)) },
 					StrPair{ U"1", I18n::Get(I18n::Option::kVsyncOn) },
 				}).setKeyTextureIdx(9),
+				CreateInfo::Enum(ConfigIni::Key::kAutoSync, Array<StringView>{
+					I18n::Get(I18n::Select::kAutoSyncOff),
+					I18n::Get(I18n::Select::kAutoSyncOnLow),
+					I18n::Get(I18n::Select::kAutoSyncOnMid),
+					I18n::Get(I18n::Select::kAutoSyncOnHigh),
+				}).setLabel(I18n::Get(I18n::Select::kAutoSync)),
+				CreateInfo::Enum(ConfigIni::Key::kShowSongTitleImages, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(U"Song Title/Artist Images"),
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueInputJudgment, {
 				CreateInfo::Enum(ConfigIni::Key::kJudgmentModeBT, Array<StringView>{
@@ -180,7 +191,12 @@ namespace
 					I18n::Get(I18n::Option::kLaserMouseDirectionUpThenRight),
 					I18n::Get(I18n::Option::kLaserMouseDirectionDownThenRight),
 				}).setKeyTextureIdx(9),
-				CreateInfo::Int(ConfigIni::Key::kLaserSignalSensitivity, kLaserSignalSensitivityMin, kLaserSignalSensitivityMax, kLaserSignalSensitivityDefault).setKeyTextureIdx(10), // TODO: additional suffix for zero value
+				CreateInfo::Int(ConfigIni::Key::kLaserSignalSensitivity, kLaserSignalSensitivityMin, kLaserSignalSensitivityMax, kLaserSignalSensitivityDefault)
+					.setAdditionalSuffixes(
+						I18n::Get(I18n::Option::kLaserSignalSensitivityZero),
+						U"",
+						U"")
+					.setKeyTextureIdx(10),
 				CreateInfo::Enum(ConfigIni::Key::kSwapLaserLR, Array<StringView>{
 					I18n::Get(I18n::Option::kDisabled),
 					I18n::Get(I18n::Option::kEnabled),
@@ -216,6 +232,9 @@ namespace
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOnKeyboard),
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOnController),
 				}).setKeyTextureIdx(6),
+				CreateInfo::Enum(ConfigIni::Key::kSongsDirectoryPath, Array<String>{
+					FsUtils::SongsDirectoryPath()
+				}).setLabel(U"Songs Directory"),
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueOther/*FIXME*/, {
 			}),

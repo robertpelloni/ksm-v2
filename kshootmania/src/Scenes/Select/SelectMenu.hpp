@@ -34,6 +34,8 @@ struct SelectMenuEventContext
 	std::function<void()> fnCloseFolder;
 	std::function<const Texture&(FilePathView)> fnGetJacketTexture;
 	std::function<const Texture&(FilePathView)> fnGetIconTexture;
+	std::function<const Texture&(FilePathView)> fnGetTitleTexture;
+	std::function<const Texture&(FilePathView)> fnGetArtistTexture;
 	std::function<void()> fnMoveToNextSubDirSection;
 	std::function<void()> fnMoveToPrevSubDirSection;
 };
@@ -66,6 +68,10 @@ private:
 	HashTable<String, Texture> m_jacketTextureCache;
 
 	HashTable<String, Texture> m_iconTextureCache;
+
+	HashTable<String, Texture> m_titleTextureCache;
+
+	HashTable<String, Texture> m_artistTextureCache;
 
 	bool openDirectory(FilePathView directoryPath, PlaySeYN playSe, RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::Yes, SaveToConfigIniYN saveToConfigIni = SaveToConfigIniYN::Yes);
 
@@ -139,6 +145,10 @@ public:
 	const Texture& getJacketTexture(FilePathView filePath);
 
 	const Texture& getIconTexture(FilePathView filePath);
+
+	const Texture& getTitleTexture(FilePathView filePath);
+
+	const Texture& getArtistTexture(FilePathView filePath);
 
 	void reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::No);
 

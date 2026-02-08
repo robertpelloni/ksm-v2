@@ -108,6 +108,8 @@ ir_sign_in_cursor=0
 hispeedtype_c=0
 hispeedtype_o=1
 hispeedtype_x=0
+autosync=0
+show_song_title_images=1
 )";
 #else
 	constexpr StringView kDefaultConfigIni = UR"([config]
@@ -211,6 +213,8 @@ ir_sign_in_cursor=0
 hispeedtype_c=0
 hispeedtype_o=1
 hispeedtype_x=0
+autosync=0
+show_song_title_images=1
 )";
 #endif
 

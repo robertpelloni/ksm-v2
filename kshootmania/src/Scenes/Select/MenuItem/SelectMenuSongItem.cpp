@@ -243,6 +243,68 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 		}
 
 		// TODO: title_img, artist_imgの設定
+		if (ConfigIni::GetBool(ConfigIni::Key::kShowSongTitleImages))
+		{
+			// タイトル画像
+			if (const auto titleImageNode = songNode->findByName(U"TitleImage"))
+			{
+				const String titleImgPath = pChartInfo->titleImgFilePath();
+				const Texture titleTexture = titleImgPath.empty() ? Texture{} : context.fnGetTitleTexture(titleImgPath);
+
+				if (!titleTexture.isEmpty())
+				{
+					if (const auto sprite = titleImageNode->getComponent<noco::Sprite>())
+					{
+						sprite->setTexture(titleTexture);
+						sprite->setColor(Palette::White);
+					}
+					titleImageNode->setActive(true);
+
+					if (const auto titleNode = songNode->findByName(U"Title"))
+					{
+						titleNode->setActive(false);
+					}
+				}
+				else
+				{
+					titleImageNode->setActive(false);
+					if (const auto titleNode = songNode->findByName(U"Title"))
+					{
+						titleNode->setActive(true);
+					}
+				}
+			}
+
+			// アーティスト画像
+			if (const auto artistImageNode = songNode->findByName(U"ArtistImage"))
+			{
+				const String artistImgPath = pChartInfo->artistImgFilePath();
+				const Texture artistTexture = artistImgPath.empty() ? Texture{} : context.fnGetArtistTexture(artistImgPath);
+
+				if (!artistTexture.isEmpty())
+				{
+					if (const auto sprite = artistImageNode->getComponent<noco::Sprite>())
+					{
+						sprite->setTexture(artistTexture);
+						sprite->setColor(Palette::White);
+					}
+					artistImageNode->setActive(true);
+
+					if (const auto artistNode = songNode->findByName(U"Artist"))
+					{
+						artistNode->setActive(false);
+					}
+				}
+				else
+				{
+					artistImageNode->setActive(false);
+					if (const auto artistNode = songNode->findByName(U"Artist"))
+					{
+						artistNode->setActive(true);
+					}
+				}
+			}
+		}
 	}
 	else
 	{
@@ -338,6 +400,68 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 	}
 
 	// TODO: title_img, artist_imgの設定
+	if (ConfigIni::GetBool(ConfigIni::Key::kShowSongTitleImages))
+	{
+		// タイトル画像
+		if (const auto titleImageNode = songNode->findByName(U"TitleImage"))
+		{
+			const String titleImgPath = pAltChartInfo->titleImgFilePath();
+			const Texture titleTexture = titleImgPath.empty() ? Texture{} : context.fnGetTitleTexture(titleImgPath);
+
+			if (!titleTexture.isEmpty())
+			{
+				if (const auto sprite = titleImageNode->getComponent<noco::Sprite>())
+				{
+					sprite->setTexture(titleTexture);
+					sprite->setColor(Palette::White);
+				}
+				titleImageNode->setActive(true);
+
+				if (const auto titleNode = songNode->findByName(U"Title"))
+				{
+					titleNode->setActive(false);
+				}
+			}
+			else
+			{
+				titleImageNode->setActive(false);
+				if (const auto titleNode = songNode->findByName(U"Title"))
+				{
+					titleNode->setActive(true);
+				}
+			}
+		}
+
+		// アーティスト画像
+		if (const auto artistImageNode = songNode->findByName(U"ArtistImage"))
+		{
+			const String artistImgPath = pAltChartInfo->artistImgFilePath();
+			const Texture artistTexture = artistImgPath.empty() ? Texture{} : context.fnGetArtistTexture(artistImgPath);
+
+			if (!artistTexture.isEmpty())
+			{
+				if (const auto sprite = artistImageNode->getComponent<noco::Sprite>())
+				{
+					sprite->setTexture(artistTexture);
+					sprite->setColor(Palette::White);
+				}
+				artistImageNode->setActive(true);
+
+				if (const auto artistNode = songNode->findByName(U"Artist"))
+				{
+					artistNode->setActive(false);
+				}
+			}
+			else
+			{
+				artistImageNode->setActive(false);
+				if (const auto artistNode = songNode->findByName(U"Artist"))
+				{
+					artistNode->setActive(true);
+				}
+			}
+		}
+	}
 }
 
 void SelectMenuSongItem::showInFileManager(int32 difficultyIdx) const

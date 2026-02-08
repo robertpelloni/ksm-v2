@@ -12,8 +12,15 @@ namespace
 	{
 		int32 i = 0;
 		return fieldCreateInfos.map([&i, &fieldKeyTexture](const OptionMenuField::CreateInfo& createInfo) {
+			if (!createInfo.labelText.empty())
+			{
+				return OptionMenuField(fieldKeyTexture(0), createInfo); // テクスチャは使用しないが、サイズ情報取得のために0番目のテクスチャを渡す
+			}
 			const int32 keyTextureIdx = (createInfo.keyTextureIdx == OptionMenuField::CreateInfo::kKeyTextureIdxAutoSet) ? i : createInfo.keyTextureIdx;
-			i++;
+			if (createInfo.keyTextureIdx == OptionMenuField::CreateInfo::kKeyTextureIdxAutoSet)
+			{
+				i++;
+			}
 			return OptionMenuField(fieldKeyTexture(keyTextureIdx), createInfo);
 		});
 	}
