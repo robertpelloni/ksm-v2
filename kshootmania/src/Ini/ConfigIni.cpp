@@ -54,6 +54,8 @@ viewtiming=0
 
 currentplayer=PLAYER
 
+songs_path=
+
 ; outputの値を1にするとoutput_pathで指定したディレクトリに連番PNGが30fpsで書き出されます
 ; output_pathで指定するパスの終端には\を入れ忘れないよう注意してください
 output=0
@@ -154,6 +156,8 @@ noteskin=default
 viewtiming=0
 
 currentplayer=PLAYER
+
+songs_path=
 
 ; outputの値を1にするとoutput_pathで指定したディレクトリに連番PNGが30fpsで書き出されます
 ; output_pathで指定するパスの終端には\を入れ忘れないよう注意してください

@@ -151,6 +151,22 @@ if(OUTPUT_LICENSE_TXT)
 	target_compile_definitions(kshootmania PRIVATE OUTPUT_LICENSE_TXT)
 endif()
 
+# Copy VERSION file
+if(EXISTS "${CMAKE_SOURCE_DIR}/VERSION")
+	if(APPLE)
+		set_source_files_properties(${CMAKE_SOURCE_DIR}/VERSION PROPERTIES
+			MACOSX_PACKAGE_LOCATION "Resources"
+		)
+		target_sources(kshootmania PRIVATE ${CMAKE_SOURCE_DIR}/VERSION)
+	else()
+		add_custom_command(TARGET kshootmania POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			${CMAKE_SOURCE_DIR}/VERSION
+			${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/VERSION
+		)
+	endif()
+endif()
+
 if(APPLE)
     # Siv3DのmacOS/Linux版はプリコンパイル済みヘッダ非対応のため通常のヘッダとしてインクルード
     target_compile_options(kshootmania PRIVATE

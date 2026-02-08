@@ -54,6 +54,7 @@ namespace ConfigIni
 		// Song Select / Game Play
 		constexpr StringView kIRSignInCursor = U"ir_sign_in_cursor";
 		constexpr StringView kCurrentPlayer = U"currentplayer";
+		constexpr StringView kSongsDirectoryPath = U"songs_path";
 		constexpr StringView kSelectDirectory = U"currentdir";
 		constexpr StringView kSelectSongIndex = U"currentitem";
 		constexpr StringView kSelectDifficulty = U"currentlevel";

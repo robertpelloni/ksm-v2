@@ -239,7 +239,17 @@ void KSMMain()
 	LicenseManager::DisableDefaultTrigger();
 
 	// ウィンドウタイトル
-	Window::SetTitle(U"K-Shoot MANIA v2.0.0-alpha5");
+	String version = U"2.0.0-alpha6";
+	const FilePath versionFilePath = FileSystem::PathAppend(FsUtils::ResourceDirectoryPath(), U"VERSION");
+	if (FileSystem::Exists(versionFilePath))
+	{
+		TextReader reader(versionFilePath);
+		if (reader)
+		{
+			version = reader.readAll().trim();
+		}
+	}
+	Window::SetTitle(U"K-Shoot MANIA v" + version);
 
 	// カレントディレクトリを設定
 	// (ChangeCurrentDirectoryはここ以外は基本的に使用禁止。どうしても使う必要がある場合は必ずResourceDirectoryPathに戻すこと)
@@ -260,11 +270,11 @@ void KSMMain()
 	// アプリケーションデータディレクトリを作成(macOSのみ)
 	CreateAppDataDirectory();
 
-	// リソースファイルをコピー(macOSのみ)
-	CopyResourcesIfNeeded();
-
 	// config.iniを読み込み
 	ConfigIni::Load();
+
+	// リソースファイルをコピー(macOSのみ)
+	CopyResourcesIfNeeded();
 
 	// ランタイム設定を初期化
 	RuntimeConfig::RestoreJudgmentModesFromConfigIni();
