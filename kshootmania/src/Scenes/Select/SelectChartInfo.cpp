@@ -38,9 +38,27 @@ String SelectChartInfo::title() const
 	return Unicode::FromUTF8(m_chartData.meta.title);
 }
 
+String SelectChartInfo::titleImgFilePath() const
+{
+	if (m_chartData.meta.titleImgFilename.empty())
+	{
+		return U"";
+	}
+	return toFullPath(m_chartData.meta.titleImgFilename);
+}
+
 String SelectChartInfo::artist() const
 {
 	return Unicode::FromUTF8(m_chartData.meta.artist);
+}
+
+String SelectChartInfo::artistImgFilePath() const
+{
+	if (m_chartData.meta.artistImgFilename.empty())
+	{
+		return U"";
+	}
+	return toFullPath(m_chartData.meta.artistImgFilename);
 }
 
 FilePath SelectChartInfo::jacketFilePath() const

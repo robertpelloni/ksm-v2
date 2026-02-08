@@ -54,6 +54,7 @@ namespace ConfigIni
 		// Song Select / Game Play
 		constexpr StringView kIRSignInCursor = U"ir_sign_in_cursor";
 		constexpr StringView kCurrentPlayer = U"currentplayer";
+		constexpr StringView kSongsDirectoryPath = U"songs_path";
 		constexpr StringView kSelectDirectory = U"currentdir";
 		constexpr StringView kSelectSongIndex = U"currentitem";
 		constexpr StringView kSelectDifficulty = U"currentlevel";
@@ -71,6 +72,8 @@ namespace ConfigIni
 		constexpr StringView kAudioProcDelay = U"soundfx_delay";
 		constexpr StringView kVisualOffset = U"visual_offset";
 		constexpr StringView kAutoPlaySE = U"auto_play_se";
+		constexpr StringView kAutoSync = U"autosync";
+		constexpr StringView kShowSongTitleImages = U"show_song_title_images";
 
 		constexpr StringView kMuteAudioInInactiveWindow = U"automaticmute";
 

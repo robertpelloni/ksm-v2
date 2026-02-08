@@ -338,6 +338,8 @@ bool SelectMenu::openDirectoryWithNameSort(FilePathView directoryPath)
 		m_menu.clear();
 		m_jacketTextureCache.clear();
 		m_iconTextureCache.clear();
+		m_titleTextureCache.clear();
+		m_artistTextureCache.clear();
 
 		// ディレクトリの見出し項目を追加
 		m_menu.push_back(std::make_unique<SelectMenuDirFolderItem>(IsCurrentFolderYN::Yes, FileSystem::FullPath(directoryPath)));
@@ -535,6 +537,8 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 			.fnCloseFolder = [this]() { closeFolder(PlaySeYN::Yes); },
 			.fnGetJacketTexture = [this](FilePathView path) -> const Texture& { return getJacketTexture(path); },
 			.fnGetIconTexture = [this](FilePathView path) -> const Texture& { return getIconTexture(path); },
+			.fnGetTitleTexture = [this](FilePathView path) -> const Texture& { return getTitleTexture(path); },
+			.fnGetArtistTexture = [this](FilePathView path) -> const Texture& { return getArtistTexture(path); },
 			.fnMoveToNextSubDirSection = [this]() { moveToNextSubDirSection(); },
 			.fnMoveToPrevSubDirSection = [this]() { moveToPrevSubDirSection(); },
 		}
@@ -954,6 +958,38 @@ const Texture& SelectMenu::getIconTexture(FilePathView filePath)
 	}
 
 	return m_iconTextureCache.emplace(filePath, std::move(texture)).first->second;
+}
+
+const Texture& SelectMenu::getTitleTexture(FilePathView filePath)
+{
+	if (auto it = m_titleTextureCache.find(filePath); it != m_titleTextureCache.end())
+	{
+		return it->second;
+	}
+
+	Texture texture;
+	if (FileSystem::IsFile(filePath))
+	{
+		texture = Texture{ filePath };
+	}
+
+	return m_titleTextureCache.emplace(filePath, std::move(texture)).first->second;
+}
+
+const Texture& SelectMenu::getArtistTexture(FilePathView filePath)
+{
+	if (auto it = m_artistTextureCache.find(filePath); it != m_artistTextureCache.end())
+	{
+		return it->second;
+	}
+
+	Texture texture;
+	if (FileSystem::IsFile(filePath))
+	{
+		texture = Texture{ filePath };
+	}
+
+	return m_artistTextureCache.emplace(filePath, std::move(texture)).first->second;
 }
 
 void SelectMenu::moveToNextSubDirSection()

@@ -54,6 +54,8 @@ viewtiming=0
 
 currentplayer=PLAYER
 
+songs_path=
+
 ; outputの値を1にするとoutput_pathで指定したディレクトリに連番PNGが30fpsで書き出されます
 ; output_pathで指定するパスの終端には\を入れ忘れないよう注意してください
 output=0
@@ -106,6 +108,8 @@ ir_sign_in_cursor=0
 hispeedtype_c=0
 hispeedtype_o=1
 hispeedtype_x=0
+autosync=0
+show_song_title_images=1
 )";
 #else
 	constexpr StringView kDefaultConfigIni = UR"([config]
@@ -155,6 +159,8 @@ viewtiming=0
 
 currentplayer=PLAYER
 
+songs_path=
+
 ; outputの値を1にするとoutput_pathで指定したディレクトリに連番PNGが30fpsで書き出されます
 ; output_pathで指定するパスの終端には\を入れ忘れないよう注意してください
 output=0
@@ -207,6 +213,8 @@ ir_sign_in_cursor=0
 hispeedtype_c=0
 hispeedtype_o=1
 hispeedtype_x=0
+autosync=0
+show_song_title_images=1
 )";
 #endif
 
