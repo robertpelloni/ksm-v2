@@ -9,7 +9,18 @@ private:
 	InputGate::InputGateClient m_client;
 	Array<InputGate::SongInfo> m_songList;
 
+	// Download state
+	bool m_isDownloading = false;
+	double m_downloadProgress = 0.0;
+	String m_downloadingTitle;
+
+	int32 m_selectedIdx = 0;
+
 	void populateSongList();
+
+	void drawSongList() const;
+
+	void drawDownloadProgress() const;
 
 public:
 	InputGateScene();
