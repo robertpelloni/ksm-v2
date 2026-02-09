@@ -15,6 +15,9 @@ namespace MusicGame::Judgment
 
 		int32 error = 0;
 
+		double totalDeviationSec = 0.0; // 判定のズレ時間(秒)の合計 (Near以上のみ、Fastは負、Slowは正)
+		int32 deviationCount = 0; // 判定のズレ時間を加算した回数
+
 		int32 totalNear() const
 		{
 			return nearFast + nearSlow;
@@ -51,7 +54,7 @@ namespace MusicGame::Judgment
 		{
 		}
 
-		void processJudgmentResult(JudgmentResult result);
+		void processJudgmentResult(JudgmentResult result, double diffSec = 0.0);
 
 		/// @brief 現在のコンボ数を取得
 		/// @return 現在のコンボ数

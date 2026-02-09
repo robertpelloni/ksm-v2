@@ -213,7 +213,7 @@ namespace MusicGame::Judgment
 			{
 				// CRITICAL判定
 				m_chipJudgmentArray.at(nearestNotePulse) = JudgmentResult::kCritical;
-				judgmentHandlerRef.onChipJudged(JudgmentResult::kCritical);
+				judgmentHandlerRef.onChipJudged(JudgmentResult::kCritical, diffSec);
 				laneStatusRef.keyBeamType = KeyBeamType::kCritical;
 				chipAnimType = ChipAnimType::kCritical;
 			}
@@ -225,7 +225,7 @@ namespace MusicGame::Judgment
 					// 効果音付きチップFXノーツの場合、FAST NEARは出さずCRITICAL判定扱いとする
 					// (効果音の再生遅延を気にして早押しした場合にNEARにならないようにするための仕様)
 					m_chipJudgmentArray.at(nearestNotePulse) = JudgmentResult::kCritical;
-					judgmentHandlerRef.onChipJudged(JudgmentResult::kCritical);
+					judgmentHandlerRef.onChipJudged(JudgmentResult::kCritical, diffSec);
 					laneStatusRef.keyBeamType = KeyBeamType::kCritical;
 					chipAnimType = ChipAnimType::kCritical;
 				}
@@ -233,7 +233,7 @@ namespace MusicGame::Judgment
 				{
 					const auto judgmentResult = isFast ? JudgmentResult::kNearFast : JudgmentResult::kNearSlow;
 					m_chipJudgmentArray.at(nearestNotePulse) = judgmentResult;
-					judgmentHandlerRef.onChipJudged(judgmentResult);
+					judgmentHandlerRef.onChipJudged(judgmentResult, diffSec);
 
 					// FAST/SLOW表示設定に応じてキービームの種類を設定
 					if (m_fastSlowMode == FastSlowMode::kShow)

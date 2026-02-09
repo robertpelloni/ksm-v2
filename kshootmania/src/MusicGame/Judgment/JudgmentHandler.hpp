@@ -38,7 +38,8 @@ namespace MusicGame::Judgment
 
 		/// @brief チップノーツ判定時に呼び出される
 		/// @param result 判定結果
-		void onChipJudged(JudgmentResult result);
+		/// @param diffSec 判定タイミング誤差(秒) (FAST: <0, SLOW: >0, ERROR/Unspecified: 0.0)
+		void onChipJudged(JudgmentResult result, double diffSec = 0.0);
 
 		/// @brief ロングノーツ判定時に呼び出される
 		/// @param result 判定結果

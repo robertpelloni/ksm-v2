@@ -232,8 +232,8 @@ namespace
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOnKeyboard),
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOnController),
 				}).setKeyTextureIdx(6),
-				CreateInfo::Enum(ConfigIni::Key::kSongsDirectoryPath, Array<String>{
-					FsUtils::SongsDirectoryPath()
+				CreateInfo::Enum(ConfigIni::Key::kSongsDirectoryPath, Array<std::pair<String, String>>{
+					{ FsUtils::SongsDirectoryPath().str(), FsUtils::SongsDirectoryPath().str() }
 				}).setLabel(U"Songs Directory"),
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueOther/*FIXME*/, {

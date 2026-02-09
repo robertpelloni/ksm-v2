@@ -26,6 +26,8 @@ private:
 
 	Co::Task<bool> waitForNewRecordPanelClose();
 
+	Co::Task<void> checkAutoSync();
+
 public:
 	explicit ResultScene(const ResultSceneArgs& args);
 
