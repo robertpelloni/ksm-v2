@@ -7,6 +7,7 @@
 #include "Common/CommonDefines.hpp"
 #include "Ini/ConfigIni.hpp"
 #include "UI/Dialog.hpp"
+#include "Network/InternetRanking.hpp"
 
 namespace
 {
@@ -363,6 +364,14 @@ Co::Task<void> ResultScene::start()
 
 	// Auto Sync Check
 	co_await checkAutoSync();
+
+	// Internet Ranking Submission (Mock)
+	// TODO: Config setting to enable/disable auto submission?
+	if (ConfigIni::GetBool(ConfigIni::Key::kAutoSync /* FIXME: Use specific key for IR? */, false))
+	{
+		// Just a placeholder call for now
+		// InternetRanking::SubmitScore(m_playResult);
+	}
 
 	if (!userPressedStartOrBack)
 	{

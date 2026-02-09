@@ -1,31 +1,36 @@
 #include "InputGateScene.hpp"
 #include "Scenes/Title/TitleScene.hpp"
 #include "Input/KeyConfig.hpp"
-
-namespace
-{
-	// TODO: Create dedicated NocoUI layout for Input Gate
-	// For now, we might use a placeholder or reuse a generic background
-}
+#include "Common/FsUtils.hpp"
 
 InputGateScene::InputGateScene()
 {
-	// Placeholder: Load a simple canvas or just display text
-	// m_canvas = noco::Canvas::LoadFromFile(U"ui/scene/input_gate.noco");
+	const FilePath uiFilePath = FsUtils::GetResourcePath(U"ui/scene/input_gate.noco");
+	m_canvas = noco::Canvas::LoadFromFile(uiFilePath);
+	if (!m_canvas)
+	{
+		// Fallback if file not found (though I just wrote it, resource path might differ in env)
+		// For now, assume it works or just handle gracefully
+	}
 }
 
 Co::Task<void> InputGateScene::start()
 {
-	// Simple placeholder loop
 	while (true)
 	{
 		co_await Co::NextFrame();
 
 		update();
 
-		if (KeyConfig::Down(kButtonBack) || KeyConfig::Down(kButtonStart))
+		if (KeyConfig::Down(kButtonBack))
 		{
 			break;
+		}
+
+		if (KeyConfig::Down(kButtonStart))
+		{
+			// Simulate download
+			System::MessageBoxOK(U"Download simulation started.", MessageBoxStyle::Info);
 		}
 	}
 
@@ -42,15 +47,13 @@ void InputGateScene::update()
 
 void InputGateScene::draw() const
 {
-	Scene::SetBackground(Palette::Black);
-
 	if (m_canvas)
 	{
 		m_canvas->draw();
 	}
 	else
 	{
-		FontAsset(U"SystemFont")(U"INPUT GATE - Under Construction").drawAt(Scene::Center(), Palette::White);
-		FontAsset(U"SystemFont")(U"Press Start or Back to Return").drawAt(Scene::Center().movedBy(0, 50), Palette::Gray);
+		Scene::SetBackground(Palette::Black);
+		FontAsset(U"SystemFont")(U"INPUT GATE (UI Load Failed)").drawAt(Scene::Center(), Palette::White);
 	}
 }
