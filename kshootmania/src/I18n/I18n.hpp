@@ -103,6 +103,9 @@ namespace I18n
 		kAutoSyncSaveConfirmYes = 52,
 		kAutoSyncSaveConfirmNo = 53,
 		kAutoSyncSaving = 55,
+		kAutoSyncInputDelayConfirm = 56,
+		kAutoSyncInputDelayConfirmNewVal = 57,
+		kAutoSyncInputDelaySaved = 58,
 		kUnlockedTrack = 70,
 	};
 
@@ -174,6 +177,9 @@ namespace I18n
 		kGuideOption = 91,
 		kGuideOptionWithRestartRequired = 92,
 		kGuideKeyConfig = 93,
+		kInternetRanking = 95,
+		kInternetRankingOff = 96,
+		kInternetRankingOn = 97,
 	};
 
 	enum class InputGate : int32

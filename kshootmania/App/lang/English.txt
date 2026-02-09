@@ -62,6 +62,9 @@ m02-051|ms)
 m02-052|[  Yes  ]    No   
 m02-053|   Yes     [ No ] 
 m02-055|Saving...
+m02-056|Auto Sync has detected an input delay.\nAdjust the global Input Delay setting?
+m02-057|(Input Offset:
+m02-058|Input Delay updated.
 m02-070|Unlocked track:
 m03-000|Window
 m03-001|Fullscreen
@@ -131,6 +134,9 @@ m03-090|Up/Down: Scroll  Enter: Select  ESC: Save and return
 m03-091|Up/Down: Scroll  Left/Right: Modify selection  ESC: Return
 m03-092|Up/Down: Scroll  Left/Right: Modify selection  ESC: Return  (*)Requires restart
 m03-093|Arrow keys: Select  Enter: Change mapping/Cancel  Space: Remove mapping  ESC: Return
+m03-095|Internet Ranking:
+m03-096|Off
+m03-097|On
 m04-000|Could not connect to server.\nPlease check your Internet connection.\n(There is a possibility of your antivirus blocking this program.)
 m04-001|404 Not Found
 m04-002|File not found (404).\nThe server might be under maintenance.

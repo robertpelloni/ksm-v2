@@ -232,6 +232,10 @@ namespace
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOnKeyboard),
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOnController),
 				}).setKeyTextureIdx(6),
+				CreateInfo::Enum(ConfigIni::Key::kEnableInternetRanking, Array<StringView>{
+					I18n::Get(I18n::Option::kInternetRankingOff),
+					I18n::Get(I18n::Option::kInternetRankingOn),
+				}).setLabel(I18n::Get(I18n::Option::kInternetRanking)),
 				CreateInfo::Enum(ConfigIni::Key::kSongsDirectoryPath, Array<std::pair<String, String>>{
 					{ FsUtils::SongsDirectoryPath().str(), FsUtils::SongsDirectoryPath().str() }
 				}).setLabel(U"Songs Directory"),

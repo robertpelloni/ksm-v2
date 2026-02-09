@@ -365,12 +365,10 @@ Co::Task<void> ResultScene::start()
 	// Auto Sync Check
 	co_await checkAutoSync();
 
-	// Internet Ranking Submission (Mock)
-	// TODO: Config setting to enable/disable auto submission?
-	if (ConfigIni::GetBool(ConfigIni::Key::kAutoSync /* FIXME: Use specific key for IR? */, false))
+	// Internet Ranking Submission
+	if (ConfigIni::GetBool(ConfigIni::Key::kEnableInternetRanking, false))
 	{
-		// Just a placeholder call for now
-		// InternetRanking::SubmitScore(m_playResult);
+		co_await InternetRanking::SubmitScore(m_playResult);
 	}
 
 	if (!userPressedStartOrBack)
@@ -547,9 +545,9 @@ Co::Task<void> ResultScene::checkAutoSync()
 	// But `I18n::Play::kAutoSyncSaveConfirm1` etc were in the list.
 	// Let's use `I18n::Play::kAutoSyncSaveConfirm1` + numbers + `kAutoSyncSaveConfirm2`.
 
-	const String message = I18n::Get(I18n::Play::kAutoSyncSaveConfirm1) + U"\n" +
-		U"{} ms -> {} ms"_fmt(currentDelay, newDelay) + U"\n" +
-		I18n::Get(I18n::Play::kAutoSyncSaveConfirm2); // "Save?"
+	const String message = I18n::Get(I18n::Play::kAutoSyncInputDelayConfirm) + U"\n" +
+		I18n::Get(I18n::Play::kAutoSyncInputDelayConfirmNewVal) +
+		U"{} ms -> {} ms)"_fmt(currentDelay, newDelay);
 
 	const Dialog::Result result = co_await Dialog::Confirm(message,
 		I18n::Get(I18n::Play::kAutoSyncSaveConfirmYes),
@@ -560,8 +558,8 @@ Co::Task<void> ResultScene::checkAutoSync()
 		ConfigIni::SetInt(ConfigIni::Key::kInputDelay, newDelay);
 		ConfigIni::Save();
 
-		// Show "Saved" message briefly? Or just proceed.
-		// `kAutoSyncSaving` exists.
+		// Show "Saved" message briefly
+		co_await Dialog::Ok(I18n::Get(I18n::Play::kAutoSyncInputDelaySaved));
 	}
 }
 
