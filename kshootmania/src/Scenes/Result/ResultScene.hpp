@@ -28,6 +28,8 @@ private:
 
 	Co::Task<void> checkAutoSync();
 
+	Co::Task<void> postToTwitter();
+
 public:
 	explicit ResultScene(const ResultSceneArgs& args);
 

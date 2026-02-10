@@ -8,6 +8,7 @@
 #include "Ini/ConfigIni.hpp"
 #include "UI/Dialog.hpp"
 #include "Network/InternetRanking.hpp"
+#include "Network/TwitterClient.hpp"
 
 namespace
 {
@@ -373,9 +374,26 @@ Co::Task<void> ResultScene::start()
 
 	if (!userPressedStartOrBack)
 	{
-		co_await Co::Any(
-			KeyConfig::WaitUntilDown(kButtonStart),
-			KeyConfig::WaitUntilDown(kButtonBack));
+		while (true)
+		{
+			// Post to Twitter (FX-L + FX-R)
+			if (KeyConfig::Pressed(kButtonFX_L) && KeyConfig::Pressed(kButtonFX_R))
+			{
+				co_await postToTwitter();
+
+				// Wait for release
+				while (KeyConfig::Pressed(kButtonFX_L) && KeyConfig::Pressed(kButtonFX_R))
+				{
+					co_await Co::NextFrame();
+				}
+			}
+
+			if (KeyConfig::Down(kButtonStart) || KeyConfig::Down(kButtonBack))
+			{
+				break;
+			}
+			co_await Co::NextFrame();
+		}
 	}
 
 	// コースモードの場合は次の曲またはコースリザルトへ
@@ -561,6 +579,25 @@ Co::Task<void> ResultScene::checkAutoSync()
 		// Show "Saved" message briefly
 		co_await Dialog::Ok(I18n::Get(I18n::Play::kAutoSyncInputDelaySaved));
 	}
+}
+
+Co::Task<void> ResultScene::postToTwitter()
+{
+	// Construct default tweet text
+	// "I played [Title] [Difficulty] and scored [Score]! #kshootmania"
+	// We should probably use I18n here but for now English/Universal format
+	const String title = Unicode::FromUTF8(m_chartData.meta.title);
+	const String diff = Unicode::FromUTF8(m_chartData.meta.difficulty.idx == kDifficultyIdxInfinite ? "INF" : "EXH"); // Simplified
+	const String score = U"{}"_fmt(m_playResult.score);
+
+	const String text = U"I played {} [{}] and scored {}! #kshootmania"_fmt(title, diff, score);
+
+	// Confirm?
+	// const Dialog::Result result = co_await Dialog::Confirm(U"Post to Twitter/X?\n\n" + text, U"Post", U"Cancel");
+	// if (result != Dialog::Result::Yes) co_return;
+
+	Twitter::TwitterClient client;
+	co_await client.postTweet(text);
 }
 
 void ResultScene::update()
