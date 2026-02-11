@@ -180,6 +180,11 @@ namespace I18n
 		kInternetRanking = 95,
 		kInternetRankingOff = 96,
 		kInternetRankingOn = 97,
+		kGlobalOffset = 98,
+		kVisualOffset = 99,
+		kAudioProcDelay = 100,
+		kAutoPlaySE = 101,
+		kMuteAudioInInactiveWindow = 102,
 	};
 
 	enum class InputGate : int32

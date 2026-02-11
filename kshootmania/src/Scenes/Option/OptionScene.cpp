@@ -109,6 +109,12 @@ namespace
 							const int32 volume = ConfigIni::GetInt(ConfigIni::Key::kMasterVolume, kMasterVolumeDefault);
 							ksmaudio::SetMasterVolume(volume / 100.0);
 						}),
+				CreateInfo::Enum(ConfigIni::Key::kMuteAudioInInactiveWindow, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(I18n::Get(I18n::Option::kMuteAudioInInactiveWindow)).setOnChangeCallback([] {
+					AutoMuteAddon::SetEnabled(ConfigIni::GetBool(ConfigIni::Key::kMuteAudioInInactiveWindow));
+				}),
 				CreateInfo::Enum(ConfigIni::Key::kVsync, Array<StrPair>{
 					StrPair{ U"0;120", U"{}(120fps)"_fmt(I18n::Get(I18n::Option::kVsyncOff)) },
 					StrPair{ U"0;144", U"{}(144fps)"_fmt(I18n::Get(I18n::Option::kVsyncOff)) },
@@ -177,6 +183,20 @@ namespace
 					I18n::Get(I18n::Option::kTimingAdjustSuffixLater),
 					I18n::Get(I18n::Option::kTimingAdjustSuffixEarlier))
 				.setKeyTextureIdx(6),
+				CreateInfo::Int(ConfigIni::Key::kGlobalOffset, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
+				.setAdditionalSuffixes(
+					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),
+					I18n::Get(I18n::Option::kTimingAdjustSuffixLater),
+					I18n::Get(I18n::Option::kTimingAdjustSuffixEarlier))
+				.setLabel(I18n::Get(I18n::Option::kGlobalOffset)),
+				CreateInfo::Int(ConfigIni::Key::kVisualOffset, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
+				.setAdditionalSuffixes(
+					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),
+					I18n::Get(I18n::Option::kTimingAdjustSuffixLater),
+					I18n::Get(I18n::Option::kTimingAdjustSuffixEarlier))
+				.setLabel(I18n::Get(I18n::Option::kVisualOffset)),
+				CreateInfo::Int(ConfigIni::Key::kAudioProcDelay, 0, 500, 0, I18n::Get(I18n::Option::kTimingAdjustMs))
+				.setLabel(I18n::Get(I18n::Option::kAudioProcDelay)),
 				CreateInfo::Int(ConfigIni::Key::kLaserInputDelay, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
 				.setAdditionalSuffixes(
 					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),
@@ -201,6 +221,10 @@ namespace
 					I18n::Get(I18n::Option::kDisabled),
 					I18n::Get(I18n::Option::kEnabled),
 				}).setKeyTextureIdx(11),
+				CreateInfo::Enum(ConfigIni::Key::kAutoPlaySE, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(I18n::Get(I18n::Option::kAutoPlaySE)),
 				CreateInfo::Enum(ConfigIni::Key::kSelectCloseFolderKey, Array<StringView>{
 					I18n::Get(I18n::Option::kSelectCloseFolderKeyBackspace),
 					I18n::Get(I18n::Option::kSelectCloseFolderKeyEsc),

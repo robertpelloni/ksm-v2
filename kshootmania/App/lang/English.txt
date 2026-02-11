@@ -137,6 +137,11 @@ m03-093|Arrow keys: Select  Enter: Change mapping/Cancel  Space: Remove mapping 
 m03-095|Internet Ranking:
 m03-096|Off
 m03-097|On
+m03-098|Global Offset (ms)
+m03-099|Visual Offset (ms)
+m03-100|Audio FX Delay (ms)
+m03-101|Auto Play SE (FX/Laser Slam)
+m03-102|Mute in Inactive Window
 m04-000|Could not connect to server.\nPlease check your Internet connection.\n(There is a possibility of your antivirus blocking this program.)
 m04-001|404 Not Found
 m04-002|File not found (404).\nThe server might be under maintenance.
