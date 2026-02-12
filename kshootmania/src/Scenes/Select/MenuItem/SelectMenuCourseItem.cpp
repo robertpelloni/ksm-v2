@@ -118,6 +118,27 @@ void SelectMenuCourseItem::setCanvasParamsCenter(const SelectMenuEventContext& c
 	// Course用のノードを取得
 	if (const auto courseNode = NocoUtils::GetSubCanvasNodeByName(&canvas, U"center", U"Course"))
 	{
+		// タイトル画像を設定 (title_img)
+		if (const auto titleImgNode = courseNode->findByName(U"TitleImg"))
+		{
+			if (m_courseInfo.titleImgPath.isEmpty())
+			{
+				titleImgNode->setActive(false);
+			}
+			else
+			{
+				// Note: Using fnGetJacketTexture for now, though title img might be different asset type
+				// Typically courses use relative path so we need full path
+				const FilePath titleImgPath = FileSystem::PathAppend(FileSystem::ParentPath(m_courseInfo.filePath), m_courseInfo.titleImgPath);
+				const Texture texture = context.fnGetJacketTexture(titleImgPath);
+				titleImgNode->setActive(!texture.isEmpty());
+				if (const auto sprite = titleImgNode->getComponent<noco::Sprite>())
+				{
+					sprite->setTexture(texture);
+				}
+			}
+		}
+
 		// アイコン画像を設定
 		if (const auto iconNode = courseNode->findByName(U"Icon"))
 		{

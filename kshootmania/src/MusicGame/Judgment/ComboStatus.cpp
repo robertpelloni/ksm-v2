@@ -43,6 +43,7 @@ namespace MusicGame::Judgment
 			++m_combo;
 			++m_courseCombo;
 			m_maxCombo = Max(m_maxCombo, m_combo);
+			m_maxCourseCombo = Max(m_maxCourseCombo, m_courseCombo);
 			++m_stats.critical;
 			break;
 
@@ -50,6 +51,7 @@ namespace MusicGame::Judgment
 			++m_combo;
 			++m_courseCombo;
 			m_maxCombo = Max(m_maxCombo, m_combo);
+			m_maxCourseCombo = Max(m_maxCourseCombo, m_courseCombo);
 			++m_stats.nearFast;
 			break;
 
@@ -57,6 +59,7 @@ namespace MusicGame::Judgment
 			++m_combo;
 			++m_courseCombo;
 			m_maxCombo = Max(m_maxCombo, m_combo);
+			m_maxCourseCombo = Max(m_maxCourseCombo, m_courseCombo);
 			++m_stats.nearSlow;
 			break;
 
@@ -101,6 +104,11 @@ namespace MusicGame::Judgment
 	int32 ComboStatus::courseCombo() const
 	{
 		return m_courseCombo;
+	}
+
+	int32 ComboStatus::maxCourseCombo() const
+	{
+		return m_maxCourseCombo;
 	}
 
 	bool ComboStatus::courseIsNoError() const

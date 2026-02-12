@@ -63,6 +63,8 @@ namespace MusicGame::Judgment
 
 		int32 courseCombo() const;
 
+		int32 maxCourseCombo() const;
+
 		bool courseIsNoError() const;
 
 		/// @brief 表示用のコンボ数を返す
