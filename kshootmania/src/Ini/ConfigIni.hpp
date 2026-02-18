@@ -75,6 +75,7 @@ namespace ConfigIni
 		constexpr StringView kAutoSync = U"autosync";
 		constexpr StringView kShowSongTitleImages = U"show_song_title_images";
 		constexpr StringView kEnableInternetRanking = U"internet_ranking";
+		constexpr StringView kInternetRankingUrl = U"internet_ranking_url";
 
 		constexpr StringView kMuteAudioInInactiveWindow = U"automaticmute";
 

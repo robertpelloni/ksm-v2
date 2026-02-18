@@ -16,7 +16,6 @@ private:
 	int32 m_totalCritical = 0;
 	int32 m_totalNear = 0;
 	int32 m_totalError = 0;
-	int32 m_maxCombo = 0; // コース全体での最大コンボ数
 
 	CourseContinuation m_continuation; // 次の曲に引き継ぐ情報
 
@@ -51,7 +50,6 @@ public:
 		m_totalError += playResult.comboStats.error;
 
 		m_failedChartTimeProgress = playResult.chartTimeProgress;
-		m_maxCombo = Max(m_maxCombo, playResult.maxCourseCombo);
 
 		// 次の曲に引き継ぐ情報を更新
 		m_continuation.gaugeValue = playResult.gaugeValue;

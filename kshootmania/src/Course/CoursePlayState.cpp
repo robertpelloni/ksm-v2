@@ -8,7 +8,7 @@ CoursePlayResult CoursePlayState::coursePlayResult() const
 	return CoursePlayResult
 	{
 		.avgScore = avgScore,
-		.maxCombo = m_maxCombo,
+		.maxCombo = m_totalCritical,
 		.achievementRate = rate,
 		.gaugeType = m_kscKey.gaugeType,
 		.isCleared = m_cleared,

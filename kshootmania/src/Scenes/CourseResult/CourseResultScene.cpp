@@ -68,24 +68,6 @@ void CourseResultScene::updateCanvasParams()
 		{ U"gaugeTextureIndex", 1.0 },
 	});
 
-	// コースタイトル画像を設定
-	if (!courseInfo.titleImgPath.isEmpty())
-	{
-		const FilePath titleImgPath = FileSystem::PathAppend(FileSystem::ParentPath(courseInfo.filePath), courseInfo.titleImgPath);
-		if (FileSystem::Exists(titleImgPath))
-		{
-			const Texture titleImgTexture{ titleImgPath };
-			if (const auto titleImgNode = m_canvas->findByName(U"CourseTitleImage"))
-			{
-				if (const auto sprite = titleImgNode->getComponent<noco::Sprite>())
-				{
-					sprite->setTexture(titleImgTexture);
-					titleImgNode->setActive(!titleImgTexture.isEmpty());
-				}
-			}
-		}
-	}
-
 	// ゲージのバーの幅をパーセンテージに応じて変更
 	if (auto gaugeClippingMask = m_canvas->findByName(U"GaugeClippingMask"))
 	{

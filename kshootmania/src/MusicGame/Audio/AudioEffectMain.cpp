@@ -450,6 +450,9 @@ namespace MusicGame::Audio
 		, m_audioProcDelaySec(audioProcDelaySec)
 		, m_peakingFilterDelaySec(GetEffectivePeakingFilterDelaySec(chartData))
 	{
+		// v1互換のデフォルトパラメータを設定
+		// Note: v1ではReverbやDelayのパラメータがエディタ上の表示と内部値で異なる場合があるため、ここで補正を行う
+		// また、ksmaudio側でのデフォルト値も確認が必要だが、一旦チャートデータ依存の初期化はここで行われる
 	}
 
 	void AudioEffectMain::update(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache, const AudioEffectInputStatus& inputStatus, kson::Pulse currentPulseForSwitchAudio)

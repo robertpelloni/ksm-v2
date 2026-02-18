@@ -200,7 +200,6 @@ namespace MusicGame::Judgment
 			.score = m_scoringStatus.score(),
 			.maxCombo = m_scoringStatus.maxCombo(),
 			.finalCourseCombo = m_scoringStatus.courseCombo(),
-			.maxCourseCombo = m_scoringStatus.maxCourseCombo(),
 			.totalCombo = m_totalCombo,
 			.comboStats = m_scoringStatus.comboStats(),
 			.playOption = m_playOption,
