@@ -373,6 +373,12 @@ namespace MusicGame::Audio
 			}
 			return none;
 		}
+
+		kson::FXLane<Optional<AudioEffectInvocation>> RegisterAndCreateLongFXInvocations(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache, const FilePath& parentPath)
+		{
+			RegisterAudioEffects(bgm, chartData, timingCache, parentPath);
+			return CreateLongFXNoteAudioEffectInvocations(bgm, chartData);
+		}
 	}
 
 	void AudioEffectMain::updateActiveAudioEffectDictFX(
@@ -445,7 +451,7 @@ namespace MusicGame::Audio
 	}
 
 	AudioEffectMain::AudioEffectMain(BGM& bgm, const kson::ChartData& chartData, const kson::TimingCache& timingCache, const FilePath& parentPath, double audioProcDelaySec)
-		: m_longFXNoteInvocations((RegisterAudioEffects(bgm, chartData, timingCache, parentPath), CreateLongFXNoteAudioEffectInvocations(bgm, chartData))) // 先に登録しておく必要があるので、分かりにくいがカンマ演算子を使用している(TODO: もうちょっとどうにかする)
+		: m_longFXNoteInvocations(RegisterAndCreateLongFXInvocations(bgm, chartData, timingCache, parentPath))
 		, m_laserPulseInvocations(CreateLaserPulseAudioEffectInvocations(bgm, chartData))
 		, m_audioProcDelaySec(audioProcDelaySec)
 		, m_peakingFilterDelaySec(GetEffectivePeakingFilterDelaySec(chartData))

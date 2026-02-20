@@ -242,7 +242,6 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 			}
 		}
 
-		// TODO: title_img, artist_imgの設定
 		if (ConfigIni::GetBool(ConfigIni::Key::kShowSongTitleImages))
 		{
 			// タイトル画像
@@ -399,7 +398,6 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 		}
 	}
 
-	// TODO: title_img, artist_imgの設定
 	if (ConfigIni::GetBool(ConfigIni::Key::kShowSongTitleImages))
 	{
 		// タイトル画像
