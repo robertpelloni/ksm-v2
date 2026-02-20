@@ -1,23 +1,18 @@
 #include "InputGateClient.hpp"
+#include "Ini/ConfigIni.hpp"
 #include <Siv3D.hpp>
 
 namespace InputGate
 {
-	namespace
-	{
-		// モック用URL (実際はconfigなどで管理するのが望ましい)
-		constexpr StringView kApiBaseUrl = U"http://localhost:8080/api/inputgate";
-		constexpr bool kUseMock = true;
-	}
-
 	Co::Task<Array<SongInfo>> InputGateClient::fetchSongList()
 	{
-		if constexpr (kUseMock)
+		const String apiBaseUrl = ConfigIni::GetString(ConfigIni::Key::kInputGateUrl, U"");
+
+		if (apiBaseUrl.isEmpty())
 		{
-			// ネットワーク遅延をシミュレート
+			// モックモード
 			co_await Co::Delay(0.5s);
 
-			// ダミーデータを返す
 			co_return Array<SongInfo>{
 				{ U"song_001", U"Test Song 1", U"Test Artist 1", U"http://example.com/jacket1.jpg", U"http://example.com/song1.zip", U"", U"hash1", 1024 * 1024 * 5 },
 				{ U"song_002", U"Test Song 2", U"Test Artist 2", U"http://example.com/jacket2.jpg", U"http://example.com/song2.zip", U"", U"hash2", 1024 * 1024 * 3 },
@@ -29,9 +24,10 @@ namespace InputGate
 		else
 		{
 			// TODO: 実装
-			// const URL url = kApiBaseUrl + U"/list";
+			// const URL url = apiBaseUrl + U"/list";
 			// const auto response = SimpleHTTP::Get(url);
 			// if (response.isOK()) { ... }
+			Logger << U"[ksm info] InputGateClient: Fetching from {} (Not implemented)"_fmt(apiBaseUrl);
 			co_await Co::Delay(0.1s);
 			co_return Array<SongInfo>();
 		}
@@ -39,7 +35,8 @@ namespace InputGate
 
 	Co::Task<bool> InputGateClient::downloadSong(StringView url, FilePathView savePath, std::function<void(double)> progressCallback)
 	{
-		if constexpr (kUseMock)
+		// URLが空の場合はモックとみなす(またはエラー)
+		if (url.isEmpty() || url.includes(U"example.com"))
 		{
 			// モック: プログレスを進めながら完了させる
 			double progress = 0.0;
@@ -57,9 +54,9 @@ namespace InputGate
 		else
 		{
 			// TODO: SimpleHTTP::Save(url, savePath)
-			// 残念ながらSiv3DのSimpleHTTP::Saveは非同期プログレスコールバックを標準で持っていない場合がある
-			// HTTPClientなどの利用を検討するか、自前で実装が必要。
-			// 今回は簡易的に成功を返す。
+			// Note: Asynchronous download with progress requires threading or polling
+			Logger << U"[ksm info] InputGateClient: Downloading from {} to {} (Mocked)"_fmt(url, savePath);
+			co_await Co::Delay(1.0s);
 			co_return true;
 		}
 	}
