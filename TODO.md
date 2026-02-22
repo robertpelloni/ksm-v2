@@ -1,9 +1,9 @@
 # Todo List
 
 ## High Priority
-- [ ] **Hardware I/O (Controller Lights)**
-    - [ ] Implement LED output for supported controllers (HID/Serial).
-    - [ ] Add configuration for LED behavior (blinking, intensity).
+- [x] **Hardware I/O (Controller Lights)**
+    - [x] Implement LED output for supported controllers (HID/Serial) - *Added HidLightingDriver*.
+    - [ ] Add configuration for LED behavior (blinking, intensity) - *Basic state mostly, needs refinement*.
 - [ ] **Internet Ranking**
     - [ ] Implement real score submission (currently mocked).
     - [ ] Implement "Ranking" tab in Input Gate (view rankings).

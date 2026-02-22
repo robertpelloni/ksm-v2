@@ -9,6 +9,11 @@ All notable changes to this project will be documented in this file.
 ## [2.0.0-alpha20] - 2026-02-20
 
 ### Added
+- **Hardware I/O**:
+    - Added `LightingManager` to support controller LEDs.
+    - Implemented `HidLightingDriver` using `hidapi` (supports generic HID lighting reports, currently hardcoded for standard YuanCon VID/PID 0x1973:0x2001).
+    - Added `MockLightingDriver` for environments without hardware.
+    - Integrated lighting state updates (BT/FX) into the main loop.
 - **Input Gate**:
     - Implemented real download logic using `AsyncHTTPTask`.
     - Implemented ZIP extraction of downloaded songs to `songs/download/` using `ZIPReader`.

@@ -141,6 +141,12 @@ target_link_libraries(kshootmania PRIVATE
     NocoUI
 )
 
+if(HIDAPI_FOUND)
+    target_link_libraries(kshootmania PRIVATE ${HIDAPI_LIBRARIES})
+    target_include_directories(kshootmania PRIVATE ${HIDAPI_INCLUDE_DIRS})
+    target_compile_definitions(kshootmania PRIVATE KSM_ specific_HIDAPI_ENABLED)
+endif()
+
 if(APPLE)
 	target_link_libraries(kshootmania PRIVATE ksmplatform_macos)
 endif()

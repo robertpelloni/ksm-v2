@@ -13,6 +13,8 @@
 #include "Scenes/Title/TitleScene.hpp"
 #include "Input/KeyConfig.hpp"
 #include "Input/InputUtils.hpp"
+#include "Hardware/Lighting/LightingManager.hpp"
+#include "Debug/LightingOverlay.hpp"
 
 #ifdef __APPLE__
 #include <ksmplatform_macos/input_method.h>
@@ -344,6 +346,10 @@ void KSMMain()
 	// レーザー入力方式がキーボード以外なら、ksmaxisを初期化
 	InputUtils::InitKsmaxisForCurrentLaserInput();
 
+	// Hardware Lighting (Controller LEDs) initialization
+	Hardware::Lighting::LightingManager lightingManager;
+	lightingManager.init();
+
 	// NocoUIのグローバルデフォルトフォントを設定
 	noco::SetGlobalDefaultFont(AssetManagement::SystemFont());
 
@@ -359,6 +365,24 @@ void KSMMain()
 		if (ksmaxis::IsInitialized())
 		{
 			ksmaxis::Update();
+		}
+
+		// Update Lighting state from Input
+		{
+			Hardware::Lighting::LightingState lightState;
+			lightState.bt[0] = KeyConfig::Pressed(kButtonBT_A);
+			lightState.bt[1] = KeyConfig::Pressed(kButtonBT_B);
+			lightState.bt[2] = KeyConfig::Pressed(kButtonBT_C);
+			lightState.bt[3] = KeyConfig::Pressed(kButtonBT_D);
+			lightState.fx[0] = KeyConfig::Pressed(kButtonFX_L);
+			lightState.fx[1] = KeyConfig::Pressed(kButtonFX_R);
+			// Laser intensity is hard to get from simple Pressed state, usually handled in GameMain.
+			// For now, in menus, we can perhaps just use input state or nothing.
+			lightingManager.update(lightState);
+
+#ifdef _DEBUG
+			// Debug::LightingOverlay::Draw(lightState);
+#endif
 		}
 
 #ifdef __APPLE__
@@ -377,6 +401,8 @@ void KSMMain()
 
 	// config.iniを保存
 	ConfigIni::Save();
+
+	lightingManager.shutdown();
 
 #ifdef __APPLE__
 	// macOS: 英数・かなキーのイベントタップを停止
