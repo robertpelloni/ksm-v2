@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 ## [2.0.0-alpha20] - 2026-02-20
 
 ### Added
+- **Input Gate**:
+    - Implemented real download logic using `AsyncHTTPTask`.
+    - Implemented ZIP extraction of downloaded songs to `songs/download/` using `ZIPReader`.
+    - Client now fetches `list.json` from the configured `kInputGateUrl`.
 - **Course Mode UI**:
     - Added display of Course Title Image (`title_img`) in Course Selection (replaces text title if image exists).
     - Added display of Course Title Image (`title_img`) in Course Result Screen.

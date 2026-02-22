@@ -1,5 +1,7 @@
 #include "InputGateClient.hpp"
 #include "Ini/ConfigIni.hpp"
+#include "Common/FsUtils.hpp"
+#include "DownloadTask.hpp"
 #include <Siv3D.hpp>
 
 namespace InputGate
@@ -23,12 +25,40 @@ namespace InputGate
 		}
 		else
 		{
-			// TODO: 実装
-			// const URL url = apiBaseUrl + U"/list";
-			// const auto response = SimpleHTTP::Get(url);
-			// if (response.isOK()) { ... }
-			Logger << U"[ksm info] InputGateClient: Fetching from {} (Not implemented)"_fmt(apiBaseUrl);
-			co_await Co::Delay(0.1s);
+			const URL url = apiBaseUrl + U"/list.json"; // サーバー実装に合わせて変更
+
+			// 非同期でJSONを取得
+			AsyncHTTPTask task = SimpleHTTP::CreateGetTask(url);
+
+			while (!task.isReady())
+			{
+				co_await Co::NextFrame();
+			}
+
+			if (task.getResponse().isOK())
+			{
+				const JSON json = task.getAsJSON();
+				if (json.isArray())
+				{
+					Array<SongInfo> songs;
+					for (const auto& item : json.arrayView())
+					{
+						songs.push_back({
+							item[U"id"].getString(),
+							item[U"title"].getString(),
+							item[U"artist"].getString(),
+							item[U"jacket_url"].getString(),
+							item[U"download_url"].getString(),
+							item[U"preview_url"].getString(),
+							item[U"hash"].getString(),
+							static_cast<int32>(item[U"size"].getOr<int64>(0))
+						});
+					}
+					co_return songs;
+				}
+			}
+
+			Logger << U"[ksm error] Failed to fetch song list from {}"_fmt(url);
 			co_return Array<SongInfo>();
 		}
 	}
@@ -53,11 +83,8 @@ namespace InputGate
 		}
 		else
 		{
-			// TODO: SimpleHTTP::Save(url, savePath)
-			// Note: Asynchronous download with progress requires threading or polling
-			Logger << U"[ksm info] InputGateClient: Downloading from {} to {} (Mocked)"_fmt(url, savePath);
-			co_await Co::Delay(1.0s);
-			co_return true;
+			// 実際のダウンロード
+			return DownloadTask::Download(url, savePath, progressCallback);
 		}
 	}
 }

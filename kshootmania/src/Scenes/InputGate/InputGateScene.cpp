@@ -86,11 +86,41 @@ Co::Task<void> InputGateScene::start()
 				// Yes, Co::SceneBase::start() is a task. The SceneManager calls draw() every frame.
 				// So awaiting here is fine, provided downloadSong yields periodically.
 
-				const bool success = co_await m_client.downloadSong(song.downloadUrl, U"songs/download/{}.zip"_fmt(song.id), [this](double p) {
+				const FilePath zipPath = U"songs/download/{}.zip"_fmt(song.id);
+
+				// Ensure directory exists
+				if (!FileSystem::Exists(U"songs/download/"))
+				{
+					FileSystem::CreateDirectories(U"songs/download/");
+				}
+
+				const bool success = co_await m_client.downloadSong(song.downloadUrl, zipPath, [this](double p) {
 					m_downloadProgress = p;
 				});
 
 				m_isDownloading = false;
+
+				if (success)
+				{
+					// Extract ZIP
+					// Siv3D's ZIPReader
+					const FilePath extractPath = U"songs/download/{}"_fmt(song.id);
+					ZIPReader zip{ zipPath };
+					if (zip)
+					{
+						zip.extractAll(extractPath);
+						// Remove zip file? Or keep it?
+						// FileSystem::Remove(zipPath);
+					}
+					else
+					{
+						Logger << U"[ksm error] Failed to open ZIP: " << zipPath;
+					}
+				}
+				else
+				{
+					// Show error?
+				}
 
 				if (success)
 				{
