@@ -14,6 +14,8 @@ private:
 
 	const CoursePlayState m_courseState;
 
+	Texture m_courseTitleTexture;
+
 	CourseResultNewRecordPanel m_newRecordPanel;
 
 	CourseResultChartList m_chartList;
