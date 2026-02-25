@@ -262,18 +262,22 @@ void KSMMain()
 	Graphics3D::SetGlobalAmbientColor(Palette::White);
 	Graphics3D::SetSunColor(Palette::Black);
 
-	// 音声処理のバックエンドを初期化
-#ifdef _WIN32
-	ksmaudio::Init(s3d::Platform::Windows::Window::GetHWND());
-#else
-	ksmaudio::Init(nullptr);
-#endif
-
 	// アプリケーションデータディレクトリを作成(macOSのみ)
 	CreateAppDataDirectory();
 
 	// config.iniを読み込み
 	ConfigIni::Load();
+
+	// 音声処理のバックエンドを初期化
+	const int32 audioDeviceID = ConfigIni::GetInt(ConfigIni::Key::kAudioDeviceID, -1);
+	const int32 audioBufferMs = ConfigIni::GetInt(ConfigIni::Key::kAudioBufferMs, ksmaudio::kDefaultBufferSizeMs);
+	const int32 audioUpdatePeriodMs = ConfigIni::GetInt(ConfigIni::Key::kAudioUpdatePeriod, ksmaudio::kDefaultUpdatePeriodMs);
+
+#ifdef _WIN32
+	ksmaudio::Init(s3d::Platform::Windows::Window::GetHWND(), audioDeviceID, ksmaudio::kDefaultSampleRate, audioBufferMs, audioUpdatePeriodMs);
+#else
+	ksmaudio::Init(nullptr, audioDeviceID, ksmaudio::kDefaultSampleRate, audioBufferMs, audioUpdatePeriodMs);
+#endif
 
 	// リソースファイルをコピー(macOSのみ)
 	CopyResourcesIfNeeded();

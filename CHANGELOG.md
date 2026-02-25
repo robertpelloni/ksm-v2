@@ -6,6 +6,37 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+## [2.0.0-alpha23] - 2026-02-20
+
+### Added
+- **Audio Configuration**:
+    - Added "Audio Device" selection to Option Menu (supports WASAPI Shared Mode via BASS).
+    - Added "Audio Buffer Size" selection to Option Menu (50ms - 200ms) to allow tuning latency vs stability.
+    - Updated `ksmaudio` to support device enumeration and configurable initialization parameters.
+    - Updated `Main.cpp` to initialize audio backend using saved configuration.
+
+### Fixed
+- **Build**: Fixed a typo in `CMakeLists.txt` that prevented `KSM_HIDAPI_ENABLED` from being defined, ensuring hardware lighting support is properly enabled when HIDAPI is found.
+
+## [2.0.0-alpha22] - 2026-02-20
+
+### Added
+- **Input Gate**:
+    - Implemented auto-update check on scene start.
+    - Checks against `kInputGateUrl + "/version.json"` (or mock if URL empty).
+    - Displays update notification dialog if a newer version is available.
+    - Reads local version from `VERSION` file.
+
+## [2.0.0-alpha21] - 2026-02-20
+
+### Added
+- **Internet Ranking**:
+    - Implemented real score submission backend using asynchronous HTTP POST.
+    - Sends JSON payload with Score, Combo, Critical/Near/Error counts, and Gauge Value.
+- **Editor**:
+    - Verified `kshooteditor` target existence and build process.
+    - Confirmed current state is a stub with "Editor is unimplemented" message.
+
 ## [2.0.0-alpha20] - 2026-02-20
 
 ### Added

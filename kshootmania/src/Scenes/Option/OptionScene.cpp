@@ -1,4 +1,4 @@
-﻿#include "OptionScene.hpp"
+#include "OptionScene.hpp"
 #include "OptionAssets.hpp"
 #include "Common/FrameRateLimit.hpp"
 #include "Common/IMEUtils.hpp"
@@ -6,6 +6,7 @@
 #include "RuntimeConfig.hpp"
 #include "Scenes/Title/TitleScene.hpp"
 #include "Input/InputUtils.hpp"
+#include "ksmaudio/ksmaudio.hpp"
 
 // TODO: TextureIdxまわりどうにかする
 
@@ -43,6 +44,14 @@ namespace
 		for (const auto& language : I18n::GetAvailableLanguageList())
 		{
 			availableLanguageStrPairs.emplace_back(language, language);
+		}
+
+		// Audio Devices
+		Array<IntStrPair> audioDevices;
+		audioDevices.emplace_back(-1, U"Default");
+		for (const auto& device : ksmaudio::GetAudioDevices())
+		{
+			audioDevices.emplace_back(device.id, Unicode::Widen(device.name));
 		}
 
 		return {
@@ -121,6 +130,13 @@ namespace
 					StrPair{ U"0;300", U"{}(300fps)"_fmt(I18n::Get(I18n::Option::kVsyncOff)) },
 					StrPair{ U"1", I18n::Get(I18n::Option::kVsyncOn) },
 				}).setKeyTextureIdx(9),
+				CreateInfo::Enum(ConfigIni::Key::kAudioDeviceID, audioDevices).setLabel(U"Audio Device (Restart Required)"),
+				CreateInfo::Enum(ConfigIni::Key::kAudioBufferMs, Array<IntStrPair>{
+					{ 50, U"50ms" },
+					{ 100, U"100ms" },
+					{ 150, U"150ms" },
+					{ 200, U"200ms" },
+				}).setLabel(U"Audio Buffer (Restart Required)"),
 				CreateInfo::Enum(ConfigIni::Key::kAutoSync, Array<StringView>{
 					I18n::Get(I18n::Select::kAutoSyncOff),
 					I18n::Get(I18n::Select::kAutoSyncOnLow),

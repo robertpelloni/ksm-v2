@@ -14,6 +14,10 @@ private:
 	double m_downloadProgress = 0.0;
 	String m_downloadingTitle;
 
+	// Update state
+	InputGate::UpdateInfo m_updateInfo;
+	bool m_showUpdateDialog = false;
+
 	int32 m_selectedIdx = 0;
 
 	void populateSongList();
@@ -21,6 +25,8 @@ private:
 	void drawSongList() const;
 
 	void drawDownloadProgress() const;
+
+	void drawUpdateDialog() const;
 
 public:
 	InputGateScene();

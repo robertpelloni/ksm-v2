@@ -54,16 +54,17 @@ To achieve total feature parity with K-Shoot MANIA v1 and commercial rhythm game
 - [x] Score Load/Save
 - [x] Player Profile Switch
 - [x] AUTO SYNC
-- [x] Internet Ranking System (UI/Stub)
+- [x] Internet Ranking System (UI/Real Integration)
 - [x] Twitter (X) Result Posting (Web Intent)
 - [x] Advanced Timing Options (Global/Visual Offset, Audio FX Delay)
+- [x] Audio Backend Configuration (Device Selection, Buffer Size)
 
 ### 🌐 Input Gate / Online
 - [x] Download from Input Gate (Client logic implemented, mock active)
-- [ ] Auto Update
+- [x] Auto Update (Version Check & Notification)
 - [ ] Unlock Conditions & Popups
 
 ## Upcoming Priorities
 1. **Course Mode Refinement**: Verify and complete any missing course mode UI elements.
-2. **Internet Ranking**: Implement actual score submission API (backend required).
+2. **Internet Ranking**: Create server-side implementation (Client is ready).
 3. **Input Gate**: Connect to real server API (backend required).

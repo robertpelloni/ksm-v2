@@ -87,4 +87,84 @@ namespace InputGate
 			return DownloadTask::Download(url, savePath, progressCallback);
 		}
 	}
+
+	Co::Task<UpdateInfo> InputGateClient::checkUpdate()
+	{
+		UpdateInfo info;
+
+		// 現在のバージョンを取得
+		// リソースフォルダまたは実行ファイルディレクトリのVERSIONファイルを読む
+		FilePath versionPath = FsUtils::GetResourcePath(U"VERSION");
+		if (!FileSystem::Exists(versionPath))
+		{
+			// Fallback: Check local directory
+			versionPath = U"VERSION";
+		}
+
+		if (FileSystem::Exists(versionPath))
+		{
+			TextReader reader{ versionPath };
+			if (reader)
+			{
+				info.currentVersion = reader.readAll().trimmed();
+			}
+		}
+
+		if (info.currentVersion.isEmpty())
+		{
+			info.currentVersion = U"Unknown";
+		}
+
+		const String apiBaseUrl = ConfigIni::GetString(ConfigIni::Key::kInputGateUrl, U"");
+
+		if (apiBaseUrl.isEmpty())
+		{
+			// Mock: 50% chance to have update or always have update if version matches specific mock
+			// For testing UI, let's say there is an update if current version contains "alpha"
+			// But let's verify if current is alpha21, update to alpha22
+
+			co_await Co::Delay(0.5s);
+
+			info.hasUpdate = true;
+			info.latestVersion = U"2.0.0-alpha22"; // Assuming we are on alpha21
+			info.downloadUrl = U"http://example.com/update.zip";
+			info.patchNotes = U"Mock Update:\n- New Input Gate features\n- Bug fixes";
+
+			// If current is same or newer, no update
+			if (info.currentVersion == info.latestVersion)
+			{
+				info.hasUpdate = false;
+			}
+		}
+		else
+		{
+			const URL url = apiBaseUrl + U"/version.json";
+			AsyncHTTPTask task = SimpleHTTP::CreateGetTask(url);
+
+			while (!task.isReady())
+			{
+				co_await Co::NextFrame();
+			}
+
+			if (task.getResponse().isOK())
+			{
+				const JSON json = task.getAsJSON();
+				info.latestVersion = json[U"latest_version"].getString();
+				info.downloadUrl = json[U"download_url"].getString();
+				info.patchNotes = json[U"patch_notes"].getString();
+
+				if (info.latestVersion != info.currentVersion) // Simple string compare for now
+				{
+					// TODO: Semver compare?
+					info.hasUpdate = true;
+				}
+			}
+			else
+			{
+				Logger << U"[ksm error] Failed to fetch version info from {}"_fmt(url);
+			}
+		}
+
+		co_return info;
+	}
 }

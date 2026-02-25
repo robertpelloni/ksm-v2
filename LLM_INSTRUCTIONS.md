@@ -27,7 +27,14 @@ This file consolidates instructions for all AI models (Claude, Gemini, GPT, Copi
 *   **UI System**: Uses NocoUI (JSON-based layout). Textures are often loaded dynamically.
 *   **Input/Output**:
     *   Input: `ksmaxis` (HID/DirectInput).
-    *   Output: Currently missing (LED/HID lights). *Priority for implementation.*
+    *   Output: `LightingManager` handles HID/Serial lights (e.g., YuanCon). Uses `hidapi`.
+*   **Audio**:
+    *   Uses `ksmaudio` (BASS wrapper).
+    *   Configuration via `config.ini` (Device ID, Buffer Size).
+*   **Networking**:
+    *   Uses `SimpleHTTP` for requests.
+    *   Internet Ranking sends JSON scores.
+    *   Input Gate handles song downloads (ZIP extraction).
 
 ## Handoff Protocol
 When finishing a session:

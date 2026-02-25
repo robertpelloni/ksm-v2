@@ -12,6 +12,7 @@
 .DS_Store
 build/
 build_full/
+build_editor/
 out/
 bin/
 kshootmania/App/kshootmania_log.txt

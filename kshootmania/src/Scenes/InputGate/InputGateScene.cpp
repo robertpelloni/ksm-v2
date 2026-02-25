@@ -32,16 +32,38 @@ void InputGateScene::populateSongList()
 
 Co::Task<void> InputGateScene::start()
 {
+	// Updater for canvas
+	const auto updateRunner = Co::UpdaterTask([this] { update(); }).runScoped();
+
+	// Check for updates first
+	m_updateInfo = co_await m_client.checkUpdate();
+	if (m_updateInfo.hasUpdate)
+	{
+		m_showUpdateDialog = true;
+	}
+
 	// Fetch song list
 	m_songList = co_await m_client.fetchSongList();
 	populateSongList();
 
-	// Updater for canvas
-	const auto updateRunner = Co::UpdaterTask([this] { update(); }).runScoped();
-
 	while (true)
 	{
 		co_await Co::NextFrame();
+
+		if (m_showUpdateDialog)
+		{
+			// Modal dialog handling
+			if (KeyConfig::Down(kButtonStart) || KeyConfig::Down(kButtonBack))
+			{
+				if (KeyConfig::Down(kButtonStart) && !m_updateInfo.downloadUrl.isEmpty())
+				{
+					// Open browser
+					System::LaunchBrowser(m_updateInfo.downloadUrl);
+				}
+				m_showUpdateDialog = false;
+			}
+			continue;
+		}
 
 		if (m_isDownloading)
 		{
@@ -74,18 +96,6 @@ Co::Task<void> InputGateScene::start()
 				m_downloadingTitle = song.title;
 
 				// Start download
-				// Since we are in a coroutine, we can await it?
-				// But we want to show progress in update/draw loop.
-				// So we spawn a task or just do it here if it supports progress callback?
-				// InputGateClient::downloadSong is a Co::Task.
-				// If we await it, the loop blocks, so update/draw won't run unless we run it in parallel?
-				// But Co::Task is cooperative. If downloadSong awaits Co::NextFrame, it yields.
-				// So we can await it here, BUT we need to ensure update/draw are called.
-				// Currently start() runs, and it calls update(). draw() is called by the system (SceneManager).
-				// So if we await here, draw() continues to be called?
-				// Yes, Co::SceneBase::start() is a task. The SceneManager calls draw() every frame.
-				// So awaiting here is fine, provided downloadSong yields periodically.
-
 				const FilePath zipPath = U"songs/download/{}.zip"_fmt(song.id);
 
 				// Ensure directory exists
@@ -117,20 +127,6 @@ Co::Task<void> InputGateScene::start()
 						Logger << U"[ksm error] Failed to open ZIP: " << zipPath;
 					}
 				}
-				else
-				{
-					// Show error?
-				}
-
-				if (success)
-				{
-					// Show success message or refresh?
-					// For now just done.
-				}
-				else
-				{
-					// Show error?
-				}
 			}
 		}
 	}
@@ -156,6 +152,11 @@ void InputGateScene::draw() const
 		if (m_isDownloading)
 		{
 			drawDownloadProgress();
+		}
+
+		if (m_showUpdateDialog)
+		{
+			drawUpdateDialog();
 		}
 	}
 	else
@@ -229,4 +230,32 @@ void InputGateScene::drawDownloadProgress() const
 	// Percentage
 	font(U"{:.0f}%"_fmt(m_downloadProgress * 100))
 		.drawAt(barBg.center(), Palette::Black);
+}
+
+void InputGateScene::drawUpdateDialog() const
+{
+	// Overlay
+	Scene::Rect().draw(ColorF(0.0, 0.8));
+
+	const RectF dialog(Arg::center = Scene::Center(), 600, 400);
+	dialog.draw(Palette::Black).drawFrame(2, Palette::Yellow);
+
+	const Font& font = AssetManagement::SystemFont();
+	const Font& titleFont = AssetManagement::SystemFont(); // Use a larger font if available
+
+	// Title
+	titleFont(U"New Update Available!").drawAt(dialog.topCenter().movedBy(0, 40), Palette::Yellow);
+
+	// Versions
+	font(U"Current: {}"_fmt(m_updateInfo.currentVersion)).drawAt(dialog.topCenter().movedBy(0, 80), Palette::White);
+	font(U"Latest: {}"_fmt(m_updateInfo.latestVersion)).drawAt(dialog.topCenter().movedBy(0, 110), Palette::Cyan);
+
+	// Patch Notes
+	const RectF notesRect = dialog.stretched(-20, -140, -20, -80);
+	notesRect.draw(ColorF(0.2));
+	font(m_updateInfo.patchNotes).draw(notesRect.stretched(-10), Palette::White);
+
+	// Buttons
+	font(U"[Start] Download / Open Browser").drawAt(dialog.bottomCenter().movedBy(0, -50), Palette::White);
+	font(U"[Back] Close").drawAt(dialog.bottomCenter().movedBy(0, -20), Palette::Gray);
 }
