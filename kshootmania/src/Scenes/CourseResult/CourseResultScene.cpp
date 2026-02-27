@@ -35,6 +35,22 @@ CourseResultScene::CourseResultScene(const CoursePlayState& courseState)
 	, m_newRecordPanel(m_canvas)
 	, m_chartList(m_canvas, m_courseState)
 {
+	// タイトル画像をロード
+	const FilePath kcoDir = FileSystem::ParentPath(m_courseState.courseInfo().filePath);
+	const String& rawTitleImgPath = m_courseState.courseInfo().titleImgPath;
+	if (!rawTitleImgPath.isEmpty())
+	{
+		FilePath path = rawTitleImgPath;
+		if (!FileSystem::IsFullPath(path))
+		{
+			path = FileSystem::PathAppend(kcoDir, path);
+		}
+		if (FileSystem::Exists(path))
+		{
+			m_courseTitleTexture = Texture{ path };
+		}
+	}
+
 	// 前回までのAchievementRateを読み込んでNewRecordパネルを設定
 	const FilePath courseFilePath = m_courseState.courseInfo().filePath;
 	const KscKey kscKey = m_courseState.kscKey();
@@ -67,6 +83,22 @@ void CourseResultScene::updateCanvasParams()
 		{ U"gaugePercentageNumber", U"{}"_fmt(newAchievementRate) },
 		{ U"gaugeTextureIndex", 1.0 },
 	});
+
+	// タイトル画像を設定
+	if (const auto titleImgNode = m_canvas->findByName(U"TitleImage"))
+	{
+		titleImgNode->setActive(!m_courseTitleTexture.isEmpty());
+		if (const auto sprite = titleImgNode->getComponent<noco::Sprite>())
+		{
+			sprite->setTexture(m_courseTitleTexture);
+		}
+
+		// タイトル画像がある場合はタイトルテキストを非表示に
+		if (const auto titleNode = m_canvas->findByName(U"CourseTitle"))
+		{
+			titleNode->setActive(m_courseTitleTexture.isEmpty());
+		}
+	}
 
 	// ゲージのバーの幅をパーセンテージに応じて変更
 	if (auto gaugeClippingMask = m_canvas->findByName(U"GaugeClippingMask"))

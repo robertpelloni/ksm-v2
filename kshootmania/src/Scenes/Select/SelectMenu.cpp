@@ -11,6 +11,7 @@
 #include "MenuItem/SelectMenuLevelSectionItem.hpp"
 #include "Common/FsUtils.hpp"
 #include "Common/Encoding.hpp"
+#include "Ini/ConfIni.hpp"
 #include "Input/PlatformKey.hpp"
 #include "Course/CourseInfo.hpp"
 
@@ -1504,9 +1505,11 @@ bool SelectMenu::openAllFolderWithNameSort()
 	// TODO: Insert course items
 
 	// 全フォルダの楽曲を収集
-	const Array<FilePath> searchPaths = {
-		FsUtils::SongsDirectoryPath(), // TODO: 設定可能にする
+	Array<FilePath> searchPaths = {
+		FsUtils::SongsDirectoryPath(),
 	};
+	// conf.iniから追加のフォルダを読み込む
+	searchPaths.append(ConfIni::LoadAdditionalSongFolders());
 
 	// 全フォルダを取得
 	Array<FilePath> allFolderDirectories;
@@ -1633,9 +1636,11 @@ bool SelectMenu::openAllFolderWithLevelSort()
 	};
 
 	// 全フォルダの楽曲を収集
-	const Array<FilePath> searchPaths = {
-		FsUtils::SongsDirectoryPath(), // TODO: 設定可能にする
+	Array<FilePath> searchPaths = {
+		FsUtils::SongsDirectoryPath(),
 	};
+	// conf.iniから追加のフォルダを読み込む
+	searchPaths.append(ConfIni::LoadAdditionalSongFolders());
 
 	// 全フォルダを取得
 	Array<FilePath> allFolderDirectories;
@@ -2069,9 +2074,11 @@ bool SelectMenu::openCoursesFolderWithLevelSort()
 
 Array<FilePath> SelectMenu::getSortedFolderPaths() const
 {
-	const Array<FilePath> searchPaths = {
-		FsUtils::SongsDirectoryPath(), // TODO: 設定可能にする
+	Array<FilePath> searchPaths = {
+		FsUtils::SongsDirectoryPath(),
 	};
+	// conf.iniから追加のフォルダを読み込む
+	searchPaths.append(ConfIni::LoadAdditionalSongFolders());
 
 	// "All"フォルダを追加
 	Array<FilePath> folderPaths;

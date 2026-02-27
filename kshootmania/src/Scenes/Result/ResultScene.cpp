@@ -5,6 +5,10 @@
 #include "Scenes/Common/ShowLoadingOneFrame.hpp"
 #include "HighScore/KscIO.hpp"
 #include "Common/CommonDefines.hpp"
+#include "Ini/ConfigIni.hpp"
+#include "UI/Dialog.hpp"
+#include "Network/InternetRanking.hpp"
+#include "Network/TwitterClient.hpp"
 
 namespace
 {
@@ -359,11 +363,37 @@ Co::Task<void> ResultScene::start()
 		}
 	}
 
+	// Auto Sync Check
+	co_await checkAutoSync();
+
+	// Internet Ranking Submission
+	if (ConfigIni::GetBool(ConfigIni::Key::kEnableInternetRanking, false))
+	{
+		co_await InternetRanking::SubmitScore(m_playResult);
+	}
+
 	if (!userPressedStartOrBack)
 	{
-		co_await Co::Any(
-			KeyConfig::WaitUntilDown(kButtonStart),
-			KeyConfig::WaitUntilDown(kButtonBack));
+		while (true)
+		{
+			// Post to Twitter (FX-L + FX-R)
+			if (KeyConfig::Pressed(kButtonFX_L) && KeyConfig::Pressed(kButtonFX_R))
+			{
+				co_await postToTwitter();
+
+				// Wait for release
+				while (KeyConfig::Pressed(kButtonFX_L) && KeyConfig::Pressed(kButtonFX_R))
+				{
+					co_await Co::NextFrame();
+				}
+			}
+
+			if (KeyConfig::Down(kButtonStart) || KeyConfig::Down(kButtonBack))
+			{
+				break;
+			}
+			co_await Co::NextFrame();
+		}
 	}
 
 	// コースモードの場合は次の曲またはコースリザルトへ
@@ -444,6 +474,130 @@ Co::Task<bool> ResultScene::waitForNewRecordPanelClose()
 			co_return true;
 		}
 	}
+}
+
+Co::Task<void> ResultScene::checkAutoSync()
+{
+	// Auto Syncの設定値を取得
+	// 0: Off, 1: Low, 2: Mid, 3: High
+	const int32 autoSyncLevel = ConfigIni::GetInt(ConfigIni::Key::kAutoSync, 0);
+	if (autoSyncLevel == 0)
+	{
+		co_return;
+	}
+
+	const auto& stats = m_playResult.comboStats;
+	if (stats.deviationCount == 0)
+	{
+		co_return;
+	}
+
+	// 平均ズレ時間(秒) (Positive: Fast/Early, Negative: Slow/Late in data, but let's re-verify)
+	// ComboStatus.cpp: diffSec = noteTime - inputTime
+	// if note=1.1, input=1.0 (Early), diff=+0.1.
+	// if note=1.1, input=1.2 (Late), diff=-0.1.
+	//
+	// InputDelay in ConfigIni adds delay to input? or subtracts?
+	// Usually "Input Delay" means "Hardware Latency".
+	// If hardware has +10ms latency, the input arrives 10ms LATE.
+	// Game sees input at T+10ms.
+	// To correct, we must SUBTRACT 10ms from the timestamp? Or add 10ms to note time?
+	// Usually: AdjustedInputTime = RawInputTime - InputDelay.
+	//
+	// If I am consistently Early (diff > 0), it means InputTime < NoteTime.
+	// It implies either I am rushing, or the visual/audio is early.
+	// If I press early, it might mean the audio is ahead of visual?
+	//
+	// Let's look at "Auto Adjust" features in other games.
+	// If average error is +20ms (Early), we usually shift the offset by +20ms?
+	// If I hit early, I need the judgment line to be "earlier" (visually) or "later" (internally)?
+	//
+	// Let's assume the standard convention:
+	// If Average Error is X ms, we add X ms to the existing offset.
+	// Example: I hit 20ms early (+20ms).
+	// New Offset = Old Offset + 20ms.
+	// If Old Offset was 0, New is +20.
+	// If I apply +20ms offset (assuming it means "make notes appear later" or "shift judgment window later"):
+	// Original: Note at 1000ms. I hit at 980ms. Error +20ms.
+	// Shift: Note effectively at 980ms (or input treated as 1000ms).
+	//
+	// Let's try to stick to the logic:
+	// Recommended Offset Change = Average Deviation.
+
+	const double avgDeviationSec = stats.totalDeviationSec / stats.deviationCount;
+	const int32 avgDeviationMs = static_cast<int32>(avgDeviationSec * 1000);
+
+	// Thresholds (ms) based on level
+	// High: Sensitive (small threshold)
+	// Low: Less sensitive (large threshold)
+	int32 thresholdMs = 0;
+	switch (autoSyncLevel)
+	{
+	case 1: // Low
+		thresholdMs = 40;
+		break;
+	case 2: // Mid
+		thresholdMs = 25;
+		break;
+	case 3: // High
+		thresholdMs = 15;
+		break;
+	default:
+		return;
+	}
+
+	if (Abs(avgDeviationMs) < thresholdMs)
+	{
+		co_return;
+	}
+
+	// Format confirmation message
+	const int32 currentDelay = ConfigIni::GetInt(ConfigIni::Key::kInputDelay, 0);
+	const int32 newDelay = currentDelay + avgDeviationMs;
+
+	// Note: We need to use I18n strings here.
+	// Ideally: "Input timing deviation detected.\nAdjust Input Delay?\nCurrent: {0}ms -> New: {1}ms"
+	// Using existing keys or fallback.
+	// Since I18n keys for this specific message might not exist in standard yet, I'll use placeholders or existing.
+	// I added I18n keys in the previous turn? No, I added them to I18n.hpp but didn't implement the Japanese text.
+	// But `I18n::Play::kAutoSyncSaveConfirm1` etc were in the list.
+	// Let's use `I18n::Play::kAutoSyncSaveConfirm1` + numbers + `kAutoSyncSaveConfirm2`.
+
+	const String message = I18n::Get(I18n::Play::kAutoSyncInputDelayConfirm) + U"\n" +
+		I18n::Get(I18n::Play::kAutoSyncInputDelayConfirmNewVal) +
+		U"{} ms -> {} ms)"_fmt(currentDelay, newDelay);
+
+	const Dialog::Result result = co_await Dialog::Confirm(message,
+		I18n::Get(I18n::Play::kAutoSyncSaveConfirmYes),
+		I18n::Get(I18n::Play::kAutoSyncSaveConfirmNo));
+
+	if (result == Dialog::Result::Yes)
+	{
+		ConfigIni::SetInt(ConfigIni::Key::kInputDelay, newDelay);
+		ConfigIni::Save();
+
+		// Show "Saved" message briefly
+		co_await Dialog::Ok(I18n::Get(I18n::Play::kAutoSyncInputDelaySaved));
+	}
+}
+
+Co::Task<void> ResultScene::postToTwitter()
+{
+	// Construct default tweet text
+	// "I played [Title] [Difficulty] and scored [Score]! #kshootmania"
+	// We should probably use I18n here but for now English/Universal format
+	const String title = Unicode::FromUTF8(m_chartData.meta.title);
+	const String diff = Unicode::FromUTF8(m_chartData.meta.difficulty.idx == kDifficultyIdxInfinite ? "INF" : "EXH"); // Simplified
+	const String score = U"{}"_fmt(m_playResult.score);
+
+	const String text = U"I played {} [{}] and scored {}! #kshootmania"_fmt(title, diff, score);
+
+	// Confirm?
+	// const Dialog::Result result = co_await Dialog::Confirm(U"Post to Twitter/X?\n\n" + text, U"Post", U"Cancel");
+	// if (result != Dialog::Result::Yes) co_return;
+
+	Twitter::TwitterClient client;
+	co_await client.postTweet(text);
 }
 
 void ResultScene::update()

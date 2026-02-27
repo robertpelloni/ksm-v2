@@ -70,10 +70,16 @@ namespace ConfigIni
 		// Other advanced audio settings
 		constexpr StringView kGlobalOffset = U"globaloffset";
 		constexpr StringView kAudioProcDelay = U"soundfx_delay";
+		constexpr StringView kAudioDeviceID = U"audio_device_id";
+		constexpr StringView kAudioBufferMs = U"audio_buffer_ms";
+		constexpr StringView kAudioUpdatePeriod = U"audio_update_period";
 		constexpr StringView kVisualOffset = U"visual_offset";
 		constexpr StringView kAutoPlaySE = U"auto_play_se";
 		constexpr StringView kAutoSync = U"autosync";
 		constexpr StringView kShowSongTitleImages = U"show_song_title_images";
+		constexpr StringView kEnableInternetRanking = U"internet_ranking";
+		constexpr StringView kInternetRankingUrl = U"internet_ranking_url";
+		constexpr StringView kInputGateUrl = U"input_gate_url";
 
 		constexpr StringView kMuteAudioInInactiveWindow = U"automaticmute";
 

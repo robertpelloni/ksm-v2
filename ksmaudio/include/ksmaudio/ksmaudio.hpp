@@ -1,17 +1,29 @@
-﻿#pragma once
+#pragma once
 #include "Stream.hpp"
 #include "StreamWithEffects.hpp"
 #include "Sample.hpp"
 #include "AudioEffect/All.hpp"
+#include <string>
+#include <vector>
 
 namespace ksmaudio
 {
-	constexpr DWORD kSampleRate = 44100;
-	constexpr DWORD kBufferSizeMs = 200;
-	constexpr DWORD kUpdatePeriodMs = 100;
+	constexpr DWORD kDefaultSampleRate = 44100;
+	constexpr DWORD kDefaultBufferSizeMs = 100; // Lower latency default? (200 was high)
+	constexpr DWORD kDefaultUpdatePeriodMs = 10; // More frequent updates? (100 was high)
 	constexpr DWORD kUpdateThreads = 2;
 
-	void Init(void* hWnd);
+	struct AudioDeviceInfo
+	{
+		int id;
+		std::string name;
+		std::string driver;
+		bool isDefault;
+	};
+
+	std::vector<AudioDeviceInfo> GetAudioDevices();
+
+	void Init(void* hWnd, int deviceId = -1, DWORD sampleRate = kDefaultSampleRate, DWORD bufferMs = kDefaultBufferSizeMs, DWORD updatePeriodMs = kDefaultUpdatePeriodMs);
 
 	void Terminate();
 

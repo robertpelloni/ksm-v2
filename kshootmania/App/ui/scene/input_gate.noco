@@ -1,0 +1,97 @@
+ui {
+	// Background
+	Rect {
+		name: "Background"
+		x: 0
+		y: 0
+		w: 100%
+		h: 100%
+		color: "#000000"
+	}
+
+	// Header
+	Rect {
+		name: "Header"
+		x: 0
+		y: 0
+		w: 100%
+		h: 60
+		color: "#002244"
+
+		Label {
+			text: "INPUT GATE"
+			x: 20
+			y: 10
+			font: "SystemFont"
+			size: 32
+			color: "#FFFFFF"
+		}
+	}
+
+	// Tab Bar
+	Rect {
+		name: "TabBar"
+		x: 0
+		y: 60
+		w: 100%
+		h: 40
+		color: "#003366"
+
+		FlowLayout {
+			x: 20
+			y: 0
+			w: 100%
+			h: 100%
+			axis: "X"
+			spacing: 10
+
+			Button {
+				name: "TabNew"
+				text: "New"
+				w: 120
+				h: 40
+			}
+			Button {
+				name: "TabRanking"
+				text: "Ranking"
+				w: 120
+				h: 40
+			}
+			Button {
+				name: "TabRecommended"
+				text: "Recommended"
+				w: 120
+				h: 40
+			}
+		}
+	}
+
+	// Content Area (List)
+	Rect {
+		name: "ContentArea"
+		x: 20
+		y: 120
+		w: 600
+		h: 100%
+
+		// List Item Template (Repeated in code)
+		// ...
+	}
+
+	// Footer
+	Rect {
+		name: "Footer"
+		x: 0
+		y: 100% - 40
+		w: 100%
+		h: 40
+		color: "#001122"
+
+		Label {
+			text: "Press Start to Download | Back to Return"
+			align: "center"
+			y: 10
+			color: "#AAAAAA"
+		}
+	}
+}

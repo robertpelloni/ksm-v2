@@ -107,9 +107,9 @@ namespace MusicGame::Judgment
 	{
 	}
 
-	void ScoringStatus::onChipOrLaserSlamJudgment(Judgment::JudgmentResult result)
+	void ScoringStatus::onChipOrLaserSlamJudgment(Judgment::JudgmentResult result, double diffSec)
 	{
-		m_comboStatus.processJudgmentResult(result);
+		m_comboStatus.processJudgmentResult(result, diffSec);
 
 		switch (result)
 		{
