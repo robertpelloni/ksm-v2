@@ -1,0 +1,10 @@
+^C:\USERS\HYPER\WORKSPACE\BOBMANI\KSM-V2\TESTS\BUILD_OUTPUT\_DEPS\CATCH2-SUBBUILD\CMAKEFILES\E85252F861E7D00A19B6EB4ADE134FE9\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild -BC:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/catch2-populate.slnx
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

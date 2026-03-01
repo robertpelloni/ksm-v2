@@ -1,0 +1,10 @@
+^C:\USERS\HYPER\WORKSPACE\BOBMANI\KSM-V2\KSMAUDIO\BUILD_OUTPUT\CMAKEFILES\E7D88985A5F67CA13BDE288FA53511CA\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/hyper/workspace/bobmani/ksm-v2/ksmaudio -BC:/Users/hyper/workspace/bobmani/ksm-v2/ksmaudio/build_output --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/hyper/workspace/bobmani/ksm-v2/ksmaudio/build_output/ksmaudio.slnx
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

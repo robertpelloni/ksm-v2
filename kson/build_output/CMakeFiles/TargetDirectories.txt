@@ -1,0 +1,15 @@
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/CMakeFiles/kson.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/CMakeFiles/ksh2kson.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/CMakeFiles/kson2ksh.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/CMakeFiles/RUN_TESTS.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/CMakeFiles/ALL_BUILD.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/CMakeFiles/ZERO_CHECK.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/tests/CMakeFiles/kson_test.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/tests/CMakeFiles/Experimental.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/tests/CMakeFiles/Nightly.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/tests/CMakeFiles/Continuous.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/tests/CMakeFiles/NightlyMemoryCheck.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/tests/CMakeFiles/RUN_TESTS.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/tests/CMakeFiles/ALL_BUILD.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-build/CMakeFiles/RUN_TESTS.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-build/CMakeFiles/ALL_BUILD.dir

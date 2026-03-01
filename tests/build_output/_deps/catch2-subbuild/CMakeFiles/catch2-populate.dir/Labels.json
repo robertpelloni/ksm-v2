@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/catch2-populate"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/e85252f861e7d00a19b6eb4ade134fe9/catch2-populate.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/589470568079e7920e8f9d0e0509551f/catch2-populate-complete.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/35cbd04b795074cd5f1fcb377d9d9f17/catch2-populate-build.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/35cbd04b795074cd5f1fcb377d9d9f17/catch2-populate-configure.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/35cbd04b795074cd5f1fcb377d9d9f17/catch2-populate-download.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/35cbd04b795074cd5f1fcb377d9d9f17/catch2-populate-install.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/35cbd04b795074cd5f1fcb377d9d9f17/catch2-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/35cbd04b795074cd5f1fcb377d9d9f17/catch2-populate-patch.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/35cbd04b795074cd5f1fcb377d9d9f17/catch2-populate-test.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/tests/build_output/_deps/catch2-subbuild/CMakeFiles/35cbd04b795074cd5f1fcb377d9d9f17/catch2-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"catch2-populate"
+		],
+		"name" : "catch2-populate"
+	}
+}

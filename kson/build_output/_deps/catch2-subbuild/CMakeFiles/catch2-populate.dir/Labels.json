@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/catch2-populate"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/6c25321d45c6ff87c85cbacb591cef8b/catch2-populate.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/d0b2b44430a84857e3fb7434a8e70970/catch2-populate-complete.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/c61d1577e71043999984148c6418aa5b/catch2-populate-build.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/c61d1577e71043999984148c6418aa5b/catch2-populate-configure.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/c61d1577e71043999984148c6418aa5b/catch2-populate-download.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/c61d1577e71043999984148c6418aa5b/catch2-populate-install.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/c61d1577e71043999984148c6418aa5b/catch2-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/c61d1577e71043999984148c6418aa5b/catch2-populate-patch.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/c61d1577e71043999984148c6418aa5b/catch2-populate-test.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/CMakeFiles/c61d1577e71043999984148c6418aa5b/catch2-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"catch2-populate"
+		],
+		"name" : "catch2-populate"
+	}
+}

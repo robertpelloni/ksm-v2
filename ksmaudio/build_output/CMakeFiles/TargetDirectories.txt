@@ -1,0 +1,3 @@
+C:/Users/hyper/workspace/bobmani/ksm-v2/ksmaudio/build_output/CMakeFiles/ksmaudio.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/ksmaudio/build_output/CMakeFiles/ALL_BUILD.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/ksmaudio/build_output/CMakeFiles/ZERO_CHECK.dir

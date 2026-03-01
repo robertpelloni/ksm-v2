@@ -1,0 +1,5 @@
+if(EXISTS "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/tests/build_output/kson_test_tests-b12d07c.cmake")
+  include("C:/Users/hyper/workspace/bobmani/ksm-v2/kson/tests/build_output/kson_test_tests-b12d07c.cmake")
+else()
+  add_test(kson_test_NOT_BUILT-b12d07c kson_test_NOT_BUILT-b12d07c)
+endif()

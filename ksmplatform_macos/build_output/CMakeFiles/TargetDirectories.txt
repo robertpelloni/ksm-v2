@@ -1,0 +1,3 @@
+C:/Users/hyper/workspace/bobmani/ksm-v2/ksmplatform_macos/build_output/CMakeFiles/ksmplatform_macos.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/ksmplatform_macos/build_output/CMakeFiles/ALL_BUILD.dir
+C:/Users/hyper/workspace/bobmani/ksm-v2/ksmplatform_macos/build_output/CMakeFiles/ZERO_CHECK.dir

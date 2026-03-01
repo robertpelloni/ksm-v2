@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/hyper/workspace/bobmani/ksm-v2/kson/tests/build_output/cmake_install.cmake",
+		"C:/Users/hyper/workspace/bobmani/ksm-v2/kson/tests/build_output/_deps/catch2-build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
