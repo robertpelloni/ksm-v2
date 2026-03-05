@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/catch2-populate"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/8bafd16095402ba3ce6c6888890ef349/catch2-populate.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/85a72a169410bdd7e565970f53156bcf/catch2-populate-complete.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/3fd2d4604280b62c67766e4bfdcd13e6/catch2-populate-build.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/3fd2d4604280b62c67766e4bfdcd13e6/catch2-populate-configure.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/3fd2d4604280b62c67766e4bfdcd13e6/catch2-populate-download.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/3fd2d4604280b62c67766e4bfdcd13e6/catch2-populate-install.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/3fd2d4604280b62c67766e4bfdcd13e6/catch2-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/3fd2d4604280b62c67766e4bfdcd13e6/catch2-populate-patch.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/3fd2d4604280b62c67766e4bfdcd13e6/catch2-populate-test.rule"
+		},
+		{
+			"file" : "C:/Users/hyper/workspace/bobmani/ksm-v2/kson/build_output/_deps/catch2-subbuild/build_output/CMakeFiles/3fd2d4604280b62c67766e4bfdcd13e6/catch2-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"catch2-populate"
+		],
+		"name" : "catch2-populate"
+	}
+}
