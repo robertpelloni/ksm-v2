@@ -73,6 +73,7 @@ namespace ConfigIni
 		constexpr StringView kAudioDeviceID = U"audio_device_id";
 		constexpr StringView kAudioBufferMs = U"audio_buffer_ms";
 		constexpr StringView kAudioUpdatePeriod = U"audio_update_period";
+		constexpr StringView kAudioWasapiExclusive = U"audio_wasapi_exclusive";
 		constexpr StringView kVisualOffset = U"visual_offset";
 		constexpr StringView kAutoPlaySE = U"auto_play_se";
 		constexpr StringView kAutoSync = U"autosync";
@@ -80,6 +81,10 @@ namespace ConfigIni
 		constexpr StringView kEnableInternetRanking = U"internet_ranking";
 		constexpr StringView kInternetRankingUrl = U"internet_ranking_url";
 		constexpr StringView kInputGateUrl = U"input_gate_url";
+
+		// Hardware I/O
+		constexpr StringView kLightingEnable = U"lighting_enable";
+		constexpr StringView kLightingBlink = U"lighting_blink";
 
 		constexpr StringView kMuteAudioInInactiveWindow = U"automaticmute";
 

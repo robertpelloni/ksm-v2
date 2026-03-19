@@ -6,34 +6,35 @@
 
 namespace Hardware::Lighting
 {
+	struct LightingConfig
+	{
+		bool enableBlink = false;
+		double blinkRateHz = 2.0;
+		double maxIntensity = 1.0;
+	};
+
 	class LightingManager
 	{
 	private:
 		std::unique_ptr<ILightingDriver> m_driver;
 		LightingState m_currentState;
+		LightingConfig m_config;
+
+		double m_blinkTimer = 0.0;
+		bool m_blinkState = true;
 
 	public:
 		void init()
 		{
-			// Read config
-			const bool enabled = ConfigIni::GetBool(ConfigIni::Key::kInputGateUrl, true); // Reusing a key? No, need new key.
-			// Actually let's use a specific key for lighting.
-			// For now default to Mock if HID fails or disabled.
+			// Read Config
+			const bool isEnabled = ConfigIni::GetBool(ConfigIni::Key::kLightingEnable, true);
+			if (!isEnabled)
+			{
+				m_driver = nullptr;
+				return;
+			}
 
-			// Try HID first if configured
-			// int vid = ConfigIni::GetInt(U"ControllerVID", 0x1973);
-			// int pid = ConfigIni::GetInt(U"ControllerPID", 0x2001);
-
-			// Temporary hardcoded default for YuanCon/Generic
-			// int vid = 0x1973;
-			// int pid = 0x2001;
-
-			// For safety in this environment, use Mock by default unless configured.
-			// But I want to implement the HidDriver.
-
-			// Read config
-			const bool enabled = ConfigIni::GetBool(ConfigIni::Key::kInputGateUrl, true); // Reusing a key? No, need new key.
-			// Ideally we have a dedicated key in ConfigIni for Lighting enabled
+			m_config.enableBlink = ConfigIni::GetBool(ConfigIni::Key::kLightingBlink, false);
 
 			// Try HID first if HIDAPI is available
 #ifdef KSM_HIDAPI_ENABLED
@@ -58,9 +59,30 @@ namespace Hardware::Lighting
 		void update(const LightingState& state)
 		{
 			m_currentState = state;
+
+			LightingState outputState = state;
+
+			// Apply behaviors
+			if (m_config.enableBlink)
+			{
+				m_blinkTimer += Scene::DeltaTime();
+				if (m_blinkTimer > (1.0 / m_config.blinkRateHz))
+				{
+					m_blinkTimer = 0.0;
+					m_blinkState = !m_blinkState;
+				}
+
+				if (!m_blinkState)
+				{
+					// Turn off blinking lights
+					for (int i=0; i<4; ++i) outputState.bt[i] = false;
+					for (int i=0; i<2; ++i) outputState.fx[i] = false;
+				}
+			}
+
 			if (m_driver)
 			{
-				m_driver->update(state);
+				m_driver->update(outputState);
 			}
 		}
 
@@ -76,6 +98,11 @@ namespace Hardware::Lighting
 		const LightingState& getState() const
 		{
 			return m_currentState;
+		}
+
+		void setConfig(const LightingConfig& config)
+		{
+			m_config = config;
 		}
 	};
 }

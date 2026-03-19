@@ -272,11 +272,12 @@ void KSMMain()
 	const int32 audioDeviceID = ConfigIni::GetInt(ConfigIni::Key::kAudioDeviceID, -1);
 	const int32 audioBufferMs = ConfigIni::GetInt(ConfigIni::Key::kAudioBufferMs, ksmaudio::kDefaultBufferSizeMs);
 	const int32 audioUpdatePeriodMs = ConfigIni::GetInt(ConfigIni::Key::kAudioUpdatePeriod, ksmaudio::kDefaultUpdatePeriodMs);
+	const bool audioWasapiExclusive = ConfigIni::GetBool(ConfigIni::Key::kAudioWasapiExclusive, false);
 
 #ifdef _WIN32
-	ksmaudio::Init(s3d::Platform::Windows::Window::GetHWND(), audioDeviceID, ksmaudio::kDefaultSampleRate, audioBufferMs, audioUpdatePeriodMs);
+	ksmaudio::Init(s3d::Platform::Windows::Window::GetHWND(), audioDeviceID, ksmaudio::kDefaultSampleRate, audioBufferMs, audioUpdatePeriodMs, audioWasapiExclusive);
 #else
-	ksmaudio::Init(nullptr, audioDeviceID, ksmaudio::kDefaultSampleRate, audioBufferMs, audioUpdatePeriodMs);
+	ksmaudio::Init(nullptr, audioDeviceID, ksmaudio::kDefaultSampleRate, audioBufferMs, audioUpdatePeriodMs, audioWasapiExclusive);
 #endif
 
 	// リソースファイルをコピー(macOSのみ)

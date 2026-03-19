@@ -12,6 +12,11 @@ namespace
 	constexpr int32 kListX = 40;
 	constexpr int32 kListY = 130;
 	constexpr int32 kListMaxItems = 10; // Number of items to show at once (scrolling)
+
+	constexpr int32 kTabX = 40;
+	constexpr int32 kTabY = 80;
+	constexpr int32 kTabWidth = 150;
+	constexpr int32 kTabHeight = 40;
 }
 
 InputGateScene::InputGateScene()
@@ -28,6 +33,19 @@ void InputGateScene::populateSongList()
 {
 	// NocoUI is not dynamic enough yet, so we handle list drawing manually in drawSongList()
 	// But we might want to update some static labels if they exist
+}
+
+void InputGateScene::fetchRankingsForCurrentSong()
+{
+	if (m_songList.empty() || m_isFetchingRanking) return;
+
+	const auto& song = m_songList[m_selectedSongIdx];
+	m_isFetchingRanking = true;
+
+	// Fire and forget task to fetch rankings, updating state when done
+	// We can't await inside a non-coroutine, so we spawn an anonymous task or use a coroutine helper.
+	// Actually, wait, we are in `start()` which is a Co::Task. We can await there.
+	// But we need to switch tabs via input, which is handled in `start()`.
 }
 
 Co::Task<void> InputGateScene::start()
@@ -77,55 +95,108 @@ Co::Task<void> InputGateScene::start()
 			break;
 		}
 
-		if (!m_songList.empty())
+		// Tab Switching (FX-L / FX-R)
+		if (KeyConfig::Down(kButtonFX_L) || KeyConfig::Down(kButtonFX_R))
 		{
-			if (KeyConfig::Down(kButtonDown))
+			if (m_currentTab == TabState::Songs)
 			{
-				m_selectedIdx = (m_selectedIdx + 1) % static_cast<int32>(m_songList.size());
-			}
-			else if (KeyConfig::Down(kButtonUp))
-			{
-				m_selectedIdx = (m_selectedIdx - 1 + static_cast<int32>(m_songList.size())) % static_cast<int32>(m_songList.size());
-			}
+				m_currentTab = TabState::Ranking;
 
-			if (KeyConfig::Down(kButtonStart))
-			{
-				const auto& song = m_songList[m_selectedIdx];
-				m_isDownloading = true;
-				m_downloadProgress = 0.0;
-				m_downloadingTitle = song.title;
-
-				// Start download
-				const FilePath zipPath = U"songs/download/{}.zip"_fmt(song.id);
-
-				// Ensure directory exists
-				if (!FileSystem::Exists(U"songs/download/"))
+				// Fetch rankings when switching to ranking tab
+				if (!m_songList.empty())
 				{
-					FileSystem::CreateDirectories(U"songs/download/");
+					m_isFetchingRanking = true;
+					const auto& song = m_songList[m_selectedSongIdx];
+					m_rankingList = co_await m_client.fetchRanking(song.id, m_selectedRankingDiff);
+					m_isFetchingRanking = false;
+				}
+			}
+			else
+			{
+				m_currentTab = TabState::Songs;
+			}
+		}
+
+		if (m_currentTab == TabState::Songs)
+		{
+			if (!m_songList.empty())
+			{
+				if (KeyConfig::Down(kButtonDown))
+				{
+					m_selectedSongIdx = (m_selectedSongIdx + 1) % static_cast<int32>(m_songList.size());
+				}
+				else if (KeyConfig::Down(kButtonUp))
+				{
+					m_selectedSongIdx = (m_selectedSongIdx - 1 + static_cast<int32>(m_songList.size())) % static_cast<int32>(m_songList.size());
 				}
 
-				const bool success = co_await m_client.downloadSong(song.downloadUrl, zipPath, [this](double p) {
-					m_downloadProgress = p;
-				});
-
-				m_isDownloading = false;
-
-				if (success)
+				if (KeyConfig::Down(kButtonStart))
 				{
-					// Extract ZIP
-					// Siv3D's ZIPReader
-					const FilePath extractPath = U"songs/download/{}"_fmt(song.id);
-					ZIPReader zip{ zipPath };
-					if (zip)
+					const auto& song = m_songList[m_selectedSongIdx];
+					m_isDownloading = true;
+					m_downloadProgress = 0.0;
+					m_downloadingTitle = song.title;
+
+					// Start download
+					const FilePath zipPath = U"songs/download/{}.zip"_fmt(song.id);
+
+					// Ensure directory exists
+					if (!FileSystem::Exists(U"songs/download/"))
 					{
-						zip.extractAll(extractPath);
-						// Remove zip file? Or keep it?
-						// FileSystem::Remove(zipPath);
+						FileSystem::CreateDirectories(U"songs/download/");
 					}
-					else
+
+					const bool success = co_await m_client.downloadSong(song.downloadUrl, zipPath, [this](double p) {
+						m_downloadProgress = p;
+					});
+
+					m_isDownloading = false;
+
+					if (success)
 					{
-						Logger << U"[ksm error] Failed to open ZIP: " << zipPath;
+						// Extract ZIP
+						// Siv3D's ZIPReader
+						const FilePath extractPath = U"songs/download/{}"_fmt(song.id);
+						ZIPReader zip{ zipPath };
+						if (zip)
+						{
+							zip.extractAll(extractPath);
+							// Remove zip file? Or keep it?
+							// FileSystem::Remove(zipPath);
+						}
+						else
+						{
+							Logger << U"[ksm error] Failed to open ZIP: " << zipPath;
+						}
 					}
+				}
+			}
+		}
+		else if (m_currentTab == TabState::Ranking)
+		{
+			// Ranking tab logic (maybe difficulty switching)
+			if (KeyConfig::Down(kButtonRight))
+			{
+				m_selectedRankingDiff = (m_selectedRankingDiff + 1) % 4; // Assuming 4 diffs max
+
+				if (!m_songList.empty())
+				{
+					m_isFetchingRanking = true;
+					const auto& song = m_songList[m_selectedSongIdx];
+					m_rankingList = co_await m_client.fetchRanking(song.id, m_selectedRankingDiff);
+					m_isFetchingRanking = false;
+				}
+			}
+			else if (KeyConfig::Down(kButtonLeft))
+			{
+				m_selectedRankingDiff = (m_selectedRankingDiff - 1 + 4) % 4;
+
+				if (!m_songList.empty())
+				{
+					m_isFetchingRanking = true;
+					const auto& song = m_songList[m_selectedSongIdx];
+					m_rankingList = co_await m_client.fetchRanking(song.id, m_selectedRankingDiff);
+					m_isFetchingRanking = false;
 				}
 			}
 		}
@@ -147,7 +218,17 @@ void InputGateScene::draw() const
 	if (m_canvas)
 	{
 		m_canvas->draw();
-		drawSongList();
+
+		drawTabs();
+
+		if (m_currentTab == TabState::Songs)
+		{
+			drawSongList();
+		}
+		else if (m_currentTab == TabState::Ranking)
+		{
+			drawRankingList();
+		}
 
 		if (m_isDownloading)
 		{
@@ -166,6 +247,39 @@ void InputGateScene::draw() const
 	}
 }
 
+void InputGateScene::drawTabs() const
+{
+	const Font& font = AssetManagement::SystemFont();
+
+	// Songs Tab
+	RectF songsTab(kTabX, kTabY, kTabWidth, kTabHeight);
+	if (m_currentTab == TabState::Songs)
+	{
+		songsTab.draw(Palette::Cyan);
+		font(U"Song List").drawAt(songsTab.center(), Palette::Black);
+	}
+	else
+	{
+		songsTab.draw(Palette::Gray);
+		font(U"Song List").drawAt(songsTab.center(), Palette::White);
+	}
+
+	// Ranking Tab
+	RectF rankingTab(kTabX + kTabWidth + 10, kTabY, kTabWidth, kTabHeight);
+	if (m_currentTab == TabState::Ranking)
+	{
+		rankingTab.draw(Palette::Cyan);
+		font(U"Ranking").drawAt(rankingTab.center(), Palette::Black);
+	}
+	else
+	{
+		rankingTab.draw(Palette::Gray);
+		font(U"Ranking").drawAt(rankingTab.center(), Palette::White);
+	}
+
+	font(U"[FX-L/FX-R] Switch Tab").drawAt(kTabX + kTabWidth * 2 + 100, kTabY + kTabHeight / 2, Palette::Yellow);
+}
+
 void InputGateScene::drawSongList() const
 {
 	if (m_songList.empty()) return;
@@ -174,9 +288,9 @@ void InputGateScene::drawSongList() const
 
 	// Calculate scroll window
 	int32 startIdx = 0;
-	if (m_selectedIdx >= kListMaxItems)
+	if (m_selectedSongIdx >= kListMaxItems)
 	{
-		startIdx = m_selectedIdx - kListMaxItems + 1;
+		startIdx = m_selectedSongIdx - kListMaxItems + 1;
 	}
 
 	int32 y = kListY;
@@ -186,7 +300,7 @@ void InputGateScene::drawSongList() const
 		if (idx >= static_cast<int32>(m_songList.size())) break;
 
 		const auto& song = m_songList[idx];
-		const bool isSelected = (idx == m_selectedIdx);
+		const bool isSelected = (idx == m_selectedSongIdx);
 
 		const RectF itemRect(kListX, y, 500, kItemHeight); // Fixed width for now
 
@@ -203,6 +317,56 @@ void InputGateScene::drawSongList() const
 		drawFont(U"{} / {}"_fmt(song.title, song.artist)).drawAt(itemRect.center(), Palette::White);
 
 		y += kItemHeight + 5;
+	}
+}
+
+void InputGateScene::drawRankingList() const
+{
+	const Font& font = AssetManagement::SystemFont();
+
+	if (m_songList.empty())
+	{
+		font(U"No song selected.").drawAt(Scene::Center(), Palette::White);
+		return;
+	}
+
+	const auto& song = m_songList[m_selectedSongIdx];
+
+	// Header
+	font(U"Internet Ranking for: {}"_fmt(song.title)).draw(kListX, kListY, Palette::White);
+
+	const String diffNames[] = { U"Light", U"Challenge", U"Extended", U"Infinite" };
+	font(U"Difficulty: {} (< / > to change)"_fmt(diffNames[m_selectedRankingDiff])).draw(kListX, kListY + 30, Palette::Yellow);
+
+	if (m_isFetchingRanking)
+	{
+		font(U"Fetching rankings...").drawAt(Scene::Center(), Palette::Cyan);
+		return;
+	}
+
+	if (m_rankingList.empty())
+	{
+		font(U"No rankings available.").draw(kListX, kListY + 80, Palette::Gray);
+		return;
+	}
+
+	int32 y = kListY + 80;
+	for (const auto& entry : m_rankingList)
+	{
+		const RectF itemRect(kListX, y, 600, kItemHeight);
+		itemRect.draw(ColorF(0.1, 0.5));
+		itemRect.drawFrame(1, Palette::Gray);
+
+		// Rank, Name, Score, Date
+		font(U"#{}"_fmt(entry.rank)).draw(kListX + 10, y + 5, Palette::Yellow);
+		font(entry.playerName).draw(kListX + 60, y + 5, Palette::White);
+		font(U"{:07d}"_fmt(entry.score)).draw(kListX + 250, y + 5, Palette::Cyan);
+		font(entry.date).draw(kListX + 400, y + 5, Palette::Gray);
+		font(entry.playStyle).draw(kListX + 500, y + 5, Palette::White);
+
+		y += kItemHeight + 5;
+
+		if (y > Scene::Height() - 50) break; // Don't overflow screen
 	}
 }
 
