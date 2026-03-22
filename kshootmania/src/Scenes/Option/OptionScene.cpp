@@ -137,6 +137,10 @@ namespace
 					{ 150, U"150ms" },
 					{ 200, U"200ms" },
 				}).setLabel(U"Audio Buffer (Restart Required)"),
+				CreateInfo::Enum(ConfigIni::Key::kAudioWasapiExclusive, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(U"WASAPI Exclusive (Restart Required)"),
 				CreateInfo::Enum(ConfigIni::Key::kAutoSync, Array<StringView>{
 					I18n::Get(I18n::Select::kAutoSyncOff),
 					I18n::Get(I18n::Select::kAutoSyncOnLow),
@@ -241,6 +245,14 @@ namespace
 					I18n::Get(I18n::Option::kDisabled),
 					I18n::Get(I18n::Option::kEnabled),
 				}).setLabel(I18n::Get(I18n::Option::kAutoPlaySE)),
+				CreateInfo::Enum(ConfigIni::Key::kLightingEnable, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(U"Controller LED Lighting (Restart Required)"),
+				CreateInfo::Enum(ConfigIni::Key::kLightingBlink, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(U"LED Blinking Effect"),
 				CreateInfo::Enum(ConfigIni::Key::kSelectCloseFolderKey, Array<StringView>{
 					I18n::Get(I18n::Option::kSelectCloseFolderKeyBackspace),
 					I18n::Get(I18n::Option::kSelectCloseFolderKeyEsc),

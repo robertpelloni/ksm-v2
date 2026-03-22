@@ -1,10 +1,8 @@
 #pragma once
 #include "ILightingDriver.hpp"
 
-#if defined(SIV3D_PLATFORM_LINUX) || defined(SIV3D_PLATFORM_MACOS)
-#include <hidapi/hidapi.h>
-#elif defined(SIV3D_PLATFORM_WINDOWS)
-#include <hidapi.h> // Windows usually has it in include path if set up
+#ifdef KSM_HIDAPI_ENABLED
+#include <hidapi/hidapi.h> // Or <hidapi.h> depending on platform/include path
 #endif
 
 namespace Hardware::Lighting
@@ -17,7 +15,7 @@ namespace Hardware::Lighting
 		// Standard YuanCon: 0x1973 / 0x2001 (Example)
 		// Let's use a generic approach or config-based.
 
-		hid_device* m_device = nullptr;
+		void* m_device = nullptr; // Use void* to avoid hidapi header dependency in headers if not strictly needed, but it's fine.
 		uint16_t m_vid = 0;
 		uint16_t m_pid = 0;
 
@@ -26,9 +24,7 @@ namespace Hardware::Lighting
 
 		bool init() override
 		{
-#ifdef SIV3D_PLATFORM_WINDOWS
-			// Windows HIDAPI init if needed
-#endif
+#ifdef KSM_HIDAPI_ENABLED
 			if (hid_init() != 0)
 			{
 				Logger << U"[ksm error] hid_init failed";
@@ -45,10 +41,14 @@ namespace Hardware::Lighting
 
 			Logger << U"[ksm info] HID device opened: {:04x}:{:04x}"_fmt(m_vid, m_pid);
 			return true;
+#else
+			return false;
+#endif
 		}
 
 		void update(const LightingState& state) override
 		{
+#ifdef KSM_HIDAPI_ENABLED
 			if (!m_device) return;
 
 			// Construct HID report
@@ -91,17 +91,20 @@ namespace Hardware::Lighting
 			buffer[2] = static_cast<uint8_t>(state.laser[0].r); // Brightness/Color? Usually just intensity 0-255
 			buffer[3] = static_cast<uint8_t>(state.laser[1].r); // Using Red channel as intensity for now
 
-			hid_write(m_device, buffer, 4);
+			hid_write(static_cast<hid_device*>(m_device), buffer, 4);
+#endif
 		}
 
 		void close() override
 		{
+#ifdef KSM_HIDAPI_ENABLED
 			if (m_device)
 			{
-				hid_close(m_device);
+				hid_close(static_cast<hid_device*>(m_device));
 				m_device = nullptr;
 			}
 			hid_exit();
+#endif
 		}
 	};
 }

@@ -23,7 +23,7 @@ namespace ksmaudio
 
 	std::vector<AudioDeviceInfo> GetAudioDevices();
 
-	void Init(void* hWnd, int deviceId = -1, DWORD sampleRate = kDefaultSampleRate, DWORD bufferMs = kDefaultBufferSizeMs, DWORD updatePeriodMs = kDefaultUpdatePeriodMs);
+	void Init(void* hWnd, int deviceId = -1, DWORD sampleRate = kDefaultSampleRate, DWORD bufferMs = kDefaultBufferSizeMs, DWORD updatePeriodMs = kDefaultUpdatePeriodMs, bool exclusive = false);
 
 	void Terminate();
 

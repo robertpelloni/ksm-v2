@@ -63,6 +63,65 @@ namespace InputGate
 		}
 	}
 
+	Co::Task<Array<RankingEntry>> InputGateClient::fetchRanking(StringView songId, int32 difficulty)
+	{
+		const String apiBaseUrl = ConfigIni::GetString(ConfigIni::Key::kInputGateUrl, U"");
+
+		if (apiBaseUrl.isEmpty())
+		{
+			// モックモード
+			co_await Co::Delay(0.3s);
+
+			Array<RankingEntry> entries;
+			for (int32 i = 0; i < 20; ++i)
+			{
+				entries.push_back({
+					i + 1,
+					U"Player_{}"_fmt(i + 1),
+					10000000 - (i * 15000) - Random(0, 5000),
+					(i % 3 == 0) ? U"Gamepad" : U"Keyboard",
+					U"2026-02-20"
+				});
+			}
+
+			co_return entries;
+		}
+		else
+		{
+			const URL url = apiBaseUrl + U"/ranking.json?song={}&diff={}"_fmt(songId, difficulty);
+
+			AsyncHTTPTask task = SimpleHTTP::CreateGetTask(url);
+
+			while (!task.isReady())
+			{
+				co_await Co::NextFrame();
+			}
+
+			if (task.getResponse().isOK())
+			{
+				const JSON json = task.getAsJSON();
+				if (json.isArray())
+				{
+					Array<RankingEntry> entries;
+					for (const auto& item : json.arrayView())
+					{
+						entries.push_back({
+							static_cast<int32>(item[U"rank"].getOr<int64>(0)),
+							item[U"player_name"].getString(),
+							static_cast<int32>(item[U"score"].getOr<int64>(0)),
+							item[U"play_style"].getString(),
+							item[U"date"].getString()
+						});
+					}
+					co_return entries;
+				}
+			}
+
+			Logger << U"[ksm error] Failed to fetch ranking from {}"_fmt(url);
+			co_return Array<RankingEntry>();
+		}
+	}
+
 	Co::Task<bool> InputGateClient::downloadSong(StringView url, FilePathView savePath, std::function<void(double)> progressCallback)
 	{
 		// URLが空の場合はモックとみなす(またはエラー)
@@ -126,7 +185,7 @@ namespace InputGate
 			co_await Co::Delay(0.5s);
 
 			info.hasUpdate = true;
-			info.latestVersion = U"2.0.0-alpha22"; // Assuming we are on alpha21
+			info.latestVersion = U"2.0.0-alpha24"; // Next mock version
 			info.downloadUrl = U"http://example.com/update.zip";
 			info.patchNotes = U"Mock Update:\n- New Input Gate features\n- Bug fixes";
 
