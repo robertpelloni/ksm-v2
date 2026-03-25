@@ -28,7 +28,7 @@ namespace InputGate
 			const URL url = apiBaseUrl + U"/list.json"; // サーバー実装に合わせて変更
 
 			// 非同期でJSONを取得
-			AsyncHTTPTask task = SimpleHTTP::GetAsync(url);
+			AsyncHTTPTask task = SimpleHTTP::LoadAsync(url);
 
 			while (!task.isReady())
 			{
@@ -37,7 +37,8 @@ namespace InputGate
 
 			if (task.getResponse().isOK())
 			{
-				const JSON json = JSON::Load(task.getAsFilePath());
+				const Blob blob = task.getBlob();
+				const JSON json = JSON::Parse(TextReader{ MemoryViewReader{ blob.data(), blob.size() } }.readAll());
 				if (json && json.isArray())
 				{
 					Array<SongInfo> songs;
@@ -90,7 +91,7 @@ namespace InputGate
 		{
 			const URL url = apiBaseUrl + U"/ranking.json?song={}&diff={}"_fmt(songId, difficulty);
 
-			AsyncHTTPTask task = SimpleHTTP::GetAsync(url);
+			AsyncHTTPTask task = SimpleHTTP::LoadAsync(url);
 
 			while (!task.isReady())
 			{
@@ -99,7 +100,8 @@ namespace InputGate
 
 			if (task.getResponse().isOK())
 			{
-				const JSON json = JSON::Load(task.getAsFilePath());
+				const Blob blob = task.getBlob();
+				const JSON json = JSON::Parse(TextReader{ MemoryViewReader{ blob.data(), blob.size() } }.readAll());
 				if (json && json.isArray())
 				{
 					Array<RankingEntry> entries;
@@ -198,7 +200,7 @@ namespace InputGate
 		else
 		{
 			const URL url = apiBaseUrl + U"/version.json";
-			AsyncHTTPTask task = SimpleHTTP::GetAsync(url);
+			AsyncHTTPTask task = SimpleHTTP::LoadAsync(url);
 
 			while (!task.isReady())
 			{
@@ -207,7 +209,8 @@ namespace InputGate
 
 			if (task.getResponse().isOK())
 			{
-				const JSON json = JSON::Load(task.getAsFilePath());
+				const Blob blob = task.getBlob();
+				const JSON json = JSON::Parse(TextReader{ MemoryViewReader{ blob.data(), blob.size() } }.readAll());
 				if (json)
 				{
 					info.latestVersion = json[U"latest_version"].getString();
