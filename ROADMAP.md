@@ -62,9 +62,10 @@ To achieve total feature parity with K-Shoot MANIA v1 and commercial rhythm game
 ### 🌐 Input Gate / Online
 - [x] Download from Input Gate (Client logic implemented, mock active)
 - [x] Auto Update (Version Check & Notification)
+- [x] Ranking Tab UI (Client logic)
 - [ ] Unlock Conditions & Popups
 
 ## Upcoming Priorities
 1. **Course Mode Refinement**: Verify and complete any missing course mode UI elements.
-2. **Internet Ranking**: Create server-side implementation (Client is ready).
-3. **Input Gate**: Connect to real server API (backend required).
+2. **Server Backend Development**: Create server-side API for Internet Ranking and Input Gate song lists.
+3. **Editor Parity**: Ensure `kshooteditor` can edit KSON charts correctly.

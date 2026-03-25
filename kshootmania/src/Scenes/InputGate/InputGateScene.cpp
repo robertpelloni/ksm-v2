@@ -132,41 +132,59 @@ Co::Task<void> InputGateScene::start()
 
 				if (KeyConfig::Down(kButtonStart))
 				{
-					const auto& song = m_songList[m_selectedSongIdx];
-					m_isDownloading = true;
-					m_downloadProgress = 0.0;
-					m_downloadingTitle = song.title;
-
-					// Start download
-					const FilePath zipPath = U"songs/download/{}.zip"_fmt(song.id);
-
-					// Ensure directory exists
-					if (!FileSystem::Exists(U"songs/download/"))
+					if (!m_downloadErrorMsg.isEmpty())
 					{
-						FileSystem::CreateDirectories(U"songs/download/");
+						// Dismiss error
+						m_downloadErrorMsg.clear();
 					}
-
-					const bool success = co_await m_client.downloadSong(song.downloadUrl, zipPath, [this](double p) {
-						m_downloadProgress = p;
-					});
-
-					m_isDownloading = false;
-
-					if (success)
+					else
 					{
-						// Extract ZIP
-						// Siv3D's ZIPReader
-						const FilePath extractPath = U"songs/download/{}"_fmt(song.id);
-						ZIPReader zip{ zipPath };
-						if (zip)
+						const auto& song = m_songList[m_selectedSongIdx];
+						m_isDownloading = true;
+						m_downloadProgress = 0.0;
+						m_downloadingTitle = song.title;
+						m_downloadErrorMsg.clear();
+
+						// Start download
+						const FilePath zipPath = U"songs/download/{}.zip"_fmt(song.id);
+
+						// Ensure directory exists
+						if (!FileSystem::Exists(U"songs/download/"))
 						{
-							zip.extractAll(extractPath);
-							// Remove zip file? Or keep it?
-							// FileSystem::Remove(zipPath);
+							FileSystem::CreateDirectories(U"songs/download/");
 						}
-						else
+
+						const int32 result = co_await m_client.downloadSong(song.downloadUrl, zipPath, [this](double p) {
+							m_downloadProgress = p;
+						});
+
+						m_isDownloading = false;
+
+						if (result == static_cast<int32>(InputGate::DownloadResult::Success))
 						{
-							Logger << U"[ksm error] Failed to open ZIP: " << zipPath;
+							// Extract ZIP
+							// Siv3D's ZIPReader
+							const FilePath extractPath = U"songs/download/{}"_fmt(song.id);
+							ZIPReader zip{ zipPath };
+							if (zip)
+							{
+								zip.extractAll(extractPath);
+								// Remove zip file? Or keep it?
+								// FileSystem::Remove(zipPath);
+							}
+							else
+							{
+								m_downloadErrorMsg = U"Failed to open ZIP:\n" + zipPath;
+								Logger << U"[ksm error] Failed to open ZIP: " << zipPath;
+							}
+						}
+						else if (result == static_cast<int32>(InputGate::DownloadResult::NetworkError))
+						{
+							m_downloadErrorMsg = U"Network Error while downloading.\nPlease check your connection.";
+						}
+						else if (result == static_cast<int32>(InputGate::DownloadResult::FileWriteError))
+						{
+							m_downloadErrorMsg = U"File Write Error.\nPlease check disk space or permissions.";
 						}
 					}
 				}
@@ -233,6 +251,11 @@ void InputGateScene::draw() const
 		if (m_isDownloading)
 		{
 			drawDownloadProgress();
+		}
+
+		if (!m_downloadErrorMsg.isEmpty())
+		{
+			drawErrorDialog();
 		}
 
 		if (m_showUpdateDialog)
@@ -422,4 +445,19 @@ void InputGateScene::drawUpdateDialog() const
 	// Buttons
 	font(U"[Start] Download / Open Browser").drawAt(dialog.bottomCenter().movedBy(0, -50), Palette::White);
 	font(U"[Back] Close").drawAt(dialog.bottomCenter().movedBy(0, -20), Palette::Gray);
+}
+
+void InputGateScene::drawErrorDialog() const
+{
+	// Overlay
+	Scene::Rect().draw(ColorF(0.0, 0.8));
+
+	const RectF dialog(Arg::center = Scene::Center(), 500, 200);
+	dialog.draw(Palette::Black).drawFrame(2, Palette::Red);
+
+	const Font& font = AssetManagement::SystemFont();
+
+	font(U"Download Failed").drawAt(dialog.topCenter().movedBy(0, 30), Palette::Red);
+	font(m_downloadErrorMsg).drawAt(dialog.center(), Palette::White);
+	font(U"[Start] OK").drawAt(dialog.bottomCenter().movedBy(0, -30), Palette::White);
 }

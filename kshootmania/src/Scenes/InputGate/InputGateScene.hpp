@@ -29,6 +29,7 @@ private:
 	bool m_isDownloading = false;
 	double m_downloadProgress = 0.0;
 	String m_downloadingTitle;
+	String m_downloadErrorMsg;
 
 	// Update state
 	InputGate::UpdateInfo m_updateInfo;
@@ -43,6 +44,7 @@ private:
 
 	void drawDownloadProgress() const;
 	void drawUpdateDialog() const;
+	void drawErrorDialog() const;
 
 public:
 	InputGateScene();

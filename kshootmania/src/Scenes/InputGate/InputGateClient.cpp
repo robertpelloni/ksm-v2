@@ -28,7 +28,7 @@ namespace InputGate
 			const URL url = apiBaseUrl + U"/list.json"; // サーバー実装に合わせて変更
 
 			// 非同期でJSONを取得
-			AsyncHTTPTask task = SimpleHTTP::CreateGetTask(url);
+			AsyncHTTPTask task = SimpleHTTP::GetAsync(url);
 
 			while (!task.isReady())
 			{
@@ -37,8 +37,8 @@ namespace InputGate
 
 			if (task.getResponse().isOK())
 			{
-				const JSON json = task.getAsJSON();
-				if (json.isArray())
+				const JSON json = JSON::Load(task.getAsFilePath());
+				if (json && json.isArray())
 				{
 					Array<SongInfo> songs;
 					for (const auto& item : json.arrayView())
@@ -90,7 +90,7 @@ namespace InputGate
 		{
 			const URL url = apiBaseUrl + U"/ranking.json?song={}&diff={}"_fmt(songId, difficulty);
 
-			AsyncHTTPTask task = SimpleHTTP::CreateGetTask(url);
+			AsyncHTTPTask task = SimpleHTTP::GetAsync(url);
 
 			while (!task.isReady())
 			{
@@ -99,8 +99,8 @@ namespace InputGate
 
 			if (task.getResponse().isOK())
 			{
-				const JSON json = task.getAsJSON();
-				if (json.isArray())
+				const JSON json = JSON::Load(task.getAsFilePath());
+				if (json && json.isArray())
 				{
 					Array<RankingEntry> entries;
 					for (const auto& item : json.arrayView())
@@ -122,7 +122,7 @@ namespace InputGate
 		}
 	}
 
-	Co::Task<bool> InputGateClient::downloadSong(StringView url, FilePathView savePath, std::function<void(double)> progressCallback)
+	Co::Task<int32> InputGateClient::downloadSong(StringView url, FilePathView savePath, std::function<void(double)> progressCallback)
 	{
 		// URLが空の場合はモックとみなす(またはエラー)
 		if (url.isEmpty() || url.includes(U"example.com"))
@@ -138,12 +138,12 @@ namespace InputGate
 				}
 				co_await Co::NextFrame();
 			}
-			co_return true;
+			co_return static_cast<int32>(DownloadResult::Success);
 		}
 		else
 		{
 			// 実際のダウンロード
-			return DownloadTask::Download(url, savePath, progressCallback);
+			co_return static_cast<int32>(co_await DownloadTask::Download(url, savePath, progressCallback));
 		}
 	}
 
@@ -198,7 +198,7 @@ namespace InputGate
 		else
 		{
 			const URL url = apiBaseUrl + U"/version.json";
-			AsyncHTTPTask task = SimpleHTTP::CreateGetTask(url);
+			AsyncHTTPTask task = SimpleHTTP::GetAsync(url);
 
 			while (!task.isReady())
 			{
@@ -207,15 +207,18 @@ namespace InputGate
 
 			if (task.getResponse().isOK())
 			{
-				const JSON json = task.getAsJSON();
-				info.latestVersion = json[U"latest_version"].getString();
-				info.downloadUrl = json[U"download_url"].getString();
-				info.patchNotes = json[U"patch_notes"].getString();
-
-				if (info.latestVersion != info.currentVersion) // Simple string compare for now
+				const JSON json = JSON::Load(task.getAsFilePath());
+				if (json)
 				{
-					// TODO: Semver compare?
-					info.hasUpdate = true;
+					info.latestVersion = json[U"latest_version"].getString();
+				info.downloadUrl = json[U"download_url"].getString();
+					info.patchNotes = json[U"patch_notes"].getString();
+
+					if (info.latestVersion != info.currentVersion) // Simple string compare for now
+					{
+						// TODO: Semver compare?
+						info.hasUpdate = true;
+					}
 				}
 			}
 			else
