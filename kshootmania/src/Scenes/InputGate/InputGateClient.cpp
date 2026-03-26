@@ -35,7 +35,8 @@ namespace InputGate
 				co_await Co::NextFrame();
 			}
 
-			if (task.getResponse().isOK())
+			const auto response = task.getResponse();
+			if (response.isOK())
 			{
 				const Blob blob = task.getBlob();
 				const JSON json = JSON::Parse(TextReader{ MemoryViewReader{ blob.data(), blob.size() } }.readAll());
@@ -98,7 +99,8 @@ namespace InputGate
 				co_await Co::NextFrame();
 			}
 
-			if (task.getResponse().isOK())
+			const auto response = task.getResponse();
+			if (response.isOK())
 			{
 				const Blob blob = task.getBlob();
 				const JSON json = JSON::Parse(TextReader{ MemoryViewReader{ blob.data(), blob.size() } }.readAll());
@@ -207,7 +209,8 @@ namespace InputGate
 				co_await Co::NextFrame();
 			}
 
-			if (task.getResponse().isOK())
+			const auto response = task.getResponse();
+			if (response.isOK())
 			{
 				const Blob blob = task.getBlob();
 				const JSON json = JSON::Parse(TextReader{ MemoryViewReader{ blob.data(), blob.size() } }.readAll());

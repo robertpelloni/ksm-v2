@@ -8,8 +8,8 @@
     - [x] Implement real score submission (Client side done).
     - [x] Implement "Ranking" tab in Input Gate (view rankings).
 - [ ] **Editor**
-    - [ ] Verify `kshooteditor` builds and runs (CMake target exists).
-    - [ ] Check feature parity with v1 editor.
+    - [x] Verify `kshooteditor` builds and runs (CMake target exists).
+    - [ ] Check feature parity with v1 editor (Initial NocoUI layout created).
 
 ## Medium Priority
 - [ ] **Input Gate Polish**
@@ -21,6 +21,6 @@
 
 ## Low Priority
 - [ ] **Localization**
-    - [ ] Add more languages (Chinese, Korean).
+    - [x] Add more languages (Chinese, Korean).
 - [ ] **Skinning**
     - [x] Document NocoUI structure for skinners.

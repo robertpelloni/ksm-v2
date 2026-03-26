@@ -31,14 +31,14 @@ namespace InputGate
             if (progressCallback) progressCallback(1.0);
             co_return DownloadResult::Success;
         }
-        else if (response.status == HTTPStatusCode::OK && !FileSystem::Exists(savePath))
+        else if (response.getStatusCode() == HTTPStatusCode::OK && !FileSystem::Exists(savePath))
         {
             // Edge case: HTTP OK but file writing failed locally
             co_return DownloadResult::FileWriteError;
         }
         else
         {
-            Logger << U"[ksm error] HTTP GET failed for URL: {} with status: {}"_fmt(url, EnumToString(response.status));
+            Logger << U"[ksm error] HTTP GET failed for URL: {} with status: {}"_fmt(url, EnumToString(response.getStatusCode()));
             co_return DownloadResult::NetworkError;
         }
     }

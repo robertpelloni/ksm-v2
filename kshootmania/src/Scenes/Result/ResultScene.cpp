@@ -372,10 +372,28 @@ Co::Task<void> ResultScene::start()
 		co_await InternetRanking::SubmitScore(m_playResult);
 	}
 
+	// Mock Unlock Logic (for demonstration)
+	// In a real scenario, this would check an UnlockManager singleton
+	// against the current score/combo/play count to see if a threshold is crossed.
+	if (m_playResult.achievement() == Achievement::kPerfect)
+	{
+		m_unlockPopup.show(U"New Content Unlocked!", U"You perfected this chart!\nA secret difficulty has been revealed.");
+	}
+
 	if (!userPressedStartOrBack)
 	{
 		while (true)
 		{
+			if (m_unlockPopup.isActive())
+			{
+				if (KeyConfig::Down(kButtonStart) || KeyConfig::Down(kButtonBack))
+				{
+					m_unlockPopup.dismiss();
+				}
+				co_await Co::NextFrame();
+				continue;
+			}
+
 			// Post to Twitter (FX-L + FX-R)
 			if (KeyConfig::Pressed(kButtonFX_L) && KeyConfig::Pressed(kButtonFX_R))
 			{
@@ -603,11 +621,17 @@ Co::Task<void> ResultScene::postToTwitter()
 void ResultScene::update()
 {
 	m_canvas->update();
+	m_unlockPopup.update();
 }
 
 void ResultScene::draw() const
 {
 	m_canvas->draw();
+
+	if (m_unlockPopup.isActive())
+	{
+		m_unlockPopup.draw();
+	}
 }
 
 Co::Task<void> ResultScene::fadeIn()
