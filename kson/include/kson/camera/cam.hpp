@@ -1,48 +1,59 @@
 #pragma once
-#include "kson/common/common.hpp"
+#include <tuple>
+#include "kson/Common/Common.hpp"
 
 namespace kson
 {
 	struct CamGraphs
 	{
-		Graph zoom; // "zoom_bottom"
-		Graph shiftX; // "zoom_side"
-		Graph rotationX; // "zoom_top"
-		Graph rotationZ; // Rotation degree
-		Graph rotationZLane; // Rotation degree (lane only)
-		Graph rotationZJdgLine; // Rotation degree (judgment line only)
+		Graph zoomBottom; // "zoom_bottom"
+		Graph zoomSide; // "zoom_side"
+		Graph zoomTop; // "zoom_top"
+		Graph rotationDeg; // Rotation degree
 		Graph centerSplit; // "center_split"
-
-		bool empty() const;
 	};
 
-	struct CamPatternParams
+	struct CamPatternInvokeSwingValue
 	{
-		RelPulse length = 0;
-		double scale = 1.0;  // Swing only
-		std::int32_t repeat = 1;  // Swing only
-		double decayOrder = 0.0;  // Swing only
+		double scale = 250.0;
+		std::int32_t repeat = 3;
+		std::int32_t decayOrder = 2;
+	};
+
+	namespace detail
+	{
+		template <typename ValueType>
+		struct BasicCamPatternInvoke
+		{
+			std::int32_t d = 0; // laser slam direction, -1 (left) or 1 (right)
+			RelPulse length = 0;
+			ValueType v = {};
+		};
+	}
+
+	using CamPatternInvokeSpin = detail::BasicCamPatternInvoke<std::tuple<>>; // Note: std::tuple<> is empty
+	using CamPatternInvokeSwing = detail::BasicCamPatternInvoke<CamPatternInvokeSwingValue>;
+
+	struct CamPatternLaserInvokeList
+	{
+		ByPulse<CamPatternInvokeSpin> spin;
+		ByPulse<CamPatternInvokeSpin> halfSpin;
+		ByPulse<CamPatternInvokeSwing> swing;
 	};
 
 	struct CamPatternLaserInfo
 	{
-		Dict<ByPulse<CamPatternParams>> slamEvent;
-
-		bool empty() const;
+		CamPatternLaserInvokeList slamEvent;
 	};
 
 	struct CamPatternInfo
 	{
 		CamPatternLaserInfo laser;
-
-		bool empty() const;
 	};
 
 	struct CamInfo
 	{
 		CamGraphs body;
 		CamPatternInfo pattern;
-
-		bool empty() const;
 	};
 }
