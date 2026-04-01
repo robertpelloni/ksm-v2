@@ -2,35 +2,44 @@
 
 namespace InputGate
 {
-    Co::Task<bool> DownloadTask::Download(StringView url, FilePathView savePath, std::function<void(double)> progressCallback)
+    Co::Task<DownloadResult> DownloadTask::Download(StringView url, FilePathView savePath, std::function<void(double)> progressCallback)
     {
         // Use Siv3D's AsyncHTTPTask
-        AsyncHTTPTask task = SimpleHTTP::CreateGetTask(url, savePath);
+        AsyncHTTPTask task = SimpleHTTP::SaveAsync(url, savePath);
 
         while (!task.isReady())
         {
             if (progressCallback)
             {
-                // progress() returns download progress in bytes? No, usually not available in basic interface easily without Content-Length
-                // But let's check Siv3D docs memory: AsyncHTTPTask has getProgress().
-                // It returns { downloaded, total }.
-                const auto progress = task.getProgress();
-                if (progress.total_bytes > 0)
+                // progress() returns download progress in bytes
+                if (task.getProgress().has_value())
                 {
-                    progressCallback(static_cast<double>(progress.downloaded_bytes) / progress.total_bytes);
+                    const auto progress = task.getProgress().value();
+                    if (progress.total_bytes && progress.total_bytes.value() > 0)
+                    {
+                        progressCallback(static_cast<double>(progress.downloaded_bytes) / progress.total_bytes.value());
+                    }
                 }
             }
             co_await Co::NextFrame();
         }
 
-        if (task.getResponse().isOK())
+        const auto response = task.getResponse();
+
+        if (response.isOK())
         {
             if (progressCallback) progressCallback(1.0);
-            co_return true;
+            co_return DownloadResult::Success;
+        }
+        else if (response.getStatusCode() == HTTPStatusCode::OK && !FileSystem::Exists(savePath))
+        {
+            // Edge case: HTTP OK but file writing failed locally
+            co_return DownloadResult::FileWriteError;
         }
         else
         {
-            co_return false;
+            Logger << U"[ksm error] HTTP GET failed for URL: {} with status: {}"_fmt(url, EnumToString(response.getStatusCode()));
+            co_return DownloadResult::NetworkError;
         }
     }
 }

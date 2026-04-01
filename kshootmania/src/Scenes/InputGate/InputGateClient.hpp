@@ -48,7 +48,7 @@ namespace InputGate
 		// @param url ダウンロードURL
 		// @param savePath 保存先パス
 		// @param progressCallback 進捗コールバック (0.0 - 1.0)
-		Co::Task<bool> downloadSong(StringView url, FilePathView savePath, std::function<void(double)> progressCallback = nullptr);
+		Co::Task<int32> downloadSong(StringView url, FilePathView savePath, std::function<void(double)> progressCallback = nullptr);
 
 		// アップデートを確認する
 		Co::Task<UpdateInfo> checkUpdate();

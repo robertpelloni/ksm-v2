@@ -4,6 +4,7 @@
 #include "ResultNewRecordPanel.hpp"
 #include "MusicGame/PlayResult.hpp"
 #include "ksmaudio/ksmaudio.hpp"
+#include "UI/PopupDialog.hpp"
 
 class ResultScene : public Co::SceneBase
 {
@@ -19,6 +20,8 @@ private:
 	ResultNewRecordPanel m_newRecordPanel;
 
 	Optional<CoursePlayState> m_courseState;
+
+	UI::PopupDialog m_unlockPopup;
 
 	void updateCanvasParams();
 
