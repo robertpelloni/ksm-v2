@@ -30,20 +30,37 @@ public:
 		, m_editorCanvas(noco::Canvas::Create(Scene::Size())->setAutoFitMode(noco::AutoFitMode::MatchSize))
 		, m_prevSceneSize(Scene::Size())
 	{
-		// とりあえず何か出しとく
-		auto messageNode = m_editorCanvas->emplaceChild(U"MessageNode", noco::InlineRegion{ .sizeRatio = Vec2::One() });
-		messageNode->emplaceComponent<noco::Label>(U"Editorは未実装")
-			->setFontSize(32)
+		// Editor Base Layout
+
+		// 1. Toolbar (Top)
+		auto toolbar = m_editorCanvas->emplaceChild(U"Toolbar", noco::InlineRegion{ .size = Vec2{ Scene::Size().x, 40 }, .sizeRatio = Vec2{ 1.0, 0.0 } });
+		toolbar->emplaceComponent<noco::Rect>()->setColor(ColorF(0.1, 0.1, 0.1));
+
+		auto titleLabel = toolbar->emplaceChild(U"TitleLabel", noco::InlineRegion{ .position = Vec2{ 10, 0 }, .sizeRatio = Vec2{ 0.5, 1.0 } });
+		titleLabel->emplaceComponent<noco::Label>(U"K-Shoot Editor (Alpha)")
+			->setFontSize(20)
+			->setColor(Palette::White)
+			->setVerticalAlign(noco::VerticalAlign::Middle);
+
+		// 2. Sidebar (Left) - Properties/Tools
+		auto sidebar = m_editorCanvas->emplaceChild(U"Sidebar", noco::InlineRegion{ .position = Vec2{ 0, 40 }, .size = Vec2{ 250, Scene::Size().y - 40 }, .sizeRatio = Vec2{ 0.0, 1.0 } });
+		sidebar->emplaceComponent<noco::Rect>()->setColor(ColorF(0.15, 0.15, 0.15));
+
+		auto toolLabel = sidebar->emplaceChild(U"ToolLabel", noco::InlineRegion{ .position = Vec2{ 10, 10 }, .size = Vec2{ 230, 30 } });
+		toolLabel->emplaceComponent<noco::Label>(U"Tools")
+			->setFontSize(24)
+			->setColor(Palette::Cyan);
+
+		// 3. Chart Canvas Area (Center/Right)
+		auto chartArea = m_editorCanvas->emplaceChild(U"ChartArea", noco::InlineRegion{ .position = Vec2{ 250, 40 }, .size = Vec2{ Scene::Size().x - 250, Scene::Size().y - 40 }, .sizeRatio = Vec2{ 1.0, 1.0 } });
+		chartArea->emplaceComponent<noco::Rect>()->setColor(ColorF(0.05, 0.05, 0.05));
+
+		auto placeholderLabel = chartArea->emplaceChild(U"Placeholder", noco::InlineRegion{ .sizeRatio = Vec2::One() });
+		placeholderLabel->emplaceComponent<noco::Label>(U"Chart editing canvas goes here")
+			->setFontSize(28)
+			->setColor(Palette::Gray)
 			->setHorizontalAlign(noco::HorizontalAlign::Center)
 			->setVerticalAlign(noco::VerticalAlign::Middle);
-		const double screenWidth = static_cast<double>(Scene::Size().x);
-		messageNode->emplaceComponent<noco::Tween>()
-			->setTranslateEnabled(true)
-			->setTranslateFrom(Vec2{ screenWidth, 0.0 })
-			->setTranslateTo(Vec2{ -screenWidth, 0.0 })
-			->setEasing(noco::TweenEasing::Linear)
-			->setDuration(5.0)
-			->setLoopType(noco::TweenLoopType::Loop);
 	}
 
 	void update()

@@ -23,6 +23,7 @@ private:
 	LinearMenu m_menu;
 
 	TextureRegion m_keyTextureRegion;
+	String m_labelText;
 
 public:
 	struct CreateInfo
@@ -44,6 +45,7 @@ public:
 
 		static constexpr int32 kKeyTextureIdxAutoSet = -1;
 		int32 keyTextureIdx = kKeyTextureIdxAutoSet;
+		String labelText;
 
 		std::function<void()> onChangeCallback = nullptr;
 
@@ -66,6 +68,10 @@ public:
 		CreateInfo& setKeyTextureIdx(int32 idx)&;
 
 		CreateInfo&& setKeyTextureIdx(int32 idx)&&;
+
+		CreateInfo& setLabel(StringView label)&;
+
+		CreateInfo&& setLabel(StringView label)&&;
 
 		CreateInfo& setOnChangeCallback(std::function<void()> callback)&;
 

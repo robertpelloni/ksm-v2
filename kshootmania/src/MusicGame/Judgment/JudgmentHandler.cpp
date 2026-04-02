@@ -108,7 +108,7 @@ namespace MusicGame::Judgment
 	{
 	}
 
-	void JudgmentHandler::onChipJudged(JudgmentResult result)
+	void JudgmentHandler::onChipJudged(JudgmentResult result, double diffSec)
 	{
 		assert(result == JudgmentResult::kCritical || result == JudgmentResult::kNearFast || result == JudgmentResult::kNearSlow || result == JudgmentResult::kError);
 
@@ -117,7 +117,7 @@ namespace MusicGame::Judgment
 			return;
 		}
 
-		m_scoringStatus.onChipOrLaserSlamJudgment(result);
+		m_scoringStatus.onChipOrLaserSlamJudgment(result, diffSec);
 	}
 
 	void JudgmentHandler::onLongJudged(JudgmentResult result)

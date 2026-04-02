@@ -13,6 +13,8 @@
 #include "Scenes/Title/TitleScene.hpp"
 #include "Input/KeyConfig.hpp"
 #include "Input/InputUtils.hpp"
+#include "Hardware/Lighting/LightingManager.hpp"
+#include "Debug/LightingOverlay.hpp"
 
 #ifdef __APPLE__
 #include <ksmplatform_macos/input_method.h>
@@ -239,7 +241,17 @@ void KSMMain()
 	LicenseManager::DisableDefaultTrigger();
 
 	// ウィンドウタイトル
-	Window::SetTitle(U"K-Shoot MANIA v2.0.0-alpha5");
+	String version = U"2.0.0-alpha6";
+	const FilePath versionFilePath = FileSystem::PathAppend(FsUtils::ResourceDirectoryPath(), U"VERSION");
+	if (FileSystem::Exists(versionFilePath))
+	{
+		TextReader reader(versionFilePath);
+		if (reader)
+		{
+			version = reader.readAll().trim();
+		}
+	}
+	Window::SetTitle(U"K-Shoot MANIA v" + version);
 
 	// カレントディレクトリを設定
 	// (ChangeCurrentDirectoryはここ以外は基本的に使用禁止。どうしても使う必要がある場合は必ずResourceDirectoryPathに戻すこと)
@@ -250,21 +262,26 @@ void KSMMain()
 	Graphics3D::SetGlobalAmbientColor(Palette::White);
 	Graphics3D::SetSunColor(Palette::Black);
 
-	// 音声処理のバックエンドを初期化
-#ifdef _WIN32
-	ksmaudio::Init(s3d::Platform::Windows::Window::GetHWND());
-#else
-	ksmaudio::Init(nullptr);
-#endif
-
 	// アプリケーションデータディレクトリを作成(macOSのみ)
 	CreateAppDataDirectory();
 
-	// リソースファイルをコピー(macOSのみ)
-	CopyResourcesIfNeeded();
-
 	// config.iniを読み込み
 	ConfigIni::Load();
+
+	// 音声処理のバックエンドを初期化
+	const int32 audioDeviceID = ConfigIni::GetInt(ConfigIni::Key::kAudioDeviceID, -1);
+	const int32 audioBufferMs = ConfigIni::GetInt(ConfigIni::Key::kAudioBufferMs, ksmaudio::kDefaultBufferSizeMs);
+	const int32 audioUpdatePeriodMs = ConfigIni::GetInt(ConfigIni::Key::kAudioUpdatePeriod, ksmaudio::kDefaultUpdatePeriodMs);
+	const bool audioWasapiExclusive = ConfigIni::GetBool(ConfigIni::Key::kAudioWasapiExclusive, false);
+
+#ifdef _WIN32
+	ksmaudio::Init(s3d::Platform::Windows::Window::GetHWND(), audioDeviceID, ksmaudio::kDefaultSampleRate, audioBufferMs, audioUpdatePeriodMs, audioWasapiExclusive);
+#else
+	ksmaudio::Init(nullptr, audioDeviceID, ksmaudio::kDefaultSampleRate, audioBufferMs, audioUpdatePeriodMs, audioWasapiExclusive);
+#endif
+
+	// リソースファイルをコピー(macOSのみ)
+	CopyResourcesIfNeeded();
 
 	// ランタイム設定を初期化
 	RuntimeConfig::RestoreJudgmentModesFromConfigIni();
@@ -334,6 +351,10 @@ void KSMMain()
 	// レーザー入力方式がキーボード以外なら、ksmaxisを初期化
 	InputUtils::InitKsmaxisForCurrentLaserInput();
 
+	// Hardware Lighting (Controller LEDs) initialization
+	Hardware::Lighting::LightingManager lightingManager;
+	lightingManager.init();
+
 	// NocoUIのグローバルデフォルトフォントを設定
 	noco::SetGlobalDefaultFont(AssetManagement::SystemFont());
 
@@ -349,6 +370,24 @@ void KSMMain()
 		if (ksmaxis::IsInitialized())
 		{
 			ksmaxis::Update();
+		}
+
+		// Update Lighting state from Input
+		{
+			Hardware::Lighting::LightingState lightState;
+			lightState.bt[0] = KeyConfig::Pressed(KeyConfig::kButtonBT_A);
+			lightState.bt[1] = KeyConfig::Pressed(KeyConfig::kButtonBT_B);
+			lightState.bt[2] = KeyConfig::Pressed(KeyConfig::kButtonBT_C);
+			lightState.bt[3] = KeyConfig::Pressed(KeyConfig::kButtonBT_D);
+			lightState.fx[0] = KeyConfig::Pressed(KeyConfig::kButtonFX_L);
+			lightState.fx[1] = KeyConfig::Pressed(KeyConfig::kButtonFX_R);
+			// Laser intensity is hard to get from simple Pressed state, usually handled in GameMain.
+			// For now, in menus, we can perhaps just use input state or nothing.
+			lightingManager.update(lightState);
+
+#ifdef _DEBUG
+			// Debug::LightingOverlay::Draw(lightState);
+#endif
 		}
 
 #ifdef __APPLE__
@@ -367,6 +406,8 @@ void KSMMain()
 
 	// config.iniを保存
 	ConfigIni::Save();
+
+	lightingManager.shutdown();
 
 #ifdef __APPLE__
 	// macOS: 英数・かなキーのイベントタップを停止

@@ -4,6 +4,8 @@
 #include "ResultNewRecordPanel.hpp"
 #include "MusicGame/PlayResult.hpp"
 #include "ksmaudio/ksmaudio.hpp"
+#include "UI/PopupDialog.hpp"
+#include "Unlock/UnlockManager.hpp"
 
 class ResultScene : public Co::SceneBase
 {
@@ -20,11 +22,17 @@ private:
 
 	Optional<CoursePlayState> m_courseState;
 
+	UI::PopupDialog m_unlockPopup;
+
 	void updateCanvasParams();
 
 	void update();
 
 	Co::Task<bool> waitForNewRecordPanelClose();
+
+	Co::Task<void> checkAutoSync();
+
+	Co::Task<void> postToTwitter();
 
 public:
 	explicit ResultScene(const ResultSceneArgs& args);

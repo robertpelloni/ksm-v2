@@ -1,4 +1,5 @@
 ﻿#include "FsUtils.hpp"
+#include "../Ini/ConfigIni.hpp"
 
 namespace FsUtils
 {
@@ -66,6 +67,11 @@ namespace FsUtils
 
 	FilePath SongsDirectoryPath()
 	{
+		const StringView configuredPath = ConfigIni::GetString(ConfigIni::Key::kSongsDirectoryPath);
+		if (!configuredPath.empty())
+		{
+			return FilePath(configuredPath);
+		}
 		return FileSystem::PathAppend(AppDataDirectoryPath(), U"songs");
 	}
 

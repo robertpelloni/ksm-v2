@@ -184,6 +184,18 @@ OptionMenuField::CreateInfo&& OptionMenuField::CreateInfo::setKeyTextureIdx(int3
 	return std::move(*this);
 }
 
+OptionMenuField::CreateInfo& OptionMenuField::CreateInfo::setLabel(StringView label)&
+{
+	labelText = String{ label };
+	return *this;
+}
+
+OptionMenuField::CreateInfo&& OptionMenuField::CreateInfo::setLabel(StringView label)&&
+{
+	labelText = String{ label };
+	return std::move(*this);
+}
+
 OptionMenuField::CreateInfo& OptionMenuField::CreateInfo::setOnChangeCallback(std::function<void()> callback)&
 {
 	onChangeCallback = std::move(callback);
@@ -209,6 +221,7 @@ OptionMenuField::OptionMenuField(const TextureRegion& keyTextureRegion, const Cr
 		? MakeMenuEnum(static_cast<int32>(createInfo.valueDisplayNamePairs.size()), FindDefaultCursor(m_configIniKey, m_isEnum, m_valueDisplayNamePairs, 0))
 		: MakeMenuInt(createInfo.valueMin, createInfo.valueMax, FindDefaultCursor(m_configIniKey, m_isEnum, m_valueDisplayNamePairs, createInfo.valueDefault), createInfo.valueStep))
 	, m_keyTextureRegion(keyTextureRegion)
+	, m_labelText(createInfo.labelText)
 {
 }
 
@@ -249,7 +262,14 @@ void OptionMenuField::update()
 void OptionMenuField::draw(const Vec2& position, const TiledTexture& valueTiledTexture, const Font& font) const
 {
 	// Draw left half (key)
-	m_keyTextureRegion.draw(position);
+	if (m_labelText.empty())
+	{
+		m_keyTextureRegion.draw(position);
+	}
+	else
+	{
+		font(m_labelText).drawAt(Scaled(15), position + m_keyTextureRegion.size / 2);
+	}
 
 	// Draw right half (value)
 	const Vec2 rightHalfOffsetPosition{ position.x + m_keyTextureRegion.size.x, position.y };

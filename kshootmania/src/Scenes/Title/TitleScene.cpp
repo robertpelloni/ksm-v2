@@ -1,6 +1,7 @@
 ﻿#include "TitleScene.hpp"
 #include "Scenes/Select/SelectScene.hpp"
 #include "Scenes/Option/OptionScene.hpp"
+#include "Scenes/InputGate/InputGateScene.hpp"
 #include "Scenes/Common/ShowLoadingOneFrame.hpp"
 
 namespace
@@ -85,9 +86,8 @@ Co::Task<void> TitleScene::fadeOut()
 		break;
 
 	case TitleMenuItem::kInputGate:
-		// TODO: INPUT GATEへ遷移
 		co_await Co::ScreenFadeOut(kFadeDuration);
-		requestNextScene<TitleScene>(TitleMenuItem::kInputGate);
+		requestNextScene<InputGateScene>();
 		break;
 
 	case TitleMenuItem::kExit:

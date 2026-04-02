@@ -115,6 +115,36 @@ void SelectMenuCourseItem::setCanvasParamsCenter(const SelectMenuEventContext& c
 		{ U"gaugePercentage", ToString(achievementRate) },
 	});
 
+	// タイトル画像を設定
+	if (const auto titleImgNode = NocoUtils::GetSubCanvasNodeByName(&canvas, U"center", U"TitleImage"))
+	{
+		if (m_courseInfo.titleImgPath.isEmpty())
+		{
+			titleImgNode->setActive(false);
+			// タイトルテキストを表示
+			canvas.setSubCanvasParamValueByTag(U"center", U"title", m_courseInfo.title);
+		}
+		else
+		{
+			const Texture titleTexture = context.fnGetTitleTexture(m_courseInfo.titleImgPath);
+			titleImgNode->setActive(!titleTexture.isEmpty());
+			if (const auto sprite = titleImgNode->getComponent<noco::Sprite>())
+			{
+				sprite->setTexture(titleTexture);
+			}
+
+			// タイトル画像がある場合はタイトルテキストを非表示(または空文字)に
+			if (!titleTexture.isEmpty())
+			{
+				canvas.setSubCanvasParamValueByTag(U"center", U"title", U"");
+			}
+			else
+			{
+				canvas.setSubCanvasParamValueByTag(U"center", U"title", m_courseInfo.title);
+			}
+		}
+	}
+
 	// Course用のノードを取得
 	if (const auto courseNode = NocoUtils::GetSubCanvasNodeByName(&canvas, U"center", U"Course"))
 	{

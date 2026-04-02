@@ -29,7 +29,7 @@ namespace MusicGame::Judgment
 	public:
 		ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType, const Optional<CourseContinuation>& courseContinuation, GameMode gameMode);
 
-		void onChipOrLaserSlamJudgment(Judgment::JudgmentResult result);
+		void onChipOrLaserSlamJudgment(Judgment::JudgmentResult result, double diffSec = 0.0);
 
 		void onLongOrLaserLineJudgment(Judgment::JudgmentResult result);
 

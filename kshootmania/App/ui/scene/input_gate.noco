@@ -1,0 +1,46 @@
+{
+  "type": "Canvas",
+  "children": [
+    {
+      "type": "Rect",
+      "name": "Background",
+      "position": { "x": 0, "y": 0 },
+      "size": { "x": 800, "y": 600 },
+      "color": [0.0, 0.0, 0.0, 1.0]
+    },
+    {
+      "type": "Rect",
+      "name": "Header",
+      "position": { "x": 0, "y": 0 },
+      "size": { "x": 800, "y": 60 },
+      "color": [0.0, 0.133, 0.266, 1.0],
+      "children": [
+        {
+          "type": "Text",
+          "name": "HeaderTitle",
+          "text": "INPUT GATE",
+          "fontAsset": "system_font",
+          "color": [1.0, 1.0, 1.0, 1.0],
+          "position": { "x": 20, "y": 10 }
+        }
+      ]
+    },
+    {
+      "type": "Rect",
+      "name": "Footer",
+      "position": { "x": 0, "y": 560 },
+      "size": { "x": 800, "y": 40 },
+      "color": [0.0, 0.066, 0.133, 1.0],
+      "children": [
+        {
+          "type": "Text",
+          "name": "FooterText",
+          "text": "Press Start to Download | Back to Return",
+          "fontAsset": "system_font",
+          "color": [0.666, 0.666, 0.666, 1.0],
+          "position": { "x": 20, "y": 10 }
+        }
+      ]
+    }
+  ]
+}

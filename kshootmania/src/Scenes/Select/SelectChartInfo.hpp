@@ -19,7 +19,11 @@ public:
 
 	String title() const;
 
+	String titleImgFilePath() const;
+
 	String artist() const;
+
+	String artistImgFilePath() const;
 
 	FilePath jacketFilePath() const;
 

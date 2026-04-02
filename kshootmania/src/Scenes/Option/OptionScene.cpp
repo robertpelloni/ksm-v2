@@ -1,10 +1,12 @@
-﻿#include "OptionScene.hpp"
+#include "OptionScene.hpp"
 #include "OptionAssets.hpp"
 #include "Common/FrameRateLimit.hpp"
 #include "Common/IMEUtils.hpp"
+#include "Common/FsUtils.hpp"
 #include "RuntimeConfig.hpp"
 #include "Scenes/Title/TitleScene.hpp"
 #include "Input/InputUtils.hpp"
+#include "ksmaudio/ksmaudio.hpp"
 
 // TODO: TextureIdxまわりどうにかする
 
@@ -42,6 +44,14 @@ namespace
 		for (const auto& language : I18n::GetAvailableLanguageList())
 		{
 			availableLanguageStrPairs.emplace_back(language, language);
+		}
+
+		// Audio Devices
+		Array<IntStrPair> audioDevices;
+		audioDevices.emplace_back(-1, U"Default");
+		for (const auto& device : ksmaudio::GetAudioDevices())
+		{
+			audioDevices.emplace_back(device.id, Unicode::Widen(device.name));
 		}
 
 		return {
@@ -108,12 +118,39 @@ namespace
 							const int32 volume = ConfigIni::GetInt(ConfigIni::Key::kMasterVolume, kMasterVolumeDefault);
 							ksmaudio::SetMasterVolume(volume / 100.0);
 						}),
+				CreateInfo::Enum(ConfigIni::Key::kMuteAudioInInactiveWindow, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(I18n::Get(I18n::Option::kMuteAudioInInactiveWindow)).setOnChangeCallback([] {
+					AutoMuteAddon::SetEnabled(ConfigIni::GetBool(ConfigIni::Key::kMuteAudioInInactiveWindow));
+				}),
 				CreateInfo::Enum(ConfigIni::Key::kVsync, Array<StrPair>{
 					StrPair{ U"0;120", U"{}(120fps)"_fmt(I18n::Get(I18n::Option::kVsyncOff)) },
 					StrPair{ U"0;144", U"{}(144fps)"_fmt(I18n::Get(I18n::Option::kVsyncOff)) },
 					StrPair{ U"0;300", U"{}(300fps)"_fmt(I18n::Get(I18n::Option::kVsyncOff)) },
 					StrPair{ U"1", I18n::Get(I18n::Option::kVsyncOn) },
 				}).setKeyTextureIdx(9),
+				CreateInfo::Enum(ConfigIni::Key::kAudioDeviceID, audioDevices).setLabel(U"Audio Device (Restart Required)"),
+				CreateInfo::Enum(ConfigIni::Key::kAudioBufferMs, Array<IntStrPair>{
+					{ 50, U"50ms" },
+					{ 100, U"100ms" },
+					{ 150, U"150ms" },
+					{ 200, U"200ms" },
+				}).setLabel(U"Audio Buffer (Restart Required)"),
+				CreateInfo::Enum(ConfigIni::Key::kAudioWasapiExclusive, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(U"WASAPI Exclusive (Restart Required)"),
+				CreateInfo::Enum(ConfigIni::Key::kAutoSync, Array<StringView>{
+					I18n::Get(I18n::Select::kAutoSyncOff),
+					I18n::Get(I18n::Select::kAutoSyncOnLow),
+					I18n::Get(I18n::Select::kAutoSyncOnMid),
+					I18n::Get(I18n::Select::kAutoSyncOnHigh),
+				}).setLabel(I18n::Get(I18n::Select::kAutoSync)),
+				CreateInfo::Enum(ConfigIni::Key::kShowSongTitleImages, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(U"Song Title/Artist Images"),
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueInputJudgment, {
 				CreateInfo::Enum(ConfigIni::Key::kJudgmentModeBT, Array<StringView>{
@@ -166,6 +203,20 @@ namespace
 					I18n::Get(I18n::Option::kTimingAdjustSuffixLater),
 					I18n::Get(I18n::Option::kTimingAdjustSuffixEarlier))
 				.setKeyTextureIdx(6),
+				CreateInfo::Int(ConfigIni::Key::kGlobalOffset, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
+				.setAdditionalSuffixes(
+					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),
+					I18n::Get(I18n::Option::kTimingAdjustSuffixLater),
+					I18n::Get(I18n::Option::kTimingAdjustSuffixEarlier))
+				.setLabel(I18n::Get(I18n::Option::kGlobalOffset)),
+				CreateInfo::Int(ConfigIni::Key::kVisualOffset, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
+				.setAdditionalSuffixes(
+					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),
+					I18n::Get(I18n::Option::kTimingAdjustSuffixLater),
+					I18n::Get(I18n::Option::kTimingAdjustSuffixEarlier))
+				.setLabel(I18n::Get(I18n::Option::kVisualOffset)),
+				CreateInfo::Int(ConfigIni::Key::kAudioProcDelay, 0, 500, 0, I18n::Get(I18n::Option::kTimingAdjustMs))
+				.setLabel(I18n::Get(I18n::Option::kAudioProcDelay)),
 				CreateInfo::Int(ConfigIni::Key::kLaserInputDelay, kTimingAdjustMin, kTimingAdjustMax, kTimingAdjustDefault, I18n::Get(I18n::Option::kTimingAdjustMs))
 				.setAdditionalSuffixes(
 					I18n::Get(I18n::Option::kTimingAdjustSuffixNoAdjustment),
@@ -180,11 +231,28 @@ namespace
 					I18n::Get(I18n::Option::kLaserMouseDirectionUpThenRight),
 					I18n::Get(I18n::Option::kLaserMouseDirectionDownThenRight),
 				}).setKeyTextureIdx(9),
-				CreateInfo::Int(ConfigIni::Key::kLaserSignalSensitivity, kLaserSignalSensitivityMin, kLaserSignalSensitivityMax, kLaserSignalSensitivityDefault).setKeyTextureIdx(10), // TODO: additional suffix for zero value
+				CreateInfo::Int(ConfigIni::Key::kLaserSignalSensitivity, kLaserSignalSensitivityMin, kLaserSignalSensitivityMax, kLaserSignalSensitivityDefault)
+					.setAdditionalSuffixes(
+						I18n::Get(I18n::Option::kLaserSignalSensitivityZero),
+						U"",
+						U"")
+					.setKeyTextureIdx(10),
 				CreateInfo::Enum(ConfigIni::Key::kSwapLaserLR, Array<StringView>{
 					I18n::Get(I18n::Option::kDisabled),
 					I18n::Get(I18n::Option::kEnabled),
 				}).setKeyTextureIdx(11),
+				CreateInfo::Enum(ConfigIni::Key::kAutoPlaySE, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(I18n::Get(I18n::Option::kAutoPlaySE)),
+				CreateInfo::Enum(ConfigIni::Key::kLightingEnable, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(U"Controller LED Lighting (Restart Required)"),
+				CreateInfo::Enum(ConfigIni::Key::kLightingBlink, Array<StringView>{
+					I18n::Get(I18n::Option::kDisabled),
+					I18n::Get(I18n::Option::kEnabled),
+				}).setLabel(U"LED Blinking Effect"),
 				CreateInfo::Enum(ConfigIni::Key::kSelectCloseFolderKey, Array<StringView>{
 					I18n::Get(I18n::Option::kSelectCloseFolderKeyBackspace),
 					I18n::Get(I18n::Option::kSelectCloseFolderKeyEsc),
@@ -216,6 +284,13 @@ namespace
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOnKeyboard),
 					I18n::Get(I18n::Option::kUseNumpadAsArrowKeysOnController),
 				}).setKeyTextureIdx(6),
+				CreateInfo::Enum(ConfigIni::Key::kEnableInternetRanking, Array<StringView>{
+					I18n::Get(I18n::Option::kInternetRankingOff),
+					I18n::Get(I18n::Option::kInternetRankingOn),
+				}).setLabel(I18n::Get(I18n::Option::kInternetRanking)),
+				CreateInfo::Enum(ConfigIni::Key::kSongsDirectoryPath, Array<std::pair<String, String>>{
+					{ FsUtils::SongsDirectoryPath().str(), FsUtils::SongsDirectoryPath().str() }
+				}).setLabel(U"Songs Directory"),
 			}),
 			OptionMenu(OptionTexture::kMenuKeyValueOther/*FIXME*/, {
 			}),

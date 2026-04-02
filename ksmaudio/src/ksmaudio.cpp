@@ -1,4 +1,4 @@
-﻿#include "ksmaudio/ksmaudio.hpp"
+#include "ksmaudio/ksmaudio.hpp"
 #include "bass.h"
 
 namespace ksmaudio
@@ -16,16 +16,68 @@ namespace ksmaudio
 		}
 	}
 
-	void Init(void* hWnd)
+	std::vector<AudioDeviceInfo> GetAudioDevices()
 	{
+		std::vector<AudioDeviceInfo> devices;
+		BASS_DEVICEINFO info;
+		// Device 0 is "No Sound", 1 is first real device.
+		// BASS_GetDeviceInfo iterates from 1.
+		for (int i = 1; BASS_GetDeviceInfo(i, &info); i++)
+		{
+			if (info.flags & BASS_DEVICE_ENABLED)
+			{
+				devices.push_back({
+					i,
+					info.name ? info.name : "Unknown",
+					info.driver ? info.driver : "",
+					(info.flags & BASS_DEVICE_DEFAULT) != 0
+				});
+			}
+		}
+		return devices;
+	}
+
+	void Init(void* hWnd, int deviceId, DWORD sampleRate, DWORD bufferMs, DWORD updatePeriodMs, bool exclusive)
+	{
+		// Exclusive mode isn't directly a flag in standard BASS_Init,
+		// typically requires basswasapi.dll on Windows.
+		// For now, if exclusive is true, we could attempt to load basswasapi,
+		// but since it's not present, we will fallback to standard init and log.
+
+		if (exclusive)
+		{
+			// In the future:
+			// 1. Initialize "No Sound" device in BASS.
+			// 2. Initialize BASSWASAPI with BASS_WASAPI_EXCLUSIVE.
+			// 3. Set up WASAPI callback to feed BASS channels.
+		}
+
+		// Force default device if -1, but usually user passes specific ID or -1.
+		// BASS_Init(device, ...)
+
+		DWORD flags = 0;
+
 #ifdef _WIN32
-		BASS_Init(-1/* default device */, kSampleRate, 0, static_cast<HWND>(hWnd), nullptr);
+		if (!BASS_Init(deviceId, sampleRate, flags, static_cast<HWND>(hWnd), nullptr))
 #else
 		(void)hWnd;
-		BASS_Init(-1/* default device */, kSampleRate, 0, 0, nullptr);
+		if (!BASS_Init(deviceId, sampleRate, flags, 0, nullptr))
 #endif
-		BASS_SetConfig(BASS_CONFIG_BUFFER, kBufferSizeMs);
-		BASS_SetConfig(BASS_CONFIG_UPDATEPERIOD, kUpdatePeriodMs);
+		{
+			// Fallback to default device if specific failed?
+			if (deviceId != -1)
+			{
+				// Try default
+#ifdef _WIN32
+				BASS_Init(-1, sampleRate, flags, static_cast<HWND>(hWnd), nullptr);
+#else
+				BASS_Init(-1, sampleRate, flags, 0, nullptr);
+#endif
+			}
+		}
+
+		BASS_SetConfig(BASS_CONFIG_BUFFER, bufferMs);
+		BASS_SetConfig(BASS_CONFIG_UPDATEPERIOD, updatePeriodMs);
 		BASS_SetConfig(BASS_CONFIG_FLOATDSP, TRUE);
 		BASS_SetConfig(BASS_CONFIG_UPDATETHREADS, kUpdateThreads);
 

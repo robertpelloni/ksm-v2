@@ -141,6 +141,12 @@ target_link_libraries(kshootmania PRIVATE
     NocoUI
 )
 
+if(HIDAPI_FOUND)
+    target_link_libraries(kshootmania PRIVATE ${HIDAPI_LIBRARIES})
+    target_include_directories(kshootmania PRIVATE ${HIDAPI_INCLUDE_DIRS})
+    target_compile_definitions(kshootmania PRIVATE KSM_HIDAPI_ENABLED)
+endif()
+
 if(APPLE)
 	target_link_libraries(kshootmania PRIVATE ksmplatform_macos)
 endif()
@@ -149,6 +155,22 @@ target_compile_features(kshootmania PRIVATE cxx_std_20)
 
 if(OUTPUT_LICENSE_TXT)
 	target_compile_definitions(kshootmania PRIVATE OUTPUT_LICENSE_TXT)
+endif()
+
+# Copy VERSION file
+if(EXISTS "${CMAKE_SOURCE_DIR}/VERSION")
+	if(APPLE)
+		set_source_files_properties(${CMAKE_SOURCE_DIR}/VERSION PROPERTIES
+			MACOSX_PACKAGE_LOCATION "Resources"
+		)
+		target_sources(kshootmania PRIVATE ${CMAKE_SOURCE_DIR}/VERSION)
+	else()
+		add_custom_command(TARGET kshootmania POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			${CMAKE_SOURCE_DIR}/VERSION
+			${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/VERSION
+		)
+	endif()
 endif()
 
 if(APPLE)
