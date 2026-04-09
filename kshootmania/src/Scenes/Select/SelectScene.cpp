@@ -267,6 +267,38 @@ void SelectScene::update()
 		return;
 	}
 
+	// Filter Modal Toggle & Update
+	// Open if both are pressed, and at least one went down this frame to avoid rapid toggling
+	const bool fxL = KeyConfig::Pressed(KeyConfig::kButtonFX_L);
+	const bool fxR = KeyConfig::Pressed(KeyConfig::kButtonFX_R);
+	const bool fxLDown = KeyConfig::Down(KeyConfig::kButtonFX_L);
+	const bool fxRDown = KeyConfig::Down(KeyConfig::kButtonFX_R);
+
+	if (fxL && fxR && (fxLDown || fxRDown))
+	{
+		m_filterModal.toggle();
+
+		// If closing, we would apply the filter here.
+		if (!m_filterModal.isActive())
+		{
+			// Apply filter/sort logic to the menu
+			// For now, if they change the sort, we just reload the directory.
+			m_menu.reloadCurrentDirectory();
+		}
+	}
+
+	if (m_filterModal.isActive())
+	{
+		m_filterModal.update();
+		if (!m_filterModal.isActive())
+		{
+			// Closed via Start/Back from inside the modal update
+			m_menu.reloadCurrentDirectory();
+		}
+		m_canvas->update();
+		return;
+	}
+
 	// BTオプションパネル更新
 	const bool needsDisplayRefresh = m_btOptionPanel.update(m_menu.getCurrentChartStdBPM());
 	if (needsDisplayRefresh)
@@ -548,6 +580,11 @@ bool SelectScene::anyDialogVisible() const
 void SelectScene::draw() const
 {
 	m_canvas->draw();
+
+	if (m_filterModal.isActive())
+	{
+		m_filterModal.draw();
+	}
 }
 
 Co::Task<void> SelectScene::fadeIn()

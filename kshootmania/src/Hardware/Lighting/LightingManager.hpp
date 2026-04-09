@@ -38,14 +38,57 @@ namespace Hardware::Lighting
 
 			// Try HID first if HIDAPI is available
 #ifdef KSM_HIDAPI_ENABLED
-			// Try to open standard controller (YuanCon default VID/PID for now)
-			// In future, scan list or config
-			auto hidDriver = std::make_unique<HidLightingDriver>(0x1973, 0x2001);
-			if (hidDriver->init())
+			// Load controller profiles from JSON
+			Array<ControllerProfile> profiles;
+			const FilePath profilesPath = U"hardware/controller_profiles.json";
+
+			if (FileSystem::Exists(profilesPath))
 			{
-				m_driver = std::move(hidDriver);
+				JSON json = JSON::Load(profilesPath);
+				if (json && json.hasElement(U"profiles") && json[U"profiles"].isArray())
+				{
+					for (const auto& p : json[U"profiles"].arrayView())
+					{
+						ControllerProfile profile;
+						profile.name = p[U"name"].getString();
+						profile.vid = static_cast<uint16_t>(p[U"vid"].getOr<int32>(0));
+						profile.pid = static_cast<uint16_t>(p[U"pid"].getOr<int32>(0));
+						profile.reportId = static_cast<uint8_t>(p[U"report_id"].getOr<int32>(0));
+						profile.reportLength = p[U"report_length"].getOr<int32>(4);
+						profile.buttonsByte = p[U"buttons_byte"].getOr<int32>(1);
+						profile.btABit = p[U"bt_a_bit"].getOr<int32>(0);
+						profile.btBBit = p[U"bt_b_bit"].getOr<int32>(1);
+						profile.btCBit = p[U"bt_c_bit"].getOr<int32>(2);
+						profile.btDBit = p[U"bt_d_bit"].getOr<int32>(3);
+						profile.fxLBit = p[U"fx_l_bit"].getOr<int32>(4);
+						profile.fxRBit = p[U"fx_r_bit"].getOr<int32>(5);
+						profile.laserLByte = p[U"laser_l_byte"].getOr<int32>(2);
+						profile.laserRByte = p[U"laser_r_byte"].getOr<int32>(3);
+						profiles.push_back(profile);
+					}
+				}
 			}
-			else
+
+			// If no profiles loaded, use a default YuanCon generic profile
+			if (profiles.empty())
+			{
+				profiles.push_back(ControllerProfile{});
+			}
+
+			// Attempt to open the first matching connected controller
+			bool foundDevice = false;
+			for (const auto& profile : profiles)
+			{
+				auto hidDriver = std::make_unique<HidLightingDriver>(profile);
+				if (hidDriver->init())
+				{
+					m_driver = std::move(hidDriver);
+					foundDevice = true;
+					break;
+				}
+			}
+
+			if (!foundDevice)
 			{
 				m_driver = std::make_unique<MockLightingDriver>();
 				m_driver->init();

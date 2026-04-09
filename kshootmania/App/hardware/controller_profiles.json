@@ -1,0 +1,20 @@
+{
+  "profiles": [
+    {
+      "name": "Standard YuanCon / Generic",
+      "vid": 6515,
+      "pid": 8193,
+      "report_id": 0,
+      "report_length": 4,
+      "buttons_byte": 1,
+      "bt_a_bit": 0,
+      "bt_b_bit": 1,
+      "bt_c_bit": 2,
+      "bt_d_bit": 3,
+      "fx_l_bit": 4,
+      "fx_r_bit": 5,
+      "laser_l_byte": 2,
+      "laser_r_byte": 3
+    }
+  ]
+}

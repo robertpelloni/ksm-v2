@@ -4,23 +4,18 @@
 #ifdef KSM_HIDAPI_ENABLED
 #include <hidapi/hidapi.h> // Or <hidapi.h> depending on platform/include path
 #endif
+#include "../ControllerProfile.hpp"
 
 namespace Hardware::Lighting
 {
 	class HidLightingDriver : public ILightingDriver
 	{
 	private:
-		// Common rhythm game controller VID/PID (e.g. YuanCon, SVSE)
-		// For now, we might want to make this configurable or scan multiple.
-		// Standard YuanCon: 0x1973 / 0x2001 (Example)
-		// Let's use a generic approach or config-based.
-
 		void* m_device = nullptr; // Use void* to avoid hidapi header dependency in headers if not strictly needed, but it's fine.
-		uint16_t m_vid = 0;
-		uint16_t m_pid = 0;
+		ControllerProfile m_profile;
 
 	public:
-		HidLightingDriver(uint16_t vid, uint16_t pid) : m_vid(vid), m_pid(pid) {}
+		explicit HidLightingDriver(const ControllerProfile& profile) : m_profile(profile) {}
 
 		bool init() override
 		{
@@ -32,14 +27,13 @@ namespace Hardware::Lighting
 			}
 
 			// Try to open
-			m_device = hid_open(m_vid, m_pid, nullptr);
+			m_device = hid_open(m_profile.vid, m_profile.pid, nullptr);
 			if (!m_device)
 			{
-				// Logger << U"[ksm warning] Failed to open HID device {:04x}:{:04x}"_fmt(m_vid, m_pid);
 				return false;
 			}
 
-			Logger << U"[ksm info] HID device opened: {:04x}:{:04x}"_fmt(m_vid, m_pid);
+			Logger << U"[ksm info] HID device opened for Lighting: {} ({:04x}:{:04x})"_fmt(m_profile.name, m_profile.vid, m_profile.pid);
 			return true;
 #else
 			return false;
@@ -51,47 +45,34 @@ namespace Hardware::Lighting
 #ifdef KSM_HIDAPI_ENABLED
 			if (!m_device) return;
 
-			// Construct HID report
-			// This depends heavily on the controller firmware.
-			// YuanCon standard:
-			// Report ID?
-			// Byte 0: Lights (Bitmask)
-			// Bit 0-3: BT A-D
-			// Bit 4-5: FX L/R
-			// Byte 1: Laser L (Blue?)
-			// Byte 2: Laser R (Pink?)
+			uint8_t buffer[65] = {0}; // Max typical HID report size + 1
+			buffer[0] = m_profile.reportId;
 
-			// This is a placeholder protocol. We need a way to configure this.
-			// For this task, I'll implement a "Standard" report format often used.
-
-			uint8_t report[64] = {0};
-
-			// Simple Bitmask for buttons
+			// Set buttons bitmask
 			uint8_t buttons = 0;
-			if (state.bt[0]) buttons |= (1 << 0);
-			if (state.bt[1]) buttons |= (1 << 1);
-			if (state.bt[2]) buttons |= (1 << 2);
-			if (state.bt[3]) buttons |= (1 << 3);
-			if (state.fx[0]) buttons |= (1 << 4);
-			if (state.fx[1]) buttons |= (1 << 5);
+			if (state.bt[0]) buttons |= (1 << m_profile.btABit);
+			if (state.bt[1]) buttons |= (1 << m_profile.btBBit);
+			if (state.bt[2]) buttons |= (1 << m_profile.btCBit);
+			if (state.bt[3]) buttons |= (1 << m_profile.btDBit);
+			if (state.fx[0]) buttons |= (1 << m_profile.fxLBit);
+			if (state.fx[1]) buttons |= (1 << m_profile.fxRBit);
 
-			report[0] = 0; // Report ID if needed, or data
-			// Wait, hid_write expects Report ID as first byte if numbered reports are used.
-			// If not, it's just data.
+			if (m_profile.buttonsByte >= 0 && m_profile.buttonsByte < 64)
+			{
+				buffer[m_profile.buttonsByte] = buttons;
+			}
 
-			// Assuming YuanCon style (often just sends state)
-			// Let's assume a generic report structure for now.
-			// Byte 0: Buttons
-			// Byte 1: Laser L Brightness
-			// Byte 2: Laser R Brightness
+			// Set lasers
+			if (m_profile.laserLByte >= 0 && m_profile.laserLByte < 64)
+			{
+				buffer[m_profile.laserLByte] = static_cast<uint8_t>(state.laser[0].r); // Simple intensity
+			}
+			if (m_profile.laserRByte >= 0 && m_profile.laserRByte < 64)
+			{
+				buffer[m_profile.laserRByte] = static_cast<uint8_t>(state.laser[1].r);
+			}
 
-			uint8_t buffer[65];
-			buffer[0] = 0x00; // Report ID
-			buffer[1] = buttons;
-			buffer[2] = static_cast<uint8_t>(state.laser[0].r); // Brightness/Color? Usually just intensity 0-255
-			buffer[3] = static_cast<uint8_t>(state.laser[1].r); // Using Red channel as intensity for now
-
-			hid_write(static_cast<hid_device*>(m_device), buffer, 4);
+			hid_write(static_cast<hid_device*>(m_device), buffer, m_profile.reportLength);
 #endif
 		}
 
