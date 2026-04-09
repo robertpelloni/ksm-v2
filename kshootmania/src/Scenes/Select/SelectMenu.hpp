@@ -150,7 +150,7 @@ public:
 
 	const Texture& getArtistTexture(FilePathView filePath);
 
-	void reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::No);
+	void reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::No, int32 sortType = 0, int32 levelFilter = 0);
 
 	// ハイスコア表示を更新
 	void refreshHighScoreDisplay();

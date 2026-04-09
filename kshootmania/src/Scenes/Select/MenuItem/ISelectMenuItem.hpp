@@ -70,6 +70,11 @@ public:
 		return false;
 	}
 
+	virtual bool hasLevel(int32 level) const
+	{
+		return true; // Default true so folders are not filtered out
+	}
+
 	virtual bool isSubFolderHeading() const
 	{
 		return false;

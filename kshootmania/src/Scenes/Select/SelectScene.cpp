@@ -281,9 +281,8 @@ void SelectScene::update()
 		// If closing, we would apply the filter here.
 		if (!m_filterModal.isActive())
 		{
-			// Apply filter/sort logic to the menu
-			// For now, if they change the sort, we just reload the directory.
-			m_menu.reloadCurrentDirectory();
+			// Closed via FX-L + FX-R toggle
+			m_menu.reloadCurrentDirectory(RefreshSongPreviewYN::Yes, m_filterModal.getSortType(), m_filterModal.getLevelFilter());
 		}
 	}
 
@@ -293,7 +292,7 @@ void SelectScene::update()
 		if (!m_filterModal.isActive())
 		{
 			// Closed via Start/Back from inside the modal update
-			m_menu.reloadCurrentDirectory();
+			m_menu.reloadCurrentDirectory(RefreshSongPreviewYN::Yes, m_filterModal.getSortType(), m_filterModal.getLevelFilter());
 		}
 		m_canvas->update();
 		return;

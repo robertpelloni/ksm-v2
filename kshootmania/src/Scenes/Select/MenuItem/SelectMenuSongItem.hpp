@@ -54,6 +54,16 @@ public:
 		return true;
 	}
 
+	virtual bool hasLevel(int32 level) const override
+	{
+		if (level == 0) return true; // All
+		for (const auto& info : m_chartInfos)
+		{
+			if (info && info->level() == level) return true;
+		}
+		return false;
+	}
+
 	/// @brief Canvasのパラメータを設定(中央の項目)
 	/// @param context イベントコンテキスト
 	/// @param canvas 設定対象のCanvas

@@ -69,3 +69,4 @@ To achieve total feature parity with K-Shoot MANIA v1 and commercial rhythm game
 1. **Course Mode Refinement**: Verify and complete any missing course mode UI elements.
 2. **Server Backend Development**: Create server-side API for Internet Ranking and Input Gate song lists.
 3. **Editor Parity**: Ensure `kshooteditor` can edit KSON charts correctly.
+4. **Select Menu Level Filtering**: Extend `ISelectMenuItem` and the `SelectMenu` internal backend logic to filter arrays by `levelFilter` (currently only sorting `sortType` is natively hooked up to the filesystem read).

@@ -772,123 +772,48 @@ void SelectMenu::fadeOutSongPreviewForExit(Duration duration)
 	m_songPreview.fadeOutForExit(duration);
 }
 
-void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview)
+void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview, int32 sortType, int32 levelFilter)
 {
-	// 現在選択中の譜面ファイルパスと難易度を保持
-	FilePath currentChartFilePath;
-	int32 currentDifficulty = m_difficultyMenu.rawCursor();
-	int32 currentCursorIndex = m_menu.cursor();
-	if (!m_menu.empty() && m_menu.cursorValue() != nullptr)
+	const String cursorItemFullPath = m_menu.empty() ? U"" : m_menu.cursorValue()->fullPath();
+
+	String sortTypeStr = sortType == 1 ? U"level" : U"title";
+	ConfigIni::SetString(ConfigIni::Key::kSelectSortType, sortTypeStr);
+
+	if (m_folderState.folderType == SelectFolderState::kAll)
 	{
-		const auto* pItem = m_menu.cursorValue().get();
-		const auto pChartInfo = pItem->chartInfoPtr(currentDifficulty);
-		if (pChartInfo != nullptr)
-		{
-			currentChartFilePath = pChartInfo->chartFilePath();
-		}
-		else if (pItem->isSubFolderHeading())
-		{
-			// 見出し項目の場合、次の曲項目を探してその譜面ファイルパスを使用
-			for (std::size_t i = static_cast<std::size_t>(currentCursorIndex) + 1; i < m_menu.size(); ++i)
-			{
-				const auto& nextItem = m_menu[i];
-				if (nextItem == nullptr)
-				{
-					continue;
-				}
-
-				// フォルダ項目や見出し項目はスキップ
-				if (nextItem->isFolder() || nextItem->isSubFolderHeading())
-				{
-					continue;
-				}
-
-				// 存在する難易度を探す
-				for (int32 difficultyIdx = 0; difficultyIdx < kNumDifficulties; ++difficultyIdx)
-				{
-					const auto pNextChartInfo = nextItem->chartInfoPtr(difficultyIdx);
-					if (pNextChartInfo != nullptr)
-					{
-						currentChartFilePath = pNextChartInfo->chartFilePath();
-						break;
-					}
-				}
-
-				if (!currentChartFilePath.isEmpty())
-				{
-					break;
-				}
-			}
-		}
+		openAllFolder(PlaySeYN::No, refreshSongPreview, SaveToConfigIniYN::No);
 	}
-
-	const FilePath currentDirectory = m_folderState.fullPath;
-	const SelectFolderState::FolderType currentFolderType = m_folderState.folderType;
-
-	if (currentFolderType == SelectFolderState::kAll)
+	else if (m_folderState.folderType == SelectFolderState::kCourses)
 	{
-		openAllFolder(PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
+		openCoursesFolder(PlaySeYN::No, refreshSongPreview, SaveToConfigIniYN::No);
 	}
-	else if (currentFolderType == SelectFolderState::kFavorite)
+	else if (m_folderState.folderType == SelectFolderState::kFavorite)
 	{
-		openFavoriteFolder(currentDirectory, PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
-	}
-	else if (currentFolderType == SelectFolderState::kCourses)
-	{
-		openCoursesFolder(PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
+		openFavoriteFolder(m_folderState.fullPath, PlaySeYN::No, refreshSongPreview, SaveToConfigIniYN::No);
 	}
 	else
 	{
-		openDirectory(currentDirectory, PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
+		openDirectory(m_folderState.fullPath, PlaySeYN::No, refreshSongPreview, SaveToConfigIniYN::No);
 	}
 
-	// 譜面ファイルパスから項目を探してフォーカスを復元
-	if (!currentChartFilePath.isEmpty())
+	// Apply Level Filter
+	if (levelFilter > 0 && !m_menu.empty())
 	{
-		bool found = false;
-		for (std::size_t i = 0U; i < m_menu.size(); ++i)
+		Array<std::unique_ptr<ISelectMenuItem>> filteredItems;
+		for (auto& item : m_menu)
 		{
-			const auto& pItem = m_menu[i];
-			if (pItem == nullptr)
+			if (item->hasLevel(levelFilter))
 			{
-				continue;
-			}
-
-			// 全難易度から一致する譜面を探す
-			for (int32 difficultyIdx = 0; difficultyIdx < kNumDifficulties; ++difficultyIdx)
-			{
-				const auto pChartInfo = pItem->chartInfoPtr(difficultyIdx);
-				if (pChartInfo != nullptr && pChartInfo->chartFilePath() == currentChartFilePath)
-				{
-					m_menu.setCursor(static_cast<int32>(i));
-					m_difficultyMenu.setCursor(difficultyIdx);
-					found = true;
-					break;
-				}
-			}
-
-			if (found)
-			{
-				break;
+				filteredItems.push_back(std::move(item));
 			}
 		}
 
-		// 譜面ファイルパスで復元できなかった場合はカーソルインデックスで復元
-		if (!found && currentCursorIndex < static_cast<int32>(m_menu.size()))
-		{
-			m_menu.setCursor(currentCursorIndex);
-		}
-	}
-	else if (currentCursorIndex < static_cast<int32>(m_menu.size()))
-	{
-		// 譜面ファイルパスがない場合もカーソルインデックスで復元
-		m_menu.setCursor(currentCursorIndex);
+		m_menu.setArray(std::move(filteredItems));
 	}
 
-	refreshContentCanvasParams();
-	if (refreshSongPreview)
+	if (!cursorItemFullPath.empty())
 	{
-		this->refreshSongPreview();
+		setCursorToItemByFullPath(cursorItemFullPath);
 	}
 }
 
