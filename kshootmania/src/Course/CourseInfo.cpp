@@ -26,6 +26,19 @@ namespace
 			return fullPath;
 		}
 
+		// 指定された拡張子のファイルが見つからない場合、他方の拡張子も試す
+		if (FsUtils::HasChartExtension(fullPath))
+		{
+			const String basePath = FsUtils::EliminateExtension(fullPath);
+			const FilePath altPath = FsUtils::HasKsonExtension(fullPath)
+				? basePath + U"." + kKSHExtension
+				: basePath + U"." + kKSONExtension;
+			if (FileSystem::IsFile(altPath))
+			{
+				return altPath;
+			}
+		}
+
 		return U"";
 	}
 }
@@ -106,8 +119,16 @@ Optional<CourseInfo> CourseInfo::Load(FilePathView kcoFilePath)
 				CourseChartEntry entry;
 				entry.relativePath = chartPath;
 
-				entry.absolutePath = ResolveChartPath(chartPath, songsDir);
-				entry.exists = !entry.absolutePath.isEmpty();
+				// バックスラッシュを含むパスはファイルが存在しない扱いとする
+				if (chartPath.includes(U'\\'))
+				{
+					entry.exists = false;
+				}
+				else
+				{
+					entry.absolutePath = ResolveChartPath(chartPath, songsDir);
+					entry.exists = !entry.absolutePath.isEmpty();
+				}
 				if (!entry.exists)
 				{
 					Logger << U"[ksm warning] Chart file not found in course: {}"_fmt(chartPath);

@@ -2,6 +2,7 @@
 #include <CoTaskLib.hpp>
 #include "ResultSceneArgs.hpp"
 #include "ResultNewRecordPanel.hpp"
+#include "ResultSNSShare.hpp"
 #include "MusicGame/PlayResult.hpp"
 #include "ksmaudio/ksmaudio.hpp"
 #include "UI/PopupDialog.hpp"
@@ -18,6 +19,8 @@ private:
 	const MusicGame::PlayResult m_playResult;
 
 	ResultNewRecordPanel m_newRecordPanel;
+
+	ResultSNSShare m_snsShare;
 
 	Optional<CoursePlayState> m_courseState;
 

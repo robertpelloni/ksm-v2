@@ -379,10 +379,19 @@ namespace MusicGame::Judgment
 		const int32 direction = Sign(deltaCursorX);
 		if (direction != 0)
 		{
-			if (Abs(cursorX - noteCursorX) < kLaserAutoFitMaxDeltaCursorX && (noteDirection == 0 || direction != noteDirection))
+			if (Abs(cursorX - noteCursorX) < kLaserAutoFitMaxDeltaCursorX)
 			{
-				// LASERカーソルが理想位置に近い場合はカーソルを逆方向に動かさない
-				nextCursorX = cursorX;
+				if (direction == noteDirection)
+				{
+					// ノーツと同方向の入力をしている場合は理想位置に吸い付かせる
+					nextCursorX = noteCursorX;
+					m_lastCorrectMovementSec = currentTimeSec;
+				}
+				else
+				{
+					// ノーツと逆方向の入力をしている場合はカーソルを動かさない
+					nextCursorX = cursorX;
+				}
 			}
 			else
 			{
@@ -791,11 +800,9 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	LaserLaneJudgment::LaserLaneJudgment(JudgmentPlayMode judgmentPlayMode, int32 laneIdx, Button keyConfigButtonL, Button keyConfigButtonR, const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache)
+	LaserLaneJudgment::LaserLaneJudgment(JudgmentPlayMode judgmentPlayMode, int32 laneIdx, const kson::ByPulse<kson::LaserSection>& lane, const kson::BeatInfo& beatInfo, const kson::TimingCache& timingCache)
 		: m_judgmentPlayMode(judgmentPlayMode)
 		, m_laneIdx(laneIdx)
-		, m_keyConfigButtonL(keyConfigButtonL)
-		, m_keyConfigButtonR(keyConfigButtonR)
 		, m_laserLineDirectionMap(CreateLaserLineDirectionMap(lane))
 		, m_laserLineDirectionMapForRippleEffect(CreateLaserLineDirectionMapForRippleEffect(m_laserLineDirectionMap, lane))
 		, m_laserLineDirectionChangeSecArray(CreateLaserLineDirectionChangeSecArray(lane, beatInfo, timingCache))

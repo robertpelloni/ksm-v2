@@ -1,6 +1,7 @@
 ﻿#include "SelectMenu.hpp"
 #include <cassert>
 #include "kson/kson.hpp"
+#include "IR/IRHash.hpp"
 #include "MenuItem/SelectMenuSongItem.hpp"
 #include "MenuItem/SelectMenuAllFolderItem.hpp"
 #include "MenuItem/SelectMenuDirFolderItem.hpp"
@@ -9,6 +10,7 @@
 #include "MenuItem/SelectMenuCoursesFolderItem.hpp"
 #include "MenuItem/SelectMenuSubDirSectionItem.hpp"
 #include "MenuItem/SelectMenuLevelSectionItem.hpp"
+#include "MenuItem/SelectMenuLevelSongItem.hpp"
 #include "Common/FsUtils.hpp"
 #include "Common/Encoding.hpp"
 #include "Ini/ConfIni.hpp"
@@ -174,7 +176,9 @@ namespace
 			{
 				continue;
 			}
-			result.push_back(trimmed);
+
+			// バックスラッシュをスラッシュに置換(v1ではバックスラッシュを受け付けていたため)
+			result.push_back(trimmed.replaced(U'\\', U'/'));
 		}
 
 		return result;
@@ -253,6 +257,129 @@ namespace
 		}
 
 		return courseItems;
+	}
+
+	/// @brief レベルソート用の譜面ファイル情報
+	struct LevelSortChartFileInfo
+	{
+		FilePath filePath;
+		int32 difficultyIdx;
+		String sortKey; // ソート用キー(小文字化済み)
+	};
+
+	/// @brief 譜面ファイルを処理してchartsByLevelに追加
+	void ProcessChartFilesForLevelSort(
+		std::array<Array<LevelSortChartFileInfo>, kNumLevels>* pChartsByLevel,
+		const FilePath& directory,
+		const Array<FilePath>& chartFiles,
+		StringView logFunctionName)
+	{
+		for (const auto& chartFile : chartFiles)
+		{
+			auto chartInfo = std::make_unique<SelectChartInfo>(chartFile);
+			if (chartInfo->hasError())
+			{
+				Logger << U"[ksm warning] {}: Chart Loading Error (error:'{}', chartFilePath:'{}')"_fmt(logFunctionName, chartInfo->errorString(), chartFile);
+				continue;
+			}
+
+			const int32 level = chartInfo->level();
+			const int32 difficultyIdx = chartInfo->difficultyIdx();
+
+			if (level < kLevelMin || level > kLevelMax)
+			{
+				Logger << U"[ksm warning] {}: Level out of range (level:{}, chartFilePath:'{}')"_fmt(logFunctionName, level, chartFile);
+				continue;
+			}
+
+			if (difficultyIdx < 0 || difficultyIdx >= kNumDifficulties)
+			{
+				Logger << U"[ksm warning] {}: Difficulty index out of range (difficultyIdx:{}, chartFilePath:'{}')"_fmt(logFunctionName, difficultyIdx, chartFile);
+				continue;
+			}
+
+			(*pChartsByLevel)[level - 1].push_back(LevelSortChartFileInfo{
+				.filePath = chartFile,
+				.difficultyIdx = difficultyIdx,
+				.sortKey = FsUtils::DirectoryNameByDirectoryPath(directory).lowercased(),
+			});
+		}
+	}
+
+	/// @brief 楽曲フォルダごとに兄弟難易度情報を構築してリンク
+	void LinkLevelSortSiblings(const Array<std::pair<int32, SelectMenuLevelSongItem*>>& levelItems)
+	{
+		// 楽曲フォルダごとにグループ化
+		HashTable<FilePath, Array<std::pair<int32, SelectMenuLevelSongItem*>>> songDirItems;
+		for (const auto& [index, item] : levelItems)
+		{
+			songDirItems[FilePath{ item->songDirectoryPath() }].push_back({ index, item });
+		}
+
+		// 各グループ内で兄弟情報を構築してセット
+		for (auto& [songDir, items] : songDirItems)
+		{
+			std::array<SiblingDifficultyInfo, kNumDifficulties> siblings = {};
+			for (const auto& [index, item] : items)
+			{
+				const int32 diffIdx = item->difficultyIdx();
+				const SelectChartInfo* chartInfo = item->chartInfoPtr(diffIdx);
+				siblings[diffIdx] = {
+					.menuIndex = index,
+					.level = chartInfo != nullptr ? chartInfo->level() : -1,
+				};
+			}
+
+			for (auto& [index, item] : items)
+			{
+				item->setSiblings(siblings);
+			}
+		}
+	}
+
+	/// @brief レベル分類済みの譜面から見出しと項目をメニューに追加し、兄弟難易度をリンク
+	void AddLevelSortedItems(
+		ArrayWithLinearMenu<std::unique_ptr<ISelectMenuItem>>* pMenu,
+		std::array<Array<LevelSortChartFileInfo>, kNumLevels>* pChartsByLevel)
+	{
+		Array<std::pair<int32, SelectMenuLevelSongItem*>> levelItems;
+		for (int32 level = kLevelMin; level <= kLevelMax; ++level)
+		{
+			auto& charts = (*pChartsByLevel)[level - 1];
+			if (charts.isEmpty())
+			{
+				continue;
+			}
+
+			// ソートキーの昇順でソート
+			charts.sort_by([](const LevelSortChartFileInfo& a, const LevelSortChartFileInfo& b)
+			{
+				if (a.sortKey != b.sortKey)
+				{
+					return a.sortKey < b.sortKey;
+				}
+
+				// 同一楽曲内は難易度順
+				return a.difficultyIdx < b.difficultyIdx;
+			});
+
+			// レベル見出し項目を追加
+			pMenu->push_back(std::make_unique<SelectMenuLevelSectionItem>(level));
+
+			// 譜面項目を追加
+			for (const auto& chartInfo : charts)
+			{
+				const FilePath chartDir = FileSystem::ParentPath(chartInfo.filePath);
+				auto item = std::make_unique<SelectMenuLevelSongItem>(chartInfo.filePath, chartDir, chartInfo.difficultyIdx);
+				if (item->chartExists())
+				{
+					levelItems.push_back({ static_cast<int32>(pMenu->size()), item.get() });
+					pMenu->push_back(std::move(item));
+				}
+			}
+		}
+
+		LinkLevelSortSiblings(levelItems);
 	}
 }
 
@@ -456,6 +583,15 @@ void SelectMenu::refreshContentCanvasParams()
 		return;
 	}
 
+	// レベルソート項目など、項目自体が特定の難易度を表す場合は難易度カーソルを同期
+	if (const auto* pItem = m_menu.cursorValue().get())
+	{
+		if (const auto itemDiffIdx = pItem->itemDifficultyIdx())
+		{
+			m_difficultyMenu.setCursor(*itemDiffIdx);
+		}
+	}
+
 	const int32 difficultyCursor = m_difficultyMenu.cursor(); // この値は-1にもなり得る
 	const int32 difficultyIdx = difficultyCursor >= 0 ? difficultyCursor : m_difficultyMenu.rawCursor();
 	m_selectSceneCanvas->setParamValues({
@@ -542,6 +678,27 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 			.fnGetArtistTexture = [this](FilePathView path) -> const Texture& { return getArtistTexture(path); },
 			.fnMoveToNextSubDirSection = [this]() { moveToNextSubDirSection(); },
 			.fnMoveToPrevSubDirSection = [this]() { moveToPrevSubDirSection(); },
+			.fnChangeDifficulty = [this](int32 newDifficultyIdx)
+			{
+				m_difficultyMenu.setCursor(newDifficultyIdx);
+				ConfigIni::SetInt(ConfigIni::Key::kSelectDifficulty, newDifficultyIdx);
+			},
+			.fnJumpToItemWithDifficulty = [this](int32 jumpMenuIndex, int32 newDifficultyIdx)
+			{
+				const int32 prevIndex = m_menu.cursor();
+				m_menu.setCursor(jumpMenuIndex);
+				m_difficultyMenu.setCursor(newDifficultyIdx);
+				ConfigIni::SetInt(ConfigIni::Key::kSelectSongIndex, jumpMenuIndex);
+				ConfigIni::SetInt(ConfigIni::Key::kSelectDifficulty, newDifficultyIdx);
+				if (jumpMenuIndex > prevIndex)
+				{
+					playShakeDownTween();
+				}
+				else if (jumpMenuIndex < prevIndex)
+				{
+					playShakeUpTween();
+				}
+			},
 		}
 	, m_selectSceneCanvas(selectSceneCanvas)
 	, m_menu(
@@ -684,13 +841,20 @@ void SelectMenu::update(SongPreviewOnlyYN songPreviewOnly)
 	const bool btBCPressed = KeyConfig::Pressed(kButtonBT_B) && KeyConfig::Pressed(kButtonBT_C);
 	if (!PlatformKey::KeyCommandControl.pressed() && !KeyShift.pressed() && !btBCPressed)
 	{
-		m_difficultyMenu.update();
-		if (m_difficultyMenu.deltaCursor() != 0)
+		const int32 diffDelta = m_difficultyMenu.updateAndGetInputDelta();
+		if (diffDelta != 0 && !m_menu.empty() && m_menu.cursorValue() != nullptr)
 		{
-			ConfigIni::SetInt(ConfigIni::Key::kSelectDifficulty, m_difficultyMenu.cursor());
-			m_difficultySelectSe.play();
-			refreshContentCanvasParams();
-			refreshSongPreview();
+			const bool changed = m_menu.cursorValue()->handleDifficultyChange(
+				m_eventContext,
+				m_difficultyMenu.rawCursor(),
+				diffDelta);
+
+			if (changed)
+			{
+				m_difficultySelectSe.play();
+				refreshContentCanvasParams();
+				refreshSongPreview();
+			}
 		}
 	}
 
@@ -776,12 +940,13 @@ void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview)
 {
 	// 現在選択中の譜面ファイルパスと難易度を保持
 	FilePath currentChartFilePath;
-	int32 currentDifficulty = m_difficultyMenu.rawCursor();
+	const int32 difficultyCursor = m_difficultyMenu.cursor();
+	int32 currentDifficultyIdx = difficultyCursor >= 0 ? difficultyCursor : m_difficultyMenu.rawCursor();
 	int32 currentCursorIndex = m_menu.cursor();
 	if (!m_menu.empty() && m_menu.cursorValue() != nullptr)
 	{
 		const auto* pItem = m_menu.cursorValue().get();
-		const auto pChartInfo = pItem->chartInfoPtr(currentDifficulty);
+		const auto pChartInfo = pItem->chartInfoPtr(currentDifficultyIdx);
 		if (pChartInfo != nullptr)
 		{
 			currentChartFilePath = pChartInfo->chartFilePath();
@@ -1311,48 +1476,7 @@ bool SelectMenu::openDirectoryWithLevelSort(FilePathView directoryPath)
 		}
 
 		// レベルごとに譜面を分類
-		struct ChartFileInfo
-		{
-			FilePath filePath;
-			int32 difficultyIdx;
-			String songDirectoryName;
-		};
-		std::array<Array<ChartFileInfo>, kNumLevels> chartsByLevel;
-
-		// 譜面ファイルを処理してchartsByLevelに追加する関数
-		const auto fnProcessChartFiles = [&chartsByLevel](const FilePath& directory, const Array<FilePath>& chartFiles)
-		{
-			for (const auto& chartFile : chartFiles)
-			{
-				auto chartInfo = std::make_unique<SelectChartInfo>(chartFile);
-				if (chartInfo->hasError())
-				{
-					Logger << U"[ksm warning] SelectMenu::openDirectoryWithLevelSort: KSH Loading Error (error:'{}', chartFilePath:'{}')"_fmt(chartInfo->errorString(), chartFile);
-					continue;
-				}
-
-				const int32 level = chartInfo->level();
-				const int32 difficultyIdx = chartInfo->difficultyIdx();
-
-				if (level < 1 || level > 20)
-				{
-					Logger << U"[ksm warning] SelectMenu::openDirectoryWithLevelSort: Level out of range (level:{}, chartFilePath:'{}')"_fmt(level, chartFile);
-					continue;
-				}
-
-				if (difficultyIdx < 0 || difficultyIdx >= kNumDifficulties)
-				{
-					Logger << U"[ksm warning] SelectMenu::openDirectoryWithLevelSort: Difficulty index out of range (difficultyIdx:{}, chartFilePath:'{}')"_fmt(difficultyIdx, chartFile);
-					continue;
-				}
-
-				chartsByLevel[level - 1].push_back(ChartFileInfo{
-					.filePath = chartFile,
-					.difficultyIdx = difficultyIdx,
-					.songDirectoryName = FsUtils::DirectoryNameByDirectoryPath(directory).lowercased(),
-				});
-			}
-		};
+		std::array<Array<LevelSortChartFileInfo>, kNumLevels> chartsByLevel;
 
 		// 全サブディレクトリを走査して譜面を収集
 		const Array<FilePath> songDirectories = GetSubDirectories(directoryPath);
@@ -1361,52 +1485,16 @@ bool SelectMenu::openDirectoryWithLevelSort(FilePathView directoryPath)
 			const Array<FilePath> subDirs = GetSubDirectories(songDirectory);
 			for (const auto& subDir : subDirs)
 			{
-				// サブディレクトリ内の.kshファイルを走査
-				const Array<FilePath> chartFiles = FileSystem::DirectoryContents(subDir, Recursive::No).filter([](FilePathView p)
-				{
-					return FileSystem::Extension(p) == kKSHExtension;
-				});
-
-				fnProcessChartFiles(subDir, chartFiles);
+				const Array<FilePath> chartFiles = FsUtils::GetChartFilePathsPreferringKson(subDir);
+				ProcessChartFilesForLevelSort(&chartsByLevel, subDir, chartFiles, U"SelectMenu::openDirectoryWithLevelSort");
 			}
 
-			// songDirectory直下の.kshファイルも走査
-			const Array<FilePath> chartFiles = FileSystem::DirectoryContents(songDirectory, Recursive::No).filter([](FilePathView p)
-			{
-				return FileSystem::Extension(p) == kKSHExtension;
-			});
-
-			fnProcessChartFiles(songDirectory, chartFiles);
+			const Array<FilePath> chartFiles = FsUtils::GetChartFilePathsPreferringKson(songDirectory);
+			ProcessChartFilesForLevelSort(&chartsByLevel, songDirectory, chartFiles, U"SelectMenu::openDirectoryWithLevelSort");
 		}
 
-		// レベルごとに見出しと譜面項目を追加
-		for (int32 level = 1; level <= 20; ++level)
-		{
-			Array<ChartFileInfo>& charts = chartsByLevel[level - 1];
-			if (charts.isEmpty())
-			{
-				continue;
-			}
-
-			// フォルダ名(小文字変換)の昇順でソート
-			charts.sort_by([](const ChartFileInfo& a, const ChartFileInfo& b)
-			{
-				return a.songDirectoryName < b.songDirectoryName;
-			});
-
-			// レベル見出し項目を追加
-			m_menu.push_back(std::make_unique<SelectMenuLevelSectionItem>(level));
-
-			// 譜面項目を追加
-			for (const auto& chartInfo : charts)
-			{
-				auto item = std::make_unique<SelectMenuSongItem>(chartInfo.filePath);
-				if (item->chartExists())
-				{
-					m_menu.push_back(std::move(item));
-				}
-			}
-		}
+		// 見出しと項目を追加し、兄弟難易度をリンク
+		AddLevelSortedItems(&m_menu, &chartsByLevel);
 
 		m_folderState.folderType = SelectFolderState::kDirectory;
 		m_folderState.fullPath = FileSystem::FullPath(directoryPath);
@@ -1592,48 +1680,7 @@ bool SelectMenu::openAllFolderWithLevelSort()
 	// TODO: Insert course items
 
 	// レベルごとに譜面を分類
-	struct ChartFileInfo
-	{
-		FilePath filePath;
-		int32 difficultyIdx;
-		String songDirectoryName;
-	};
-	std::array<Array<ChartFileInfo>, kNumLevels> chartsByLevel;
-
-	// 譜面ファイルを処理してchartsByLevelに追加する関数
-	const auto fnProcessChartFiles = [&chartsByLevel](const FilePath& directory, const Array<FilePath>& chartFiles)
-	{
-		for (const auto& chartFile : chartFiles)
-		{
-			auto chartInfo = std::make_unique<SelectChartInfo>(chartFile);
-			if (chartInfo->hasError())
-			{
-				Logger << U"[ksm warning] SelectMenu::openAllFolderWithLevelSort: KSH Loading Error (error:'{}', chartFilePath:'{}')"_fmt(chartInfo->errorString(), chartFile);
-				continue;
-			}
-
-			const int32 level = chartInfo->level();
-			const int32 difficultyIdx = chartInfo->difficultyIdx();
-
-			if (level < 1 || level > 20)
-			{
-				Logger << U"[ksm warning] SelectMenu::openAllFolderWithLevelSort: Level out of range (level:{}, chartFilePath:'{}')"_fmt(level, chartFile);
-				continue;
-			}
-
-			if (difficultyIdx < 0 || difficultyIdx >= kNumDifficulties)
-			{
-				Logger << U"[ksm warning] SelectMenu::openAllFolderWithLevelSort: Difficulty index out of range (difficultyIdx:{}, chartFilePath:'{}')"_fmt(difficultyIdx, chartFile);
-				continue;
-			}
-
-			chartsByLevel[level - 1].push_back(ChartFileInfo{
-				.filePath = chartFile,
-				.difficultyIdx = difficultyIdx,
-				.songDirectoryName = FsUtils::DirectoryNameByDirectoryPath(directory).lowercased(),
-			});
-		}
-	};
+	std::array<Array<LevelSortChartFileInfo>, kNumLevels> chartsByLevel;
 
 	// 全フォルダの楽曲を収集
 	Array<FilePath> searchPaths = {
@@ -1658,53 +1705,17 @@ bool SelectMenu::openAllFolderWithLevelSort()
 			const Array<FilePath> subDirs = GetSubDirectories(songDirectory);
 			for (const auto& subDir : subDirs)
 			{
-				// サブディレクトリ内の.kshファイルを走査
-				const Array<FilePath> chartFiles = FileSystem::DirectoryContents(subDir, Recursive::No).filter([](FilePathView p)
-				{
-					return FileSystem::Extension(p) == kKSHExtension;
-				});
-
-				fnProcessChartFiles(subDir, chartFiles);
+				const Array<FilePath> chartFiles = FsUtils::GetChartFilePathsPreferringKson(subDir);
+				ProcessChartFilesForLevelSort(&chartsByLevel, subDir, chartFiles, U"SelectMenu::openAllFolderWithLevelSort");
 			}
 
-			// songDirectory直下の.kshファイルも走査
-			const Array<FilePath> chartFiles = FileSystem::DirectoryContents(songDirectory, Recursive::No).filter([](FilePathView p)
-			{
-				return FileSystem::Extension(p) == kKSHExtension;
-			});
-
-			fnProcessChartFiles(songDirectory, chartFiles);
+			const Array<FilePath> chartFiles = FsUtils::GetChartFilePathsPreferringKson(songDirectory);
+			ProcessChartFilesForLevelSort(&chartsByLevel, songDirectory, chartFiles, U"SelectMenu::openAllFolderWithLevelSort");
 		}
 	}
 
-	// レベルごとに見出しと譜面項目を追加
-	for (int32 level = 1; level <= 20; ++level)
-	{
-		Array<ChartFileInfo>& charts = chartsByLevel[level - 1];
-		if (charts.isEmpty())
-		{
-			continue;
-		}
-
-		// フォルダ名(小文字変換)の昇順でソート
-		charts.sort_by([](const ChartFileInfo& a, const ChartFileInfo& b)
-		{
-			return a.songDirectoryName < b.songDirectoryName;
-		});
-
-		// レベル見出し項目を追加
-		m_menu.push_back(std::make_unique<SelectMenuLevelSectionItem>(level));
-
-		// 譜面項目を追加
-		for (const auto& chartInfo : charts)
-		{
-			auto item = std::make_unique<SelectMenuSongItem>(chartInfo.filePath);
-			if (item->chartExists())
-			{
-				m_menu.push_back(std::move(item));
-			}
-		}
-	}
+	// 見出しと項目を追加し、兄弟難易度をリンク
+	AddLevelSortedItems(&m_menu, &chartsByLevel);
 
 	m_folderState.folderType = SelectFolderState::kAll;
 	m_folderState.fullPath = SelectMenuAllFolderItem::kAllFolderSpecialPath;
@@ -1796,7 +1807,7 @@ bool SelectMenu::openFavoriteFolderWithNameSort(FilePathView specialPath)
 				.lowercasedName = FsUtils::DirectoryNameByDirectoryPath(fullPath).lowercased(),
 			});
 		}
-		else if (FileSystem::IsFile(fullPath) && FileSystem::Extension(fullPath) == U"ksh")
+		else if (FileSystem::IsFile(fullPath) && FsUtils::HasChartExtension(fullPath))
 		{
 			pathInfos.push_back(PathInfo{
 				.path = fullPath,
@@ -1853,25 +1864,19 @@ bool SelectMenu::openFavoriteFolderWithLevelSort(FilePathView specialPath)
 	m_menu.push_back(std::make_unique<SelectMenuFavFolderItem>(IsCurrentFolderYN::Yes, specialPath));
 
 	// レベルごとに譜面を分類
-	constexpr int32 kNumLevels = 20;
-	struct ChartFileInfo
-	{
-		FilePath filePath;
-		String songDirectoryName;
-	};
-	std::array<Array<ChartFileInfo>, kNumLevels> chartsByLevel;
+	std::array<Array<LevelSortChartFileInfo>, kNumLevels> chartsByLevel;
 
 	// .favファイルから楽曲パスを読み込み
 	const Array<String> songPaths = LoadFavFile(favFilePath);
 	const FilePath songsDir = FsUtils::SongsDirectoryPath();
 
-	// 各楽曲フォルダまたはKSHファイルから項目を生成
+	// 各楽曲フォルダまたは譜面ファイル(KSH/KSON)から項目を生成
 	Array<std::unique_ptr<SelectMenuSongItem>> songItems;
 	for (const String& relativePath : songPaths)
 	{
 		const FilePath fullPath = FileSystem::PathAppend(songsDir, relativePath);
 
-		if (FileSystem::IsDirectory(fullPath) || (FileSystem::IsFile(fullPath) && FileSystem::Extension(fullPath) == U"ksh"))
+		if (FileSystem::IsDirectory(fullPath) || (FileSystem::IsFile(fullPath) && FsUtils::HasChartExtension(fullPath)))
 		{
 			auto item = std::make_unique<SelectMenuSongItem>(fullPath);
 			if (item->chartExists())
@@ -1900,48 +1905,22 @@ bool SelectMenu::openFavoriteFolderWithLevelSort(FilePathView specialPath)
 			}
 
 			const int32 level = pChartInfo->level();
-			if (level < 1 || level > 20)
+			if (level < kLevelMin || level > kLevelMax)
 			{
 				Logger << U"[ksm warning] SelectMenu::openFavoriteFolderWithLevelSort: Level out of range (level:{}, chartFilePath:'{}')"_fmt(level, pChartInfo->chartFilePath());
 				continue;
 			}
 
-			chartsByLevel[level - 1].push_back(ChartFileInfo{
+			chartsByLevel[level - 1].push_back(LevelSortChartFileInfo{
 				.filePath = FilePath{ pChartInfo->chartFilePath() },
-				.songDirectoryName = songName,
+				.difficultyIdx = diffIdx,
+				.sortKey = songName.lowercased(),
 			});
 		}
 	}
 
-	// レベルごとに見出しと譜面項目を追加
-	for (int32 level = 1; level <= kNumLevels; ++level)
-	{
-		const auto& charts = chartsByLevel[level - 1];
-		if (charts.isEmpty())
-		{
-			continue;
-		}
-
-		// レベル見出し項目を追加
-		m_menu.push_back(std::make_unique<SelectMenuLevelSectionItem>(level));
-
-		// 曲名(小文字)でソート
-		Array<ChartFileInfo> sortedCharts = charts;
-		sortedCharts.sort_by([](const ChartFileInfo& a, const ChartFileInfo& b)
-		{
-			return a.songDirectoryName.lowercased() < b.songDirectoryName.lowercased();
-		});
-
-		// 譜面項目を追加
-		for (const auto& chartInfo : sortedCharts)
-		{
-			auto item = std::make_unique<SelectMenuSongItem>(chartInfo.filePath);
-			if (item->chartExists())
-			{
-				m_menu.push_back(std::move(item));
-			}
-		}
-	}
+	// 見出しと項目を追加し、兄弟難易度をリンク
+	AddLevelSortedItems(&m_menu, &chartsByLevel);
 
 	m_folderState.folderType = SelectFolderState::kFavorite;
 	m_folderState.fullPath = specialPath;
@@ -2258,6 +2237,26 @@ void SelectMenu::showCurrentItemInFileManager()
 
 	// 現在選択中の項目のshowInFileManagerを呼び出す
 	m_menu.cursorValue()->showInFileManager(m_difficultyMenu.cursor());
+}
+
+void SelectMenu::openCurrentChartIRPage()
+{
+	if (m_menu.empty())
+	{
+		return;
+	}
+
+	const SelectChartInfo* pChartInfo = m_menu.cursorValue()->chartInfoPtr(m_difficultyMenu.cursor());
+	if (pChartInfo == nullptr)
+	{
+		return;
+	}
+
+	const String irHash = IRHash::Calculate(pChartInfo->chartFilePath());
+	if (!irHash.isEmpty())
+	{
+		System::LaunchBrowser(U"https://ir.kshootmania.com/md5/" + irHash);
+	}
 }
 
 Optional<String> SelectMenu::currentItemRelativePathToCopy() const

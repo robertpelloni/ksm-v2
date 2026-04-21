@@ -15,8 +15,8 @@ namespace MusicGame::Judgment
 			ButtonLaneJudgment(playOption.effectiveFxJudgmentPlayMode(), playOption.gaugeType, playOption.fastSlowMode, kButtonFX_L, chartData.note.fx[0], chartData.beat, timingCache),
 			ButtonLaneJudgment(playOption.effectiveFxJudgmentPlayMode(), playOption.gaugeType, playOption.fastSlowMode, kButtonFX_R, chartData.note.fx[1], chartData.beat, timingCache) }
 		, m_laserLaneJudgments{
-			LaserLaneJudgment(playOption.effectiveLaserJudgmentPlayMode(), 0, kButtonLeftLaserL, kButtonLeftLaserR, chartData.note.laser[0], chartData.beat, timingCache),
-			LaserLaneJudgment(playOption.effectiveLaserJudgmentPlayMode(), 1, kButtonRightLaserL, kButtonRightLaserR, chartData.note.laser[1], chartData.beat, timingCache) }
+			LaserLaneJudgment(playOption.effectiveLaserJudgmentPlayMode(), 0, chartData.note.laser[0], chartData.beat, timingCache),
+			LaserLaneJudgment(playOption.effectiveLaserJudgmentPlayMode(), 1, chartData.note.laser[1], chartData.beat, timingCache) }
 		, m_judgmentHandler(chartData, m_btLaneJudgments, m_fxLaneJudgments, m_laserLaneJudgments, playOption, courseContinuation, gameMode)
 	{
 	}
@@ -65,15 +65,25 @@ namespace MusicGame::Judgment
 		}
 	}
 
-	PlayResult JudgmentMain::playResult(const kson::ChartData& chartData, const kson::TimingCache& timingCache, double currentTimeSec, IsHardFailedYN isHardFailed) const
+	PlayResult JudgmentMain::playResult(const kson::ChartData& chartData, const kson::TimingCache& timingCache, double currentTimeSec, IsHardFailedYN isHardFailed, bool isAborted) const
 	{
 		const kson::Pulse lastNoteEndY = kson::LastNoteEndY(chartData.note);
 		const double chartEndTimeSec = kson::PulseToSec(lastNoteEndY, chartData.beat, timingCache);
-		return m_judgmentHandler.playResult(currentTimeSec, chartEndTimeSec, isHardFailed);
+		return m_judgmentHandler.playResult(currentTimeSec, chartEndTimeSec, isHardFailed, isAborted);
 	}
 
 	bool JudgmentMain::isFinished() const
 	{
 		return m_judgmentHandler.isFinished();
+	}
+
+	double JudgmentMain::timingAdjustOffsetSec() const
+	{
+		return m_judgmentHandler.timingAdjustOffsetSec();
+	}
+
+	void JudgmentMain::addTimingAdjustOffset(double offsetSec)
+	{
+		m_judgmentHandler.addTimingAdjustOffset(offsetSec);
 	}
 }

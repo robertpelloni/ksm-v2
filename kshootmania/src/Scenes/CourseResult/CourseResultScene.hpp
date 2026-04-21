@@ -3,6 +3,7 @@
 #include "Course/CoursePlayState.hpp"
 #include "Scenes/CourseResult/CourseResultNewRecordPanel.hpp"
 #include "Scenes/CourseResult/CourseResultChartList.hpp"
+#include "Scenes/Result/ResultSNSShare.hpp"
 #include "ksmaudio/ksmaudio.hpp"
 
 class CourseResultScene : public Co::SceneBase
@@ -19,6 +20,8 @@ private:
 	CourseResultNewRecordPanel m_newRecordPanel;
 
 	CourseResultChartList m_chartList;
+
+	ResultSNSShare m_snsShare;
 
 	void updateCanvasParams();
 

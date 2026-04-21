@@ -15,6 +15,7 @@
 #include "UI/HispeedSettingMenu.hpp"
 #include "Graphics/GraphicsMain.hpp"
 #include "kson/Util/TimingUtils.hpp"
+#include "Ini/FolderConfIni.hpp"
 
 namespace MusicGame
 {
@@ -27,6 +28,8 @@ namespace MusicGame
 		AssistTickMode assistTickMode = AssistTickMode::kOff;
 
 		Optional<CourseContinuation> courseContinuation = none;
+
+		FolderConfIni folderConfIni;
 	};
 
 	class GameMain
@@ -44,6 +47,7 @@ namespace MusicGame
 		bool m_isFirstUpdate = true;
 
 		// 譜面情報
+		std::array<HashSet<kson::Pulse>, kson::kNumLaserLanesSZ> m_laserCurvedPulses;
 		const kson::ChartData m_chartData;
 		const kson::TimingCache m_timingCache;
 
@@ -81,9 +85,13 @@ namespace MusicGame
 		ViewStatus m_viewStatus;
 		bool m_isFinishedPrev = false;
 
+		// Backボタンによる途中終了かどうか(未判定ノーツが残った状態でlockForExitが呼ばれた場合にtrue)
+		bool m_isAborted = false;
+
 		// 再生制御
 		bool m_isPaused = false;
 		Stopwatch m_fastForwardStopwatch;
+		Stopwatch m_syncAdjustStopwatch;
 
 		void updateStatus();
 
@@ -110,6 +118,10 @@ namespace MusicGame
 		const kson::ChartData& chartData() const;
 
 		PlayResult playResult() const;
+
+		/// @brief タイミング調整オフセット
+		[[nodiscard]]
+		int32 timingAdjustOffsetMs() const;
 
 		void startBGMFadeOut(Duration duration);
 	};

@@ -110,35 +110,36 @@ namespace
 	}
 }
 
-OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Enum(StringView configIniKey, const Array<String>& valueDisplayNames)
+OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Enum(StringView name, StringView configIniKey, const Array<String>& valueDisplayNames)
 {
-	return Enum(configIniKey, ConvertValueDisplayNamePairs(valueDisplayNames));
+	return Enum(name, configIniKey, ConvertValueDisplayNamePairs(valueDisplayNames));
 }
 
-OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Enum(StringView configIniKey, const Array<StringView>& valueDisplayNames)
+OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Enum(StringView name, StringView configIniKey, const Array<StringView>& valueDisplayNames)
 {
-	return Enum(configIniKey, ConvertValueDisplayNamePairs(valueDisplayNames));
+	return Enum(name, configIniKey, ConvertValueDisplayNamePairs(valueDisplayNames));
 }
 
-OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Enum(StringView configIniKey, const Array<std::pair<String, String>>& valueDisplayNamePairs)
+OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Enum(StringView name, StringView configIniKey, const Array<std::pair<String, String>>& valueDisplayNamePairs)
 {
 	return CreateInfo{
-		.configIniKey = String(configIniKey),
+		.configIniKey = String{ configIniKey },
+		.name = String{ name },
 		.valueDisplayNamePairs = valueDisplayNamePairs,
 	};
 }
 
-OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Enum(StringView configIniKey, const Array<std::pair<int, String>>& valueDisplayNamePairs)
+OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Enum(StringView name, StringView configIniKey, const Array<std::pair<int, String>>& valueDisplayNamePairs)
 {
-	return Enum(configIniKey, ConvertValueDisplayNamePairs(valueDisplayNamePairs));
+	return Enum(name, configIniKey, ConvertValueDisplayNamePairs(valueDisplayNamePairs));
 }
 
-OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Enum(StringView configIniKey, const Array<std::pair<double, String>>& valueDisplayNamePairs)
+OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Enum(StringView name, StringView configIniKey, const Array<std::pair<double, String>>& valueDisplayNamePairs)
 {
-	return Enum(configIniKey, ConvertValueDisplayNamePairs(valueDisplayNamePairs));
+	return Enum(name, configIniKey, ConvertValueDisplayNamePairs(valueDisplayNamePairs));
 }
 
-OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Int(StringView configIniKey, int32 valueMin, int32 valueMax, int32 valueDefault, StringView suffixStr, int32 valueStep)
+OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Int(StringView name, StringView configIniKey, int32 valueMin, int32 valueMax, int32 valueDefault, StringView suffixStr, int32 valueStep)
 {
 	if (valueStep == 0)
 	{
@@ -147,12 +148,13 @@ OptionMenuField::CreateInfo OptionMenuField::CreateInfo::Int(StringView configIn
 	}
 
 	return OptionMenuField::CreateInfo{
-		.configIniKey = String(configIniKey),
+		.configIniKey = String{ configIniKey },
+		.name = String{ name },
 		.valueMin = valueMin,
 		.valueMax = valueMax,
 		.valueDefault = valueDefault,
 		.valueStep = valueStep,
-		.suffixStr = String(suffixStr),
+		.suffixStr = String{ suffixStr },
 	};
 }
 
@@ -208,8 +210,9 @@ OptionMenuField::CreateInfo&& OptionMenuField::CreateInfo::setOnChangeCallback(s
 	return std::move(*this);
 }
 
-OptionMenuField::OptionMenuField(const TextureRegion& keyTextureRegion, const CreateInfo& createInfo)
+OptionMenuField::OptionMenuField(const CreateInfo& createInfo)
 	: m_configIniKey(createInfo.configIniKey)
+	, m_name(createInfo.name)
 	, m_isEnum(createInfo.valueStep == 0)
 	, m_suffixStr(createInfo.suffixStr)
 	, m_suffixStrZero(createInfo.suffixStrZero)
@@ -225,7 +228,7 @@ OptionMenuField::OptionMenuField(const TextureRegion& keyTextureRegion, const Cr
 {
 }
 
-void OptionMenuField::update()
+bool OptionMenuField::update()
 {
 	const int32 cursorPrev = m_menu.cursor();
 
@@ -244,7 +247,7 @@ void OptionMenuField::update()
 			}
 			else
 			{
-				Logger << U"[ksm warning] OptionMenuField::update(): Option enum value index is out of range! (func=OptionMenuField::draw(), index={}, min=0, max={})"_fmt(cursor, enumCount - 1);
+				Logger << U"[ksm warning] OptionMenuField::update(): Option enum value index is out of range! (index={}, min=0, max={})"_fmt(cursor, enumCount - 1);
 			}
 		}
 		else
@@ -256,10 +259,14 @@ void OptionMenuField::update()
 		{
 			m_onChangeCallback();
 		}
+
+		return true;
 	}
+
+	return false;
 }
 
-void OptionMenuField::draw(const Vec2& position, const TiledTexture& valueTiledTexture, const Font& font) const
+String OptionMenuField::valueDisplayString() const
 {
 	// Draw left half (key)
 	if (m_labelText.empty())
@@ -274,26 +281,18 @@ void OptionMenuField::draw(const Vec2& position, const TiledTexture& valueTiledT
 	// Draw right half (value)
 	const Vec2 rightHalfOffsetPosition{ position.x + m_keyTextureRegion.size.x, position.y };
 	const int32 cursor = m_menu.cursor();
-	const ArrowType arrowType = GetMenuFieldValueArrowType(m_menu);
-	valueTiledTexture(arrowType).draw(rightHalfOffsetPosition);
 
-	// Draw text on the right half
-	const Vec2 textPosition = rightHalfOffsetPosition + valueTiledTexture.scaledSize() / 2;
 	if (m_isEnum)
 	{
 		const int32 enumCount = static_cast<int32>(m_valueDisplayNamePairs.size());
 		if (cursor < 0 || enumCount <= cursor)
 		{
-			Logger << U"[ksm warning] OptionMenuField::draw(): Option enum value index is out of range! (func=OptionMenuField::draw(), index={}, min=0, max={})"_fmt(cursor, enumCount - 1);
-			return;
+			return U"";
 		}
-
-		const StringView displayName = m_valueDisplayNamePairs[cursor].second;
-		font(displayName).drawAt(Scaled(15), textPosition);
+		return String{ m_valueDisplayNamePairs[cursor].second };
 	}
 	else
 	{
-		String displayStr;
 		if (!m_suffixStrZero.isEmpty())
 		{
 			String additionalSuffix;
@@ -312,18 +311,26 @@ void OptionMenuField::draw(const Vec2& position, const TiledTexture& valueTiledT
 
 			if (cursor > 0)
 			{
-				displayStr = U"+" + Format(cursor) + m_suffixStr + additionalSuffix;
+				return U"+" + Format(cursor) + m_suffixStr + additionalSuffix;
 			}
 			else
 			{
-				displayStr = Format(cursor) + m_suffixStr + additionalSuffix;
+				return Format(cursor) + m_suffixStr + additionalSuffix;
 			}
 		}
 		else
 		{
-			displayStr = Format(cursor) + m_suffixStr;
+			return Format(cursor) + m_suffixStr;
 		}
-
-		font(displayStr).drawAt(Scaled(15), textPosition);
 	}
+}
+
+const String& OptionMenuField::name() const
+{
+	return m_name;
+}
+
+OptionMenuField::ArrowType OptionMenuField::arrowType() const
+{
+	return GetMenuFieldValueArrowType(m_menu);
 }

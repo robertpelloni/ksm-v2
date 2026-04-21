@@ -1,10 +1,36 @@
 ﻿#include "GraphicsMain.hpp"
 #include "GraphicsDefines.hpp"
 #include "MusicGame/GameDefines.hpp"
+#include "MusicGame/HispeedUtils.hpp"
 #include "kson/Util/GraphUtils.hpp"
 
 namespace MusicGame::Graphics
 {
+	void ScoreAnimator::update(int32 score)
+	{
+		if (m_targetScore != score)
+		{
+			m_startScore = m_displayedScore;
+			m_targetScore = score;
+			m_animationTimer.restart();
+		}
+
+		if (m_animationTimer.isRunning() && m_animationTimer < kAnimationDuration)
+		{
+			const double progress = m_animationTimer.sF() / kAnimationDuration.count();
+			m_displayedScore = static_cast<int32>(m_startScore + static_cast<double>(m_targetScore - m_startScore) * progress);
+		}
+		else
+		{
+			m_displayedScore = m_targetScore;
+		}
+	}
+
+	int32 ScoreAnimator::displayedScore() const
+	{
+		return m_displayedScore;
+	}
+
 	namespace
 	{
 		constexpr double kCameraVerticalFOV = 45_deg;
@@ -132,6 +158,52 @@ namespace MusicGame::Graphics
 
 			return renderTextures;
 		}
+
+		/// @brief BPMを文字列にフォーマット(小数部分がある場合のみ小数を表示)
+		String FormatBPM(double bpm)
+		{
+			const int32 bpmInt = static_cast<int32>(bpm * 1000);
+			const int32 integerPart = bpmInt / 1000;
+			const int32 decimalPart = bpmInt % 1000;
+			if (decimalPart == 0)
+			{
+				return Format(integerPart);
+			}
+
+			// 末尾のゼロを除去
+			String result = U"{}.{:03d}"_fmt(integerPart, decimalPart);
+			while (result.back() == U'0')
+			{
+				result.pop_back();
+			}
+			return result;
+		}
+
+		std::shared_ptr<noco::Canvas> LoadHUDCanvas()
+		{
+			const FilePath uiFilePath = FsUtils::GetResourcePath(U"ui/scene/play_hud.noco");
+			const auto canvas = noco::Canvas::LoadFromFile(uiFilePath);
+			if (!canvas)
+			{
+				throw Error{ U"Failed to load '{}'"_fmt(uiFilePath) };
+			}
+			return canvas;
+		}
+
+		FilePath GetJacketPath(FilePathView parentPath, const String& jacketFilename)
+		{
+			if (FileSystem::Extension(jacketFilename).isEmpty())
+			{
+				return FileSystem::PathAppend(U"imgs/jacket", jacketFilename + U".jpg");
+			}
+			else
+			{
+				return FileSystem::PathAppend(parentPath, jacketFilename);
+			}
+		}
+
+		constexpr double kPreStartOffsetSec = 3.4;
+		constexpr double kPreStartOffsetWithMovieSec = 4.4;
 	}
 
 	void GraphicsMain::drawBG(const ViewStatus& viewStatus) const
@@ -142,7 +214,7 @@ namespace MusicGame::Graphics
 		const int32 percentThreshold = (m_playOption.gaugeType == GaugeType::kHardGauge || m_playOption.gameMode == GameMode::kCourseMode) ? kGaugePercentageThresholdHardWarning : kGaugePercentageThreshold;
 		const int32 bgTextureIndex = viewStatus.gaugePercentageInt >= percentThreshold ? 1 : 0;
 
-		double bgTiltRadians = viewStatus.tiltRadians / 3;
+		double bgTiltRadians = viewStatus.tiltRadiansForBgLayer / 3;
 		m_bgBillboardMesh.draw(m_bgTransform * TiltTransformMatrix(bgTiltRadians, kBGBillboardPosition), m_bgTextures[bgTextureIndex]);
 	}
 
@@ -154,7 +226,7 @@ namespace MusicGame::Graphics
 		double layerTiltRadians = 0.0;
 		if (chartData.bg.legacy.layer.rotation.tilt)
 		{
-			layerTiltRadians += viewStatus.tiltRadians * 0.8;
+			layerTiltRadians += viewStatus.tiltRadiansForBgLayer * 0.8;
 		}
 		if (chartData.bg.legacy.layer.rotation.spin)
 		{
@@ -206,12 +278,34 @@ namespace MusicGame::Graphics
 		, m_layerFrameTextures(SplitLayerTexture(LayerFilePath(chartData, parentPath)))
 		, m_layerTransform(m_camera.billboard(kLayerBillboardPosition, kLayerBillboardSize))
 		, m_jdgoverlay3DGraphics(m_camera)
-		, m_songInfoPanel(chartData, parentPath)
+		, m_hudCanvas(LoadHUDCanvas())
 		, m_gaugePanel(ToGaugeCalcType(playOption.gaugeType, playOption.gameMode))
 		, m_laserApproachIndicator(chartData)
 		, m_moviePanel(MovieFilePath(chartData, parentPath), chartData.bg.legacy.movie.offset / 1000.0 / playOption.nonZeroPlaybackSpeed(), playOption.playbackSpeed, playOption.movieEnabled)
 		, m_playOption(playOption)
 	{
+		// HUDのCanvasパラメータを初期設定
+		const double startBPM = chartData.beat.bpm.contains(0) ? chartData.beat.bpm.at(0) : kDefaultBPM;
+		m_hudCanvas->setParamValues({
+			{ U"title", Unicode::FromUTF8(chartData.meta.title) },
+			{ U"artist", Unicode::FromUTF8(chartData.meta.artist) },
+			{ U"levelNumber", Format(chartData.meta.level) },
+			{ U"bpmNumber", FormatBPM(startBPM) },
+			{ U"difficultyIndex", chartData.meta.difficulty.idx },
+			{ U"hispeedValue", HispeedUtils::ToDisplayString(playOption.hispeedSetting) },
+			{ U"hispeedValueEffective", Format(playOption.hispeedSetting.value) },
+		});
+
+		// ジャケット画像をSpriteに設定
+		const String jacketFilename = Unicode::FromUTF8(chartData.meta.jacketFilename);
+		const Texture jacketTexture{ GetJacketPath(parentPath, jacketFilename) };
+		if (const auto jacketNode = m_hudCanvas->findByName(U"Jacket"))
+		{
+			if (const auto sprite = jacketNode->getComponent<noco::Sprite>())
+			{
+				sprite->setTexture(jacketTexture);
+			}
+		}
 	}
 
 	void GraphicsMain::prepareMovie(double globalOffsetSec)
@@ -222,16 +316,28 @@ namespace MusicGame::Graphics
 	void GraphicsMain::update(const GameStatus& gameStatus, const ViewStatus& viewStatus, const kson::TimingCache& timingCache)
 	{
 		m_comboOverlay.update(viewStatus);
-		m_scorePanel.update(viewStatus.score);
+		m_scoreAnimator.update(viewStatus.score);
 		m_highway3DGraphics.update(viewStatus);
 		m_laserApproachIndicator.update(gameStatus, timingCache);
 		m_moviePanel.update(gameStatus.currentTimeSec, gameStatus.isPaused);
+
+		// HUDのCanvasパラメータを更新
+		m_hudCanvas->setParamValues({
+			{ U"scoreNumber", U"{:08d}"_fmt(m_scoreAnimator.displayedScore()) },
+			{ U"fpsNumber", Format(Profiler::FPS()) },
+			{ U"bpmNumber", FormatBPM(gameStatus.currentBPM) },
+			{ U"timingAdjustVisible", viewStatus.timingAdjustMs != 0 },
+			{ U"timingAdjustSignIndex", viewStatus.timingAdjustMs > 0 ? 1 : 0 },
+			{ U"timingAdjustNumber", Format(Abs(viewStatus.timingAdjustMs)) },
+		});
+
+		m_hudCanvas->update();
 	}
 
-	void GraphicsMain::draw(const kson::ChartData& chartData, const kson::TimingCache& timingCache, const GameStatus& gameStatus, const ViewStatus& viewStatus, const Scroll::HighwayScrollContext& highwayScrollContext, Duration bgmDuration) const
+	void GraphicsMain::draw(const kson::ChartData& chartData, const std::array<HashSet<kson::Pulse>, kson::kNumLaserLanesSZ>& laserCurvedPulses, const kson::TimingCache& timingCache, const GameStatus& gameStatus, const ViewStatus& viewStatus, const Scroll::HighwayScrollContext& highwayScrollContext, Duration bgmDuration) const
 	{
 		// 各レンダーテクスチャを用意
-		m_highway3DGraphics.draw2D(chartData, m_playOption, timingCache, gameStatus, viewStatus, highwayScrollContext);
+		m_highway3DGraphics.draw2D(chartData, laserCurvedPulses, m_playOption, timingCache, gameStatus, viewStatus, highwayScrollContext);
 		m_jdgoverlay3DGraphics.draw2D(gameStatus, viewStatus);
 		Graphics2D::Flush();
 
@@ -251,11 +357,21 @@ namespace MusicGame::Graphics
 		m_laserCursor3DGraphics.draw3D(gameStatus, viewStatus, m_camera);
 
 		// 手前に表示する2DのHUDを描画
-		m_songInfoPanel.draw(gameStatus.currentTimeSec, bgmDuration, gameStatus.currentBPM, highwayScrollContext, m_moviePanel.isEnabled());
-		m_scorePanel.draw();
+		{
+			const double preStartOffset = m_moviePanel.isEnabled() ? kPreStartOffsetWithMovieSec : kPreStartOffsetSec;
+			const double totalDurationSec = bgmDuration.count() + preStartOffset;
+			const double progress = Clamp(gameStatus.currentTimeSec / totalDurationSec, 0.0, 1.0);
+
+			m_hudCanvas->setParamValues({
+				{ U"positionMarkerProgress", progress },
+				{ U"hispeedValue", HispeedUtils::ToDisplayString(highwayScrollContext.highwayScroll().hispeedSetting()) },
+				{ U"hispeedValueEffective", Format(highwayScrollContext.currentHispeedWithScrollSpeed()) },
+			});
+		}
+
+		m_hudCanvas->draw();
 		m_gaugePanel.draw(viewStatus.gaugePercentage, gameStatus.currentPulse);
 		m_comboOverlay.draw();
-		m_frameRateMonitor.draw();
 		m_achievementPanel.draw(gameStatus);
 		m_laserApproachIndicator.draw(gameStatus.currentTimeSec);
 		m_moviePanel.draw();

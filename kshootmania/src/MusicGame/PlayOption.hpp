@@ -3,6 +3,18 @@
 
 namespace MusicGame
 {
+	// テストプレイ用オプション
+	struct TestPlayOption
+	{
+		Optional<GaugeType> gaugeType;
+		Optional<int32> startMeasure;
+
+		bool hasStartMeasure() const
+		{
+			return startMeasure.has_value() && *startMeasure > 0;
+		}
+	};
+
 	struct PlayOption
 	{
 		GameMode gameMode = GameMode::kNormal;
@@ -35,6 +47,8 @@ namespace MusicGame
 
 		NoteSkinType noteSkin = NoteSkinType::kDefault;
 
+		AutoSyncMode autoSyncMode = AutoSyncMode::kOff;
+
 		FastSlowMode fastSlowMode = FastSlowMode::kHide;
 
 		Array<HispeedType> availableHispeedTypes = { HispeedType::OMod };
@@ -46,6 +60,14 @@ namespace MusicGame
 		bool showBG = true;
 
 		bool showLayer = true;
+
+		Optional<TestPlayOption> testPlayOption;
+
+		// テストプレイで開始小節が指定されているか
+		bool isTestPlayWithStartMeasure() const
+		{
+			return testPlayOption.has_value() && testPlayOption->hasStartMeasure();
+		}
 
 		// オートプレイを考慮したBT判定モードを取得
 		JudgmentPlayMode effectiveBtJudgmentPlayMode() const
@@ -106,7 +128,7 @@ namespace MusicGame
 		// スコアを保存すべきかどうか
 		bool shouldSaveScore() const
 		{
-			return !isAutoPlay;
+			return !isAutoPlay && !testPlayOption.has_value();
 		}
 
 		// playbackSpeed取得(ゼロ除算対策用に0の場合は1を返す)

@@ -38,6 +38,8 @@ struct SelectMenuEventContext
 	std::function<const Texture&(FilePathView)> fnGetArtistTexture;
 	std::function<void()> fnMoveToNextSubDirSection;
 	std::function<void()> fnMoveToPrevSubDirSection;
+	std::function<void(int32)> fnChangeDifficulty;
+	std::function<void(int32, int32)> fnJumpToItemWithDifficulty;
 };
 
 class SelectMenu
@@ -109,10 +111,6 @@ private:
 
 	void playShakeDownTween();
 
-	void moveToNextSubDirSection();
-
-	void moveToPrevSubDirSection();
-
 	Array<FilePath> getSortedFolderPaths() const;
 
 	Optional<std::size_t> findFolderIndex(const Array<FilePath>& folderPaths, FilePathView targetFullPath) const;
@@ -132,18 +130,23 @@ public:
 
 	void decideAutoPlay();
 
+	[[nodiscard]]
 	bool isFolderOpen() const;
 
 	void closeFolder(PlaySeYN playSe);
 
+	[[nodiscard]]
 	const ISelectMenuItem& cursorMenuItem() const;
 
+	[[nodiscard]]
 	bool empty() const;
 
 	void fadeOutSongPreviewForExit(Duration duration);
 
+	[[nodiscard]]
 	const Texture& getJacketTexture(FilePathView filePath);
 
+	[[nodiscard]]
 	const Texture& getIconTexture(FilePathView filePath);
 
 	const Texture& getTitleTexture(FilePathView filePath);
@@ -157,6 +160,10 @@ public:
 
 	void jumpToAlphabetItem(char32 letter);
 
+	void moveToNextSubDirSection();
+
+	void moveToPrevSubDirSection();
+
 	void jumpToNextAlphabet();
 
 	void jumpToPrevAlphabet();
@@ -165,11 +172,15 @@ public:
 
 	void jumpToLast();
 
+	[[nodiscard]]
 	double getCurrentChartStdBPM() const;
 
+	[[nodiscard]]
 	Optional<HighScoreInfo> getCurrentHighScoreInfo() const;
 
 	void showCurrentItemInFileManager();
+
+	void openCurrentChartIRPage();
 
 	[[nodiscard]]
 	Optional<String> currentItemRelativePathToCopy() const;
