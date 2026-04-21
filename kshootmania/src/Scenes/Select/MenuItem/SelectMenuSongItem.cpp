@@ -2,7 +2,6 @@
 #include "Graphics/FontUtils.hpp"
 #include "Scenes/Select/SelectDifficultyMenu.hpp"
 #include "RuntimeConfig.hpp"
-#include "NocoExtensions/NocoUtils.hpp"
 
 SelectMenuSongItem::SelectMenuSongItem(FilePathView fullPath)
 	: m_fullPath(fullPath)
@@ -83,7 +82,7 @@ void SelectMenuSongItem::decide(const SelectMenuEventContext& context, int32 dif
 	// 譜面ファイルの存在チェック
 	if (!FileSystem::Exists(chartFilePath))
 	{
-		MessageBoxUtils::ShowOK(I18n::Get(I18n::Play::ErrorChartFileNotFound), MessageBoxStyle::Error);
+		context.fnShowErrorDialog(I18n::Get(I18n::Play::ErrorChartFileNotFound));
 		return;
 	}
 
@@ -110,7 +109,7 @@ void SelectMenuSongItem::decideAutoPlay(const SelectMenuEventContext& context, i
 	// 譜面ファイルの存在チェック
 	if (!FileSystem::Exists(chartFilePath))
 	{
-		MessageBoxUtils::ShowOK(I18n::Get(I18n::Play::ErrorChartFileNotFound), MessageBoxStyle::Error);
+		context.fnShowErrorDialog(I18n::Get(I18n::Play::ErrorChartFileNotFound));
 		return;
 	}
 
@@ -146,7 +145,7 @@ const SelectChartInfo* SelectMenuSongItem::chartInfoPtr(int difficultyIdx, Fallb
 	return m_chartInfos[difficultyIdx].get();
 }
 
-void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx) const
+void SelectMenuSongItem::setCanvasParamsCenter([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx) const
 {
 	canvas.setSubCanvasParamValuesByTag(U"center", {
 		{ U"isSong", true },
@@ -182,9 +181,19 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 
 		const GaugeType gaugeType = RuntimeConfig::GetGaugeType();
 
+		const FilePath jacketPath = pChartInfo->jacketFilePath();
+		const FilePath iconPath = pChartInfo->iconFilePath();
+
+		const FilePath titleImgPath = pChartInfo->titleImgFilePath();
+		const bool hasTitleImg = !titleImgPath.isEmpty() && FileSystem::IsFile(titleImgPath);
+		const FilePath artistImgPath = pChartInfo->artistImgFilePath();
+		const bool hasArtistImg = !artistImgPath.isEmpty() && FileSystem::IsFile(artistImgPath);
+
 		canvas.setSubCanvasParamValuesByTag(U"center", {
-			{ U"title", pChartInfo->title() },
-			{ U"artist", pChartInfo->artist() },
+			{ U"title", hasTitleImg ? U"" : pChartInfo->title() },
+			{ U"titleImgFilePath", titleImgPath },
+			{ U"artist", hasArtistImg ? U"" : pChartInfo->artist() },
+			{ U"artistImgFilePath", artistImgPath },
 			{ U"bpm", pChartInfo->dispBPM() },
 			{ U"jacketAuthor", pChartInfo->jacketAuthor() },
 			{ U"information", pChartInfo->information() },
@@ -194,6 +203,10 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 			{ U"highScoreGradeIndex", static_cast<int32>(highScoreInfo.grade(gaugeType)) },
 			{ U"highScore", U"{:08d}"_fmt(highScoreInfo.score(gaugeType)) },
 			{ U"gaugePercentage", ToString(highScoreInfo.percent(gaugeType)) },
+			{ U"jacketFilePath", jacketPath },
+			{ U"jacketActive", !jacketPath.isEmpty() && FileSystem::IsFile(jacketPath) },
+			{ U"iconFilePath", iconPath },
+			{ U"iconActive", !iconPath.isEmpty() && FileSystem::IsFile(iconPath) },
 		});
 
 		// ジャケット画像を設定
@@ -303,7 +316,7 @@ void SelectMenuSongItem::setCanvasParamsCenter(const SelectMenuEventContext& con
 	}
 }
 
-void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx, StringView tag) const
+void SelectMenuSongItem::setCanvasParamsTopBottom([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, int32 difficultyIdx, StringView tag) const
 {
 	// 中央で選択中の難易度がこの曲に存在するかチェック
 	// (difficultyIdxには中央の項目の代替カーソル値が適用済み)
@@ -339,17 +352,31 @@ void SelectMenuSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& 
 		gaugePercentage = highScoreInfo.percent(gaugeType);
 	}
 
+	const FilePath jacketPath = pAltChartInfo->jacketFilePath();
+	const FilePath iconPath = pAltChartInfo->iconFilePath();
+
+	const FilePath titleImgPath = pAltChartInfo->titleImgFilePath();
+	const bool hasTitleImg = !titleImgPath.isEmpty() && FileSystem::IsFile(titleImgPath);
+	const FilePath artistImgPath = pAltChartInfo->artistImgFilePath();
+	const bool hasArtistImg = !artistImgPath.isEmpty() && FileSystem::IsFile(artistImgPath);
+
 	canvas.setSubCanvasParamValuesByTag(tag, {
 		{ U"isSong", true },
 		{ U"isDirectory", false },
 		{ U"isSubDirectory", false },
 		{ U"isCourse", false },
-		{ U"title", pAltChartInfo->title() },
-		{ U"artist", pAltChartInfo->artist() },
+		{ U"title", hasTitleImg ? U"" : pAltChartInfo->title() },
+		{ U"titleImgFilePath", titleImgPath },
+		{ U"artist", hasArtistImg ? U"" : pAltChartInfo->artist() },
+		{ U"artistImgFilePath", artistImgPath },
 		{ U"levelIndex", levelIndex },
 		{ U"medalIndex", medalIndex },
 		{ U"highScoreGradeIndex", highScoreGradeIndex },
 		{ U"gaugePercentage", ToString(gaugePercentage) },
+		{ U"jacketFilePath", jacketPath },
+		{ U"jacketActive", !jacketPath.isEmpty() && FileSystem::IsFile(jacketPath) },
+		{ U"iconFilePath", iconPath },
+		{ U"iconActive", !iconPath.isEmpty() && FileSystem::IsFile(iconPath) },
 	});
 
 	// ジャケット画像・アイコン画像を設定

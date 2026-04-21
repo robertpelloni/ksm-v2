@@ -365,33 +365,29 @@ ResultScene::ResultScene(const ResultSceneArgs& args)
 	updateCanvasParams();
 
 	// ジャケット画像を設定
-	FilePath jacketFilePath = FileSystem::PathAppend(FileSystem::ParentPath(args.chartFilePath), Unicode::FromUTF8(m_chartData.meta.jacketFilename));
+	const FilePath chartDir = FileSystem::ParentPath(args.chartFilePath);
+	const FilePath jacketPath = FsUtils::ResolveJacketPath(chartDir, Unicode::FromUTF8(m_chartData.meta.jacketFilename));
+	const bool jacketExists = !jacketPath.isEmpty() && FileSystem::IsFile(jacketPath);
+	m_canvas->setParamValues({
+		{ U"jacketFilePath", jacketPath },
+		{ U"jacketActive", jacketExists },
+	});
 
-	// 拡張子なしの場合はimgs/jacket内の画像を使用
-	if (FileSystem::Extension(jacketFilePath).isEmpty())
+	// title_img/artist_imgを設定(updateCanvasParams内で使用)
+	if (!m_chartData.meta.titleImgFilename.empty())
 	{
-		const String baseName = FileSystem::BaseName(jacketFilePath);
-		if (!baseName.isEmpty())
+		const FilePath titleImgPath = FileSystem::PathAppend(chartDir, Unicode::FromUTF8(m_chartData.meta.titleImgFilename));
+		if (FileSystem::IsFile(titleImgPath))
 		{
-			jacketFilePath = FileSystem::PathAppend(U"imgs/jacket", baseName + U".jpg");
+			m_canvas->setParamValue(U"songTitleImgFilePath", titleImgPath);
 		}
 	}
-
-	Texture jacketTexture;
-	if (FileSystem::IsFile(jacketFilePath))
+	if (!m_chartData.meta.artistImgFilename.empty())
 	{
-		jacketTexture = Texture{ jacketFilePath };
-	}
-
-	if (const auto jacketNode = m_canvas->findByName(U"JacketImage"))
-	{
-		if (const auto sprite = jacketNode->getComponent<noco::Sprite>())
+		const FilePath artistImgPath = FileSystem::PathAppend(chartDir, Unicode::FromUTF8(m_chartData.meta.artistImgFilename));
+		if (FileSystem::IsFile(artistImgPath))
 		{
-			sprite->setTexture(jacketTexture);
-			if (jacketTexture.isEmpty())
-			{
-				sprite->setColor(ColorF{ 0.0, 0.0 });
-			}
+			m_canvas->setParamValue(U"artistNameImgFilePath", artistImgPath);
 		}
 	}
 
@@ -415,8 +411,8 @@ void ResultScene::updateCanvasParams()
 	const int32 errorCountWithUnjudged = m_playResult.comboStats.error + unjudgedCombo;
 
 	m_canvas->setParamValues({
-		{ U"songTitle", Unicode::FromUTF8(m_chartData.meta.title) },
-		{ U"artistName", Unicode::FromUTF8(m_chartData.meta.artist) },
+		{ U"songTitle", m_chartData.meta.titleImgFilename.empty() ? Unicode::FromUTF8(m_chartData.meta.title) : U"" },
+		{ U"artistName", m_chartData.meta.artistImgFilename.empty() ? Unicode::FromUTF8(m_chartData.meta.artist) : U"" },
 		{ U"difficultyIndex", static_cast<double>(m_chartData.meta.difficulty.idx) },
 		{ U"levelIndex", static_cast<double>(m_chartData.meta.level - 1) },
 		{ U"resultTopIndex", static_cast<double>(TopTextureRow(m_playResult)) },

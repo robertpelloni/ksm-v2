@@ -271,6 +271,9 @@
     <Filter Include="Header Files\ThirdParty\CoTaskLib">
       <UniqueIdentifier>{35ec8b6e-d771-43fd-881e-570e4f2d352c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ThirdParty\stb">
+      <UniqueIdentifier>{9ce118d1-e8b9-435c-9a1e-23ab2e3db081}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Scenes\Common">
       <UniqueIdentifier>{8fafb3ff-bed2-4710-973c-3f95281dc0bd}</UniqueIdentifier>
     </Filter>
@@ -346,6 +349,9 @@
       <Filter>Source Files\Ini</Filter>
     </ClCompile>
     <ClCompile Include="src\UI\LinearMenu.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\SimpleDialog.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="src\Scenes\Option\OptionMenuField.cpp">
@@ -625,6 +631,9 @@
       <Filter>Source Files\Common</Filter>
     </ClCompile>
     <ClCompile Include="src\Graphics\FontUtils.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\ImageUtils.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\Scenes\PlayPrepare\PlayPrepareScene.cpp">
@@ -976,7 +985,13 @@
     <ClInclude Include="src\Scenes\Option\OptionScene.hpp">
       <Filter>Header Files\Scenes\Option</Filter>
     </ClInclude>
+    <ClInclude Include="src\UI\DialogBase.hpp">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
     <ClInclude Include="src\UI\LinearMenu.hpp">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UI\SimpleDialog.hpp">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="src\Input\FXButtonUpDetection.hpp">
@@ -1342,6 +1357,9 @@
     <ClInclude Include="src\Graphics\FontUtils.hpp">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\Graphics\ImageUtils.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="src\Scenes\PlayPrepare\PlayPrepareScene.hpp">
       <Filter>Header Files\Scenes\PlayPrepare</Filter>
     </ClInclude>
@@ -1389,6 +1407,9 @@
     </ClInclude>
     <ClInclude Include="ThirdParty\CoTaskLib\include\CoTaskLib\ScreenFade.hpp">
       <Filter>Header Files\ThirdParty\CoTaskLib</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\stb\stb_image.h">
+      <Filter>Header Files\ThirdParty\stb</Filter>
     </ClInclude>
     <ClInclude Include="src\Input\LaserInput\AnalogStickXYLaserInput.hpp">
       <Filter>Header Files\Input\LaserInput</Filter>

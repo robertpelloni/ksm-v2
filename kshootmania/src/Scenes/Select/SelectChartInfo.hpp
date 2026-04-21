@@ -29,6 +29,13 @@ public:
 
 	String artistImgFilePath() const;
 
+	[[nodiscard]]
+	FilePath titleImgFilePath() const;
+
+	[[nodiscard]]
+	FilePath artistImgFilePath() const;
+
+	[[nodiscard]]
 	FilePath jacketFilePath() const;
 
 	[[nodiscard]]

@@ -132,6 +132,7 @@
     <ClCompile Include="src\Common\MathUtils.cpp" />
     <ClCompile Include="src\Common\MessageBoxUtils.cpp" />
     <ClCompile Include="src\Graphics\FontUtils.cpp" />
+    <ClCompile Include="src\Graphics\ImageUtils.cpp" />
     <ClCompile Include="src\Graphics\TextureFontTextLayout.cpp" />
     <ClCompile Include="src\Graphics\NumberTextureFont.cpp" />
     <ClCompile Include="src\Graphics\ScreenUtils.cpp" />
@@ -250,6 +251,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\UI\LinearMenu.cpp" />
+    <ClCompile Include="src\UI\SimpleDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\engine\texture\box-shadow\128.png" />
@@ -359,6 +361,7 @@
     <ClInclude Include="src\Common\MathUtils.hpp" />
     <ClInclude Include="src\Common\MessageBoxUtils.hpp" />
     <ClInclude Include="src\Graphics\FontUtils.hpp" />
+    <ClInclude Include="src\Graphics\ImageUtils.hpp" />
     <ClInclude Include="src\Graphics\TextureFontTextLayout.hpp" />
     <ClInclude Include="src\Graphics\NumberTextureFont.hpp" />
     <ClInclude Include="src\Graphics\ScreenUtils.hpp" />
@@ -494,7 +497,9 @@
     <ClInclude Include="src\Scenes\Title\TitleScene.hpp" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\UI\ArrayWithLinearMenu.hpp" />
+    <ClInclude Include="src\UI\DialogBase.hpp" />
     <ClInclude Include="src\UI\LinearMenu.hpp" />
+    <ClInclude Include="src\UI\SimpleDialog.hpp" />
     <ClInclude Include="ThirdParty\CoTaskLib\include\CoTaskLib.hpp" />
     <ClInclude Include="ThirdParty\CoTaskLib\include\CoTaskLib\Core.hpp" />
     <ClInclude Include="ThirdParty\CoTaskLib\include\CoTaskLib\Ease.hpp" />
@@ -507,6 +512,7 @@
     <ClInclude Include="ThirdParty\CoTaskLib\include\CoTaskLib\SimpleDialog.hpp" />
     <ClInclude Include="ThirdParty\CoTaskLib\include\CoTaskLib\Tween.hpp" />
     <ClInclude Include="ThirdParty\CoTaskLib\include\CoTaskLib\Typewriter.hpp" />
+    <ClInclude Include="ThirdParty\stb\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kson\kson.vcxproj">

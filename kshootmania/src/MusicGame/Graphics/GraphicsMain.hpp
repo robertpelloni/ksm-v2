@@ -43,7 +43,7 @@ namespace MusicGame::Graphics
 		const Mesh m_bgBillboardMesh;
 		std::array<Texture, 2> m_bgTextures;
 		const Mat4x4 m_bgTransform;
-		std::array<Array<RenderTexture>, 2> m_layerFrameTextures;
+		std::array<Array<Texture>, 2> m_layerFrameTextures;
 		const Mat4x4 m_layerTransform;
 
 		Highway3DGraphics m_highway3DGraphics;
@@ -63,12 +63,16 @@ namespace MusicGame::Graphics
 
 		const PlayOption m_playOption;
 
+		const double m_layerFrameOriginTimeSec;
+
+		const kson::Pulse m_layerFrameOriginPulse;
+
 		void drawBG(const ViewStatus& viewStatus) const;
 
 		void drawLayer(const kson::ChartData& chartData, const GameStatus& gameStatus, const ViewStatus& viewStatus) const;
 
 	public:
-		explicit GraphicsMain(const kson::ChartData& chartData, FilePathView parentPath, const PlayOption& playOption);
+		explicit GraphicsMain(const kson::ChartData& chartData, const kson::TimingCache& timingCache, FilePathView parentPath, const PlayOption& playOption);
 
 		void prepareMovie(double globalOffsetSec);
 

@@ -30,9 +30,7 @@ private:
 
 	PlayStatsPanel m_playStatsPanel;
 
-	FavoriteAddDialog m_favoriteAddDialog;
-
-	FavoriteRemoveDialog m_favoriteRemoveDialog;
+	Optional<Co::ScopedTaskRunner> m_dialogRunner;
 
 	SelectFilterModal m_filterModal;
 
@@ -51,11 +49,6 @@ private:
 	void updateAlphabetJump();
 
 	void updateStartKeyLongPress();
-
-	void updateDialogs();
-
-	[[nodiscard]]
-	bool anyDialogVisible() const;
 
 public:
 	SelectScene();

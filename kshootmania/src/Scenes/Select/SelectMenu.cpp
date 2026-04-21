@@ -16,6 +16,7 @@
 #include "Ini/ConfIni.hpp"
 #include "Input/PlatformKey.hpp"
 #include "Course/CourseInfo.hpp"
+#include "NocoExtensions/NocoUtils.hpp"
 
 namespace
 {
@@ -468,6 +469,7 @@ bool SelectMenu::openDirectoryWithNameSort(FilePathView directoryPath)
 		m_iconTextureCache.clear();
 		m_titleTextureCache.clear();
 		m_artistTextureCache.clear();
+		NocoUtils::UnloadExternalTextures();
 
 		// ディレクトリの見出し項目を追加
 		m_menu.push_back(std::make_unique<SelectMenuDirFolderItem>(IsCurrentFolderYN::Yes, FileSystem::FullPath(directoryPath)));
@@ -540,8 +542,7 @@ bool SelectMenu::openDirectoryWithNameSort(FilePathView directoryPath)
 	else
 	{
 		m_menu.clear();
-		m_jacketTextureCache.clear();
-		m_iconTextureCache.clear();
+		NocoUtils::UnloadExternalTextures();
 
 		m_folderState.folderType = SelectFolderState::kNone;
 		m_folderState.fullPath = U"";
@@ -663,7 +664,10 @@ void SelectMenu::playShakeDownTween()
 	m_selectSceneCanvas->setTweenActiveByTag(U"shakeDown", true);
 }
 
-SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, std::function<void(FilePathView, MusicGame::IsAutoPlayYN, const Optional<CoursePlayState>&)> fnMoveToPlayScene)
+SelectMenu::SelectMenu(
+	const std::shared_ptr<noco::Canvas>& selectSceneCanvas,
+	std::function<void(FilePathView, MusicGame::IsAutoPlayYN, const Optional<CoursePlayState>&)> fnMoveToPlayScene,
+	std::function<void(StringView)> fnShowErrorDialog)
 	: m_eventContext
 		{
 			.fnMoveToPlayScene = [fnMoveToPlayScene](FilePath path, MusicGame::IsAutoPlayYN isAutoPlay, const Optional<CoursePlayState>& courseState) { fnMoveToPlayScene(path, isAutoPlay, courseState); },
@@ -699,6 +703,7 @@ SelectMenu::SelectMenu(const std::shared_ptr<noco::Canvas>& selectSceneCanvas, s
 					playShakeUpTween();
 				}
 			},
+			.fnShowErrorDialog = std::move(fnShowErrorDialog),
 		}
 	, m_selectSceneCanvas(selectSceneCanvas)
 	, m_menu(
@@ -1423,8 +1428,7 @@ bool SelectMenu::openDirectoryWithLevelSort(FilePathView directoryPath)
 		}
 
 		m_menu.clear();
-		m_jacketTextureCache.clear();
-		m_iconTextureCache.clear();
+		NocoUtils::UnloadExternalTextures();
 
 		// ディレクトリの見出し項目を追加
 		m_menu.push_back(std::make_unique<SelectMenuDirFolderItem>(IsCurrentFolderYN::Yes, FileSystem::FullPath(directoryPath)));
@@ -1465,8 +1469,7 @@ bool SelectMenu::openDirectoryWithLevelSort(FilePathView directoryPath)
 	else
 	{
 		m_menu.clear();
-		m_jacketTextureCache.clear();
-		m_iconTextureCache.clear();
+		NocoUtils::UnloadExternalTextures();
 
 		m_folderState.folderType = SelectFolderState::kNone;
 		m_folderState.fullPath = U"";
@@ -1547,8 +1550,7 @@ bool SelectMenu::openAllFolderWithNameSort()
 	};
 
 	m_menu.clear();
-	m_jacketTextureCache.clear();
-	m_iconTextureCache.clear();
+	NocoUtils::UnloadExternalTextures();
 
 	// Allフォルダの見出し項目を追加
 	m_menu.push_back(std::make_unique<SelectMenuAllFolderItem>(IsCurrentFolderYN::Yes));
@@ -1634,8 +1636,7 @@ bool SelectMenu::openAllFolderWithNameSort()
 bool SelectMenu::openAllFolderWithLevelSort()
 {
 	m_menu.clear();
-	m_jacketTextureCache.clear();
-	m_iconTextureCache.clear();
+	NocoUtils::UnloadExternalTextures();
 
 	// Allフォルダの見出し項目を追加
 	m_menu.push_back(std::make_unique<SelectMenuAllFolderItem>(IsCurrentFolderYN::Yes));
@@ -1741,8 +1742,7 @@ bool SelectMenu::openFavoriteFolderWithNameSort(FilePathView specialPath)
 	}
 
 	m_menu.clear();
-	m_jacketTextureCache.clear();
-	m_iconTextureCache.clear();
+	NocoUtils::UnloadExternalTextures();
 
 	// お気に入りフォルダの見出し項目を追加
 	m_menu.push_back(std::make_unique<SelectMenuFavFolderItem>(IsCurrentFolderYN::Yes, specialPath));
@@ -1820,8 +1820,7 @@ bool SelectMenu::openFavoriteFolderWithLevelSort(FilePathView specialPath)
 	}
 
 	m_menu.clear();
-	m_jacketTextureCache.clear();
-	m_iconTextureCache.clear();
+	NocoUtils::UnloadExternalTextures();
 
 	// お気に入りフォルダの見出し項目を追加
 	m_menu.push_back(std::make_unique<SelectMenuFavFolderItem>(IsCurrentFolderYN::Yes, specialPath));
@@ -1939,8 +1938,7 @@ bool SelectMenu::openCoursesFolder(PlaySeYN playSe, RefreshSongPreviewYN refresh
 bool SelectMenu::openCoursesFolderWithNameSort()
 {
 	m_menu.clear();
-	m_jacketTextureCache.clear();
-	m_iconTextureCache.clear();
+	NocoUtils::UnloadExternalTextures();
 
 	// コースフォルダの見出し項目を追加
 	m_menu.push_back(std::make_unique<SelectMenuCoursesFolderItem>(IsCurrentFolderYN::Yes));
@@ -1978,8 +1976,7 @@ bool SelectMenu::openCoursesFolderWithNameSort()
 bool SelectMenu::openCoursesFolderWithLevelSort()
 {
 	m_menu.clear();
-	m_jacketTextureCache.clear();
-	m_iconTextureCache.clear();
+	NocoUtils::UnloadExternalTextures();
 
 	// コースフォルダの見出し項目を追加
 	m_menu.push_back(std::make_unique<SelectMenuCoursesFolderItem>(IsCurrentFolderYN::Yes));

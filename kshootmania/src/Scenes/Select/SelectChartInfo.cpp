@@ -60,13 +60,27 @@ String SelectChartInfo::artistImgFilePath() const
 	if (m_chartData.meta.artistImgFilename.empty())
 	{
 		return U"";
+FilePath SelectChartInfo::titleImgFilePath() const
+{
+	if (m_chartData.meta.titleImgFilename.empty())
+	{
+		return FilePath{};
+	}
+	return toFullPath(m_chartData.meta.titleImgFilename);
+}
+
+FilePath SelectChartInfo::artistImgFilePath() const
+{
+	if (m_chartData.meta.artistImgFilename.empty())
+	{
+		return FilePath{};
 	}
 	return toFullPath(m_chartData.meta.artistImgFilename);
 }
 
 FilePath SelectChartInfo::jacketFilePath() const
 {
-	return toFullPath(m_chartData.meta.jacketFilename);
+	return FsUtils::ResolveJacketPath(FileSystem::ParentPath(m_chartFilePath), Unicode::FromUTF8(m_chartData.meta.jacketFilename));
 }
 
 String SelectChartInfo::jacketAuthor() const
@@ -151,7 +165,7 @@ double SelectChartInfo::previewBGMVolume() const
 
 FilePath SelectChartInfo::iconFilePath() const
 {
-	return toFullPath(m_chartData.meta.iconFilename);
+	return FsUtils::ResolveIconPath(FileSystem::ParentPath(m_chartFilePath), Unicode::FromUTF8(m_chartData.meta.iconFilename));
 }
 
 String SelectChartInfo::information() const
