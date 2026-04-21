@@ -6,6 +6,38 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+## [2.0.0-alpha25] - 2026-02-20
+
+### Added
+- **Hardware Lighting Profiles**:
+    - Created `ControllerProfile.hpp` allowing JSON-based HID configurations (`hardware/controller_profiles.json`) instead of hardcoding light/byte structures. This supports custom controllers (SVSE, FAUCET, generic Arduinos).
+- **Select Scene Filter Modal**:
+    - Added `SelectFilterModal` toggled via `FX-L + FX-R` to configure Sort (Title/Level) and difficulty filters.
+    - Wired modal directly to `SelectMenu::reloadCurrentDirectory()` to actively update the song wheel on close.
+
+### Fixed
+- **Build**: Fixed critical compilation errors by explicitly qualifying `KeyConfig::` enums in `Main.cpp` and `DifficultyIdx::` in `ResultScene.cpp`.
+- **API Fixes**: Replaced hallucinated `task.get()` calls on `AsyncHTTPTask` with the proper `task.getResponse()` from the OpenSiv3D API, resolving headless unit test deviations.
+- **Git Hygiene**: Prevented a script from truncating the `.gitignore` file, maintaining local repo cleanliness.
+
+## [2.0.0-alpha24] - 2026-02-20
+
+### Added
+- **Project Documentation & Tooling**:
+    - Created `IDEAS.md` for deep analysis and feature brainstorming.
+    - Updated `VISION.md`, `ROADMAP.md`, `TODO.md`, and `DASHBOARD.md` to reflect the latest state of the project.
+    - Created universal instruction files for all AI agents (`CLAUDE.md`, `GEMINI.md`, `GPT.md`, `copilot-instructions.md`) that link back to `LLM_INSTRUCTIONS.md`.
+    - Added `DEPLOY.md` to guide project builds and infrastructure.
+- **Unlock Manager**:
+    - Replaced the mock unlock UI in `ResultScene` with a persistent `UnlockManager` class that reads/writes to `save/unlocks.json`.
+    - Implemented a baseline condition system (e.g., unlocking secret content upon achieving a Perfect clear).
+- **Result UI Analytics**:
+    - Added Fast/Slow timing breakdown beneath the Near count on the Result screen.
+    - Updated `result.noco` dynamically to support the new metrics without breaking layout integrity.
+- **Player Profile**:
+    - Added a new `ProfileScene` accessible from the Title screen by pressing `FX-L + FX-R`.
+    - Visualizes persistent player statistics (Total Plays, Clears, Clear Rate) fetched from the `UnlockManager`.
+
 ## [2.0.0-alpha23] - 2026-02-20
 
 ### Added

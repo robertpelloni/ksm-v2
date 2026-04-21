@@ -7,6 +7,7 @@
 #include "PlayStatsPanel.hpp"
 #include "FavoriteAddDialog.hpp"
 #include "FavoriteRemoveDialog.hpp"
+#include "SelectFilterModal.hpp"
 
 class SelectScene : public Co::UpdaterSceneBase
 {
@@ -32,6 +33,8 @@ private:
 	FavoriteAddDialog m_favoriteAddDialog;
 
 	FavoriteRemoveDialog m_favoriteRemoveDialog;
+
+	SelectFilterModal m_filterModal;
 
 	// Startボタン長押し検出
 	Stopwatch m_startKeyPressStopwatch;

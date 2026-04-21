@@ -426,6 +426,8 @@ void ResultScene::updateCanvasParams()
 		{ U"criticalCount", U"{:04d}"_fmt(m_playResult.comboStats.critical) },
 		{ U"nearCount", U"{:04d}"_fmt(m_playResult.comboStats.totalNear()) },
 		{ U"errorCount", U"{:04d}"_fmt(errorCountWithUnjudged) },
+		{ U"fastCount", U"FAST: {}"_fmt(m_playResult.comboStats.nearFast) },
+		{ U"slowCount", U"SLOW: {}"_fmt(m_playResult.comboStats.nearSlow) },
 		{ U"gaugePercentageNumber", U"{}"_fmt(static_cast<int32>(m_playResult.gaugePercentage)) },
 		{ U"gaugeTextureIndex", static_cast<double>(gaugeTextureIndex) },
 		{ U"bottomRightText", U"" },
@@ -568,7 +570,7 @@ Co::Task<bool> ResultScene::waitForNewRecordPanelClose()
 		co_await Co::NextFrame();
 
 		// FX-L+R同時押しで表示時間を3秒延長
-		const bool fxLRPressed = KeyConfig::Pressed(kButtonFX_L) && KeyConfig::Pressed(kButtonFX_R);
+		const bool fxLRPressed = KeyConfig::Pressed(KeyConfig::kButtonFX_L) && KeyConfig::Pressed(KeyConfig::kButtonFX_R);
 		if (fxLRPressed && !fxLRPressedPrev)
 		{
 			displayStopwatch.restart();
@@ -592,7 +594,7 @@ Co::Task<bool> ResultScene::waitForNewRecordPanelClose()
 	{
 		co_await Co::NextFrame();
 
-		const bool fxLRPressed = KeyConfig::Pressed(kButtonFX_L) && KeyConfig::Pressed(kButtonFX_R);
+		const bool fxLRPressed = KeyConfig::Pressed(KeyConfig::kButtonFX_L) && KeyConfig::Pressed(KeyConfig::kButtonFX_R);
 		if (fxLRPressed && !fxLRPressedPrev)
 		{
 			co_return false;

@@ -936,7 +936,7 @@ void SelectMenu::fadeOutSongPreviewForExit(Duration duration)
 	m_songPreview.fadeOutForExit(duration);
 }
 
-void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview)
+void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview, int32 sortType, int32 levelFilter)
 {
 	// 現在選択中の譜面ファイルパスと難易度を保持
 	FilePath currentChartFilePath;
@@ -986,74 +986,37 @@ void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview)
 			}
 		}
 	}
-
-	const FilePath currentDirectory = m_folderState.fullPath;
-	const SelectFolderState::FolderType currentFolderType = m_folderState.folderType;
-
-	if (currentFolderType == SelectFolderState::kAll)
+	else if (m_folderState.folderType == SelectFolderState::kCourses)
 	{
-		openAllFolder(PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
+		openCoursesFolder(PlaySeYN::No, refreshSongPreview, SaveToConfigIniYN::No);
 	}
-	else if (currentFolderType == SelectFolderState::kFavorite)
+	else if (m_folderState.folderType == SelectFolderState::kFavorite)
 	{
-		openFavoriteFolder(currentDirectory, PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
-	}
-	else if (currentFolderType == SelectFolderState::kCourses)
-	{
-		openCoursesFolder(PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
+		openFavoriteFolder(m_folderState.fullPath, PlaySeYN::No, refreshSongPreview, SaveToConfigIniYN::No);
 	}
 	else
 	{
-		openDirectory(currentDirectory, PlaySeYN::No, RefreshSongPreviewYN::No, SaveToConfigIniYN::No);
+		openDirectory(m_folderState.fullPath, PlaySeYN::No, refreshSongPreview, SaveToConfigIniYN::No);
 	}
 
-	// 譜面ファイルパスから項目を探してフォーカスを復元
-	if (!currentChartFilePath.isEmpty())
+	// Apply Level Filter
+	if (levelFilter > 0 && !m_menu.empty())
 	{
-		bool found = false;
-		for (std::size_t i = 0U; i < m_menu.size(); ++i)
+		Array<std::unique_ptr<ISelectMenuItem>> filteredItems;
+		for (auto& item : m_menu)
 		{
-			const auto& pItem = m_menu[i];
-			if (pItem == nullptr)
+			if (item->hasLevel(levelFilter))
 			{
-				continue;
-			}
-
-			// 全難易度から一致する譜面を探す
-			for (int32 difficultyIdx = 0; difficultyIdx < kNumDifficulties; ++difficultyIdx)
-			{
-				const auto pChartInfo = pItem->chartInfoPtr(difficultyIdx);
-				if (pChartInfo != nullptr && pChartInfo->chartFilePath() == currentChartFilePath)
-				{
-					m_menu.setCursor(static_cast<int32>(i));
-					m_difficultyMenu.setCursor(difficultyIdx);
-					found = true;
-					break;
-				}
-			}
-
-			if (found)
-			{
-				break;
+				filteredItems.push_back(std::move(item));
 			}
 		}
 
-		// 譜面ファイルパスで復元できなかった場合はカーソルインデックスで復元
-		if (!found && currentCursorIndex < static_cast<int32>(m_menu.size()))
-		{
-			m_menu.setCursor(currentCursorIndex);
-		}
-	}
-	else if (currentCursorIndex < static_cast<int32>(m_menu.size()))
-	{
-		// 譜面ファイルパスがない場合もカーソルインデックスで復元
-		m_menu.setCursor(currentCursorIndex);
+		m_menu.setArray(std::move(filteredItems));
 	}
 
-	refreshContentCanvasParams();
-	if (refreshSongPreview)
+	if (!cursorItemFullPath.empty())
 	{
-		this->refreshSongPreview();
+		setCursorToItemByFullPath(cursorItemFullPath);
 	}
 }
 

@@ -57,6 +57,8 @@ public:
 
 	void setArray(const Array<T>& array);
 
+	void setArray(Array<T>&& array);
+
 	[[nodiscard]]
 	auto& operator[](std::size_t idx);
 
@@ -250,6 +252,14 @@ template <typename T>
 void ArrayWithLinearMenu<T>::setArray(const Array<T>& array)
 {
 	m_array = array;
+	updateLinearMenuCursorMax();
+}
+
+template <typename T>
+void ArrayWithLinearMenu<T>::setArray(Array<T>&& array)
+{
+	m_array = std::move(array);
+	updateLinearMenuCursorMax();
 }
 
 template <typename T>

@@ -2881,6 +2881,7 @@
   ],
   "serializedVersion": 5,
   "version": "0.3.0-beta1"
+<<<<<<< HEAD
 ﻿{
   "autoFitMode": "FitHeightMatchWidth",
   "children": [
@@ -5981,4 +5982,6 @@
   ],
   "serializedVersion": 5,
   "version": "0.3.1"
+=======
+>>>>>>> origin/jules/feature/configurable-songs-dir-2342222447595078619
 }
