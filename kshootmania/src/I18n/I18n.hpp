@@ -85,6 +85,7 @@ namespace I18n
 		PlayStatsClear,
 		PlayStatsFullCombo,
 		PlayStatsPerfect,
+		SearchCloseResult,
 	};
 
 	/// @brief プレイ画面テキストのキー名

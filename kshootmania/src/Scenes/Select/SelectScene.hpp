@@ -2,6 +2,7 @@
 #include <CoTaskLib.hpp>
 #include "SelectMenu.hpp"
 #include "SelectFolderState.hpp"
+#include "SelectSceneSearchParams.hpp"
 #include "Input/FXButtonUpDetection.hpp"
 #include "BTOptionPanel.hpp"
 #include "PlayStatsPanel.hpp"
@@ -19,6 +20,14 @@ private:
 	bool m_skipFadeout = false;
 
 	std::shared_ptr<noco::Canvas> m_canvas;
+
+	std::shared_ptr<noco::Node> m_searchResultNode;
+
+	SelectSceneSearchPhase m_searchPhase = SelectSceneSearchPhase::kNone;
+
+	String m_searchResultQuery;
+
+	bool m_searchInputReentryFromResult = false;
 
 	SelectMenu m_menu;
 
@@ -50,8 +59,14 @@ private:
 
 	void updateStartKeyLongPress();
 
+	void enterSearchInputPhase();
+
+	void exitSearchMode();
+
+	void onSearchInputDialogClosed(const Optional<String>& result);
+
 public:
-	SelectScene();
+	explicit SelectScene(const Optional<SelectSceneSearchParams>& initialSearchParams = none);
 
 	virtual void update() override;
 

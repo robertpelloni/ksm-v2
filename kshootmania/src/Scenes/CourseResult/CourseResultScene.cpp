@@ -40,9 +40,10 @@ namespace
 	}
 }
 
-CourseResultScene::CourseResultScene(const CoursePlayState& courseState)
+CourseResultScene::CourseResultScene(const CoursePlayState& courseState, const Optional<SelectSceneSearchParams>& selectSearchParams)
 	: m_canvas(LoadCourseResultSceneCanvas())
 	, m_courseState(courseState)
+	, m_selectSearchParams(selectSearchParams)
 	, m_newRecordPanel(m_canvas)
 	, m_chartList(m_canvas, m_courseState)
 	, m_snsShare(BuildCourseTweetText(m_courseState))
@@ -169,7 +170,7 @@ Co::Task<void> CourseResultScene::start()
 		}
 	}
 
-	requestNextScene<SelectScene>();
+	requestNextScene<SelectScene>(m_selectSearchParams);
 }
 
 Co::Task<bool> CourseResultScene::waitForNewRecordPanelClose()
@@ -242,5 +243,5 @@ Co::Task<void> CourseResultScene::fadeIn()
 Co::Task<void> CourseResultScene::postFadeOut()
 {
 	// SelectSceneはコンストラクタの処理に時間がかかるので、ローディングはここで出しておく
-	return ShowLoadingOneFrame::Play(HasBgYN::Yes);
+	return ShowLoadingOneFrame::Play(LoadingBgMode::kMainBg);
 }

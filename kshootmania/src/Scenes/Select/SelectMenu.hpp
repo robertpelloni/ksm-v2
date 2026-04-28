@@ -56,6 +56,13 @@ private:
 
 	SelectFolderState m_folderState;
 
+	bool m_searchActive = false;
+
+	String m_searchQuery;
+
+	/// @brief 検索フィルタ有効時のカーソル保持先の譜面ファイルパス
+	Optional<FilePath> m_searchPreservedChartPath;
+
 	ArrayWithLinearMenu<std::unique_ptr<ISelectMenuItem>> m_menu;
 
 	SelectDifficultyMenu m_difficultyMenu;
@@ -120,11 +127,14 @@ private:
 
 	void addOtherFolderItemsSimple();
 
+	void applySearchModeFilter();
+
 public:
 	explicit SelectMenu(
 		const std::shared_ptr<noco::Canvas>& selectSceneCanvas,
 		std::function<void(FilePathView, MusicGame::IsAutoPlayYN, const Optional<CoursePlayState>&)> fnMoveToPlayScene,
-		std::function<void(StringView)> fnShowErrorDialog);
+		std::function<void(StringView)> fnShowErrorDialog,
+		std::function<void()> fnExitSearchMode);
 
 	~SelectMenu(); // ヘッダではISelectMenuItemが不完全型なのでソースファイル側で定義
 
@@ -164,6 +174,8 @@ public:
 
 	void jumpToAlphabetItem(char32 letter);
 
+	void setCursorByChartFilePath(FilePathView chartFilePath);
+
 	void moveToNextSubDirSection();
 
 	void moveToPrevSubDirSection();
@@ -191,4 +203,25 @@ public:
 
 	[[nodiscard]]
 	const SelectFolderState& folderState() const;
+
+	/// @brief 検索モードに入る
+	/// @param preservedChartPath カーソルを保持する譜面ファイルパス
+	void enterSearchMode(const Optional<FilePath>& preservedChartPath = none);
+
+	/// @brief 検索モードを抜ける
+	void exitSearchMode();
+
+	/// @brief 維持対象譜面パスを更新
+	/// @param chartPath カーソルを保持する譜面ファイルパス
+	void setSearchPreservedChartPath(const Optional<FilePath>& chartPath);
+
+	/// @brief 検索クエリを設定
+	/// @param query 検索クエリ
+	void setSearchQuery(StringView query);
+
+	[[nodiscard]]
+	bool isSearchActive() const;
+
+	[[nodiscard]]
+	const String& searchQuery() const;
 };
