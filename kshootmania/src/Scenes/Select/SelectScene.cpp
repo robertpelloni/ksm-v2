@@ -446,10 +446,11 @@ SelectScene::SelectScene(const Optional<SelectSceneSearchParams>& initialSearchP
 
 void SelectScene::update()
 {
-	// ダイアログ表示中はCanvas更新のみ実行
+	// ダイアログ表示中は必要な更新のみ実行
 	if (Co::HasActiveModal())
 	{
-		m_canvas->update();
+		m_menu.update(SongPreviewOnlyYN::Yes);
+		m_canvas->update(noco::HitTestEnabledYN::No);
 		return;
 	}
 
@@ -498,8 +499,8 @@ void SelectScene::update()
 	// いずれかのパネルが表示中かチェック
 	const bool anyPanelVisible = m_btOptionPanel.isVisible() || m_playStatsPanel.isVisible();
 
-	// 検索結果表示中はBackキーで検索モードを終了
-	if (m_searchPhase == SelectSceneSearchPhase::kResult && KeyConfig::Down(kButtonBack))
+	// 検索結果表示中はBackキーまたはBackspaceキーで検索モードを終了
+	if (m_searchPhase == SelectSceneSearchPhase::kResult && (KeyConfig::Down(kButtonBack) || KeyConfig::Down(kButtonBackspace)))
 	{
 		exitSearchMode();
 		m_canvas->update();
