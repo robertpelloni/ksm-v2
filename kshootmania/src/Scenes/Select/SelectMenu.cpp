@@ -842,7 +842,7 @@ void SelectMenu::update(SongPreviewOnlyYN songPreviewOnly)
 		}
 
 		// 現在のディレクトリを再読み込み
-		reloadCurrentDirectory(RefreshSongPreviewYN::Yes);
+		reloadCurrentDirectory(RefreshSongPreviewYN::Yes, ReloadFromDiskYN::Yes);
 	}
 	fxLRPressed = fxLRPressedNow;
 
@@ -2309,7 +2309,7 @@ void SelectMenu::applySearchModeFilter()
 			{
 				continue;
 			}
-			if (pInfo->title().lowercased().includes(lowerQuery) || pInfo->artist().lowercased().includes(lowerQuery))
+			if (pInfo->joinedTextForSearch().includes(lowerQuery))
 			{
 				matched = true;
 				break;
@@ -2354,7 +2354,7 @@ void SelectMenu::exitSearchMode()
 	m_searchPreservedChartPath.reset();
 	if (wasFiltered)
 	{
-		reloadCurrentDirectory(RefreshSongPreviewYN::Yes);
+		reloadCurrentDirectory(RefreshSongPreviewYN::Yes, ReloadFromDiskYN::Yes);
 	}
 }
 
@@ -2374,8 +2374,13 @@ void SelectMenu::setSearchQuery(StringView query)
 	{
 		return;
 	}
+
+	// 前回の検索文字列を含むなら、既存の検索結果に対してさらに絞り込むだけで良い
+	const bool containsPrevQuery = newQuery.includes(m_searchQuery);
 	m_searchQuery = newQuery;
-	reloadCurrentDirectory(RefreshSongPreviewYN::Yes);
+	reloadCurrentDirectory(
+		RefreshSongPreviewYN::Yes,
+		containsPrevQuery ? ReloadFromDiskYN::No : ReloadFromDiskYN::Yes);
 }
 
 bool SelectMenu::isSearchActive() const
