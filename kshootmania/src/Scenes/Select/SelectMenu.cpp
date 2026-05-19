@@ -945,7 +945,7 @@ void SelectMenu::fadeOutSongPreviewForExit(Duration duration)
 	m_songPreview.fadeOutForExit(duration);
 }
 
-void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview, int32 sortType, int32 levelFilter)
+void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview, ReloadFromDiskYN reloadFromDisk, int32 sortType, int32 levelFilter)
 {
 	FilePath currentChartFilePath;
 	const int32 difficultyCursor = m_difficultyMenu.cursor();
@@ -1000,7 +1000,18 @@ void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview,
 			}
 		}
 	}
-	else if (m_folderState.folderType == SelectFolderState::kCourses)
+
+	auto prevSortMode = m_folderState.sortMode;
+	if (sortType == 1)
+	{
+		m_folderState.sortMode = SelectFolderState::SortMode::kLevel;
+	}
+	else
+	{
+		m_folderState.sortMode = SelectFolderState::SortMode::kName;
+	}
+
+	if (m_folderState.folderType == SelectFolderState::kCourses)
 	{
 		openCoursesFolder(PlaySeYN::No, refreshSongPreview, SaveToConfigIniYN::No);
 	}
@@ -1013,6 +1024,8 @@ void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview,
 		openDirectory(m_folderState.fullPath, PlaySeYN::No, refreshSongPreview, SaveToConfigIniYN::No);
 	}
 
+	m_folderState.sortMode = prevSortMode;
+
 	// Apply Level Filter
 	if (levelFilter > 0 && !m_menu.empty())
 	{
@@ -1024,14 +1037,13 @@ void SelectMenu::reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview,
 				filteredItems.push_back(std::move(item));
 			}
 		}
-	}
 
 		m_menu.setArray(std::move(filteredItems));
 	}
 
-	if (!cursorItemFullPath.empty())
+	if (!currentChartFilePath.empty())
 	{
-		setCursorToItemByFullPath(cursorItemFullPath);
+		setCursorToItemByFullPath(currentChartFilePath);
 	}
 }
 

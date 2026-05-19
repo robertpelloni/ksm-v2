@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Select Scene**: Implemented logic in `SelectMenu::reloadCurrentDirectory` to properly apply `SelectFilterModal` sort mode and level filtering.
 
 ## [2.0.0-alpha25] - 2026-02-20
 
