@@ -11,7 +11,7 @@ K-Shoot MANIA v2 is an OpenSiv3D/C++20 based rhythm game. It replaces the old v1
 
 ### 2. Underrepresented UI Features
 *   **Result Screen Score Details**: The UI shows Critical/Near/Error, but misses deeper analytics like Fast/Slow split (which exists in `ComboStats::nearFast` / `nearSlow`). **Idea:** Update `result.noco` to include Fast/Slow breakdown graphs.
-*   **Song Select Sorting & Filtering**: The backend supports folders, but advanced filtering (e.g., Level 15+, specific effector) isn't prominently accessible via controller inputs. **Idea:** Add a dedicated "Filter" modal (perhaps toggled by FX-L + FX-R in select scene).
+*   ~~**Song Select Sorting & Filtering**: The backend supports folders, but advanced filtering (e.g., Level 15+, specific effector) isn't prominently accessible via controller inputs. **Idea:** Add a dedicated "Filter" modal (perhaps toggled by FX-L + FX-R in select scene).~~ -> **DONE**. A dedicated `SelectFilterModal` has been fully wired up via `FX-L + FX-R` to physically update the internal search list filtering logic in `SelectMenu::reloadCurrentDirectory`.
 *   **Profile / Player Data**: The game saves high scores locally via `KscIO`, but there is no overarching "Player Profile" view showing total play count, global grade, or Dan/Course titles. **Idea:** Create a `ProfileScene` accessible from the Title.
 
 ### 3. Refactoring & Technical Debt
