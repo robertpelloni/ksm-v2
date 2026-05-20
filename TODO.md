@@ -2,7 +2,7 @@
 
 ## High Priority
 - [x] **Hardware I/O (Controller Lights)**
-    - [x] Implement LED output for supported controllers (HID/Serial) - *Added HidLightingDriver*.
+    - [x] Implement LED output for supported controllers (HID/Serial) - *Added HidLightingDriver, JSON Controller Profiles*.
     - [x] Add configuration for LED behavior (blinking, intensity) - *Added to Option Menu*.
 - [ ] **Internet Ranking**
     - [x] Implement real score submission (Client side done).

@@ -6,7 +6,7 @@ K-Shoot MANIA v2 is an OpenSiv3D/C++20 based rhythm game. It replaces the old v1
 
 ### 1. Unfinished / Unhooked Backend Features
 *   **Audio Backend**: WASAPI Exclusive mode is toggled in the UI (`ConfigIni::Key::kAudioWasapiExclusive`), but the actual implementation in `ksmaudio::Init` is just an empty `if (exclusive)` block because the `basswasapi` library is missing. **Idea:** Integrate `basswasapi.dll` into the `ThirdParty_Windows` folder and implement the callback.
-*   **Hardware I/O**: `HidLightingDriver` sends hardcoded standard reports (YuanCon format) based on the `LightingState`. **Idea:** Different controllers (FAUCET, SVSE5, Virar) use different HID Report structures. We need a `ControllerProfile` JSON to define exactly which bytes/bits map to which LED.
+*   ~~**Hardware I/O**: `HidLightingDriver` sends hardcoded standard reports (YuanCon format) based on the `LightingState`. **Idea:** Different controllers (FAUCET, SVSE5, Virar) use different HID Report structures. We need a `ControllerProfile` JSON to define exactly which bytes/bits map to which LED.~~ -> **DONE**. Added `ControllerProfile` and parsing logic in `LightingManager` to iterate over generic JSON definitions.
 *   **Network (Input Gate / IR)**: The client side uses OpenSiv3D `SimpleHTTP`, but it points to dummy endpoints or uses mock data if `ConfigIni` URLs are blank. **Idea:** Build a simple lightweight Node.js/Express or Python/FastAPI companion backend repo to serve `ranking.json`, `list.json`, and handle ZIP distribution.
 
 ### 2. Underrepresented UI Features

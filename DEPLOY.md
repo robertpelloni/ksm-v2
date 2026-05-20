@@ -98,3 +98,17 @@ To package the application for distribution, ensure that the `App/` directory co
 - On macOS, CMake will automatically create a `.app` bundle.
 - On Linux, ensure `libbass.so` and `libbass_fx.so` are distributed alongside the executable and `LD_LIBRARY_PATH` is configured via a launch script.
 - Update `VERSION` and `CHANGELOG.md` before finalizing a package.
+
+## 6. Mock Input Gate Server
+
+To test the Input Gate and Internet Ranking features locally without a real backend, you can run the provided Python mock server:
+
+```bash
+python3 scripts/mock_input_gate_server.py
+```
+
+Then, update your `App/config.ini` to point to the local server:
+```ini
+input_gate_url = http://localhost:8080
+internet_ranking_url = http://localhost:8080
+```

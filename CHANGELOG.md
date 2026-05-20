@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+
+## [2.0.0-alpha27] - 2026-05-20
+
+### Added
+- **Hardware Lighting Profiles**:
+    - Created `ControllerProfile.hpp` allowing JSON-based HID configurations (`hardware/controller_profiles.json`) instead of hardcoding light/byte structures. This supports custom controllers (SVSE, FAUCET, generic Arduinos).
+    - `LightingManager::init()` now iterates through provided profiles and attempts to open matching VID/PID.
 - **Select Scene**: Implemented logic in `SelectMenu::reloadCurrentDirectory` to properly apply `SelectFilterModal` sort mode and level filtering.
 
 ## [2.0.0-alpha25] - 2026-02-20
