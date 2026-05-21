@@ -13,6 +13,3 @@
 ## Next Recommendations & Priorities
 1.  **Server Backend**: As the client is now heavily requesting `list.json` and sending Internet Ranking JSON posts, bootstrapping a fast/small Node.js/Python server to receive scores and serve downloads is highly recommended.
 2.  **Audio Backend**: Investigate `basswasapi.dll` integration to support Exclusive Mode backend if required by players for lowest latency.
-
-### CMake Editor Investigation (Blocker)
-I investigated `kshootmania/CMakeLists.txt` and confirmed that the `kshooteditor` target is missing. To achieve editor parity, `CMakeLists.txt` requires a major architectural rewrite to isolate `kshootmania` game logic into a shared static library that `EditorMain.cpp` can link against without dragging in `Main.cpp`. I am halting further iteration because this constitutes a major architectural decision and the next immediate steps are ambiguous without user input on CMake restructuring.

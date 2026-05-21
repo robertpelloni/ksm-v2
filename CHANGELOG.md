@@ -163,3 +163,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - None yet.
+
+## [2.0.0-alpha28] - Fast/Slow Result Screen Details
+### Added
+- Added `fastCount` and `slowCount` parameter bindings to `ResultScene.cpp` to accurately pass inner FAST/SLOW deviation statistics from `ComboStats` directly into NocoUI.
+- Modified `result.noco` layout schema to append explicit visible FAST and SLOW counters right under the Near count text field, increasing user visual feedback regarding chart timing offsets.
