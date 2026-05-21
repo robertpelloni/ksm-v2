@@ -1,4 +1,4 @@
-#include "InputGateScene.hpp"
+﻿#include "InputGateScene.hpp"
 #include "Scenes/Title/TitleScene.hpp"
 #include "Input/KeyConfig.hpp"
 #include "Common/FsUtils.hpp"
@@ -169,6 +169,17 @@ Co::Task<void> InputGateScene::start()
 						m_downloadErrorMsg.clear();
 
 						// Start download
+
+						// Security: Prevent path traversal in song.id
+						if (song.id.includes(U"..") || song.id.includes(U"/") || song.id.includes(U"\"))
+						{
+							m_downloadErrorMsg = U"Security Error: Malformed Song ID.
+Download aborted.";
+							Logger << U"[ksm error] Malformed Song ID detected: " << song.id;
+							m_isDownloading = false;
+							continue;
+						}
+
 						const FilePath zipPath = U"songs/download/{}.zip"_fmt(song.id);
 
 						// Ensure directory exists

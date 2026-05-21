@@ -27,3 +27,6 @@
 
 ## High Priority
 - [x] Result Screen: Surface `nearFast` and `nearSlow` details inside NocoUI.
+
+## Security
+- [x] Implemented directory traversal checks for `song.id` in `InputGateScene` zip extraction.
