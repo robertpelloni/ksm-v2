@@ -8,14 +8,31 @@ SelectMenuLevelSongItem::SelectMenuLevelSongItem(
 	: m_songDirectoryPath(songDirectoryPath)
 	, m_difficultyIdx(difficultyIdx)
 {
-	auto chartInfo = std::make_unique<SelectChartInfo>(chartFilePath);
+	auto chartInfo = std::make_shared<SelectChartInfo>(chartFilePath);
 	if (!chartInfo->hasError())
 	{
-		m_chartInfo = std::move(chartInfo);
+		m_chartInfo = chartInfo;
 	}
 	else
 	{
 		Logger << U"[ksm warning] SelectMenuLevelSongItem: Chart Loading Error (error:'{}', chartFilePath:'{}')"_fmt(chartInfo->errorString(), chartFilePath);
+	}
+}
+
+SelectMenuLevelSongItem::SelectMenuLevelSongItem(
+	std::shared_ptr<const SelectChartInfo> chartInfo,
+	FilePathView songDirectoryPath,
+	int32 difficultyIdx)
+	: m_songDirectoryPath(songDirectoryPath)
+	, m_difficultyIdx(difficultyIdx)
+{
+	if (chartInfo != nullptr && !chartInfo->hasError())
+	{
+		m_chartInfo = std::move(chartInfo);
+	}
+	else if (chartInfo != nullptr)
+	{
+		Logger << U"[ksm warning] SelectMenuLevelSongItem: Chart Loading Error (error:'{}', chartFilePath:'{}')"_fmt(chartInfo->errorString(), chartInfo->chartFilePath());
 	}
 }
 
@@ -87,13 +104,13 @@ const SelectChartInfo* SelectMenuLevelSongItem::chartInfoPtr(int difficultyIdx, 
 	return nullptr;
 }
 
-Optional<HighScoreInfo> SelectMenuLevelSongItem::highScoreInfo([[maybe_unused]] int32 difficultyIdx) const
+Optional<HighScoreInfo> SelectMenuLevelSongItem::highScoreInfo(const SelectMenuEventContext& context, [[maybe_unused]] int32 difficultyIdx) const
 {
 	if (m_chartInfo == nullptr)
 	{
 		return none;
 	}
-	return m_chartInfo->highScoreInfo();
+	return context.fnGetHighScore(m_chartInfo->chartFilePath());
 }
 
 bool SelectMenuLevelSongItem::difficultyMenuExists() const
@@ -143,7 +160,7 @@ bool SelectMenuLevelSongItem::isFavoriteRegisterableItemType() const
 	return true;
 }
 
-void SelectMenuLevelSongItem::setCanvasParamsCenter([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
+void SelectMenuLevelSongItem::setCanvasParamsCenter(const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx) const
 {
 	canvas.setSubCanvasParamValuesByTag(U"center", {
 		{ U"isSong", true },
@@ -169,7 +186,7 @@ void SelectMenuLevelSongItem::setCanvasParamsCenter([[maybe_unused]] const Selec
 		throw Error{ U"SelectMenuLevelSongItem::setCanvasParamsCenter: m_chartInfo is null (songDirectoryPath={})"_fmt(m_songDirectoryPath) };
 	}
 
-	const HighScoreInfo& highScore = m_chartInfo->highScoreInfo();
+	const HighScoreInfo highScore = context.fnGetHighScore(m_chartInfo->chartFilePath());
 	const GaugeType gaugeType = RuntimeConfig::GetGaugeType();
 
 	const FilePath jacketPath = m_chartInfo->jacketFilePath();
@@ -194,7 +211,7 @@ void SelectMenuLevelSongItem::setCanvasParamsCenter([[maybe_unused]] const Selec
 	});
 }
 
-void SelectMenuLevelSongItem::setCanvasParamsTopBottom([[maybe_unused]] const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView tag) const
+void SelectMenuLevelSongItem::setCanvasParamsTopBottom(const SelectMenuEventContext& context, noco::Canvas& canvas, [[maybe_unused]] int32 difficultyIdx, StringView tag) const
 {
 	if (m_chartInfo == nullptr)
 	{
@@ -203,7 +220,7 @@ void SelectMenuLevelSongItem::setCanvasParamsTopBottom([[maybe_unused]] const Se
 	}
 
 	// 常に自身の難易度のデータを表示
-	const HighScoreInfo& highScore = m_chartInfo->highScoreInfo();
+	const HighScoreInfo highScore = context.fnGetHighScore(m_chartInfo->chartFilePath());
 	const GaugeType gaugeType = RuntimeConfig::GetGaugeType();
 
 	const FilePath jacketPath = m_chartInfo->jacketFilePath();

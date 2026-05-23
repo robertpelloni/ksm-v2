@@ -1630,7 +1630,8 @@
                 225.0,
                 0.0
               ],
-              "type": "Tween"
+              "type": "Tween",
+              "manualTime_paramRef": "positionMarkerProgress"
             }
           ],
           "decelerationRate": 0.2,
@@ -2450,6 +2451,7 @@
               "clippingEnabled": false,
               "components": [
                 {
+                  "autoFitModeOverride": "ResizeToContent",
                   "canvasPath": "ui/font/num2.noco",
                   "propagateEvents": true,
                   "serializedParamBindingModesJSON": "{\"text\":\"Normal\"}",
@@ -2483,7 +2485,7 @@
                 ],
                 "sizeDelta": [
                   10.0,
-                  10.0
+                  9.0
                 ],
                 "sizeRatio": [
                   0.0,
@@ -3164,7 +3166,7 @@
     },
     "timingAdjustVisible": {
       "type": "Bool",
-      "value": false
+      "value": true
     },
     "title": {
       "type": "String",
@@ -3179,6 +3181,6 @@
     640.0,
     480.0
   ],
-  "serializedVersion": 9,
-  "version": "0.4.1"
+  "serializedVersion": 10,
+  "version": "0.4.3"
 }

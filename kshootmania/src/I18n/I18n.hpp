@@ -35,12 +35,19 @@ namespace I18n
 	/// @brief カテゴリ名
 	enum class Category
 	{
+		General,
 		Select,
 		Play,
 		Result,
 		Option,
 		IR,
 		InputGate,
+	};
+
+	/// @brief 共通/起動時テキストのキー名
+	enum class General
+	{
+		ErrorBassInitFailed,
 	};
 
 	/// @brief 選曲画面テキストのキー名
@@ -218,6 +225,8 @@ namespace I18n
 		BGDisplayModeShowNoLayer,
 		BGDisplayModeShowLayer,
 		MasterVolumePercent,
+		AudioBackendDefault,
+		AudioBackendDirectSound,
 		VsyncOffWithFps,
 		VsyncOn,
 		JudgmentOn,
@@ -276,6 +285,7 @@ namespace I18n
 		ItemAlwaysShowOtherFolders,
 		ItemHideAllFolder,
 		ItemMasterVolume,
+		ItemAudioBackend,
 		ItemVsync,
 		ItemDefaultBTJudgmentMode,
 		ItemDefaultFXJudgmentMode,
@@ -316,7 +326,11 @@ namespace I18n
 	[[nodiscard]]
 	StringView Get(T key)
 	{
-		if constexpr (std::is_same_v<T, Select>)
+		if constexpr (std::is_same_v<T, General>)
+		{
+			return GetByCategoryAndKey(EnumUtils::EnumToString(Category::General), EnumUtils::EnumToString(key));
+		}
+		else if constexpr (std::is_same_v<T, Select>)
 		{
 			return GetByCategoryAndKey(EnumUtils::EnumToString(Category::Select), EnumUtils::EnumToString(key));
 		}

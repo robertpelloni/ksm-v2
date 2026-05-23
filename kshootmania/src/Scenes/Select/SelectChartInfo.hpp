@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "kson/ChartData.hpp"
-#include "HighScore/HighScoreInfo.hpp"
 #include "Ini/FolderConfIni.hpp"
 
 class SelectChartInfo
@@ -12,9 +11,6 @@ private:
 
 	FolderConfIni m_folderConfIni;
 
-	// 全条件のハイスコア情報(キー:gaugeType部分を除いたKscKey文字列)
-	HashTable<String, HighScoreInfo> m_highScoreInfoMap;
-
 	// 検索用文字列を連結したもの
 	String m_joinedTextForSearch;
 
@@ -22,6 +18,8 @@ private:
 
 public:
 	explicit SelectChartInfo(FilePathView chartFilePath);
+
+	SelectChartInfo(FilePathView chartFilePath, const kson::MetaChartData& chartData, const FolderConfIni& folderConfIni);
 
 	[[nodiscard]]
 	String title() const;
@@ -85,10 +83,6 @@ public:
 
 	[[nodiscard]]
 	String information() const;
-
-	// 現在のプレイ設定に対応するハイスコア情報を取得
-	[[nodiscard]]
-	HighScoreInfo highScoreInfo() const;
 
 	[[nodiscard]]
 	bool hasError() const;

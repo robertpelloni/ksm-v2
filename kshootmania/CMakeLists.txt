@@ -130,6 +130,7 @@ target_link_libraries(kshootmania PRIVATE
     ksmaudio
     ksmaxis
     NocoUI
+    SQLiteCpp
 )
 
 if(HIDAPI_FOUND)
@@ -217,4 +218,3 @@ elseif(UNIX)
         )
     endif()
 endif()
-

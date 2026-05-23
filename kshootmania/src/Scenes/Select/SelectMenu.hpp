@@ -1,12 +1,11 @@
 ﻿#pragma once
 #include "SelectFolderState.hpp"
+#include "SelectHighScoreCache.hpp"
 #include "UI/ArrayWithLinearMenu.hpp"
 #include "SelectDifficultyMenu.hpp"
 #include "SelectSongPreview.hpp"
 #include "ksmaudio/ksmaudio.hpp"
 #include "Course/CoursePlayState.hpp"
-
-struct HighScoreInfo;
 
 using PlaySeYN = YesNo<struct PlaySeYN_tag>;
 using RefreshSongPreviewYN = YesNo<struct RefreshSongPreviewYN_tag>;
@@ -42,6 +41,12 @@ struct SelectMenuEventContext
 	std::function<void(int32)> fnChangeDifficulty;
 	std::function<void(int32, int32)> fnJumpToItemWithDifficulty;
 	std::function<void(StringView)> fnShowErrorDialog;
+
+	// 譜面のハイスコア情報を取得
+	std::function<HighScoreInfo(FilePathView)> fnGetHighScore;
+
+	// コースのハイスコア情報を取得
+	std::function<HighScoreInfo(FilePathView)> fnGetCourseHighScore;
 };
 
 class SelectMenu
@@ -61,7 +66,7 @@ private:
 
 	String m_searchQuery;
 
-	/// @brief 検索フィルタ有効時のカーソル保持先の譜面ファイルパス
+	// 検索フィルタ有効時のカーソル保持先の譜面ファイルパス
 	Optional<FilePath> m_searchPreservedChartPath;
 
 	ArrayWithLinearMenu<std::unique_ptr<ISelectMenuItem>> m_menu;
@@ -69,6 +74,9 @@ private:
 	SelectDifficultyMenu m_difficultyMenu;
 
 	SelectSongPreview m_songPreview;
+
+	// 譜面・コースのハイスコア情報のキャッシュ
+	SelectHighScoreCache m_highScoreCache;
 
 	const ksmaudio::Sample m_songSelectSe{"se/sel_m.wav"};
 
@@ -170,12 +178,19 @@ public:
 
 	void reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::No);
 
+	void forceReloadCurrentDirectory();
+
+	void clearHighScoreCache();
+
 	// ハイスコア表示を更新
 	void refreshHighScoreDisplay();
 
 	void jumpToAlphabetItem(char32 letter);
 
 	void setCursorByChartFilePath(FilePathView chartFilePath);
+
+	[[nodiscard]]
+	Optional<FilePath> currentChartFilePath() const;
 
 	void moveToNextSubDirSection();
 

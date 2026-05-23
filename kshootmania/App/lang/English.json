@@ -1,4 +1,7 @@
 {
+	"General": {
+		"ErrorBassInitFailed": "Failed to initialize BASS audio library.\nSpeakers might be disconnected or disabled.\n(BASS error code: {0})"
+	},
 	"Select": {
 		"Judgment": "Judgment/Display Settings",
 		"JudgmentBT": "BT Notes     : ",
@@ -65,6 +68,8 @@
 		"BGDisplayModeShowNoLayer": "Show (Animation off)",
 		"BGDisplayModeShowLayer": "Show (Animation on)",
 		"MasterVolumePercent": "%",
+		"AudioBackendDefault": "Default (WASAPI preferred)",
+		"AudioBackendDirectSound": "DirectSound",
 		"VsyncOffWithFps": "Off ({0}fps)",
 		"VsyncOn": "On",
 		"JudgmentOn": "Judgement On",
@@ -123,6 +128,7 @@
 		"ItemAlwaysShowOtherFolders": "Always Show Other Folders",
 		"ItemHideAllFolder": "Hide \"All\" Folder",
 		"ItemMasterVolume": "Master Volume",
+		"ItemAudioBackend": "Audio Output Method (Applied after app restart)",
 		"ItemVsync": "VSync",
 		"ItemDefaultBTJudgmentMode": "BT Notes Default Judgment Mode",
 		"ItemDefaultFXJudgmentMode": "FX Notes Default Judgment Mode",
@@ -164,6 +170,7 @@
 		"ScoreNotSentPlaybackSpeed": "IR score not recorded:\nsong speed has been changed",
 		"ScoreNotSentCMod": "IR score not recorded:\nHi-Speed Type \"C\" was used",
 		"ScoreNotSentPlaybackControl": "IR score not recorded:\npause or fast-forward was used",
+		"ScoreNotSentTimingAdjust": "IR score not recorded:\nAuto Sync or manual timing adjustment was used",
 		"ScoreNotSentTurn": "IR score not recorded:\nTurn option was used",
 		"ScoreNotSentAssist": "IR score not recorded:\nJudgment Mode option has been changed"
 	}

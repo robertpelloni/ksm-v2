@@ -1,4 +1,7 @@
 {
+	"General": {
+		"ErrorBassInitFailed": "BASS 오디오 라이브러리 초기화에 실패했습니다.\n스피커가 연결되어 있지 않거나, '사용 안 함'으로 설정되어 있을 가능성이 있습니다.\n(BASS 오류 코드: {0})"
+	},
 	"Select": {
 		"Judgment": "판정/표시 설정",
 		"JudgmentBT": "BT Notes    　: ",
@@ -65,6 +68,8 @@
 		"BGDisplayModeShowNoLayer": "표시 (애니메이션 없음)",
 		"BGDisplayModeShowLayer": "표시 (애니메이션 있음)",
 		"MasterVolumePercent": "%",
+		"AudioBackendDefault": "기본값 (WASAPI 우선)",
+		"AudioBackendDirectSound": "DirectSound",
 		"VsyncOffWithFps": "OFF ({0}fps)",
 		"VsyncOn": "ON",
 		"JudgmentOn": "ON (표시/판정)",
@@ -123,6 +128,7 @@
 		"ItemAlwaysShowOtherFolders": "다른 폴더 항상 표시",
 		"ItemHideAllFolder": "\"All\" 폴더 숨기기",
 		"ItemMasterVolume": "마스터 볼륨",
+		"ItemAudioBackend": "오디오 출력 방식 (앱 재시작 후 적용)",
 		"ItemVsync": "수직동기화",
 		"ItemDefaultBTJudgmentMode": "BT 노트 기본 판정 모드",
 		"ItemDefaultFXJudgmentMode": "FX 노트 기본 판정 모드",
@@ -164,6 +170,7 @@
 		"ScoreNotSentPlaybackSpeed": "재생 속도가 변경되어\nIR 스코어 집계 대상 외",
 		"ScoreNotSentCMod": "하이스피드 종류 \"C\"가 사용되어\nIR 스코어 집계 대상 외",
 		"ScoreNotSentPlaybackControl": "일시 정지 또는 빨리 감기가 사용되어\nIR 스코어 집계 대상 외",
+		"ScoreNotSentTimingAdjust": "AUTO SYNC 또는 수동 타이밍 조정이 사용되어\nIR 스코어 집계 대상 외",
 		"ScoreNotSentTurn": "Turn 옵션이 사용되어\nIR 스코어 집계 대상 외",
 		"ScoreNotSentAssist": "판정 모드 옵션이 변경되어\nIR 스코어 집계 대상 외"
 	}

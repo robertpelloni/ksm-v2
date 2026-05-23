@@ -138,14 +138,7 @@ void SelectScene::moveToPlayScene(FilePathView chartFilePath, MusicGame::IsAutoP
 		SelectSceneSearchParams params;
 		params.phase = m_searchPhase;
 		params.query = m_searchResultQuery;
-		if (!m_menu.empty())
-		{
-			const auto* pChartInfo = m_menu.cursorMenuItem().chartInfoPtr(0, FallbackForSingleChartYN::Yes);
-			if (pChartInfo != nullptr)
-			{
-				params.cursorChartPath = FilePath{ pChartInfo->chartFilePath() };
-			}
-		}
+		params.cursorChartPath = FilePath{ chartFilePath };
 		searchParams = std::move(params);
 	}
 
@@ -194,6 +187,7 @@ void SelectScene::updatePlayerSwitching()
 	ConfigIni::Save();
 
 	refreshCanvasPlayerName();
+	m_menu.clearHighScoreCache();
 	m_menu.reloadCurrentDirectory(RefreshSongPreviewYN::No, ReloadFromDiskYN::Yes);
 }
 
@@ -268,15 +262,7 @@ void SelectScene::enterSearchInputPhase()
 	m_btOptionPanel.hide();
 	m_playStatsPanel.hide();
 
-	Optional<FilePath> preservedChartPath;
-	if (!m_menu.empty())
-	{
-		const auto* pChartInfo = m_menu.cursorMenuItem().chartInfoPtr(0, FallbackForSingleChartYN::Yes);
-		if (pChartInfo != nullptr)
-		{
-			preservedChartPath = pChartInfo->chartFilePath();
-		}
-	}
+	const Optional<FilePath> preservedChartPath = m_menu.currentChartFilePath();
 
 	if (wasNone)
 	{
@@ -514,6 +500,15 @@ void SelectScene::update()
 	}
 
 	const bool inSearchMode = m_searchPhase != SelectSceneSearchPhase::kNone;
+
+	// F5で現在のディレクトリのキャッシュを破棄して再読み込み
+	if (!inSearchMode && KeyF5.down())
+	{
+		m_menu.forceReloadCurrentDirectory();
+		m_canvas->update();
+		return;
+	}
+
 	const bool closeFolder = !inSearchMode && m_menu.isFolderOpen() && KeyConfig::Down(m_folderCloseButton/* ← kBackspace・kBackのいずれかが入っている */);
 
 	// BackSpaceキーまたはBackボタン(Escキー)でフォルダを閉じる
