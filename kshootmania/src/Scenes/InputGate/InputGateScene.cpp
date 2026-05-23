@@ -1,4 +1,4 @@
-#include "InputGateScene.hpp"
+﻿#include "InputGateScene.hpp"
 #include "Scenes/Title/TitleScene.hpp"
 #include "Input/KeyConfig.hpp"
 #include "Common/FsUtils.hpp"
@@ -95,6 +95,29 @@ Co::Task<void> InputGateScene::start()
 			break;
 		}
 
+		if (m_currentTab == TabState::Ranking && !m_isFetchingRanking && !m_songList.empty())
+		{
+			bool changedDiff = false;
+			if (KeyConfig::Down(kButtonRight))
+			{
+				m_selectedRankingDiff = (m_selectedRankingDiff + 1) % 4;
+				changedDiff = true;
+			}
+			else if (KeyConfig::Down(kButtonLeft))
+			{
+				m_selectedRankingDiff = (m_selectedRankingDiff - 1 + 4) % 4;
+				changedDiff = true;
+			}
+
+			if (changedDiff)
+			{
+				m_isFetchingRanking = true;
+				const auto& song = m_songList[m_selectedSongIdx];
+				m_rankingList = co_await m_client.fetchRanking(song.id, m_selectedRankingDiff);
+				m_isFetchingRanking = false;
+			}
+		}
+
 		// Tab Switching (FX-L / FX-R)
 		if (KeyConfig::Down(kButtonFX_L) || KeyConfig::Down(kButtonFX_R))
 		{
@@ -146,6 +169,17 @@ Co::Task<void> InputGateScene::start()
 						m_downloadErrorMsg.clear();
 
 						// Start download
+
+						// Security: Prevent path traversal in song.id
+						if (song.id.includes(U"..") || song.id.includes(U"/") || song.id.includes(U"\"))
+						{
+							m_downloadErrorMsg = U"Security Error: Malformed Song ID.
+Download aborted.";
+							Logger << U"[ksm error] Malformed Song ID detected: " << song.id;
+							m_isDownloading = false;
+							continue;
+						}
+
 						const FilePath zipPath = U"songs/download/{}.zip"_fmt(song.id);
 
 						// Ensure directory exists

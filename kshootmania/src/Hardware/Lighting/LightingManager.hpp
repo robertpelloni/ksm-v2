@@ -38,14 +38,51 @@ namespace Hardware::Lighting
 
 			// Try HID first if HIDAPI is available
 #ifdef KSM_HIDAPI_ENABLED
-			// Try to open standard controller (YuanCon default VID/PID for now)
-			// In future, scan list or config
-			auto hidDriver = std::make_unique<HidLightingDriver>(0x1973, 0x2001);
-			if (hidDriver->init())
+			// Read profiles
+			Array<ControllerProfile> profiles;
+			JSON json = JSON::Load(U"hardware/controller_profiles.json");
+			if (json)
 			{
-				m_driver = std::move(hidDriver);
+				for (const auto& item : json.arrayView())
+				{
+					ControllerProfile p;
+					p.name = item[U"name"].getString();
+					p.vid = ParseInt<uint16_t>(item[U"vid"].getString().replace(U"0x", U""), Arg::radix = 16);
+					p.pid = ParseInt<uint16_t>(item[U"pid"].getString().replace(U"0x", U""), Arg::radix = 16);
+					p.reportId = ParseInt<uint8_t>(item[U"reportId"].getString().replace(U"0x", U""), Arg::radix = 16);
+					p.reportLength = item[U"reportLength"].get<int32>();
+					p.buttonsByte = item[U"buttonsByte"].get<int32>();
+					p.btABit = item[U"btABit"].get<int32>();
+					p.btBBit = item[U"btBBit"].get<int32>();
+					p.btCBit = item[U"btCBit"].get<int32>();
+					p.btDBit = item[U"btDBit"].get<int32>();
+					p.fxLBit = item[U"fxLBit"].get<int32>();
+					p.fxRBit = item[U"fxRBit"].get<int32>();
+					p.laserLByte = item[U"laserLByte"].get<int32>();
+					p.laserRByte = item[U"laserRByte"].get<int32>();
+					profiles.push_back(p);
+				}
 			}
-			else
+
+			if (profiles.empty())
+			{
+				// Fallback to Yuancon standard if file missing or empty
+				profiles.push_back(ControllerProfile{});
+			}
+
+			bool connected = false;
+			for (const auto& profile : profiles)
+			{
+				auto hidDriver = std::make_unique<HidLightingDriver>(profile);
+				if (hidDriver->init())
+				{
+					m_driver = std::move(hidDriver);
+					connected = true;
+					break;
+				}
+			}
+
+			if (!connected)
 			{
 				m_driver = std::make_unique<MockLightingDriver>();
 				m_driver->init();

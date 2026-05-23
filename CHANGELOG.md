@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+## [2.0.0-alpha27] - 2026-05-20
+
+### Added
+- **Hardware Lighting Profiles**:
+    - Created `ControllerProfile.hpp` allowing JSON-based HID configurations (`hardware/controller_profiles.json`) instead of hardcoding light/byte structures. This supports custom controllers (SVSE, FAUCET, generic Arduinos).
+    - `LightingManager::init()` now iterates through provided profiles and attempts to open matching VID/PID.
+- **Select Scene**: Implemented logic in `SelectMenu::reloadCurrentDirectory` to properly apply `SelectFilterModal` sort mode and level filtering.
+
 ## [2.0.0-alpha25] - 2026-02-20
 
 ### Added
@@ -155,3 +163,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - None yet.
+
+## [2.0.0-alpha28] - Fast/Slow Result Screen Details
+### Added
+- Added `fastCount` and `slowCount` parameter bindings to `ResultScene.cpp` to accurately pass inner FAST/SLOW deviation statistics from `ComboStats` directly into NocoUI.
+- Modified `result.noco` layout schema to append explicit visible FAST and SLOW counters right under the Near count text field, increasing user visual feedback regarding chart timing offsets.
+
+## [2.0.0-alpha29] - Input Gate Security Path Traversal Fix
+### Fixed
+- Added a security validation check inside `InputGateScene.cpp` to explicitly block directory traversal characters (`..`, `/`, `\`) in `song.id` payloads retrieved from a backend, preventing malicious server-injected path traversal zip extraction vulnerabilities.

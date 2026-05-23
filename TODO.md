@@ -2,7 +2,7 @@
 
 ## High Priority
 - [x] **Hardware I/O (Controller Lights)**
-    - [x] Implement LED output for supported controllers (HID/Serial) - *Added HidLightingDriver*.
+    - [x] Implement LED output for supported controllers (HID/Serial) - *Added HidLightingDriver, JSON Controller Profiles*.
     - [x] Add configuration for LED behavior (blinking, intensity) - *Added to Option Menu*.
 - [ ] **Internet Ranking**
     - [x] Implement real score submission (Client side done).
@@ -24,3 +24,9 @@
     - [x] Add more languages (Chinese, Korean).
 - [ ] **Skinning**
     - [x] Document NocoUI structure for skinners.
+
+## High Priority
+- [x] Result Screen: Surface `nearFast` and `nearSlow` details inside NocoUI.
+
+## Security
+- [x] Implemented directory traversal checks for `song.id` in `InputGateScene` zip extraction.

@@ -6,12 +6,12 @@ K-Shoot MANIA v2 is an OpenSiv3D/C++20 based rhythm game. It replaces the old v1
 
 ### 1. Unfinished / Unhooked Backend Features
 *   **Audio Backend**: WASAPI Exclusive mode is toggled in the UI (`ConfigIni::Key::kAudioWasapiExclusive`), but the actual implementation in `ksmaudio::Init` is just an empty `if (exclusive)` block because the `basswasapi` library is missing. **Idea:** Integrate `basswasapi.dll` into the `ThirdParty_Windows` folder and implement the callback.
-*   **Hardware I/O**: `HidLightingDriver` sends hardcoded standard reports (YuanCon format) based on the `LightingState`. **Idea:** Different controllers (FAUCET, SVSE5, Virar) use different HID Report structures. We need a `ControllerProfile` JSON to define exactly which bytes/bits map to which LED.
+*   ~~**Hardware I/O**: `HidLightingDriver` sends hardcoded standard reports (YuanCon format) based on the `LightingState`. **Idea:** Different controllers (FAUCET, SVSE5, Virar) use different HID Report structures. We need a `ControllerProfile` JSON to define exactly which bytes/bits map to which LED.~~ -> **DONE**. Added `ControllerProfile` and parsing logic in `LightingManager` to iterate over generic JSON definitions.
 *   **Network (Input Gate / IR)**: The client side uses OpenSiv3D `SimpleHTTP`, but it points to dummy endpoints or uses mock data if `ConfigIni` URLs are blank. **Idea:** Build a simple lightweight Node.js/Express or Python/FastAPI companion backend repo to serve `ranking.json`, `list.json`, and handle ZIP distribution.
 
 ### 2. Underrepresented UI Features
 *   **Result Screen Score Details**: The UI shows Critical/Near/Error, but misses deeper analytics like Fast/Slow split (which exists in `ComboStats::nearFast` / `nearSlow`). **Idea:** Update `result.noco` to include Fast/Slow breakdown graphs.
-*   **Song Select Sorting & Filtering**: The backend supports folders, but advanced filtering (e.g., Level 15+, specific effector) isn't prominently accessible via controller inputs. **Idea:** Add a dedicated "Filter" modal (perhaps toggled by FX-L + FX-R in select scene).
+*   ~~**Song Select Sorting & Filtering**: The backend supports folders, but advanced filtering (e.g., Level 15+, specific effector) isn't prominently accessible via controller inputs. **Idea:** Add a dedicated "Filter" modal (perhaps toggled by FX-L + FX-R in select scene).~~ -> **DONE**. A dedicated `SelectFilterModal` has been fully wired up via `FX-L + FX-R` to physically update the internal search list filtering logic in `SelectMenu::reloadCurrentDirectory`.
 *   **Profile / Player Data**: The game saves high scores locally via `KscIO`, but there is no overarching "Player Profile" view showing total play count, global grade, or Dan/Course titles. **Idea:** Create a `ProfileScene` accessible from the Title.
 
 ### 3. Refactoring & Technical Debt

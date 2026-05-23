@@ -58,6 +58,7 @@ To achieve total feature parity with K-Shoot MANIA v1 and commercial rhythm game
 - [x] Twitter (X) Result Posting (Web Intent)
 - [x] Advanced Timing Options (Global/Visual Offset, Audio FX Delay)
 - [x] Audio Backend Configuration (Device Selection, Buffer Size)
+- [x] Hardware I/O JSON Profiles
 
 ### 🌐 Input Gate / Online
 - [x] Download from Input Gate (Client logic implemented, mock active)
@@ -69,4 +70,4 @@ To achieve total feature parity with K-Shoot MANIA v1 and commercial rhythm game
 1. **Course Mode Refinement**: Verify and complete any missing course mode UI elements.
 2. **Server Backend Development**: Create server-side API for Internet Ranking and Input Gate song lists.
 3. **Editor Parity**: Ensure `kshooteditor` can edit KSON charts correctly.
-4. **Select Menu Level Filtering**: Extend `ISelectMenuItem` and the `SelectMenu` internal backend logic to filter arrays by `levelFilter` (currently only sorting `sortType` is natively hooked up to the filesystem read).
+4. **[x] Select Menu Level Filtering**: Extended `ISelectMenuItem` and the `SelectMenu` internal backend logic to filter arrays by `levelFilter` (currently only sorting `sortType` is natively hooked up to the filesystem read).

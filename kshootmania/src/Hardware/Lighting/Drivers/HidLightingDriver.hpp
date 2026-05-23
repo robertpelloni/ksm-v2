@@ -1,5 +1,6 @@
 #pragma once
 #include "ILightingDriver.hpp"
+#include "../ControllerProfile.hpp"
 
 #ifdef KSM_HIDAPI_ENABLED
 #include <hidapi/hidapi.h> // Or <hidapi.h> depending on platform/include path
@@ -16,11 +17,10 @@ namespace Hardware::Lighting
 		// Let's use a generic approach or config-based.
 
 		void* m_device = nullptr; // Use void* to avoid hidapi header dependency in headers if not strictly needed, but it's fine.
-		uint16_t m_vid = 0;
-		uint16_t m_pid = 0;
+		ControllerProfile m_profile;
 
 	public:
-		HidLightingDriver(uint16_t vid, uint16_t pid) : m_vid(vid), m_pid(pid) {}
+		HidLightingDriver(const ControllerProfile& profile) : m_profile(profile) {}
 
 		bool init() override
 		{
@@ -32,70 +32,58 @@ namespace Hardware::Lighting
 			}
 
 			// Try to open
-			m_device = hid_open(m_vid, m_pid, nullptr);
+			m_device = hid_open(m_profile.vid, m_profile.pid, nullptr);
 			if (!m_device)
 			{
-				// Logger << U"[ksm warning] Failed to open HID device {:04x}:{:04x}"_fmt(m_vid, m_pid);
+
 				return false;
 			}
 
-			Logger << U"[ksm info] HID device opened: {:04x}:{:04x}"_fmt(m_vid, m_pid);
+			Logger << U"[ksm info] HID device opened: {:04x}:{:04x} ({})"_fmt(m_profile.vid, m_profile.pid, m_profile.name);
 			return true;
 #else
 			return false;
 #endif
 		}
 
-		void update(const LightingState& state) override
-		{
+					void update(const LightingState& state) override
+			{
 #ifdef KSM_HIDAPI_ENABLED
-			if (!m_device) return;
+				if (!m_device) return;
 
-			// Construct HID report
-			// This depends heavily on the controller firmware.
-			// YuanCon standard:
-			// Report ID?
-			// Byte 0: Lights (Bitmask)
-			// Bit 0-3: BT A-D
-			// Bit 4-5: FX L/R
-			// Byte 1: Laser L (Blue?)
-			// Byte 2: Laser R (Pink?)
+				Array<uint8_t> buffer;
+				buffer.resize(m_profile.reportLength + 1, 0x00);
 
-			// This is a placeholder protocol. We need a way to configure this.
-			// For this task, I'll implement a "Standard" report format often used.
+				uint8_t buttons = 0;
+				if (state.bt[0]) buttons |= (1 << m_profile.btABit);
+				if (state.bt[1]) buttons |= (1 << m_profile.btBBit);
+				if (state.bt[2]) buttons |= (1 << m_profile.btCBit);
+				if (state.bt[3]) buttons |= (1 << m_profile.btDBit);
+				if (state.fx[0]) buttons |= (1 << m_profile.fxLBit);
+				if (state.fx[1]) buttons |= (1 << m_profile.fxRBit);
 
-			uint8_t report[64] = {0};
+				buffer[0] = m_profile.reportId;
 
-			// Simple Bitmask for buttons
-			uint8_t buttons = 0;
-			if (state.bt[0]) buttons |= (1 << 0);
-			if (state.bt[1]) buttons |= (1 << 1);
-			if (state.bt[2]) buttons |= (1 << 2);
-			if (state.bt[3]) buttons |= (1 << 3);
-			if (state.fx[0]) buttons |= (1 << 4);
-			if (state.fx[1]) buttons |= (1 << 5);
+				if (m_profile.buttonsByte + 1 < buffer.size())
+				{
+					buffer[m_profile.buttonsByte + 1] = buttons;
+				}
 
-			report[0] = 0; // Report ID if needed, or data
-			// Wait, hid_write expects Report ID as first byte if numbered reports are used.
-			// If not, it's just data.
+				if (m_profile.laserLByte + 1 < buffer.size())
+				{
+					buffer[m_profile.laserLByte + 1] = static_cast<uint8_t>(state.laser[0].r);
+				}
 
-			// Assuming YuanCon style (often just sends state)
-			// Let's assume a generic report structure for now.
-			// Byte 0: Buttons
-			// Byte 1: Laser L Brightness
-			// Byte 2: Laser R Brightness
+				if (m_profile.laserRByte + 1 < buffer.size())
+				{
+					buffer[m_profile.laserRByte + 1] = static_cast<uint8_t>(state.laser[1].r);
+				}
 
-			uint8_t buffer[65];
-			buffer[0] = 0x00; // Report ID
-			buffer[1] = buttons;
-			buffer[2] = static_cast<uint8_t>(state.laser[0].r); // Brightness/Color? Usually just intensity 0-255
-			buffer[3] = static_cast<uint8_t>(state.laser[1].r); // Using Red channel as intensity for now
-
-			hid_write(static_cast<hid_device*>(m_device), buffer, 4);
+				hid_write(static_cast<hid_device*>(m_device), buffer.data(), buffer.size());
 #endif
-		}
+			}
 
-		void close() override
+			void close() override
 		{
 #ifdef KSM_HIDAPI_ENABLED
 			if (m_device)

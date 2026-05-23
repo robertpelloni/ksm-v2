@@ -176,7 +176,7 @@ public:
 
 	const Texture& getArtistTexture(FilePathView filePath);
 
-	void reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::No);
+	void reloadCurrentDirectory(RefreshSongPreviewYN refreshSongPreview = RefreshSongPreviewYN::No, ReloadFromDiskYN reloadFromDisk = ReloadFromDiskYN::No, int32 sortType = 0, int32 levelFilter = 0);
 
 	void forceReloadCurrentDirectory();
 
