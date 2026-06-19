@@ -62,8 +62,9 @@ namespace MusicGame::Graphics
 
 		switch (type)
 		{
+		case kSCritical:
 		case kCritical:
-			return m_chipCriticalTexture;
+			return m_chipCriticalTexture; // Fallback to normal critical texture for now
 
 		case kNearFast:
 		case kNear:

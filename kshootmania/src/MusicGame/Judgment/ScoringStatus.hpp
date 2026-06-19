@@ -15,6 +15,7 @@ namespace MusicGame::Judgment
 		const GaugeCalcType m_gaugeCalcType;
 
 		int32 m_scoreValue = 0;
+		int32 m_exScoreValue = 0;
 		int32 m_gaugeValue;
 		int32 m_gaugeValueNormal = 0; // NORMAL基準ゲージ値(HARDのGrade計算用)
 
@@ -36,6 +37,8 @@ namespace MusicGame::Judgment
 		void onLongOrLaserLineJudgment(Judgment::JudgmentResult result);
 
 		int32 score() const;
+
+		int32 exScore() const;
 
 		/// @brief ゲージのパーセンテージを返す
 		/// @return パーセンテージ(0.0～100.0)

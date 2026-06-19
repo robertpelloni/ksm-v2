@@ -7,6 +7,8 @@ namespace MusicGame::Judgment
 {
 	struct ComboStats
 	{
+		int32 sCritical = 0;
+
 		int32 critical = 0;
 
 		int32 nearFast = 0;
@@ -25,7 +27,7 @@ namespace MusicGame::Judgment
 
 		int32 totalJudgedCombo() const
 		{
-			return critical + totalNear() + error;
+			return sCritical + critical + totalNear() + error;
 		}
 	};
 
