@@ -2,7 +2,7 @@
 #include "MusicGame/Graphics/GraphicsDefines.hpp"
 #include "MusicGame/GameStatus.hpp"
 #include "MusicGame/Camera/CameraMath.hpp"
-#include "kson/Common/Common.hpp"
+#include "kson/common/common.hpp"
 
 namespace MusicGame::Graphics
 {
