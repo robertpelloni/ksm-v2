@@ -6,5 +6,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(kshooteditor src/EditorMain.cpp)
 
-# Assuming NocoUI and other deps are handled similarly to kshootmania
-# We'll need to link them properly later, for now just a stub to check build
+# Link against OpenSiv3D and NocoUI when available
+# target_link_libraries(kshooteditor PRIVATE Siv3D NocoUI)
