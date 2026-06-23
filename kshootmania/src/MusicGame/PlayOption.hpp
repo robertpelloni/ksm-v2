@@ -23,6 +23,8 @@ namespace MusicGame
 
 		GaugeType gaugeType = GaugeType::kNormalGauge;
 
+		bool arsEnabled = false;
+
 		TurnMode turnMode = TurnMode::kNormal;
 
 		double playbackSpeed = 1.0;

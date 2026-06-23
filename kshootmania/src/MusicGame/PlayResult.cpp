@@ -19,7 +19,7 @@ namespace MusicGame
 		// クリア判定
 		bool cleared = false;
 		const int32 gaugePercentageInt = static_cast<int32>(gaugePercentage);
-		if (playOption.gaugeType == GaugeType::kHardGauge || playOption.gameMode == GameMode::kCourseMode)
+		if ((playOption.gaugeType == GaugeType::kHardGauge || playOption.gameMode == GameMode::kCourseMode) && !isARSTriggered)
 		{
 			// HARDゲージまたはコースモードの場合、1%以上でクリア
 			cleared = gaugePercentageInt > kGaugePercentageThresholdHard;

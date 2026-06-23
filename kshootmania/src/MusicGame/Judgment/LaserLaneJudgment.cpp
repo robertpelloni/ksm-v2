@@ -465,7 +465,7 @@ namespace MusicGame::Judgment
 		{
 			if (judgmentResult == JudgmentResult::kCritical)
 			{
-				judgmentResult = JudgmentResult::kSCritical;
+				judgmentResult = JudgmentResult::kCritical;
 			}
 
 			// 判定結果を記録
@@ -698,7 +698,7 @@ namespace MusicGame::Judgment
 
 		const double cursorX = laneStatusRef.cursorX.value();
 		const double noteCursorX = laneStatusRef.noteCursorX.value();
-		const JudgmentResult currentResult = IsLaserCursorInCriticalJudgmentRange(cursorX, noteCursorX) ? JudgmentResult::kSCritical : JudgmentResult::kError;
+		const JudgmentResult currentResult = IsLaserCursorInCriticalJudgmentRange(cursorX, noteCursorX) ? JudgmentResult::kCritical : JudgmentResult::kError;
 		for (auto itr = m_lineJudgmentArray.upper_bound(sectionStartPulse - 1); itr != m_lineJudgmentArray.end(); ++itr)
 		{
 			auto& [y, judgment] = *itr;

@@ -18,6 +18,8 @@ namespace MusicGame::Judgment
 		int32 m_exScoreValue = 0;
 		int32 m_gaugeValue;
 		int32 m_gaugeValueNormal = 0; // NORMAL基準ゲージ値(HARDのGrade計算用)
+		bool m_arsEnabled = false; // ARSが有効かどうか
+		bool m_isARSTriggered = false; // ARSが発動中かどうか
 
 		ComboStatus m_comboStatus;
 
@@ -30,7 +32,7 @@ namespace MusicGame::Judgment
 		double calcGaugePercentageFromValue(int32 gaugeValue, GaugeType gaugeType) const;
 
 	public:
-		ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType, const Optional<CourseContinuation>& courseContinuation, GameMode gameMode);
+		ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType, const Optional<CourseContinuation>& courseContinuation, GameMode gameMode, bool arsEnabled = false);
 
 		void onChipOrLaserSlamJudgment(Judgment::JudgmentResult result, double diffSec = 0.0);
 
