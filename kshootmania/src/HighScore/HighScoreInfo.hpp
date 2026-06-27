@@ -14,9 +14,6 @@ struct HighScoreInfo
 	int32 score(GaugeType gaugeType) const;
 
 	[[nodiscard]]
-	int32 exScore(GaugeType gaugeType) const;
-
-	[[nodiscard]]
 	Medal medal() const;
 
 	[[nodiscard]]

@@ -126,22 +126,14 @@ namespace MusicGame::Judgment
 
 		switch (result)
 		{
-		case Judgment::JudgmentResult::kSCritical:
-			m_scoreValue += Judgment::kScoreValueCritical;
-			m_exScoreValue += 5;
-			addGaugeValue(kGaugeValueChip);
-			break;
-
 		case Judgment::JudgmentResult::kCritical:
 			m_scoreValue += Judgment::kScoreValueCritical;
-			m_exScoreValue += 4;
 			addGaugeValue(kGaugeValueChip);
 			break;
 
 		case Judgment::JudgmentResult::kNearFast:
 		case Judgment::JudgmentResult::kNearSlow:
 			m_scoreValue += Judgment::kScoreValueNear;
-			m_exScoreValue += 2;
 			if (m_gaugeCalcType == GaugeCalcType::kCourseHard)
 			{
 				// コースモードのHARDゲージでは、NEARでゲージが減る
@@ -186,15 +178,8 @@ namespace MusicGame::Judgment
 
 		switch (result)
 		{
-		case Judgment::JudgmentResult::kSCritical:
-			m_scoreValue += Judgment::kScoreValueCritical;
-			m_exScoreValue += 2; // Long/Laser ticks max out at 2 EX score points
-			addGaugeValue(kGaugeValueLong);
-			break;
-
 		case Judgment::JudgmentResult::kCritical:
 			m_scoreValue += Judgment::kScoreValueCritical;
-			m_exScoreValue += 2; // Long/Laser ticks max out at 2 EX score points
 			addGaugeValue(kGaugeValueLong);
 			break;
 
@@ -226,11 +211,6 @@ namespace MusicGame::Judgment
 			return 0;
 		}
 		return static_cast<int32>(static_cast<int64>(kScoreMax) * m_scoreValue / m_scoreValueMax);
-	}
-
-	int32 ScoringStatus::exScore() const
-	{
-		return m_exScoreValue;
 	}
 
 	double ScoringStatus::calcGaugePercentageFromValue(int32 gaugeValue, GaugeType gaugeType) const

@@ -9,8 +9,6 @@ namespace MusicGame
 	{
 		int32 score = 0;
 
-		int32 exScore = 0;
-
 		int32 maxCombo = 0;
 
 		int32 finalCourseCombo = 0; // コース内での各曲終了時点のコンボ数(コースモード時の表示・引き継ぎ用)

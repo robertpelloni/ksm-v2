@@ -1,48 +1,21 @@
 {
-    "type": "Canvas",
-    "children": [
-        {
-            "type": "Panel",
-            "name": "Toolbar",
-            "anchor": "top",
-            "height": 40,
-            "backgroundColor": "#2D2D2D",
-            "children": [
-                {
-                    "type": "Text",
-                    "text": "File | Edit | View | Tools | Help",
-                    "color": "#FFFFFF",
-                    "x": 10,
-                    "y": 10
-                }
-            ]
-        },
-        {
-            "type": "Panel",
-            "name": "Sidebar",
-            "anchor": "left",
-            "width": 200,
-            "y": 40,
-            "height": "100%",
-            "backgroundColor": "#1E1E1E",
-            "children": [
-                {
-                    "type": "Text",
-                    "text": "Tools",
-                    "color": "#AAAAAA",
-                    "x": 10,
-                    "y": 10
-                }
-            ]
-        },
-        {
-            "type": "Panel",
-            "name": "MainCanvas",
-            "x": 200,
-            "y": 40,
-            "width": "100%",
-            "height": "100%",
-            "backgroundColor": "#121212"
-        }
-    ]
+	"type": "Canvas",
+	"name": "EditorMain",
+	"children": [
+		{
+			"type": "Rect",
+			"name": "Toolbar",
+			"layout": { "height": 40, "width": "100%" }
+		},
+		{
+			"type": "Rect",
+			"name": "Sidebar",
+			"layout": { "width": 200, "height": "100%", "marginTop": 40 }
+		},
+		{
+			"type": "Rect",
+			"name": "MainCanvas",
+			"layout": { "marginLeft": 200, "marginTop": 40, "width": "100%", "height": "100%" }
+		}
+	]
 }

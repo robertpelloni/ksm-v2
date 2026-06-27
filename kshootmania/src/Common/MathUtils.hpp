@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <concepts>
-#include "kson/common/common.hpp"
+#include "kson/Common/Common.hpp"
 
 namespace MathUtils
 {

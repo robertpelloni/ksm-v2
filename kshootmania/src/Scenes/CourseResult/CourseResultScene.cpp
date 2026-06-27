@@ -95,8 +95,6 @@ void CourseResultScene::updateCanvasParams()
 		{ U"resultTopIndex", m_courseState.isCleared() ? 1.0 : 0.0 },
 		{ U"gaugePercentageNumber", newAchievementRate },
 		{ U"gaugeTextureIndex", 1.0 },
-		{ U"exScoreNumber", m_courseState.totalExScore() },
-		{ U"exScore", m_courseState.totalExScore() },
 		{ U"bottomRightText", U"" },
 	});
 

@@ -1,16 +1,5 @@
 # Changelog
 
-## [2.0.0-alpha31] - 2026-06-23
-
-### Added
-- Created foundational NocoUI layout and build target for `kshooteditor`.
-
-### Fixed
-- Reverted S-Critical judgments triggering on long notes and laser ticks to prevent score inflation.
-- Fully implemented missing Alternative Rate System (ARS) logic in gauge calculation and Result Screen parsing.
-- Fixed `find_package(Siv3D REQUIRED)` failing on Linux CI by isolating it under `#ifndef HEADLESS_BUILD`.
-
-
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
@@ -179,13 +168,6 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added `fastCount` and `slowCount` parameter bindings to `ResultScene.cpp` to accurately pass inner FAST/SLOW deviation statistics from `ComboStats` directly into NocoUI.
 - Modified `result.noco` layout schema to append explicit visible FAST and SLOW counters right under the Near count text field, increasing user visual feedback regarding chart timing offsets.
-
-## [2.0.0-alpha30] - SDVX Feature Parity: S-Critical, EX Score, & ARS
-
-### Added
-- **S-Critical Judgments**: Added a new tight 0.022s timing window for precise chip note hits.
-- **EX Score System**: Implemented EX Score calculations awarding 5 points for S-Criticals, 4 for Criticals, and 2 for Nears/Holds/Lasers.
-- **Alternative Rate System (ARS)**: Integrated ARS logic allowing players to seamlessly fall back to a Normal Gauge with standard penalty metrics if the Hard Gauge hits 0%.
 
 ## [2.0.0-alpha29] - Input Gate Security Path Traversal Fix
 ### Fixed

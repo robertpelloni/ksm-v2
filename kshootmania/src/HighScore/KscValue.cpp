@@ -27,7 +27,6 @@ KscValue KscValue::applyPlayResult(const MusicGame::PlayResult& playResult) cons
 		.clearCount = clearCount + (playResult.achievement() >= Achievement::kCleared ? 1 : 0),
 		.fullComboCount = fullComboCount + (playResult.achievement() >= Achievement::kFullCombo ? 1 : 0),
 		.perfectCount = perfectCount + (playResult.achievement() >= Achievement::kPerfect ? 1 : 0),
-		.exScore = Max(exScore, playResult.exScore),
 	};
 }
 
@@ -49,13 +48,12 @@ KscValue KscValue::applyPlayResultForCourse(const MusicGame::PlayResult& playRes
 		.clearCount = clearCount,
 		.fullComboCount = fullComboCount + (playResult.achievement() >= Achievement::kFullCombo ? 1 : 0),
 		.perfectCount = perfectCount + (playResult.achievement() >= Achievement::kPerfect ? 1 : 0),
-		.exScore = Max(exScore, playResult.exScore),
 	};
 }
 
 String KscValue::toString() const
 {
-	return U"{},{},{},{},{},{},{},{},{},{}"_fmt(
+	return U"{},{},{},{},{},{},{},{},{}"_fmt(
 		score,
 		static_cast<int32>(achievement),
 		static_cast<int32>(grade),
@@ -64,8 +62,7 @@ String KscValue::toString() const
 		playCount,
 		clearCount,
 		fullComboCount,
-		perfectCount,
-		exScore);
+		perfectCount);
 }
 
 KscValue KscValue::FromString(const String& str)
@@ -85,6 +82,5 @@ KscValue KscValue::FromString(const String& str)
 		.clearCount = GetFieldValue<int32>(values, 6, defaultValue.clearCount),
 		.fullComboCount = GetFieldValue<int32>(values, 7, defaultValue.fullComboCount),
 		.perfectCount = GetFieldValue<int32>(values, 8, defaultValue.perfectCount),
-		.exScore = GetFieldValue<int32>(values, 9, defaultValue.exScore),
 	};
 }

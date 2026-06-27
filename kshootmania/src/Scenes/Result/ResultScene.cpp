@@ -416,10 +416,7 @@ void ResultScene::updateCanvasParams()
 		{ U"resultTopIndex", static_cast<double>(TopTextureRow(m_playResult)) },
 		{ U"gradeIndex", static_cast<double>(GradeToIndex(m_playResult.grade())) },
 		{ U"scoreNumber", m_playResult.score },
-		{ U"exScoreNumber", m_playResult.exScore },
-		{ U"exScore", m_playResult.exScore }, // For compatibility with custom skins
 		{ U"maxComboNumber", m_playResult.maxCombo },
-		{ U"sCriticalCount", m_playResult.comboStats.sCritical },
 		{ U"criticalCount", m_playResult.comboStats.critical },
 		{ U"nearCount", m_playResult.comboStats.totalNear() },
 		{ U"fastCount", m_playResult.comboStats.nearFast },

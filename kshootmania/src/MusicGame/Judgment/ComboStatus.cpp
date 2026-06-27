@@ -4,7 +4,7 @@ namespace MusicGame::Judgment
 {
 	void ComboStatus::processJudgmentResult(JudgmentResult result, double diffSec)
 	{
-		if (result == JudgmentResult::kSCritical || result == JudgmentResult::kCritical || result == JudgmentResult::kNearFast || result == JudgmentResult::kNearSlow)
+		if (result == JudgmentResult::kCritical || result == JudgmentResult::kNearFast || result == JudgmentResult::kNearSlow)
 		{
 			// Add deviation info
 			// Note: We only add deviation if it's not exactly zero or if it's a valid judgment.
@@ -39,13 +39,6 @@ namespace MusicGame::Judgment
 
 		switch (result)
 		{
-		case JudgmentResult::kSCritical:
-			++m_combo;
-			++m_courseCombo;
-			m_maxCombo = Max(m_maxCombo, m_combo);
-			++m_stats.sCritical;
-			break;
-
 		case JudgmentResult::kCritical:
 			++m_combo;
 			++m_courseCombo;

@@ -21,8 +21,6 @@ struct KscValue
 
 	int32 perfectCount = 0;
 
-	int32 exScore = 0;
-
 	/// @brief プレイ結果を反映後のKscValueを返す
 	/// @param playResult プレイ結果
 	/// @return KscValue
