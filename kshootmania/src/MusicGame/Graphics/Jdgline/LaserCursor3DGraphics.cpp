@@ -1,7 +1,7 @@
 ﻿#include "Jdgoverlay3DGraphics.hpp"
 #include "MusicGame/Graphics/GraphicsDefines.hpp"
 #include "MusicGame/Camera/CameraMath.hpp"
-#include "kson/Common/Common.hpp"
+#include "kson/common/common.hpp"
 #include "LaserCursor3DGraphics.hpp"
 
 namespace MusicGame::Graphics
