@@ -1,16 +1,5 @@
 # Changelog
 
-## [2.0.0-alpha31] - 2026-06-23
-
-### Added
-- Created foundational NocoUI layout and build target for `kshooteditor`.
-
-### Fixed
-- Reverted S-Critical judgments triggering on long notes and laser ticks to prevent score inflation.
-- Fully implemented missing Alternative Rate System (ARS) logic in gauge calculation and Result Screen parsing.
-- Fixed `find_package(Siv3D REQUIRED)` failing on Linux CI by isolating it under `#ifndef HEADLESS_BUILD`.
-
-
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]

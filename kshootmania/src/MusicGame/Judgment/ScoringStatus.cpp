@@ -96,19 +96,12 @@ namespace MusicGame::Judgment
 
 		m_gaugeValue = Max(m_gaugeValue - adjustedSub, 0);
 
-		// ARS
-		if (m_arsEnabled && !m_isARSTriggered && m_gaugeValue <= 0)
-		{
-			m_isARSTriggered = true;
-			m_gaugeValue = m_gaugeValueNormal;
-		}
-
 		// Grade計算用にNORMAL基準のゲージ値も更新
 		const int32 normalSub = static_cast<int32>(sub * kGaugeDecreaseRateNormal);
 		m_gaugeValueNormal = Max(m_gaugeValueNormal - normalSub, 0);
 	}
 
-	ScoringStatus::ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType, const Optional<CourseContinuation>& courseContinuation, GameMode gameMode, bool arsEnabled)
+	ScoringStatus::ScoringStatus(int32 scoreValueMax, int32 gaugeValueMax, GaugeType gaugeType, const Optional<CourseContinuation>& courseContinuation, GameMode gameMode)
 		: m_scoreValueMax(scoreValueMax)
 		, m_gaugeValueMax(gaugeValueMax)
 		, m_gaugeType(gaugeType)
@@ -116,7 +109,6 @@ namespace MusicGame::Judgment
 		, m_gaugeCalcType(ToGaugeCalcType(gaugeType, gameMode))
 		, m_gaugeValue(courseContinuation.has_value() ? courseContinuation->gaugeValue : ((gaugeType == GaugeType::kHardGauge || gameMode == GameMode::kCourseMode) ? kGaugeValueMaxHard : 0))
 		, m_comboStatus(courseContinuation)
-		, m_arsEnabled(arsEnabled)
 	{
 	}
 
@@ -235,11 +227,6 @@ namespace MusicGame::Judgment
 
 	double ScoringStatus::calcGaugePercentageFromValue(int32 gaugeValue, GaugeType gaugeType) const
 	{
-		if (m_isARSTriggered)
-		{
-			gaugeType = GaugeType::kNormalGauge;
-		}
-
 		if (gaugeType == GaugeType::kHardGauge || m_gameMode == GameMode::kCourseMode)
 		{
 			return Max(0.0, 100.0 * gaugeValue / kGaugeValueMaxHard);
@@ -261,11 +248,6 @@ namespace MusicGame::Judgment
 
 	int32 ScoringStatus::gaugePercentageInt(GaugeType gaugeType) const
 	{
-		if (m_isARSTriggered)
-		{
-			gaugeType = GaugeType::kNormalGauge;
-		}
-
 		if (gaugeType == GaugeType::kHardGauge || m_gameMode == GameMode::kCourseMode)
 		{
 			return m_gaugeValue / 1000;

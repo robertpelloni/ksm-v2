@@ -328,8 +328,8 @@ namespace MusicGame::Judgment
 				}
 
 				// ロングノーツのCRITICAL判定
-				judgment.result = JudgmentResult::kCritical;
-				judgmentHandlerRef.onLongJudged(JudgmentResult::kCritical);
+				judgment.result = JudgmentResult::kSCritical;
+				judgmentHandlerRef.onLongJudged(JudgmentResult::kSCritical);
 			}
 		}
 	}
