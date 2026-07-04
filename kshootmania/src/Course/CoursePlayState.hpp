@@ -13,9 +13,11 @@ private:
 	Array<MusicGame::PlayResult> m_results;
 
 	int32 m_totalScore = 0;
+	int32 m_totalSCritical = 0;
 	int32 m_totalCritical = 0;
 	int32 m_totalNear = 0;
 	int32 m_totalError = 0;
+	int32 m_totalExScore = 0;
 
 	CourseContinuation m_continuation; // 次の曲に引き継ぐ情報
 
@@ -45,9 +47,11 @@ public:
 		m_results[m_currentChartIdx] = playResult;
 
 		m_totalScore += playResult.score;
+		m_totalSCritical += playResult.comboStats.sCritical;
 		m_totalCritical += playResult.comboStats.critical;
 		m_totalNear += playResult.comboStats.totalNear();
 		m_totalError += playResult.comboStats.error;
+		m_totalExScore += playResult.exScore;
 
 		m_failedChartTimeProgress = playResult.chartTimeProgress;
 
@@ -55,6 +59,12 @@ public:
 		m_continuation.gaugeValue = playResult.gaugeValue;
 		m_continuation.combo = playResult.finalCourseCombo;
 		m_continuation.isNoError = m_continuation.isNoError && playResult.comboStats.error == 0;
+	}
+
+	[[nodiscard]]
+	int32 totalExScore() const
+	{
+		return m_totalExScore;
 	}
 
 	[[nodiscard]]
@@ -139,6 +149,12 @@ public:
 			const double failedChartRatio = m_failedChartTimeProgress / chartCount;
 			return static_cast<int32>((completedRatio + failedChartRatio) * 100.0);
 		}
+	}
+
+	[[nodiscard]]
+	int32 totalSCritical() const
+	{
+		return m_totalSCritical;
 	}
 
 	[[nodiscard]]

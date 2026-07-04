@@ -460,15 +460,20 @@ namespace MusicGame::Judgment
 		laserSlamJudgmentRef.addDeltaCursorX(deltaCursorX, currentTimeSec);
 
 		// 判定が決まった場合
-		const JudgmentResult judgmentResult = laserSlamJudgmentRef.judgmentResult(currentTimeSec, isAutoPlay);
+		JudgmentResult judgmentResult = laserSlamJudgmentRef.judgmentResult(currentTimeSec, isAutoPlay);
 		if (judgmentResult != JudgmentResult::kUnspecified)
 		{
+			if (judgmentResult == JudgmentResult::kCritical)
+			{
+				judgmentResult = JudgmentResult::kSCritical;
+			}
+
 			// 判定結果を記録
 			laserSlamJudgmentRef.setResult(judgmentResult);
 
 			judgmentHandlerRef.onLaserSlamJudged(judgmentResult, laserSlamPulse, m_prevTimeSecForDraw, m_prevPulse, laserSlamJudgmentRef.direction());
 
-			if (judgmentResult == JudgmentResult::kCritical)
+			if (judgmentResult == JudgmentResult::kSCritical || judgmentResult == JudgmentResult::kCritical)
 			{
 				// 判定した時間を記録(補正および効果音再生に使用)
 				laneStatusRef.lastLaserSlamJudgedTimeSec = Max(currentTimeSec, laserSlamJudgmentRef.sec());
@@ -693,7 +698,7 @@ namespace MusicGame::Judgment
 
 		const double cursorX = laneStatusRef.cursorX.value();
 		const double noteCursorX = laneStatusRef.noteCursorX.value();
-		const JudgmentResult currentResult = IsLaserCursorInCriticalJudgmentRange(cursorX, noteCursorX) ? JudgmentResult::kCritical : JudgmentResult::kError;
+		const JudgmentResult currentResult = IsLaserCursorInCriticalJudgmentRange(cursorX, noteCursorX) ? JudgmentResult::kSCritical : JudgmentResult::kError;
 		for (auto itr = m_lineJudgmentArray.upper_bound(sectionStartPulse - 1); itr != m_lineJudgmentArray.end(); ++itr)
 		{
 			auto& [y, judgment] = *itr;
@@ -720,7 +725,7 @@ namespace MusicGame::Judgment
 
 	void LaserLaneJudgment::processPassedLineJudgment(kson::Pulse currentPulse, JudgmentHandler& judgmentHandlerRef, IsAutoPlayYN isAutoPlay)
 	{
-		const JudgmentResult result = isAutoPlay ? JudgmentResult::kCritical : JudgmentResult::kError;
+		const JudgmentResult result = isAutoPlay ? JudgmentResult::kSCritical : JudgmentResult::kError;
 		for (auto itr = m_passedLineJudgmentCursor; itr != m_lineJudgmentArray.end(); ++itr)
 		{
 			auto& [y, judgment] = *itr;
@@ -742,7 +747,7 @@ namespace MusicGame::Judgment
 	{
 		using namespace TimingWindow;
 
-		const JudgmentResult result = isAutoPlay ? JudgmentResult::kCritical : JudgmentResult::kError;
+		const JudgmentResult result = isAutoPlay ? JudgmentResult::kSCritical : JudgmentResult::kError;
 		const double thresholdSec = isAutoPlay ? 0.0 : LaserNote::kWindowSecSlam;
 
 		for (auto itr = m_passedSlamJudgmentCursor; itr != m_slamJudgmentArray.end(); ++itr)
@@ -767,7 +772,7 @@ namespace MusicGame::Judgment
 			laserSlamJudgmentRef.setResult(result);
 			judgmentHandlerRef.onLaserSlamJudged(result, laserSlamPulse, m_prevTimeSecForDraw, m_prevPulse, laserSlamJudgmentRef.direction());
 
-			if (result == JudgmentResult::kCritical)
+			if (result == JudgmentResult::kSCritical || result == JudgmentResult::kCritical)
 			{
 				// 判定した時間を記録(補正および効果音再生に使用)
 				laneStatusRef.lastLaserSlamJudgedTimeSec = Max(currentTimeSec, laserSlamJudgmentRef.sec());
