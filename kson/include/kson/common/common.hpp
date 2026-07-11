@@ -50,6 +50,19 @@ namespace kson
 	template <typename T>
 	using ByMeasureIdx = std::map<std::int64_t, T>;
 
+<<<<<<< HEAD
+	template <typename T>
+	struct DefKeyValuePair
+	{
+		std::string name;
+		T v;
+	};
+
+	[[nodiscard]]
+	bool AlmostEquals(double a, double b);
+
+=======
+>>>>>>> b9784d0 (chore: auto checkpoint before sync)
 	struct GraphValue
 	{
 		double v = 0.0;
@@ -68,6 +81,56 @@ namespace kson
 		}
 	};
 
+<<<<<<< HEAD
+	struct GraphCurveValue
+	{
+		double a = 0.0; // x-coordinate of the curve control point (0.0-1.0)
+		double b = 0.0; // y-coordinate of the curve control point (0.0-1.0)
+
+		GraphCurveValue() = default;
+
+		GraphCurveValue(double a, double b)
+			: a(a)
+			, b(b)
+		{
+		}
+
+		// Returns true if this represents a linear interpolation (no curve)
+		[[nodiscard]]
+		bool isLinear() const
+		{
+			return AlmostEquals(a, b);
+		}
+	};
+
+	struct GraphPoint
+	{
+		GraphValue v;
+		GraphCurveValue curve; // Default {0.0, 0.0} means linear interpolation
+
+		GraphPoint() = default;
+
+		/*implicit*/ GraphPoint(double value)
+			: v(value)
+			, curve()
+		{
+		}
+
+		GraphPoint(const GraphValue& v)
+			: v(v)
+			, curve()
+		{
+		}
+
+		GraphPoint(const GraphValue& v, const GraphCurveValue& curve)
+			: v(v)
+			, curve(curve)
+		{
+		}
+	};
+
+=======
+>>>>>>> b9784d0 (chore: auto checkpoint before sync)
 	struct Interval
 	{
 		RelPulse length = 0;
