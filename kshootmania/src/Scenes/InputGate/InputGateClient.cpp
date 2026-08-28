@@ -10,25 +10,10 @@ namespace InputGate
 	{
 		const String apiBaseUrl = ConfigIni::GetString(ConfigIni::Key::kInputGateUrl, U"");
 
-		if (apiBaseUrl.isEmpty())
-		{
-			// モックモード
-			co_await Co::Delay(0.5s);
+		const URL url = apiBaseUrl.isEmpty() ? U"http://localhost:3000/api/input_gate/list" : (apiBaseUrl + U"/list");
 
-			co_return Array<SongInfo>{
-				{ U"song_001", U"Test Song 1", U"Test Artist 1", U"http://example.com/jacket1.jpg", U"http://example.com/song1.zip", U"", U"hash1", 1024 * 1024 * 5 },
-				{ U"song_002", U"Test Song 2", U"Test Artist 2", U"http://example.com/jacket2.jpg", U"http://example.com/song2.zip", U"", U"hash2", 1024 * 1024 * 3 },
-				{ U"song_003", U"K-Shoot MANIA Theme", U"K-Shoot MANIA", U"", U"", U"", U"hash3", 1024 * 1024 * 2 },
-				{ U"song_004", U"New Feature Demo", U"Dev Team", U"", U"", U"", U"hash4", 1024 * 1024 * 8 },
-				{ U"song_005", U"Network Test", U"Server", U"", U"", U"", U"hash5", 1024 * 1024 * 1 },
-			};
-		}
-		else
-		{
-			const URL url = apiBaseUrl + U"/list.json"; // サーバー実装に合わせて変更
-
-			// 非同期でJSONを取得
-			AsyncHTTPTask task = SimpleHTTP::LoadAsync(url);
+		// 非同期でJSONを取得
+		AsyncHTTPTask task = SimpleHTTP::LoadAsync(url);
 
 			while (!task.isReady())
 			{
@@ -69,30 +54,9 @@ namespace InputGate
 	{
 		const String apiBaseUrl = ConfigIni::GetString(ConfigIni::Key::kInputGateUrl, U"");
 
-		if (apiBaseUrl.isEmpty())
-		{
-			// モックモード
-			co_await Co::Delay(0.3s);
+		const URL url = apiBaseUrl.isEmpty() ? U"http://localhost:3000/api/input_gate/ranking?song={}&diff={}"_fmt(songId, difficulty) : (apiBaseUrl + U"/ranking?song={}&diff={}"_fmt(songId, difficulty));
 
-			Array<RankingEntry> entries;
-			for (int32 i = 0; i < 20; ++i)
-			{
-				entries.push_back({
-					i + 1,
-					U"Player_{}"_fmt(i + 1),
-					10000000 - (i * 15000) - Random(0, 5000),
-					(i % 3 == 0) ? U"Gamepad" : U"Keyboard",
-					U"2026-02-20"
-				});
-			}
-
-			co_return entries;
-		}
-		else
-		{
-			const URL url = apiBaseUrl + U"/ranking.json?song={}&diff={}"_fmt(songId, difficulty);
-
-			AsyncHTTPTask task = SimpleHTTP::LoadAsync(url);
+		AsyncHTTPTask task = SimpleHTTP::LoadAsync(url);
 
 			while (!task.isReady())
 			{

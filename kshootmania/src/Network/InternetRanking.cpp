@@ -1,6 +1,8 @@
 #include "InternetRanking.hpp"
 #include "Ini/ConfigIni.hpp"
 #include <Siv3D.hpp>
+#include <future>
+#include <chrono>
 
 namespace InternetRanking
 {
@@ -64,13 +66,33 @@ namespace InternetRanking
 		// Note: Since we don't have a backend to test against, we'll log the attempt.
 		Logger << U"[ksm info] InternetRanking::SubmitScore: Posting to {}..."_fmt(url);
 
-		// NOTE: Actual network call commented out until backend is confirmed to avoid hanging/errors in dev environment without backend.
-		// const auto response = SimpleHTTP::Post(url, {}, JSON::From(data));
-		// if (response.isOK()) { ... }
+		const URL actualUrl = url.isEmpty() ? U"http://localhost:3000/api/ranking/submit" : url;
+		Logger << U"[ksm info] InternetRanking::SubmitScore: Posting to {}..."_fmt(actualUrl);
 
-		co_await Co::Delay(0.5s); // Simulate network time
+		const HashTable<String, String> headers = { { U"Content-Type", U"application/json" } };
+		JSON json;
+		to_json(json, data);
+		const std::string jsonStr = json.formatUTF8();
 
-		Logger << U"[ksm info] InternetRanking::SubmitScore: Score submission logic executed (Mocked network call).";
-		co_return true;
+		auto future = std::async(std::launch::async, [actualUrl, headers, jsonStr]() {
+			return SimpleHTTP::Post(actualUrl, headers, jsonStr.data(), jsonStr.size());
+		});
+
+		while (future.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
+		{
+			co_await Co::NextFrame();
+		}
+
+		const auto response = future.get();
+		if (response.isOK())
+		{
+			Logger << U"[ksm info] InternetRanking::SubmitScore: Score submission successful.";
+			co_return true;
+		}
+		else
+		{
+			Logger << U"[ksm error] InternetRanking::SubmitScore: Failed to submit score. Status code: {}"_fmt(EnumToString(response.getStatusCode()));
+			co_return false;
+		}
 	}
 }
