@@ -201,6 +201,12 @@ namespace MusicGame::Audio
 					{
 						if (pulseSet.contains(slamY))
 						{
+							if (filename == "mute")
+							{
+								pSlamSound = nullptr;
+								break;
+							}
+
 							if (m_slamSounds.contains(filename))
 							{
 								pSlamSound = &m_slamSounds.at(filename);
@@ -213,8 +219,11 @@ namespace MusicGame::Audio
 						}
 					}
 
-					// 直角音を再生
-					pSlamSound->play(volume * volumeScaleByNote * m_folderVolumeScale);
+					// 直角音がミュートでなければ再生
+					if (pSlamSound)
+					{
+						pSlamSound->play(volume * volumeScaleByNote * m_folderVolumeScale);
+					}
 					m_lastPlayedTimeSecs[i] = slamTimeSec;
 					m_autoPlaySELastPulses[i] = slamY;
 				}
@@ -299,6 +308,13 @@ namespace MusicGame::Audio
 			{
 				if (pulseSet.contains(slamY))
 				{
+					// If the filename is explicitly 'mute', we skip playing altogether
+					if (filename == "mute")
+					{
+						pSlamSound = nullptr;
+						break;
+					}
+
 					if (m_slamSounds.contains(filename))
 					{
 						pSlamSound = &m_slamSounds.at(filename);
@@ -311,8 +327,11 @@ namespace MusicGame::Audio
 				}
 			}
 
-			// 直角音を再生
-			pSlamSound->play(volume * volumeScaleByNote * m_folderVolumeScale);
+			// 直角音がミュートでなければ再生
+			if (pSlamSound)
+			{
+				pSlamSound->play(volume * volumeScaleByNote * m_folderVolumeScale);
+			}
 			m_lastPlayedTimeSecs[i] = laneStatus.lastLaserSlamJudgedTimeSec;
 		}
 	}
