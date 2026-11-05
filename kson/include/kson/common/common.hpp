@@ -51,6 +51,7 @@ namespace kson
 	using ByMeasureIdx = std::map<std::int64_t, T>;
 
 <<<<<<< HEAD
+=======
 	template <typename T>
 	struct DefKeyValuePair
 	{
@@ -61,8 +62,7 @@ namespace kson
 	[[nodiscard]]
 	bool AlmostEquals(double a, double b);
 
-=======
->>>>>>> b9784d0 (chore: auto checkpoint before sync)
+>>>>>>> origin/master
 	struct GraphValue
 	{
 		double v = 0.0;
@@ -82,6 +82,7 @@ namespace kson
 	};
 
 <<<<<<< HEAD
+=======
 	struct GraphCurveValue
 	{
 		double a = 0.0; // x-coordinate of the curve control point (0.0-1.0)
@@ -129,8 +130,7 @@ namespace kson
 		}
 	};
 
-=======
->>>>>>> b9784d0 (chore: auto checkpoint before sync)
+>>>>>>> origin/master
 	struct Interval
 	{
 		RelPulse length = 0;
