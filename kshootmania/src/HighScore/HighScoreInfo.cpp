@@ -18,6 +18,21 @@ int32 HighScoreInfo::score(GaugeType gaugeType) const
 	}
 }
 
+int32 HighScoreInfo::exScore(GaugeType gaugeType) const
+{
+	switch (gaugeType)
+	{
+	case GaugeType::kEasyGauge:
+		return easyGauge.exScore;
+	case GaugeType::kNormalGauge:
+		return normalGauge.exScore;
+	case GaugeType::kHardGauge:
+		return hardGauge.exScore;
+	default:
+		return 0;
+	}
+}
+
 Medal HighScoreInfo::medal() const
 {
 	// NORMALとHARDのPERFECT/FULLCOMBOは同じなので共有、EASYはタイミング判定しきい値が異なるので別にする

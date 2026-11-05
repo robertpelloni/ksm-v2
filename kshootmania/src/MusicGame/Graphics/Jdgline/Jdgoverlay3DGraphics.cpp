@@ -2,7 +2,7 @@
 #include "MusicGame/Graphics/GraphicsDefines.hpp"
 #include "MusicGame/GameStatus.hpp"
 #include "MusicGame/Camera/CameraMath.hpp"
-#include "kson/Common/Common.hpp"
+#include "kson/common/common.hpp"
 
 namespace MusicGame::Graphics
 {
@@ -62,8 +62,9 @@ namespace MusicGame::Graphics
 
 		switch (type)
 		{
+		case kSCritical:
 		case kCritical:
-			return m_chipCriticalTexture;
+			return m_chipCriticalTexture; // Fallback to normal critical texture for now
 
 		case kNearFast:
 		case kNear:

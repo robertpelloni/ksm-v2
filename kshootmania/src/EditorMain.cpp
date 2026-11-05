@@ -9,6 +9,10 @@
 #include "ksmaudio/ksmaudio.hpp"
 #include "RuntimeConfig.hpp"
 #include "Input/KeyConfig.hpp"
+#include "MusicGame/Graphics/Highway/Highway3DGraphics.hpp"
+#include "MusicGame/GameStatus.hpp"
+#include "MusicGame/ViewStatus.hpp"
+#include "MusicGame/PlayOption.hpp"
 
 #ifdef __APPLE__
 #include <ksmplatform_macos/input_method.h>
@@ -24,11 +28,22 @@ private:
 
 	Size m_prevSceneSize;
 
+	kson::ChartData m_chartData;
+	kson::TimingCache m_timingCache;
+	MusicGame::GameStatus m_gameStatus;
+	MusicGame::ViewStatus m_viewStatus;
+	MusicGame::PlayOption m_playOption;
+	MusicGame::Scroll::HighwayScrollContext m_highwayScrollContext;
+	std::array<HashSet<kson::Pulse>, kson::kNumLaserLanesSZ> m_laserCurvedPulses;
+
+	std::unique_ptr<MusicGame::Graphics::Highway3DGraphics> m_highwayGraphics;
+
 public:
 	Editor()
 		: m_canvas(noco::Canvas::Create())
 		, m_editorCanvas(noco::Canvas::Create(Scene::Size())->setAutoFitMode(noco::AutoFitMode::MatchSize))
 		, m_prevSceneSize(Scene::Size())
+		, m_highwayGraphics(std::make_unique<MusicGame::Graphics::Highway3DGraphics>())
 	{
 		// Editor Base Layout
 
@@ -51,22 +66,78 @@ public:
 			->setFontSize(24)
 			->setColor(Palette::Cyan);
 
+		// Zoom Control
+		auto zoomLabel = sidebar->emplaceChild(U"ZoomLabel", noco::InlineRegion{ .position = Vec2{ 10, 60 }, .size = Vec2{ 100, 30 } });
+		zoomLabel->emplaceComponent<noco::Label>(U"Lane Zoom:")->setFontSize(16);
+
+		auto zoomInBtn = sidebar->emplaceChild(U"ZoomInBtn", noco::InlineRegion{ .position = Vec2{ 120, 60 }, .size = Vec2{ 30, 30 } });
+		zoomInBtn->emplaceComponent<noco::Rect>()->setColor(ColorF(0.3));
+		zoomInBtn->emplaceComponent<noco::Label>(U"+")->setHorizontalAlign(noco::HorizontalAlign::Center);
+		zoomInBtn->setInteractable(true);
+
+		auto zoomOutBtn = sidebar->emplaceChild(U"ZoomOutBtn", noco::InlineRegion{ .position = Vec2{ 160, 60 }, .size = Vec2{ 30, 30 } });
+		zoomOutBtn->emplaceComponent<noco::Rect>()->setColor(ColorF(0.3));
+		zoomOutBtn->emplaceComponent<noco::Label>(U"-")->setHorizontalAlign(noco::HorizontalAlign::Center);
+		zoomOutBtn->setInteractable(true);
+
+		// Split Control
+		auto splitLabel = sidebar->emplaceChild(U"SplitLabel", noco::InlineRegion{ .position = Vec2{ 10, 110 }, .size = Vec2{ 100, 30 } });
+		splitLabel->emplaceComponent<noco::Label>(U"Lane Split:")->setFontSize(16);
+
+		auto splitBtn = sidebar->emplaceChild(U"SplitBtn", noco::InlineRegion{ .position = Vec2{ 120, 110 }, .size = Vec2{ 70, 30 } });
+		splitBtn->emplaceComponent<noco::Rect>()->setColor(ColorF(0.3));
+		splitBtn->emplaceComponent<noco::Label>(U"Toggle")->setHorizontalAlign(noco::HorizontalAlign::Center);
+		splitBtn->setInteractable(true);
+
+		// Event handlers for dynamic view modifications
+		zoomInBtn->addEventHandler(noco::Event::Type::Click, [this](const noco::Event& e) {
+			m_viewStatus.camStatus.zoomBottom += 10.0;
+		});
+
+		zoomOutBtn->addEventHandler(noco::Event::Type::Click, [this](const noco::Event& e) {
+			m_viewStatus.camStatus.zoomBottom -= 10.0;
+		});
+
+		splitBtn->addEventHandler(noco::Event::Type::Click, [this](const noco::Event& e) {
+			m_viewStatus.camStatus.centerSplit = (m_viewStatus.camStatus.centerSplit > 0.0) ? 0.0 : 50.0;
+		});
+
+		// Effects List UI
+		auto fxLabel = sidebar->emplaceChild(U"FXLabel", noco::InlineRegion{ .position = Vec2{ 10, 160 }, .size = Vec2{ 230, 30 } });
+		fxLabel->emplaceComponent<noco::Label>(U"Audio FX:")->setFontSize(20)->setColor(Palette::Cyan);
+
+		auto fxListContainer = sidebar->emplaceChild(U"FXList", noco::InlineRegion{ .position = Vec2{ 10, 190 }, .size = Vec2{ 230, 150 } });
+		// We will populate this container dynamically when a chart is loaded
+
 		// 3. Chart Canvas Area (Center/Right)
 		auto chartArea = m_editorCanvas->emplaceChild(U"ChartArea", noco::InlineRegion{ .position = Vec2{ 250, 40 }, .size = Vec2{ Scene::Size().x - 250, Scene::Size().y - 40 }, .sizeRatio = Vec2{ 1.0, 1.0 } });
 		chartArea->emplaceComponent<noco::Rect>()->setColor(ColorF(0.05, 0.05, 0.05));
-
-		auto placeholderLabel = chartArea->emplaceChild(U"Placeholder", noco::InlineRegion{ .sizeRatio = Vec2::One() });
-		placeholderLabel->emplaceComponent<noco::Label>(U"Chart editing canvas goes here")
-			->setFontSize(28)
-			->setColor(Palette::Gray)
-			->setHorizontalAlign(noco::HorizontalAlign::Center)
-			->setVerticalAlign(noco::VerticalAlign::Middle);
 	}
 
 	void update()
 	{
 		m_editorCanvas->update();
 		m_canvas->update();
+
+		// Basic interaction: Left click to advance the preview scroll forward.
+		// For proper implementation, a timeline scrub bar should be introduced.
+		if (MouseL.down())
+		{
+			// Advance pulse for preview
+			m_gameStatus.currentPulse += kson::kResolution;
+			m_gameStatus.currentPulseDouble += kson::kResolution;
+			m_gameStatus.currentTimeSec += 0.5; // Simulate advancing in time slightly
+		}
+
+		if (MouseR.down())
+		{
+			if (m_gameStatus.currentPulse >= kson::kResolution)
+			{
+				m_gameStatus.currentPulse -= kson::kResolution;
+				m_gameStatus.currentPulseDouble -= kson::kResolution;
+				m_gameStatus.currentTimeSec -= 0.5;
+			}
+		}
 
 		const auto sceneSize = Scene::Size();
 		if (m_prevSceneSize != sceneSize)
@@ -100,6 +171,19 @@ public:
 
 	void draw() const
 	{
+		// Draw 3D Highway Preview first (so UI sits on top)
+		// Fake view status
+		MusicGame::ViewStatus viewStatus = m_viewStatus;
+		m_highwayGraphics->update(viewStatus);
+
+		// Render the highway 2D backing to texture
+		m_highwayGraphics->draw2D(m_chartData, m_laserCurvedPulses, m_playOption, m_timingCache, m_gameStatus, viewStatus, m_highwayScrollContext);
+
+		// Combine to 3D Viewport
+		const BasicCamera3D camera{ viewStatus.camStatus.cameraPos, viewStatus.camStatus.cameraLookAt, Vec3::Up() };
+		Graphics3D::SetCameraTransform(camera);
+		m_highwayGraphics->draw3D(viewStatus);
+
 		m_canvas->draw();
 		m_editorCanvas->draw();
 	}
@@ -108,6 +192,66 @@ public:
 	bool isExitRequested() const
 	{
 		return m_exitRequested;
+	}
+
+	void loadChart(FilePathView path)
+	{
+		if (path.ends_with(U".kson"))
+		{
+			auto loaded = kson::LoadKsonChartData(path.toUTF8());
+			if (loaded.error == kson::Error::None)
+			{
+				m_chartData = std::move(loaded.chartData);
+			}
+		}
+		else if (path.ends_with(U".ksh"))
+		{
+			auto loaded = kson::LoadKshChartData(path.toUTF8());
+			if (loaded.error == kson::Error::None)
+			{
+				m_chartData = std::move(loaded.chartData);
+			}
+		}
+
+		// Ensure stop events are baked into scroll speed for visual simulation
+		m_chartData.beat.scrollSpeed = kson::ExpandCurveSegments(m_chartData.beat.scrollSpeed, kson::kCurveSubdivisionInterval);
+		m_chartData.beat.scrollSpeed = kson::BakeStopIntoScrollSpeed(m_chartData.beat.scrollSpeed, m_chartData.beat.stop);
+
+		m_timingCache = kson::CreateTimingCache(m_chartData.beat);
+
+		updateFXListUI();
+	}
+
+	void updateFXListUI()
+	{
+		if (!m_editorCanvas) return;
+		auto sidebar = m_editorCanvas->findByName(U"Sidebar");
+		if (!sidebar) return;
+		auto fxList = sidebar->findByName(U"FXList");
+		if (!fxList) return;
+
+		fxList->destroyAllChildren(); // Clear previous list
+
+		int32 yOffset = 0;
+		const auto& audioEffect = m_chartData.audio.audioEffect;
+
+		// 1. Render #define_fx
+		for (const auto& [name, def] : audioEffect.fx.def)
+		{
+			auto item = fxList->emplaceChild(U"FXItem_" + Unicode::FromUTF8(name), noco::InlineRegion{ .position = Vec2{ 0, yOffset }, .size = Vec2{ 230, 20 } });
+			String text = U"[FX] " + Unicode::FromUTF8(name) + U" (" + Unicode::FromUTF8(kson::AudioEffectTypeToStr(def.type)) + U")";
+			item->emplaceComponent<noco::Label>(text)->setFontSize(14)->setColor(Palette::Lightgreen);
+			yOffset += 25;
+		}
+
+		// 2. Render #define_filter
+		for (const auto& [name, def] : audioEffect.laser.def)
+		{
+			auto item = fxList->emplaceChild(U"FilterItem_" + Unicode::FromUTF8(name), noco::InlineRegion{ .position = Vec2{ 0, yOffset }, .size = Vec2{ 230, 20 } });
+			String text = U"[Filter] " + Unicode::FromUTF8(name) + U" (" + Unicode::FromUTF8(kson::AudioEffectTypeToStr(def.type)) + U")";
+			item->emplaceComponent<noco::Label>(text)->setFontSize(14)->setColor(Palette::Lightpink);
+			yOffset += 25;
+		}
 	}
 
 	void requestExit()
@@ -196,6 +340,17 @@ void EditorMain()
 	noco::SetGlobalDefaultFont(uiFont);
 
 	Editor editor;
+
+	// Note: Currently we don't have a file picker in NocoUI scaffolded yet.
+	// For testing chart rendering during layout init, we attempt to load a test file if present.
+	if (FileSystem::Exists(U"test.kson"))
+	{
+		editor.loadChart(U"test.kson");
+	}
+	else if (FileSystem::Exists(U"test.ksh"))
+	{
+		editor.loadChart(U"test.ksh");
+	}
 
 	while (System::Update())
 	{

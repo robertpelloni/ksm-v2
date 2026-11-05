@@ -35,13 +35,13 @@ namespace MusicGame
 			return Achievement::kNone;
 		}
 
-		if (comboStats.critical == totalCombo)
+		if ((comboStats.critical + comboStats.sCritical) == totalCombo)
 		{
 			return Achievement::kPerfect;
 		}
 		else if (maxCombo == totalCombo)
 		{
-			assert(comboStats.critical + comboStats.totalNear() == totalCombo);
+			assert((comboStats.critical + comboStats.sCritical + comboStats.totalNear()) == totalCombo);
 			return Achievement::kFullCombo;
 		}
 		else

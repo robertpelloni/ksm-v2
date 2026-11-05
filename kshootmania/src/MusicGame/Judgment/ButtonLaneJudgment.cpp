@@ -209,7 +209,15 @@ namespace MusicGame::Judgment
 		{
 			// チップノーツの判定
 			Optional<ChipAnimType> chipAnimType = none;
-			if (minDistance < ChipNote::kWindowSecCritical)
+			if (minDistance < ChipNote::kWindowSecSCritical)
+			{
+				// S-CRITICAL判定
+				m_chipJudgmentArray.at(nearestNotePulse) = JudgmentResult::kSCritical;
+				judgmentHandlerRef.onChipJudged(JudgmentResult::kSCritical, diffSec);
+				laneStatusRef.keyBeamType = KeyBeamType::kSCritical;
+				chipAnimType = ChipAnimType::kSCritical;
+			}
+			else if (minDistance < ChipNote::kWindowSecCritical)
 			{
 				// CRITICAL判定
 				m_chipJudgmentArray.at(nearestNotePulse) = JudgmentResult::kCritical;
@@ -320,8 +328,8 @@ namespace MusicGame::Judgment
 				}
 
 				// ロングノーツのCRITICAL判定
-				judgment.result = JudgmentResult::kCritical;
-				judgmentHandlerRef.onLongJudged(JudgmentResult::kCritical);
+				judgment.result = JudgmentResult::kSCritical;
+				judgmentHandlerRef.onLongJudged(JudgmentResult::kSCritical);
 			}
 		}
 	}
@@ -330,7 +338,7 @@ namespace MusicGame::Judgment
 	{
 		using namespace TimingWindow;
 
-		const JudgmentResult result = isAutoPlay ? JudgmentResult::kCritical : JudgmentResult::kError;
+		const JudgmentResult result = isAutoPlay ? JudgmentResult::kSCritical : JudgmentResult::kError;
 		const double thresholdSec = isAutoPlay ? 0.0 : ChipNote::kWindowSecLateErrorBegin;
 
 		for (auto itr = m_passedNoteCursor; itr != lane.end(); ++itr)
@@ -346,7 +354,7 @@ namespace MusicGame::Judgment
 					judgmentHandlerRef.onChipJudged(result);
 
 					// 見逃し判定はERRORかオートプレイのCRITICALのみ
-					const ChipAnimType animType = result == JudgmentResult::kCritical ? ChipAnimType::kCritical : ChipAnimType::kError;
+					const ChipAnimType animType = (result == JudgmentResult::kSCritical) ? ChipAnimType::kSCritical : ((result == JudgmentResult::kCritical) ? ChipAnimType::kCritical : ChipAnimType::kError);
 					laneStatusRef.chipAnim.push({
 						.startTimeSec = currentTimeSec,
 						.type = animType,
@@ -356,7 +364,7 @@ namespace MusicGame::Judgment
 					{
 						// オートプレイの場合はここでCRITICALのキービームを表示
 						laneStatusRef.keyBeamTimeSec = currentTimeSecForDraw;
-						laneStatusRef.keyBeamType = KeyBeamType::kCritical;
+						laneStatusRef.keyBeamType = KeyBeamType::kSCritical;
 
 						// FXチップキー音のオートプレイ用にタイミングを記録
 						laneStatusRef.lastChipJudgedTimeSec = currentTimeSec;

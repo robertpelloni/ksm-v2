@@ -9,6 +9,7 @@ namespace MusicGame::Judgment
 		kNearFast,
 		kNearSlow,
 		kCritical,
+		kSCritical,
 	};
 
 	enum class KeyBeamType : int32
@@ -19,6 +20,7 @@ namespace MusicGame::Judgment
 		kNearSlow,
 		kNearFast,
 		kErrorFast,
+		kSCritical,
 
 		kNumBeamTypes,
 	};
@@ -30,12 +32,14 @@ namespace MusicGame::Judgment
 		kNear,
 		kNearFast,
 		kCritical,
+		kSCritical,
 	};
 
 	namespace TimingWindow
 	{
 		namespace ChipNote
 		{
+			constexpr double kWindowSecSCritical = 0.022; // Half of normal critical for S-Critical (S-CRITICAL is typically half of CRITICAL)
 			constexpr double kWindowSecCritical = 0.044;
 			constexpr double kWindowSecNear = 0.114;
 			constexpr double kWindowSecError = 0.260;

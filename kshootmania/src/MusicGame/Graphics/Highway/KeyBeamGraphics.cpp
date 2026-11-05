@@ -51,8 +51,15 @@ namespace MusicGame::Graphics
 				alpha = 1.0 - (sec - kKeyBeamFullWidthSec) / (kKeyBeamEndSec - kKeyBeamFullWidthSec);
 			}
 
+			int32 beamTypeIndex = static_cast<int32>(laneStatus.keyBeamType);
+			// Currently S-Critical doesn't have its own column in the texture, so fallback to standard critical beam
+			if (laneStatus.keyBeamType == Judgment::KeyBeamType::kSCritical)
+			{
+				beamTypeIndex = static_cast<int32>(Judgment::KeyBeamType::kCritical);
+			}
+
 			const TextureRegion beamTextureRegion = m_beamTexture(
-				kBTKeyBeamTextureSize.x * (static_cast<double>(static_cast<int32>(laneStatus.keyBeamType)) + 0.5 - widthRate / 2),
+				kBTKeyBeamTextureSize.x * (static_cast<double>(beamTypeIndex) + 0.5 - widthRate / 2),
 				0,
 				kBTKeyBeamTextureSize.x * widthRate,
 				kBTKeyBeamTextureSize.y);

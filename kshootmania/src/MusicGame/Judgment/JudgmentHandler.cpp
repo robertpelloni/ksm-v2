@@ -217,6 +217,7 @@ namespace MusicGame::Judgment
 		return PlayResult
 		{
 			.score = m_scoringStatus.score(),
+			.exScore = m_scoringStatus.exScore(),
 			.maxCombo = m_scoringStatus.maxCombo(),
 			.finalCourseCombo = m_scoringStatus.courseCombo(),
 			.totalCombo = m_totalCombo,
