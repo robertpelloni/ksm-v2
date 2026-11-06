@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <cassert>
 #include <cstdint>
-#include "kson/encoding/encoding.hpp"
+#include "kson/Encoding/Encoding.hpp"
 
 namespace kson
 {
@@ -50,7 +50,6 @@ namespace kson
 	template <typename T>
 	using ByMeasureIdx = std::map<std::int64_t, T>;
 
-<<<<<<< HEAD
 	template <typename T>
 	struct DefKeyValuePair
 	{
@@ -59,14 +58,17 @@ namespace kson
 	};
 
 	[[nodiscard]]
-	bool AlmostEquals(double a, double b);
+	inline bool AlmostEquals(double a, double b)
+	{
+		return std::abs(a - b) <= 1e-5;
+	}
 
-=======
->>>>>>> b9784d0 (chore: auto checkpoint before sync)
 	struct GraphValue
 	{
 		double v = 0.0;
 		double vf = 0.0;
+
+		GraphValue() = default;
 
 		GraphValue(double v)
 			: v(v)
@@ -81,7 +83,6 @@ namespace kson
 		}
 	};
 
-<<<<<<< HEAD
 	struct GraphCurveValue
 	{
 		double a = 0.0; // x-coordinate of the curve control point (0.0-1.0)
@@ -129,14 +130,17 @@ namespace kson
 		}
 	};
 
-=======
->>>>>>> b9784d0 (chore: auto checkpoint before sync)
 	struct Interval
 	{
 		RelPulse length = 0;
 	};
 
-	using Graph = ByPulse<GraphValue>;
+		struct GraphSection
+	{
+		ByRelPulse<GraphPoint> v;
+	};
+
+	using Graph = ByPulse<GraphPoint>;
 
 	using GraphSections = ByPulse<ByRelPulse<GraphValue>>;
 
@@ -150,6 +154,17 @@ namespace kson
 	}
 
 	template <typename T, typename U>
+	U ValueAtOrDefault(const std::map<T, U>& map, T key, const U& defaultValue)
+	{
+		const auto it = map.find(key);
+		if (it != map.end())
+		{
+			return it->second;
+		}
+		return defaultValue;
+	}
+
+	template <typename T, typename U>
 	auto CurrentAt(const std::map<T, U>& map, T key)
 	{
 		auto itr = map.upper_bound(key);
@@ -158,6 +173,12 @@ namespace kson
 			--itr;
 		}
 		return itr;
+	}
+
+	template <typename T, typename U>
+	auto ValueItrAt(const std::map<T, U>& map, T key)
+	{
+		return CurrentAt(map, key);
 	}
 
 	template <typename T>

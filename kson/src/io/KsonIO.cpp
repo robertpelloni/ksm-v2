@@ -6,8 +6,15 @@
 #include <limits>
 #include <cmath>
 
+template <typename T>
+double RemoveFloatingPointError(T value)
+{
+	return std::round(static_cast<double>(value) * 1e6) / 1e6;
+}
+
 namespace
 {
+
 	using namespace kson;
 
 	std::filesystem::path U8Path(const std::string& utf8Str)
@@ -353,7 +360,7 @@ namespace
 	{
 		// Skip if empty
 		bool allEmpty = true;
-		for (std::size_t i = 0U; i < kNumLaserLanesSZ; ++i)
+		for (std::size_t i = 0U; i < kNumLaserLanes; ++i)
 		{
 			if (!lanes[i].empty())
 			{
@@ -367,7 +374,7 @@ namespace
 		}
 
 		nlohmann::json& j = json[key];
-		for (std::size_t i = 0U; i < kNumLaserLanesSZ; ++i)
+		for (std::size_t i = 0U; i < kNumLaserLanes; ++i)
 		{
 			nlohmann::json& laneJSON = j.emplace_back(nlohmann::json::array());
 			for (const auto& [y, laserSection] : lanes[i])
@@ -2138,6 +2145,7 @@ kson::ErrorType kson::SaveKsonChartData(const std::string& filePath, const Chart
 
 namespace
 {
+
 	bool ValidateAndParseKsonJson(
 		std::istream& stream,
 		nlohmann::json* pOutJson,

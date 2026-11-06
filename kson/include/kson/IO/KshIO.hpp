@@ -1,5 +1,5 @@
 #pragma once
-#include "kson/Common/Common.hpp"
+#include "kson/common/common.hpp"
 #include "kson/ChartData.hpp"
 #include "kson/IO/KshLoadingDiag.hpp"
 #include "kson/IO/KshSavingDiag.hpp"
