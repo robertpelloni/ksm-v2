@@ -35,6 +35,11 @@ else()
 endif()
 
 file(GLOB_RECURSE sources src/*.cpp)
+list(REMOVE_ITEM sources
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/io/ksh_io.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/io/kson_io.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/audio/audio_effect.cpp"
+)
 
 if(KSON_BUILD_SHARED)
     add_library(kson SHARED ${sources})

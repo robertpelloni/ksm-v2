@@ -504,7 +504,7 @@ namespace
 			bool active = false;
 			double lastValue = 0.0;
 		};
-		std::array<LaserState, kNumLaserLanesSZ> laserStates;
+		std::array<LaserState, kNumLaserLanes> laserStates;
 
 		// Laser audio effect state (output only when changed)
 		std::string currentFilterType;
@@ -512,7 +512,7 @@ namespace
 		std::int32_t currentPfiltergain = 50;
 
 		// FX audio effect state (output only when changed)
-		std::array<std::string, kNumFXLanesSZ> currentFXAudioEffects;
+		std::array<std::string, kNumFXLanes> currentFXAudioEffects;
 
 		MeasureExportState()
 		{

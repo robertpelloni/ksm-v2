@@ -14,7 +14,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 # Test executable
-file(GLOB_RECURSE TEST_SOURCES "*.cpp")
+file(GLOB TEST_SOURCES "*.cpp")
 add_executable(kson_test
     ${TEST_SOURCES}
 )
