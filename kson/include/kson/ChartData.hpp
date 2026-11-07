@@ -1,5 +1,5 @@
 #pragma once
-#include "kson/Common/Common.hpp"
+#include "kson/common/common.hpp"
 #include "kson/Meta/MetaInfo.hpp"
 #include "kson/Beat/BeatInfo.hpp"
 #include "kson/Gauge/GaugeInfo.hpp"

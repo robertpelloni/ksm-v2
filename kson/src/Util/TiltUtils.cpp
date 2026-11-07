@@ -1,3 +1,4 @@
+#include <cmath>
 #include "kson/Util/TiltUtils.hpp"
 #include "kson/Util/GraphCurve.hpp"
 #include <variant>

@@ -1,6 +1,6 @@
 #pragma once
 #include <optional>
-#include "kson/Common/Common.hpp"
+#include "kson/common/common.hpp"
 #include "kson/Note/NoteInfo.hpp"
 
 namespace kson
