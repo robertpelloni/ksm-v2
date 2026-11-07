@@ -1,3 +1,6 @@
+#include <set>
+#include <algorithm>
+#include <stdexcept>
 #include "kson/Audio/AudioEffect.hpp"
 
 namespace
