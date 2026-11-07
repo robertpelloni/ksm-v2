@@ -1,5 +1,5 @@
 #pragma once
-#include "kson/Common/Common.hpp"
+#include "kson/common/common.hpp"
 #include <variant>
 
 namespace kson

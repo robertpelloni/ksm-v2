@@ -1,3 +1,7 @@
+#include <array>
+#include <vector>
+#include <map>
+#include <unordered_map>
 #include "kson/IO/KshIO.hpp"
 #include "kson/Encoding/Encoding.hpp"
 #include <filesystem>
@@ -1187,14 +1191,14 @@ namespace
 
 	struct PreparedLongNoteArray
 	{
-		std::array<PreparedLongBTNote, kNumBTLanesSZ> bt;
-		std::array<PreparedLongFXNote, kNumFXLanesSZ> fx;
-		std::array<PreparedLaserSection, kNumLaserLanesSZ> laser;
+		std::array<PreparedLongBTNote, kNumBTLanes> bt;
+		std::array<PreparedLongFXNote, kNumFXLanes> fx;
+		std::array<PreparedLaserSection, kNumLaserLanes> laser;
 
 		PreparedLongNoteArray(ChartData* pTargetChartData, KshLoadingDiag* pKshDiag)
-			: bt(MakePreparedLongNoteArray<PreparedLongBTNote, kNumBTLanesSZ>(pTargetChartData))
-			, fx(MakePreparedLongNoteArray<PreparedLongFXNote, kNumFXLanesSZ>(pTargetChartData))
-			, laser(MakePreparedLongNoteArray<PreparedLaserSection, kNumLaserLanesSZ>(pTargetChartData, pKshDiag))
+			: bt(MakePreparedLongNoteArray<PreparedLongBTNote, kNumBTLanes>(pTargetChartData))
+			, fx(MakePreparedLongNoteArray<PreparedLongFXNote, kNumFXLanes>(pTargetChartData))
+			, laser(MakePreparedLongNoteArray<PreparedLaserSection, kNumLaserLanes>(pTargetChartData, pKshDiag))
 		{
 		}
 	};
@@ -1562,10 +1566,10 @@ namespace
 		std::unordered_map<std::string, ByPulse<GraphCurveValue>> bufferedCurves;
 
 		// Note option buffers (key: chart line index)
-		std::array<std::unordered_set<std::size_t>, kNumLaserLanesSZ> currentMeasureLaserXScale2x;
-		std::array<std::unordered_map<std::size_t, std::string>, kNumFXLanesSZ> currentMeasureFXAudioEffectStrs; // "fx-l=" or "fx-r=" in KSH
-		std::array<std::unordered_map<std::size_t, std::string>, kNumFXLanesSZ> currentMeasureFXAudioEffectParamStrs; // "fx-l_param1=" or "fx-r_param1=" in KSH
-		std::array<std::unordered_map<std::size_t, BufKeySound>, kNumFXLanesSZ> currentMeasureFXKeySounds; // "fx-l_se=" or "fx-r_se=" in KSH
+		std::array<std::unordered_set<std::size_t>, kNumLaserLanes> currentMeasureLaserXScale2x;
+		std::array<std::unordered_map<std::size_t, std::string>, kNumFXLanes> currentMeasureFXAudioEffectStrs; // "fx-l=" or "fx-r=" in KSH
+		std::array<std::unordered_map<std::size_t, std::string>, kNumFXLanes> currentMeasureFXAudioEffectParamStrs; // "fx-l_param1=" or "fx-r_param1=" in KSH
+		std::array<std::unordered_map<std::size_t, BufKeySound>, kNumFXLanes> currentMeasureFXKeySounds; // "fx-l_se=" or "fx-r_se=" in KSH
 		std::unordered_map<std::size_t, std::string> currentMeasureLaserKeySounds; // "chokkakuse=" in KSH
 
 		Pulse currentPulse = 0;
@@ -2058,7 +2062,7 @@ namespace
 								continue;
 							}
 
-							if (currentBlock == kBlockIdxBT && laneIdx < kNumBTLanesSZ) // BT notes
+							if (currentBlock == kBlockIdxBT && laneIdx < kNumBTLanes) // BT notes
 							{
 								auto& preparedLongNoteRef = preparedLongNoteArray.bt[laneIdx];
 								switch (buf[j])
@@ -2079,7 +2083,7 @@ namespace
 									break;
 								}
 							}
-							else if (currentBlock == kBlockIdxFX && laneIdx < kNumFXLanesSZ) // FX notes
+							else if (currentBlock == kBlockIdxFX && laneIdx < kNumFXLanes) // FX notes
 							{
 								auto& preparedLongNoteRef = preparedLongNoteArray.fx[laneIdx];
 								switch (buf[j])
@@ -2125,7 +2129,7 @@ namespace
 									break;
 								}
 							}
-							else if (currentBlock == kBlockIdxLaser && laneIdx < kNumLaserLanesSZ) // Laser notes
+							else if (currentBlock == kBlockIdxLaser && laneIdx < kNumLaserLanes) // Laser notes
 							{
 								auto& preparedLaserSectionRef = preparedLongNoteArray.laser[laneIdx];
 								switch (buf[j])
@@ -2164,7 +2168,7 @@ namespace
 									break;
 								}
 							}
-							else if (currentBlock == kBlockIdxLaser && laneIdx == kNumLaserLanesSZ) // Lane spin
+							else if (currentBlock == kBlockIdxLaser && laneIdx == kNumLaserLanes) // Lane spin
 							{
 								// Create a lane spin from string
 								const PreparedLaneSpin laneSpin = PreparedLaneSpin::FromKshSpinStr(buf.substr(j));
@@ -2232,21 +2236,21 @@ namespace
 				optionLines.clear();
 				commentLines.clear();
 				unknownLines.clear();
-				for (auto& set : currentMeasureLaserXScale2x)
+				for (std::size_t i = 0; i < currentMeasureLaserXScale2x.size(); ++i)
 				{
-					set.clear();
+					currentMeasureLaserXScale2x[i].clear();
 				}
-				for (auto& map : currentMeasureFXAudioEffectStrs)
+				for (std::size_t i = 0; i < currentMeasureFXAudioEffectStrs.size(); ++i)
 				{
-					map.clear();
+					currentMeasureFXAudioEffectStrs[i].clear();
 				}
-				for (auto& map : currentMeasureFXAudioEffectParamStrs)
+				for (std::size_t i = 0; i < currentMeasureFXAudioEffectParamStrs.size(); ++i)
 				{
-					map.clear();
+					currentMeasureFXAudioEffectParamStrs[i].clear();
 				}
-				for (auto& map : currentMeasureFXKeySounds)
+				for (std::size_t i = 0; i < currentMeasureFXKeySounds.size(); ++i)
 				{
-					map.clear();
+					currentMeasureFXKeySounds[i].clear();
 				}
 				currentMeasureLaserKeySounds.clear();
 				currentPulse += kResolution4 * currentTimeSig.n / currentTimeSig.d;
@@ -2262,8 +2266,9 @@ namespace
 		}
 
 		// KSH file must end with the bar line "--" (except for user-defined audio effects), so there can never be a prepared button note here
-		for (const auto& preparedBTNote : preparedLongNoteArray.bt)
+		for (std::size_t i = 0; i < preparedLongNoteArray.bt.size(); ++i)
 		{
+			const auto& preparedBTNote = preparedLongNoteArray.bt[i];
 			if (preparedBTNote.prepared())
 			{
 				pKshDiag->warnings.push_back({
@@ -2274,8 +2279,9 @@ namespace
 				});
 			}
 		}
-		for (const auto& preparedFXNote : preparedLongNoteArray.fx)
+		for (std::size_t i = 0; i < preparedLongNoteArray.fx.size(); ++i)
 		{
+			const auto& preparedFXNote = preparedLongNoteArray.fx[i];
 			if (preparedFXNote.prepared())
 			{
 				pKshDiag->warnings.push_back({
@@ -2288,8 +2294,9 @@ namespace
 		}
 
 		// The prepared laser section is published only when the laser lane is blank ("-"), so there can be unpublished laser sections here
-		for (auto& preparedFXSection : preparedLongNoteArray.laser)
+		for (std::size_t i = 0; i < preparedLongNoteArray.laser.size(); ++i)
 		{
+			auto& preparedFXSection = preparedLongNoteArray.laser[i];
 			preparedFXSection.publishLaserNote(fileLineNo);
 		}
 

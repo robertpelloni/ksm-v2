@@ -1,5 +1,5 @@
 #pragma once
-#include "kson/Common/Common.hpp"
+#include "kson/common/common.hpp"
 #include "BGMInfo.hpp"
 #include "KeySound.hpp"
 #include "AudioEffect.hpp"

@@ -1,5 +1,5 @@
 #include "kson/io/ksh_io.hpp"
-#include "kson/encoding/encoding.hpp"
+#include "kson/Encoding/Encoding.hpp"
 #include <filesystem>
 #include <fstream>
 #include <sstream>
