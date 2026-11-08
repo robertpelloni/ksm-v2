@@ -1,7 +1,7 @@
 # Dashboard
 
 **Project Status**: Active Development
-**Version**: 2.0.0-alpha31
+**Version**: 2.0.0-alpha32
 
 ## Submodules
 
@@ -16,7 +16,7 @@
 ## Feature Status
 
 *   **Audio**: Backend configuration (Device/Buffer) implemented via Option Menu (WASAPI Shared).
-*   **Internet Ranking**: Backend integrated (Async HTTP POST), real submission enabled.
+*   **Internet Ranking**: Backend integrated (Async HTTP POST), real submission enabled, mock server score receiver active.
 *   **Input Gate**: Download manager active, Auto Update check implemented (Client/Song List).
 *   **Hardware**: LED Lighting (HID) support integrated.
 *   **Editor**: Verified stub (requires GUI build).

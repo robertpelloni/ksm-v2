@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+## [2.0.0-alpha32] - 2026-05-20
+
+### Added
+- **Mock Server Score Submission & Live Rankings**:
+    - Added HTTP `POST` handler to `scripts/mock_input_gate_server.py` supporting `InternetRanking::SubmitScore` payloads (`score`, `maxCombo`, `criticalCount`, `nearCount`, `errorCount`, `gaugeValue`).
+    - Dynamically incorporates submitted player scores into the `/ranking.json` leaderboard, maintaining sorted ranks alongside simulated players.
+
 ## [2.0.0-alpha31] - 2026-05-20
 
 ### Fixed

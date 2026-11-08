@@ -10,7 +10,7 @@
 - [ ] **Internet Ranking**
     - [x] Implement real score submission (Client side done).
     - [x] Implement "Ranking" tab in Input Gate (view rankings).
-    - [ ] Deploy production-grade backend ranking microservice.
+    - [x] Implement mock server score receiver (`POST` handler in `scripts/mock_input_gate_server.py`) and dynamic leaderboard update.
 - [ ] **Editor**
     - [x] Verify `kshooteditor` builds and runs (CMake target exists).
     - [ ] Check feature parity with v1 editor (Initial NocoUI layout created).

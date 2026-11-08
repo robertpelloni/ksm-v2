@@ -64,6 +64,7 @@ To achieve total feature parity with K-Shoot MANIA v1 and commercial rhythm game
 - [x] Download from Input Gate (Client logic implemented, mock active)
 - [x] Auto Update (Version Check & Notification)
 - [x] Ranking Tab UI (Client logic)
+- [x] Mock server score submission & dynamic leaderboard
 - [ ] Unlock Conditions & Popups
 
 ### 🛠️ Build & CI Pipeline

@@ -1,6 +1,10 @@
-# Session Handoff (2.0.0-alpha31)
+# Session Handoff (2.0.0-alpha32)
 
 ## Summary of Changes
+*   **Mock Server Score Submission & Live Rankings**:
+    - Added HTTP `POST` handler to `scripts/mock_input_gate_server.py` supporting `InternetRanking::SubmitScore` payloads (`score`, `maxCombo`, `criticalCount`, `nearCount`, `errorCount`, `gaugeValue`).
+    - Dynamically incorporates submitted player scores into the `/ranking.json` leaderboard, maintaining sorted ranks alongside simulated players.
+    - Verified `POST` submission and leaderboard rendering with `curl` requests.
 *   **kson Build & Test Suite Stability**:
     - Resolved merge conflict markers and harmonized type definitions (`GraphPoint`, `GraphSection`, `GraphValue() = default;`) in `kson/include/kson/common/common.hpp`.
     - Added inline `AlmostEquals()`, `ValueAtOrDefault()`, and `ValueItrAt()` helper utilities to support strict C++20 compilation on Linux GCC 13.
@@ -9,13 +13,13 @@
     - Defined `RemoveFloatingPointError()` in `KsonIO.cpp` and fixed lane constant naming (`kNumBTLanes`, `kNumFXLanes`, `kNumLaserLanes`).
     - Excluded duplicate legacy files in `kson/CMakeLists.txt` and prevented non-test artifact globbing in `kson/tests/CMakeLists.txt`.
     - Validated that `npm test` builds cleanly and passes all 45 test cases and 979 assertions.
-*   **Version Bump**: Updated `VERSION` to `2.0.0-alpha31` and updated `CHANGELOG.md`, `TODO.md`, `DASHBOARD.md`.
+*   **Version Bump**: Updated `VERSION` to `2.0.0-alpha32` and updated `CHANGELOG.md`, `TODO.md`, `DASHBOARD.md`.
 
 ## Current State
-*   **Version**: 2.0.0-alpha31
-*   **Codebase**: `kson` builds and all unit tests pass with 0 errors. `SelectMenu` filtering works. `LightingManager` iterates generic JSON HID bindings.
+*   **Version**: 2.0.0-alpha32
+*   **Codebase**: `kson` builds and all unit tests pass with 0 errors. `scripts/mock_input_gate_server.py` accepts score submissions and dynamically serves rankings.
 *   **UI Status**: Result screen fast/slow, Input gate, Option menu WASAPI config, and Select filtering are largely finished.
 
 ## Next Recommendations & Priorities
-1.  **Server Backend**: Deploy/expand backend services for Internet Ranking and Input Gate song serving.
-2.  **Audio Backend**: Investigate `basswasapi.dll` integration to support Exclusive Mode backend if required by players for lowest latency.
+1.  **Audio Backend**: Investigate `basswasapi.dll` integration to support Exclusive Mode backend if required by players for lowest latency.
+2.  **Unlock Conditions**: Wire up `PopupDialog` for achievements/unlock conditions triggered on game clear.
