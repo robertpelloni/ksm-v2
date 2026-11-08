@@ -71,6 +71,9 @@ To achieve total feature parity with K-Shoot MANIA v1 and commercial rhythm game
 - [x] Headless Linux C++20 build support for `kson` (`npm test`)
 - [x] Unit test suite passing 100% (45 test cases, 979 assertions)
 
+### 📊 Project Architecture & Documentation
+- [x] Consolidated single-page Executive Dashboard (`DASHBOARD.md`)
+
 ## Upcoming Priorities
 1. **Course Mode Refinement**: Verify and complete any missing course mode UI elements.
 2. **Server Backend Development**: Create server-side API for Internet Ranking and Input Gate song lists.
