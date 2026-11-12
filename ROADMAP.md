@@ -64,11 +64,15 @@ To achieve total feature parity with K-Shoot MANIA v1 and commercial rhythm game
 - [x] Download from Input Gate (Client logic implemented, mock active)
 - [x] Auto Update (Version Check & Notification)
 - [x] Ranking Tab UI (Client logic)
+- [x] Mock server score submission & dynamic leaderboard
 - [ ] Unlock Conditions & Popups
 
 ### 🛠️ Build & CI Pipeline
 - [x] Headless Linux C++20 build support for `kson` (`npm test`)
 - [x] Unit test suite passing 100% (45 test cases, 979 assertions)
+
+### 📊 Project Architecture & Documentation
+- [x] Consolidated single-page Executive Dashboard (`DASHBOARD.md`)
 
 ## Upcoming Priorities
 1. **Course Mode Refinement**: Verify and complete any missing course mode UI elements.

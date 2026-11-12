@@ -47,6 +47,8 @@ version_info = {
 with open("mock_server/version.json", "w") as f:
     json.dump(version_info, f)
 
+scores_db = []
+
 class MockGateHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
@@ -56,17 +58,28 @@ class MockGateHandler(http.server.SimpleHTTPRequestHandler):
             self.send_header("Content-type", "application/json")
             self.end_headers()
 
-            # Generate fake ranking
+            # Generate ranking list
             qs = urllib.parse.parse_qs(parsed.query)
             song_id = qs.get("song", ["unknown"])[0]
             diff = qs.get("diff", ["0"])[0]
 
             rankings = []
-            for i in range(20):
+            # Include submitted scores if any exist
+            for idx, sc in enumerate(sorted(scores_db, key=lambda x: x.get("score", 0), reverse=True)):
                 rankings.append({
-                    "rank": i + 1,
-                    "player_name": f"ServerPlayer_{i+1}",
-                    "score": 10000000 - (i * 15000),
+                    "rank": idx + 1,
+                    "player_name": sc.get("player_name", "Player"),
+                    "score": sc.get("score", 0),
+                    "play_style": "Keyboard",
+                    "date": "2026-05-20"
+                })
+
+            base_rank = len(rankings)
+            for i in range(20 - base_rank):
+                rankings.append({
+                    "rank": base_rank + i + 1,
+                    "player_name": f"ServerPlayer_{base_rank + i + 1}",
+                    "score": 10000000 - ((base_rank + i) * 15000),
                     "play_style": "Gamepad" if i % 3 == 0 else "Keyboard",
                     "date": "2026-05-20"
                 })
@@ -75,6 +88,32 @@ class MockGateHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         return super().do_GET()
+
+    def do_POST(self):
+        content_length = int(self.headers.get("Content-Length", 0))
+        post_data = self.rfile.read(content_length)
+
+        try:
+            score_data = json.loads(post_data.decode("utf-8"))
+            scores_db.append(score_data)
+            with open("scores.json", "w") as f:
+                json.dump(scores_db, f)
+
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            response = {
+                "status": "ok",
+                "message": "Score recorded",
+                "received_score": score_data.get("score", 0)
+            }
+            self.wfile.write(json.dumps(response).encode("utf-8"))
+        except Exception as e:
+            self.send_response(400)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            response = {"status": "error", "message": str(e)}
+            self.wfile.write(json.dumps(response).encode("utf-8"))
 
 # Serve
 os.chdir("mock_server")
