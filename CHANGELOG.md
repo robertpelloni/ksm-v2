@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+## [2.0.0-alpha33] - 2026-05-20
+
+### Added
+- **Unified Executive Dashboard**:
+    - Completely redesigned `DASHBOARD.md` into a single consolidated view eliminating subpage fragmentation.
+    - Organized high-value priority features (S-Critical, EX Score, ARS, chart parsing, CI/CD, Input Gate, IR, HID lighting).
+    - Documented comprehensive NocoUI scene and component hierarchy, network service topology, system tray icon state, and `config.ini` setting registry with informative tooltip markers.
+
+## [2.0.0-alpha32] - 2026-05-20
+
+### Added
+- **Mock Server Score Submission & Live Rankings**:
+    - Added HTTP `POST` handler to `scripts/mock_input_gate_server.py` supporting `InternetRanking::SubmitScore` payloads (`score`, `maxCombo`, `criticalCount`, `nearCount`, `errorCount`, `gaugeValue`).
+    - Dynamically incorporates submitted player scores into the `/ranking.json` leaderboard, maintaining sorted ranks alongside simulated players.
+
 ## [2.0.0-alpha31] - 2026-05-20
 
 ### Fixed
