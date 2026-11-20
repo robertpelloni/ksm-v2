@@ -1,3 +1,5 @@
+> **Status note (2026-11-19, Tier 1 honesty fix):** This file previously contained two different vision drafts concatenated back-to-back with no separation. The first draft below is the retained vision. The second draft, after the divider, is kept only as a record and is **ASPIRATIONAL — NOT a statement of implemented features**. Do not cite the second draft as current capability.
+
 # Vision
 
 The ultimate goal of **K-Shoot MANIA v2** is to create the definitive, open-source, cross-platform rhythm game engine that fully replicates and expands upon the original K-Shoot MANIA experience.
@@ -16,6 +18,10 @@ The ultimate goal of **K-Shoot MANIA v2** is to create the definitive, open-sour
 *   Rhythm game enthusiasts who want a stable, accurate simulator.
 *   Chart creators (K-Shoot MANIA Editor compatibility).
 *   Arcade cabinet owners (Hardware I/O support).
+---
+
+> **Second draft below — ASPIRATIONAL / SUPERSEDED, kept as record only (2026-11-19).** It repeats and expands the vision above (including Sound Voltex EXCEED GEAR features, Lua, and a live backend) — none of that expansion is proven by this repository.
+
 # K-Shoot MANIA v2 Vision
 
 The ultimate goal and design of this project is to create an open-source, modernized, high-performance, and feature-complete C++20/OpenSiv3D rewrite of the popular "K-Shoot MANIA" v1 rhythm game.
