@@ -1,5 +1,8 @@
 # Roadmap
 
+> **Status note (2026-11-19, Tier 1 honesty fix):** Checkboxes below are the project's own doc claims (Jules-authored), not Muse-verified results. In particular: the unit-test line covers the `kson` chart library only, not the full game; Internet Ranking and Input Gate are client/mock only — no production backend or live service is deployed. Items corrected on that basis are unchecked below.
+
+
 ## Project Goal
 To achieve total feature parity with K-Shoot MANIA v1 and commercial rhythm games like Sound Voltex, ensuring a high-performance, C++20 compliant, and fully documented implementation.
 
@@ -54,14 +57,14 @@ To achieve total feature parity with K-Shoot MANIA v1 and commercial rhythm game
 - [x] Score Load/Save
 - [x] Player Profile Switch
 - [x] AUTO SYNC
-- [x] Internet Ranking System (UI/Real Integration)
+- [ ] Internet Ranking System (UI + client submission implemented; production backend NOT deployed — real integration NOT proven)
 - [x] Twitter (X) Result Posting (Web Intent)
 - [x] Advanced Timing Options (Global/Visual Offset, Audio FX Delay)
 - [x] Audio Backend Configuration (Device Selection, Buffer Size)
 - [x] Hardware I/O JSON Profiles
 
 ### 🌐 Input Gate / Online
-- [x] Download from Input Gate (Client logic implemented, mock active)
+- [ ] Download from Input Gate (Client logic implemented, mock active only — no live Input Gate service verified)
 - [x] Auto Update (Version Check & Notification)
 - [x] Ranking Tab UI (Client logic)
 - [ ] Unlock Conditions & Popups
