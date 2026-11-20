@@ -1,3 +1,22 @@
+# robertpelloni/ksm-v2 — Fork Status (Honest, 2026-11-19)
+
+This is **Robert Pelloni's fork** of K-Shoot MANIA v2. It is not the upstream project.
+
+- **Upstream:** [kshootmania/ksm-v2](https://github.com/kshootmania/ksm-v2) by masaka / m4saka (MIT) — the C++ / OpenSiv3D rewrite of K-Shoot MANIA v1 (HSP). Upstream was at version **2.2.0** (Nov 15, 2026) when this fork was last checked.
+- **This branch (`master`) is the newest / canonical branch of the fork:** `VERSION` **2.0.0-alpha33**, head Nov 15, 2026.
+- **`main` is stale:** `VERSION` 2.0.0-alpha31, head Nov 7, 2026. The two branches have diverged. Branch unification (Tier 2) has **not** been done — it is Robert's call.
+- **What is proven vs. claimed:**
+  - The docs in this repo (HANDOFF / DASHBOARD / ROADMAP, Jules-authored) claim the `kson` chart library builds on Linux and `npm test` passes 45 test cases / 979 assertions. That test (`scripts/test_wrapper.sh`) covers the **kson library only** — it is **not Muse-verified**, and it says nothing about the full game building or running.
+  - The full GUI game requires Visual Studio 2022 + OpenSiv3D 0.6.16 on Windows. That build is **not verified**.
+  - **Internet Ranking:** client-side submission and (on `master`) a mock server receiver exist. A production ranking backend is **not deployed**.
+  - **Input Gate:** client logic is implemented with a **mock active** — no live Input Gate service is verified.
+  - **Editor:** `kshooteditor` exists as a CMake target / stub only. Parity with the v1 editor has **not** been checked.
+- The upstream README is kept below as a record. Its build instructions and contribution policy are upstream's, not this fork's.
+
+---
+
+## Original upstream README (kept as record)
+
 K-Shoot MANIA v2 (v1 Remastered)
 ========================
 
