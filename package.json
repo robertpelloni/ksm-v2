@@ -1,13 +1,13 @@
 {
   "name": "kshootmania-v2",
-  "version": "2.0.0-alpha19",
+  "version": "2.0.0-alpha33",
   "description": "K-Shoot MANIA v2 (v1 Remastered)",
   "scripts": {
     "test": "./scripts/test_wrapper.sh"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kshootmania/ksm-v2.git"
+    "url": "https://github.com/robertpelloni/ksm-v2.git"
   },
   "author": "kshootmania-v2 team",
   "license": "MIT"
