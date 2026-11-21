@@ -1,6 +1,6 @@
 {
   "name": "kshootmania-v2",
-  "version": "2.0.0-alpha31",
+  "version": "2.0.0-alpha33",
   "description": "K-Shoot MANIA v2 (v1 Remastered)",
   "scripts": {
     "test": "./scripts/test_wrapper.sh"
